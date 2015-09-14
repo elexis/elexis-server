@@ -1,0 +1,21 @@
+target "Elexis-Server" 
+
+with source allEnvironments
+
+location "http://download.eclipse.org/eclipse/updates/4.5/" {
+	org.eclipse.equinox.sdk.feature.group
+	org.junit
+}
+
+location "http://download.eclipse.org/releases/mars" {
+}
+
+location "http://hstaudacher.github.io/osgi-jax-rs-connector" {
+	com.eclipsesource.jaxrs.connector.feature.feature.group
+	com.eclipsesource.jaxrs.provider.security.feature.feature.group
+	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
+}
+
+location "http://download.elexis.info/elexis.3.core/snapshot/" {
+
+}

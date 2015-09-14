@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<target name="ElexisBox" sequenceNumber="1441117362">
+  <locations>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.0.v20150602-1417"/>
+      <unit id="org.junit" version="4.12.0.v201504281640"/>
+      <repository location="http://download.eclipse.org/eclipse/updates/4.5/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <repository location="http://download.eclipse.org/releases/mars"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.0.0.201506221200"/>
+      <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201506221200"/>
+      <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201506221200"/>
+      <repository location="http://hstaudacher.github.io/osgi-jax-rs-connector"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <repository location="http://download.elexis.info/elexis.3.core/snapshot/"/>
+    </location>
+  </locations>
+</target>
