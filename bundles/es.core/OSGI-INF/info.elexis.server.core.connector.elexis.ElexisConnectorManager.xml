@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" name="info.elexis.server.core.connector.elexis.ElexisConnectorManager">
-    <implementation class="info.elexis.server.core.connector.elexis.ElexisConnectorManager"/>
-    <reference name="ElexisConnector" interface="info.elexis.server.core.extension.IElexisConnector" cardinality="0..n" policy="static" bind="bind" unbind="unbind"/>
-</scr:component>

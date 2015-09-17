@@ -31,6 +31,8 @@
    <features>
       <feature id="info.elexis.server.core.feature" version="1.0.0.qualifier"/>
       <feature id="info.elexis.server.core.platform.feature" version="1.0.0.qualifier"/>
+      <feature id="info.elexis.server.core.p2.feature" version="1.0.0.qualifier"/>
+      <feature id="info.elexis.server.core.connector.elexis.jpa.feature" version="1.0.0.qualifier"/>
    </features>
 
    <configurations>
@@ -43,6 +45,7 @@
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
    </configurations>
 
    <preferencesInfo>

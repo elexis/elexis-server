@@ -1,0 +1,4 @@
+
+org.eclipse.equinox.p2.core.ProvisionException: Error while reading from repository ->
+https://wiki.eclipse.org/Disabling_Apache_Httpclient
+http://stackoverflow.com/questions/22148782/unable-to-connect-to-the-eclipse-luna-market 

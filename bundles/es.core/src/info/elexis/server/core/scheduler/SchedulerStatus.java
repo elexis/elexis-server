@@ -1,6 +1,7 @@
 package info.elexis.server.core.scheduler;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -21,6 +22,9 @@ public class SchedulerStatus {
 	public Map<String, TaskStatus> taskStatusMap;
 
 	public Map<String, TaskStatus> getTaskStatusMap() {
+		if(taskStatusMap == null) {
+			taskStatusMap = new HashMap<String, SchedulerStatus.TaskStatus>();
+		}
 		return taskStatusMap;
 	}
 
@@ -42,7 +46,7 @@ public class SchedulerStatus {
 	 * @param id
 	 */
 	public void register(Task task, SchedulingPattern schedulingPattern, String id) {
-		TaskStatus ts = taskStatusMap.get(task.getClass().getName());
+		TaskStatus ts = getTaskStatusMap().get(task.getClass().getName());
 		if (ts == null) {
 			ts = new TaskStatus();
 		}
@@ -50,7 +54,7 @@ public class SchedulerStatus {
 		ts.id = id;
 		ts.schedulingPattern = schedulingPattern.toString();
 
-		taskStatusMap.put(task.getClass().getName(), ts);
+		getTaskStatusMap().put(task.getClass().getName(), ts);
 	}
 
 	/**
@@ -60,7 +64,7 @@ public class SchedulerStatus {
 	 * @param executor
 	 */
 	public void updateExecution(int state, Task task, TaskExecutor executor) {
-		TaskStatus ts = taskStatusMap.get(task.getClass().getName());
+		TaskStatus ts = getTaskStatusMap().get(task.getClass().getName());
 		if (ts == null) {
 			throw new IllegalStateException("Trying to update execution of task which was not yet registered.");
 		}

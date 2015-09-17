@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>es.core.feature</module>
+		<module>es.core.p2.feature</module>
 		<module>es.core.platform.feature</module>
 		<module>es.core.connector.elexis.jpa.feature</module>
 	</modules>
