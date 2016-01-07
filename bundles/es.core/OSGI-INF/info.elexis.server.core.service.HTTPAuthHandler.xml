@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" immediate="true" name="info.elexis.server.core.service.HTTPAuthHandler">
+    <implementation class="info.elexis.server.core.service.HTTPAuthHandler"/>
+    <service servicefactory="false">
+        <provide interface="com.eclipsesource.jaxrs.provider.security.AuthenticationHandler"/>
+        <provide interface="com.eclipsesource.jaxrs.provider.security.AuthorizationHandler"/>
+    </service>
+</scr:component>

@@ -5,9 +5,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:git="http://www.eclipse.org/oomph/setup/git/1.0"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
+    xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore"
+    xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
     name="elexis-server"
     label="Elexis-Server">
   <setupTask
@@ -18,10 +20,25 @@
         name="org.sonatype.tycho.m2e.feature.feature.group"/>
     <requirement
         name="org.eclipse.m2e.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.rap.e4.tooling.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.rap.tools.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.e4.core.tools.feature.feature.group"/>
+    <requirement
+        name="net.jeeeyul.pdetools.feature.feature.group"
+        filter=""/>
+    <requirement
+        name="org.eclipse.mylyn.wikitext_feature.feature.group"/>
     <repository
         url="http://mbarbero.github.io/fr.obeo.releng.targetplatform/p2/latest/"/>
     <repository
         url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST/"/>
+    <repository
+        url="http://download.eclipse.org/rt/rap/incubator/nightly/e4/tooling/site/"/>
+    <repository
+        url="http://eclipse.jeeeyul.net/update/"/>
     <description>Install the tools needed in the IDE to work with the source code for ${scope.project.label}</description>
   </setupTask>
   <setupTask
@@ -79,6 +96,42 @@
       version="JavaSE-1.8"
       location="${jre.location-1.8}">
     <description>Define the JRE needed to compile and run the Java projects of ${scope.project.label}</description>
+  </setupTask>
+  <setupTask
+      xsi:type="setup.workingsets:WorkingSetTask">
+    <workingSet
+        name="bundles"
+        id="bundles">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/bundles/.*"/>
+    </workingSet>
+    <workingSet
+        name="features"
+        id="features">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern="./features/.*"/>
+    </workingSet>
+    <workingSet
+        name="tests"
+        id="tests">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern=".*/tests/.*"/>
+    </workingSet>
+    <workingSet
+        name="releng">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern="./releng/.*"/>
+    </workingSet>
+    <workingSet
+        name="products">
+      <predicate
+          xsi:type="predicates:LocationPredicate"
+          pattern="./products/.*"/>
+    </workingSet>
   </setupTask>
   <stream name="master"
       label="Master"/>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1"
+	xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<persistence-unit-metadata>
+		<persistence-unit-defaults>
+			<access>FIELD</access>
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	<converter name="ElexisExtInfoMapConverter"
+		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisExtInfoMapConverter" />
+	<converter name="ElexisDBCompressedStringConverter"
+		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBCompressedStringConverter" />
+
+	<object-type-converter name="booleanStringConverter"
+		object-type="java.lang.Boolean" data-type="java.lang.String">
+		<conversion-value object-value="true" data-value="1" />
+		<conversion-value object-value="false" data-value="0" />
+	</object-type-converter>
+	<sequence-generator name="system-uuid"></sequence-generator>
+
+     <named-query name="ListPatients">
+         <query>SELECT c FROM Kontakt c WHERE c.istPatient = true AND c.deleted = false</query>
+         <hint name="eclipselink.cache-usage" value="DoNotCheckCache"/>
+     </named-query>
+</entity-mappings>

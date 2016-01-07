@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="elexis" transaction-type="RESOURCE_LOCAL">
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlungen</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Config</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Faelle</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Role</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.User</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes> 
+		<properties>
+			<property name="eclipselink.logging.level" value="FINE" />
+			<property name="eclipselink.logging.thread" value="false" />
+			<property name="eclipselink.session.customizer"
+				value="info.elexis.server.core.connector.elexis.jpa.model.annotated.id.UUIDSequence" />
+			<property name="eclipselink.exception-handler"
+				value="info.elexis.server.core.connector.elexis.jpa.model.annotated.handler.PersistenceExceptionHandler" />
+			<property name="eclipselink.ddl-generation" value="none" />
+		</properties>
+	</persistence-unit>
+</persistence>

@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>info.elexis.server</groupId>
+	<artifactId>info.elexis.server.parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Elexis-Server</name>
+
+	<organization>
+		<name>elexis.info</name>
+		<url>http://www.elexis.info</url>
+	</organization>
+
+	<scm>
+		<connection>scm:git:https://github.com/elexis/elexis-server.git</connection>
+		<developerConnection>scm:git:https://github.com/elexis/elexis-server.git</developerConnection>
+		<url>https://github.com/elexis/elexis-server</url>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License</name>
+			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<url>https://github.com/elexis/elexis-server/issues</url>
+		<system>Github</system>
+	</issueManagement>
+
+	<description>Elexis-Server for headless operation</description>
+
+	<properties>
+		<tycho.version>0.24.0</tycho.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
+	</properties>
+
+	<modules>
+		<module>../../targets</module>
+		<module>../../bundles</module>
+		<module>../../features</module>
+		<module>../../products</module>
+		<module>../../tests</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<compilerArgument>-warn:none</compilerArgument>
+					<compilerArgument>-err:none</compilerArgument>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>${tycho-groupid}</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<resolver>p2</resolver>
+					<ignoreTychoRepositories>true</ignoreTychoRepositories>
+					<pomDependencies>consider</pomDependencies>
+					<target>
+						<artifact>
+							<groupId>info.elexis.server.targets</groupId>
+							<artifactId>elexis-server</artifactId>
+							<version>${project.version}</version>
+							<classifier>elexis-server</classifier>
+						</artifact>
+					</target>
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+				<version>1.21.0</version>
+				<configuration>
+					<supportedProjectTypes>
+						<supportedProjectType>eclipse-plugin</supportedProjectType>
+					</supportedProjectTypes>
+					<outputDirectory>./</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-scr-scrdescriptor</id>
+						<goals>
+							<goal>scr</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+	</dependencies>
+</project>

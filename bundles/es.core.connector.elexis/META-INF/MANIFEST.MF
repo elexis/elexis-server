@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Elexis-Server Elexis Connector
+Bundle-SymbolicName: info.elexis.server.core.connector.elexis;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Require-Bundle: org.eclipse.core.runtime,
+ ch.elexis.core.data,
+ org.eclipse.osgi.services
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: javax.ws.rs,
+ javax.ws.rs.core;version="2.0.1",
+ org.osgi.service.jdbc;version="1.0.0"
+Service-Component: OSGI-INF/HTTPService.xml,
+ OSGI-INF/ConfigAdminConsumer.xml
+Export-Package: info.elexis.server.core.connector.elexis

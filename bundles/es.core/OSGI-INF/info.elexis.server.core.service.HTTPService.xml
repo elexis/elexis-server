@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" immediate="true" name="info.elexis.server.core.service.HTTPService">
+    <implementation class="info.elexis.server.core.service.HTTPService"/>
+    <service servicefactory="false">
+        <provide interface="info.elexis.server.core.service.HTTPService"/>
+    </service>
+</scr:component>
