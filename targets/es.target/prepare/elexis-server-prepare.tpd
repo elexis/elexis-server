@@ -2,11 +2,23 @@ target "Elexis-Server"
 
 with source allEnvironments
 
-location "http://download.eclipse.org/eclipse/updates/4.5/" eclipse-mars-updates {
+location "http://download.eclipse.org/eclipse/updates/4.5/" {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
 	org.junit
 	org.hamcrest.core
+	org.eclipse.ecf.core.feature.feature.group
+	org.eclipse.ecf.core.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.feature.feature.group
+	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group
+	org.eclipse.equinox.p2.core.feature.feature.group
+	org.eclipse.equinox.p2.extras.feature.feature.group
+	org.eclipse.equinox.p2.discovery.feature.feature.group
+	javax.annotation
+	javax.xml
+	javax.inject
 }
 
 location "http://download.eclipse.org/releases/mars" {
@@ -21,7 +33,7 @@ location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.2.1/" {
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group
 }
 
-location "http://download.elexis.info/elexis.3.core/snapshot/" elexis-core-snapshot {
+location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	ch.rgw.utility
 	ch.elexis.core
 	ch.elexis.core.data
@@ -36,7 +48,13 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" elexis-core-snaps
 
 // RAP e4 target https://wiki.eclipse.org/RAP/E4
 location "http://download.eclipse.org/rt/rap/incubator/3.0/e4/target/site/" {
-	org.eclipse.rap.e4.target.feature.feature.group
+	org.eclipse.e4.ui.workbench.addons.swt
+	org.eclipse.e4.ui.workbench.renderers.swt
+	org.eclipse.e4.ui.workbench.swt
+	org.eclipse.rap.e4
+	org.eclipse.rap.jface
+	org.eclipse.rap.rwt
+	org.eclipse.rap.rwt.osgi
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
@@ -74,6 +92,7 @@ location "http://download.eclipse.org/gemini/jpa/updates/1.2.0-M1/" {
 	org.eclipse.gemini.jpa.feature.feature.group
 }
 
+// maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
 location "http://download.elexis.info/elexis-server/elexis-server-dependencies/target/repository" {
 	com.mashape.unirest.java
 	org.apache.commons.logging
