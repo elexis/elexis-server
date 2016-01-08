@@ -1,0 +1,1 @@
+script: mvn -f releng/es.parent/pom.xml clean
