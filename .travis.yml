@@ -14,4 +14,4 @@ before_script:
   - export M2_HOME=$PWD/apache-maven-3.3.9
   - export PATH=$PWD/apache-maven-3.3.9/bin:${PATH}
   - hash -r
-script: mvn -f releng/es.parent/pom.xml clean
+script: mvn -f releng/es.parent/pom.xml clean verify
