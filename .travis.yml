@@ -1,6 +1,8 @@
 language: java
+
 jdk:
 - oraclejdk8
+
 before_install:
 - wget http://apache.claz.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 - tar zxvf apache-maven-3.3.9-bin.tar.gz
@@ -8,17 +10,23 @@ before_install:
 - export M2_HOME=$PWD/apache-maven-3.3.9
 - export PATH=$PWD/apache-maven-3.3.9/bin:${PATH}
 - hash -r
+
 before_script:
 - export M2_HOME=$PWD/apache-maven-3.3.9
 - export PATH=$PWD/apache-maven-3.3.9/bin:${PATH}
 - hash -r
+
 cache:
   directories:
   - $HOME/.m2
+
 script:
+- VERSION=1.0.0
 - mvn -f releng/es.parent/pom.xml clean verify
+
 after_success:
 - BINTRAY_PACKAGE=elexis-server
+
 deploy:
   provider: bintray
   file: bintray.desc.files.json
