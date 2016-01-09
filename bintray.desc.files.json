@@ -1,0 +1,35 @@
+{
+    "package": {
+        "name": "$BINTRAY_PACKAGE",
+        "repo": "generic",
+        "subject": "elexis-server",
+        "desc": "generated and pushed from TravisCI",
+        "github_use_tag_release_notes": true,
+        "github_release_notes_file": "RELEASE.txt",
+        "licenses": ["EPL-1.0"],
+        "labels": [""],
+        "public_download_numbers": true,
+        "public_stats": true
+	},
+
+    "version": {
+        "name": "$VERSION",
+        "desc": "https://travis-ci.org/elexis/elexis-server/builds/$TRAVIS_BUILD_ID",
+        "released": "$DATE",
+        "vcs_tag": "$TRAVIS_COMMIT",
+        "attributes": [
+           {"name": "TRAVIS_BRANCH"      , "values" : ["$TRAVIS_BRANCH"]       , "type": "string"},
+           {"name": "TRAVIS_BUILD_ID"    , "values" : ["$TRAVIS_BUILD_ID"]     , "type": "string"},
+           {"name": "TRAVIS_BUILD_NUMBER", "values" : ["$TRAVIS_BUILD_NUMBER"] , "type": "string"},
+           {"name": "TRAVIS_JOB_NUMBER"  , "values" : ["$TRAVIS_JOB_NUMBER"]   , "type": "string"},
+           {"name": "TRAVIS_COMMIT"      , "values" : ["$TRAVIS_COMMIT"]       , "type": "string"}
+        ]
+    },
+
+    "files":
+        [
+           { "includePattern": "products/es.core.product.runtime/target/products/(.*\.zip)",
+             "uploadPattern":  "$BINTRAY_PACKAGE/$VERSION/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/products/$1" }
+        ],
+    "publish": true
+}

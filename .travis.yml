@@ -17,4 +17,16 @@ before_script:
 cache:
   directories:
     - $HOME/.m2
-script: mvn -f releng/es.parent/pom.xml clean verify
+
+script: 
+  - mvn -f releng/es.parent/pom.xml clean verify
+
+after_success:
+  - BINTRAY_PACKAGE=elexis-server
+
+deploy:
+  provider: bintray
+  file: bintray.desc.files.json
+  user: col-panic
+  key:
+    secure: eB1sML0LjZZStIUGShQAtwNUvFtwQ+lR31BSNvIsIFkiHCGOtDLe5nltoxf6Ry+lF95p3BAHT8p26bvyo4k3/vKHBMSJEgR7QJLUQ+EnbOUkTnKREYrP5+j2yup0fi87kS5w/mwygmvg9xlwiYte9xX2jLVBd1ZZNVmXk3uuCM/8EY7h8f3juUJn0DGNSay8h2EGjoyIYMlfzDfVDaId5NTlnDQm+/52sFWCIuBCWFWQnZ4xfoQt6jvnaePJaX7Taol3HHS0ME2GWAutyNU++OHzLwKr67Ra1xfOZXuK1JH2vx+5eLzdTsqYKRN5gFc+XJ86kD/BEtxzEg00IozZZXo5i5xICP/q2z1nkxvez+X3L+RbYy0nW0Yj+S3EmoS+TObwuIZb/tdwLk1+H3gOHMeSKXPoA8hM11CMuVZIC58th9E+uj+VHiIgRNt/fGZyO3Skfff0IZeiG5TUiRJwBI1O7+Gpukx8VNcdp8IKS9IsXYXYUzU8j9xXaijXIbQlJOX+6+mmWROXn9N8oVYeBVgpL5djOz9rMrnfHwlO+jyEFZm0EdytLF2y8/FckNZ6bdsdJSlovNZXZPUskkWIKbewcyGsRn4qMFq0B47OXg2fcPmAYMaJHVh8NQ0/LvhCQvGtdNxIiM1jrYgN2tKtntTOTQzt+s5dB4jLIm7iqNg=
