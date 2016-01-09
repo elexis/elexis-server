@@ -26,6 +26,16 @@ script:
 
 after_success:
 - BINTRAY_PACKAGE=elexis-server
+- BINTRAY_DESC=bintray.desc.files.json
+- sed -i -e 's|$DATE|'$DATE'|g'                               $BINTRAY_DESC*
+- sed -i -e 's|$BINTRAY_PACKAGE|'$BINTRAY_PACKAGE'|g'         $BINTRAY_DESC
+- sed -i -e 's|$VERSION|'$VERSION'|g'                         $BINTRAY_DESC
+- sed -i -e 's|$TRAVIS_BRANCH|'$TRAVIS_BRANCH'|g'             $BINTRAY_DESC
+- sed -i -e 's|$TRAVIS_JOB_NUMBER|'$TRAVIS_JOB_NUMBER'|g'     $BINTRAY_DESC
+- sed -i -e 's|$TRAVIS_BUILD_ID|'$TRAVIS_BUILD_ID'|g'         $BINTRAY_DESC
+- sed -i -e 's|$TRAVIS_BUILD_NUMBER|'$TRAVIS_BUILD_NUMBER'|g' $BINTRAY_DESC
+- sed -i -e 's|$TRAVIS_COMMIT|'$TRAVIS_COMMIT'|g'             $BINTRAY_DESC
+- cat $BINTRAY_DESC
 
 deploy:
   provider: bintray
