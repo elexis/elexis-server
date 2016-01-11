@@ -18,6 +18,7 @@
 
   <modules>
     <module>es.core.product.runtime</module>
+    <module>es.updatesite</module>
   </modules>
 
 </project>
