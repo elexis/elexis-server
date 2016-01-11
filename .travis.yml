@@ -37,9 +37,10 @@ after_success:
 - sed -i -e 's|$TRAVIS_COMMIT|'$TRAVIS_COMMIT'|g'             $BINTRAY_DESC
 - cat $BINTRAY_DESC
 
-deploy:
-  provider: bintray
-  file: bintray.desc.files.json
-  user: col-panic
-  key:
-    secure: gNADh0hdU1H9OzIBQJRVqqSRj8POqz90G/ujYopPZtwn7ieWydyI2EHG0huAB7E84qWVNZH9dxZkWhU2pydqztaXlZUYYhiroZM7tEq3+2vAWwN4mV7FICe8mPCaKALMg03XevDmbeE18VmqH3E1vYKFxy0eUd44YVx72HYoB1QXegGra6hl5LKyUDSsegz5auu5cjrBa8D4t/8BKJJETKjlLLL8gFkgYvZYrZku5zVEi+cf2xMTESMNhRZwkhGhtz4ogsBmNnij5n+jTgqKxXwxhlu1Zjx4ifAxRyitbxI+oMVhsJ+t2qICsdk6L4TjJGcalap4XTqroEyDX3mTd11zS+i+lE1AxlGTWSt67UQqacNgI8w9pan24Kkboqf9R5qEpWbNFzHvj7i1hDwuqK8y5I4Gf+VhLBMSLKvjnaCnjMtfoBa8ErhmONYgh25A6IRr1RGvSlOEqyx8flOvCh8j9uxLH+rHnhBCnVL0+rV9y//esOJXTTBuQPx6lBqwARMalfzSX3dzuFjE0vPBzroeu4rYepDbrfhdYeWeSFDhySkbdLLQb/yJYYRbPIMZy/TsVHUTnxTI/hf7E2zQSUt8VYPprF5I1DH0b9FZkY92MWmLfhiHt/O/dE5mqyoOidMP3redb3oquw7F17HJh2soJyZt95839TB0v+yOURo=
+#deploy:
+#  provider: bintray
+#  file: bintray.desc.files.json
+#  user: col-panic
+#  on: release
+#  key:
+#    secure: gNADh0hdU1H9OzIBQJRVqqSRj8POqz90G/ujYopPZtwn7ieWydyI2EHG0huAB7E84qWVNZH9dxZkWhU2pydqztaXlZUYYhiroZM7tEq3+2vAWwN4mV7FICe8mPCaKALMg03XevDmbeE18VmqH3E1vYKFxy0eUd44YVx72HYoB1QXegGra6hl5LKyUDSsegz5auu5cjrBa8D4t/8BKJJETKjlLLL8gFkgYvZYrZku5zVEi+cf2xMTESMNhRZwkhGhtz4ogsBmNnij5n+jTgqKxXwxhlu1Zjx4ifAxRyitbxI+oMVhsJ+t2qICsdk6L4TjJGcalap4XTqroEyDX3mTd11zS+i+lE1AxlGTWSt67UQqacNgI8w9pan24Kkboqf9R5qEpWbNFzHvj7i1hDwuqK8y5I4Gf+VhLBMSLKvjnaCnjMtfoBa8ErhmONYgh25A6IRr1RGvSlOEqyx8flOvCh8j9uxLH+rHnhBCnVL0+rV9y//esOJXTTBuQPx6lBqwARMalfzSX3dzuFjE0vPBzroeu4rYepDbrfhdYeWeSFDhySkbdLLQb/yJYYRbPIMZy/TsVHUTnxTI/hf7E2zQSUt8VYPprF5I1DH0b9FZkY92MWmLfhiHt/O/dE5mqyoOidMP3redb3oquw7F17HJh2soJyZt95839TB0v+yOURo=

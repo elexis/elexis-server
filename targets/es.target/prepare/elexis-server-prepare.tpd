@@ -16,13 +16,23 @@ location "http://download.eclipse.org/eclipse/updates/4.5/" {
 	org.eclipse.equinox.p2.core.feature.feature.group
 	org.eclipse.equinox.p2.extras.feature.feature.group
 	org.eclipse.equinox.p2.discovery.feature.feature.group
+	org.eclipse.core.net
+	org.eclipse.core.net.linux.x86
+	org.eclipse.core.net.linux.x86_64
+	org.eclipse.core.net.win32.x86
+	org.eclipse.core.net.win32.x86_64
 	javax.annotation
 	javax.xml
 	javax.inject
 }
 
 location "http://download.eclipse.org/releases/mars" {
-
+	ch.qos.logback.classic
+	ch.qos.logback.core
+	ch.qos.logback.slf4j
+	org.apache.commons.lang
+	org.apache.commons.codec
+	org.apache.commons.io [2.2.0.v201405211200,2.2.0.v201405211200]
 }
 
 location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.2.1/" {
@@ -58,13 +68,6 @@ location "http://download.eclipse.org/rt/rap/incubator/3.0/e4/target/site/" {
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
-	ch.qos.logback.classic
-	ch.qos.logback.core
-	ch.qos.logback.slf4j
-	org.apache.commons.lang
-	org.apache.commons.codec
-	org.apache.commons.exec
-	org.apache.commons.io [2.2.0,3.0.0)
 	com.google.guava [15.0.0.v201403281430,15.0.0.v201403281430]
 	org.tukaani.xz
 	osgi.enterprise
