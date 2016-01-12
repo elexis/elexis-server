@@ -11,7 +11,7 @@ cache:
   - $HOME/.m2
 
 before_install:
-- apt-get install -qq davix
+- sudo apt-get install -qq davix
 - mvn -version 
 - wget http://apache.claz.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 - tar zxvf apache-maven-3.3.9-bin.tar.gz
@@ -40,7 +40,6 @@ after_success:
 - sed -i -e 's|$TRAVIS_BUILD_NUMBER|'$TRAVIS_BUILD_NUMBER'|g' $BINTRAY_DESC
 - sed -i -e 's|$TRAVIS_COMMIT|'$TRAVIS_COMMIT'|g'             $BINTRAY_DESC
 - cat $BINTRAY_DESC
-#- ncftpput -R -m -u medevit_elexisserver -p $FTP_UPLOAD_PASS  ftp80.world4you.com  / products/es.core.product.runtime/target/products/ 
 
 #deploy:
 #  provider: bintray
