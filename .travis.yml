@@ -6,27 +6,26 @@ jdk:
 env:
 - secure: "F26OErGQyK2ITOmAxxNiopSDfdAicRltiANRhgHVFsZGabWO6RDYM4iO0x+IFW7ViOuxK1TP2gpOliQO9a0epAsemyonjNIowsSSRZkfGoQN9FxRU3F/w4/+8toUXWdCDFaPUEbXhR3n3BGv0FA/fyRRrNdtZurBCUEQTJzx5OvjkRmbcjlQjt45xmmc+sAYh6LnMjJhNClSqXcJ8qZK8ASMXDWxTKoEf6E7b2XnfIhWU8a2eSvT4wvzzZqo7+eh5ZhsWmwmU3oJ20iTtcV4sVqm6K9M3tAIy34ToiquoISdU4KX1tMHuQhfg/6hUt5AqO5dJI0YzXLfqgYwi6ZmqOQkE5oliRijEiNvqFHmE4qtbvhWeKqd9laG+olRK+51QXy3cNOelsm4vWi4bCT15HV+Dc8Ww1vBHcQEFZ+w6Onr6zIP/z9LNOizVPpVs5aIopCesdbLH6tM2QX07bFrUGl/sC2qyxoCQ97RnW4+Gi+oSfcpZ7AygPEqstf21eo0AFzgO/I2q1hW3OY14nz/WTRDGwmMBqdV2dbraS+b8XtWw9tJnH+hgj3xQSUg44EtP4rV2jli2N9AYJXfgo4shmza0iMNCvwg1gAm3FLE5S7X6URuz6yvCTqMRNLZitZMnragXl0yt26xuLb0DYHwolITMJ7tiNuZgDfOffgysp0="
 
+cache:
+ directories:
+  - $HOME/.m2
+
 before_install:
+- apt-get install -qq davix
+- mvn -version 
 - wget http://apache.claz.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 - tar zxvf apache-maven-3.3.9-bin.tar.gz
 - chmod +x apache-maven-3.3.9/bin/mvn
 - export M2_HOME=$PWD/apache-maven-3.3.9
 - export PATH=$PWD/apache-maven-3.3.9/bin:${PATH}
 - hash -r
-- sudo apt-get update -qq
-- sudo apt-get install -y ncftp
 
 before_script:
 - export M2_HOME=$PWD/apache-maven-3.3.9
 - export PATH=$PWD/apache-maven-3.3.9/bin:${PATH}
 - hash -r
 
-cache:
-  directories:
-  - $HOME/.m2
-
 script:
-- VERSION=1.0.0
 - mvn -f releng/es.parent/pom.xml clean verify
 
 after_success:
@@ -41,7 +40,7 @@ after_success:
 - sed -i -e 's|$TRAVIS_BUILD_NUMBER|'$TRAVIS_BUILD_NUMBER'|g' $BINTRAY_DESC
 - sed -i -e 's|$TRAVIS_COMMIT|'$TRAVIS_COMMIT'|g'             $BINTRAY_DESC
 - cat $BINTRAY_DESC
-- ncftpput -R -m -u medevit_elexisserver -p $FTP_UPLOAD_PASS  ftp80.world4you.com  / products/es.core.product.runtime/target/products/ 
+#- ncftpput -R -m -u medevit_elexisserver -p $FTP_UPLOAD_PASS  ftp80.world4you.com  / products/es.core.product.runtime/target/products/ 
 
 #deploy:
 #  provider: bintray
