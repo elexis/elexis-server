@@ -96,7 +96,7 @@ location "http://download.eclipse.org/gemini/jpa/updates/1.2.0-M1/" {
 }
 
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
-location "http://download.elexis.info/elexis-server/elexis-server-dependencies/target/repository" {
+location "http://download.elexis.info/elexis-server/elexis-server-dependencies/" {
 	com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
@@ -105,4 +105,5 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/t
 	org.apache.httpcomponents.httpmime
 	org.apache.httpcomponents.httpcore-nio
 	org.json
+	org.apache.shiro.core
 }
