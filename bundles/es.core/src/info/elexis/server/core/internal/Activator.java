@@ -52,17 +52,4 @@ public class Activator implements BundleActivator {
 		return context.getBundle().getEntry(filename);
 	}
 
-	public static Properties loadProperties(String filename) {
-		Properties properties = new Properties();
-		try {
-			URL resource = loadResourceFile(filename);
-			InputStream openStream = resource.openStream();
-			properties.load(openStream);
-			openStream.close();
-		} catch (IOException e) {
-			log.error("Error loading properties", e);
-		}
-		return properties;
-	}
-
 }

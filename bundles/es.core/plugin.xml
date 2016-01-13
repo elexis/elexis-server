@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="info.elexis.server.core.Application">
+               class="info.elexis.server.core.internal.Application">
          </run>
       </application>
    </extension>
