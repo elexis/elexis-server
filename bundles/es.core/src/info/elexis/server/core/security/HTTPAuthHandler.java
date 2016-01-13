@@ -1,8 +1,6 @@
 package info.elexis.server.core.security;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.Optional;
 
@@ -23,10 +21,6 @@ public class HTTPAuthHandler implements AuthenticationHandler, AuthorizationHand
 
 	@Override
 	public boolean isUserInRole(Principal user, String role) {
-		if (PrincipalImpl.ADMIN.equals(user)) {
-			return true;
-		}
-		
 		Optional<Subject> subj = ShiroSecurityService.getSubjectBySessionId(user.getName());
 		if (subj.isPresent()) {
 			Subject subject = subj.get();
@@ -43,17 +37,6 @@ public class HTTPAuthHandler implements AuthenticationHandler, AuthorizationHand
 		String sHost = rc.getUriInfo().getBaseUri().getHost();
 		log.trace("[" + rc.getRequest().getMethod() + "] S " + sHost + " D " + rc.getUriInfo().getPath());
 
-		// (1) requests from local are always granted ADMIN rights
-		try {
-			InetAddress sHostIA = InetAddress.getByName(sHost);
-			if (sHostIA.isAnyLocalAddress() || sHostIA.isLoopbackAddress()) {
-				return PrincipalImpl.ADMIN;
-			}
-		} catch (UnknownHostException e) {
-			// definitely not localhost
-		}
-
-		// (2) check for an existing session id
 		String sessionId = rc.getHeaderString("sessionId");
 		if (sessionId == null) {
 			return null;

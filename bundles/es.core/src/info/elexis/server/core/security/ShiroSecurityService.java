@@ -5,7 +5,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -47,7 +46,6 @@ public class ShiroSecurityService {
 
 		// TODO add ElexisConnectorSecurityManager
 		shiroSecurityManager = new DefaultSecurityManager(realm);
-		SecurityUtils.setSecurityManager(shiroSecurityManager);
 	}
 
 	public static Serializable authenticate(String userID, char[] password) {
