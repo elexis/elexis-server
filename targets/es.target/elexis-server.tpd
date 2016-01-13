@@ -74,5 +74,6 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.httpcomponents.httpmime
 	org.apache.httpcomponents.httpcore-nio
 	org.json
+	org.apache.shiro.core
 }
 

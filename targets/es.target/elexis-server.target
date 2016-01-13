@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1452608957">
+<target name="Elexis-Server" sequenceNumber="1452695053">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.1.v20150831-1342"/>
@@ -69,6 +69,7 @@
       <unit id="org.apache.httpcomponents.httpmime" version="4.3.6"/>
       <unit id="org.apache.httpcomponents.httpcore-nio" version="4.3.2"/>
       <unit id="org.json" version="20140107.0.0"/>
+      <unit id="org.apache.shiro.core" version="1.2.4"/>
       <repository id="elexis-server" location="http://download.elexis.info/elexis-server/p2/target/"/>
     </location>
   </locations>
