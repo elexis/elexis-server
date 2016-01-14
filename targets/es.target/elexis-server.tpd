@@ -3,8 +3,6 @@ target "Elexis-Server" with source allEnvironments
 location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
-	org.junit
-	org.hamcrest.core
 	org.eclipse.ecf.core.feature.feature.group
 	org.eclipse.ecf.core.ssl.feature.feature.group
 	org.eclipse.ecf.filetransfer.feature.feature.group
@@ -30,6 +28,9 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.codec
 	org.apache.commons.exec
 	org.apache.commons.io [2.2.0,3.0.0)
+	org.junit
+	org.hamcrest.core
+	org.hamcrest.library
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
@@ -48,7 +49,13 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
 	
-	org.eclipse.rap.e4.target.feature.feature.group
+	org.eclipse.e4.ui.workbench.addons.swt
+	org.eclipse.e4.ui.workbench.renderers.swt
+	org.eclipse.e4.ui.workbench.swt
+	org.eclipse.rap.e4
+	org.eclipse.rap.jface
+	org.eclipse.rap.rwt
+	org.eclipse.rap.rwt.osgi
 	
 	com.google.guava [15.0.0.v201403281430,15.0.0.v201403281430]
 	org.tukaani.xz
@@ -75,5 +82,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.httpcomponents.httpcore-nio
 	org.json
 	org.apache.shiro.core
+	
+	com.eclipsesource.restfuse
 }
 
