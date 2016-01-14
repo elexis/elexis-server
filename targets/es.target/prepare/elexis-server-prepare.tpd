@@ -30,6 +30,7 @@ location "http://download.eclipse.org/releases/mars" {
 	ch.qos.logback.slf4j
 	org.apache.commons.lang
 	org.apache.commons.codec
+	org.apache.commons.exec
 	org.apache.commons.io [2.2.0.v201405211200,2.2.0.v201405211200]
 	org.junit [4.12.0.v201504281640,4.12.0.v201504281640]
 	org.hamcrest.core [1.3.0.v201303031735,1.3.0.v201303031735]
