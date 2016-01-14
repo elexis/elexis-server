@@ -1,4 +1,4 @@
-# elexis-server
+# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html)
 Elexis for server operation
 
 ## Build
