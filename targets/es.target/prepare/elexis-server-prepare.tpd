@@ -5,8 +5,6 @@ with source allEnvironments
 location "http://download.eclipse.org/eclipse/updates/4.5/" {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
-	org.junit
-	org.hamcrest.core
 	org.eclipse.ecf.core.feature.feature.group
 	org.eclipse.ecf.core.ssl.feature.feature.group
 	org.eclipse.ecf.filetransfer.feature.feature.group
@@ -33,6 +31,9 @@ location "http://download.eclipse.org/releases/mars" {
 	org.apache.commons.lang
 	org.apache.commons.codec
 	org.apache.commons.io [2.2.0.v201405211200,2.2.0.v201405211200]
+	org.junit [4.12.0.v201504281640,4.12.0.v201504281640]
+	org.hamcrest.core [1.3.0.v201303031735,1.3.0.v201303031735]
+	org.hamcrest.library [1.3.0.v201305281000,1.3.0.v201305281000]
 }
 
 location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.2.1/" {
@@ -106,4 +107,9 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.httpcomponents.httpcore-nio
 	org.json
 	org.apache.shiro.core
+}
+
+// RestFuse
+location "http://download.eclipsesource.com/technology/restfuse/p2/" {
+	com.eclipsesource.restfuse
 }
