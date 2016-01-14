@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.ElexisDBConnection;
 import info.elexis.server.core.extension.DBConnection;
@@ -35,6 +37,8 @@ public class HTTPService {
 	UriInfo uriInfo;
 	@Context
 	HttpServletRequest request;
+	
+	private Logger log = LoggerFactory.getLogger(HTTPService.class);
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -88,12 +92,12 @@ public class HTTPService {
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getElexisDBConnectionStatus() {
 		Optional<DBConnection> connectiono = ElexisDBConnection.getConnection();
+		DBConnection dbc = new DBConnection();
 		if (connectiono.isPresent()) {
-			DBConnection dbc = connectiono.get();
-			dbc.password = "removed";
-			return Response.ok(dbc).build();
-		}
-		return Response.status(Response.Status.NOT_FOUND).build();
+			dbc = connectiono.get();
+			dbc.password = "[PASSWORD REMOVED]";
+		} 
+		return Response.ok(dbc).build();
 	}
 
 	@GET
@@ -107,8 +111,8 @@ public class HTTPService {
 	@GET
 	@Path("/{subResources:.*}")
 	public Response getInESPluginBundle(@PathParam("subResources") String subResources) {
+		log.info("Unhandled GET on "+subResources);
 		// consider access rights, call registered resources
-		System.out.println(subResources);
-		return null;
+		return Response.noContent().build();
 	}
 }
