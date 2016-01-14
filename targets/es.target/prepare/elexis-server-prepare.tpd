@@ -3,7 +3,7 @@ target "Elexis-Server"
 with source allEnvironments
 
 location "http://download.eclipse.org/eclipse/updates/4.5/" {
-	org.eclipse.equinox.sdk.feature.group
+	org.eclipse.equinox.sdk.feature.group [3.11.1.v20150831-1342,3.11.1.v20150831-1342]
 	org.eclipse.core.runtime.feature.feature.group
 	org.eclipse.ecf.core.feature.feature.group
 	org.eclipse.ecf.core.ssl.feature.feature.group
@@ -111,6 +111,6 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 }
 
 // RestFuse
-location "http://download.eclipsesource.com/technology/restfuse/p2/" {
+location "http://download.elexis.info/elexis-server/p2/restfuse/" {
 	com.eclipsesource.restfuse
 }

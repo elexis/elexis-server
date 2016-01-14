@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1452764414">
+<target name="Elexis-Server" sequenceNumber="1452773975">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.1.v20150831-1342"/>
@@ -107,8 +107,8 @@
       <repository location="http://download.elexis.info/elexis-server/elexis-server-dependencies/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="com.eclipsesource.restfuse" version="1.2.0.201302251808"/>
-      <repository location="http://download.eclipsesource.com/technology/restfuse/p2/"/>
+      <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
+      <repository location="http://download.elexis.info/elexis-server/p2/restfuse/"/>
     </location>
   </locations>
 </target>
