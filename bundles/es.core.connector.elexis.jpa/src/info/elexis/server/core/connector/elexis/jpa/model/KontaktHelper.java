@@ -48,7 +48,7 @@ public class KontaktHelper {
 		Matcher matcher = pattern.matcher(uriLabel);
 		if (matcher.find()) {
 			String patientId = matcher.group(1);
-			Query nq = ElexisEntityManager.getEntityManager().createNamedQuery("FindContactByPatientId");
+			Query nq = ElexisEntityManager.em().createNamedQuery("FindContactByPatientId");
 			nq.setParameter(1, patientId);
 			return (Kontakt) nq.getSingleResult();
 		}
@@ -58,13 +58,13 @@ public class KontaktHelper {
 	}
 
 	public static List<Brief> getBriefeForKontakt(Kontakt contact) {
-		CriteriaBuilder cb = ElexisEntityManager.getEntityManager().getCriteriaBuilder();
+		CriteriaBuilder cb = ElexisEntityManager.em().getCriteriaBuilder();
 
 		// Query for a List of objects.
 		CriteriaQuery cq = cb.createQuery();
 		Root e = cq.from(Brief.class);
 		cq.where(cb.equal(e.get("patient"), contact));
-		Query query = ElexisEntityManager.getEntityManager().createQuery(cq);
+		Query query = ElexisEntityManager.em().createQuery(cq);
 		List<Brief> result = query.getResultList();
 		return result;
 	}

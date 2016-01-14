@@ -22,7 +22,7 @@ public class ElexisDBRestService {
 
 	@GET
 	public String getStatus() {
-		EntityManager em = ElexisEntityManager.getEntityManager();
+		EntityManager em = ElexisEntityManager.em();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Kontakt> cq = cb.createQuery(Kontakt.class);
 		Root<Kontakt> rootEntry = cq.from(Kontakt.class);
@@ -34,7 +34,7 @@ public class ElexisDBRestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	public void create(Kontakt contact) {
-		ElexisEntityManager.getEntityManager().persist(contact);
+		ElexisEntityManager.em().persist(contact);
 	}
 
 	@GET
@@ -42,13 +42,13 @@ public class ElexisDBRestService {
 	@Path("{id}")
 	public Kontakt read(@PathParam("id") String id) {
 		ElexisEntityManager.getEntityManagerFactory().getCache().evictAll();
-		return ElexisEntityManager.getEntityManager().find(Kontakt.class, id);
+		return ElexisEntityManager.em().find(Kontakt.class, id);
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_XML)
 	public void update(Kontakt customer) {
-		ElexisEntityManager.getEntityManager().merge(customer);
+		ElexisEntityManager.em().merge(customer);
 	}
 
 	// @DELETE

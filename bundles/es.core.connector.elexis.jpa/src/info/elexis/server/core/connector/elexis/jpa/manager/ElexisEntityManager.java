@@ -5,11 +5,19 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@Component
 public class ElexisEntityManager {
+
+	private Logger log = LoggerFactory.getLogger(ElexisEntityManager.class);
 
 	private static EntityManagerFactoryBuilder factoryBuilder;
 	private static EntityManagerFactory factory;
@@ -18,6 +26,7 @@ public class ElexisEntityManager {
 	public ElexisEntityManager() {
 	}
 
+	@Reference(service = EntityManagerFactoryBuilder.class, cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.STATIC, unbind = "deactivate")
 	public synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = factoryBuilder;
 
@@ -26,20 +35,19 @@ public class ElexisEntityManager {
 			factory = factoryBuilder.createEntityManagerFactory(props);
 			em = factory.createEntityManager();
 		} catch (RuntimeException ite) {
+			log.error("Error activating component", ite);
 			ite.printStackTrace();
 		}
 	}
 
 	public synchronized void deactivate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = null;
-		em.close();
+		if (em() != null) {
+			em.close();
+		}
 	}
 
-	public synchronized void bind(PersistenceUnitUtil puUtil) {
-		System.out.println(puUtil);
-	}
-
-	public static EntityManager getEntityManager() {
+	public static EntityManager em() {
 		return em;
 	}
 
