@@ -13,7 +13,9 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -35,6 +37,7 @@ public class HTTPService {
 	HttpServletRequest request;
 
 	@GET
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response getStatus() {
 		long millis = new Date().getTime() - Application.getStarttime().getTime();
 		String result = "Uptime: " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(millis),
@@ -44,7 +47,8 @@ public class HTTPService {
 	}
 
 	@GET
-	@Path("/login/{userid}")
+	@Path(LOGIN+"/{userid}")
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response getSessionId(@PathParam("userid") String userid, @HeaderParam("encoded") String oPassword) {
 		// TODO we should encode the IP into the session
 		Optional<String> password = Optional.ofNullable(oPassword);
@@ -55,7 +59,7 @@ public class HTTPService {
 		return Response.status(Response.Status.BAD_REQUEST).build();
 	}
 
-	@POST
+	@GET
 	@Path(HALT)
 	@RolesAllowed("admin")
 	public Response haltApplication() {
@@ -63,7 +67,7 @@ public class HTTPService {
 		return Response.ok().build();
 	}
 
-	@POST
+	@GET
 	@Path(RESTART)
 	@RolesAllowed("admin")
 	public Response restartApplication() {
@@ -81,6 +85,7 @@ public class HTTPService {
 
 	@GET
 	@Path(ELEXIS_CONNECTION)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response getElexisDBConnectionStatus() {
 		Optional<DBConnection> connectiono = ElexisDBConnection.getConnection();
 		if (connectiono.isPresent()) {
@@ -93,41 +98,11 @@ public class HTTPService {
 
 	@GET
 	@Path(SCHEDULER)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response getSchedulerStatus() {
 		SchedulerStatus schedulerStatus = Scheduler.INSTANCE.getSchedulerStatus();
 		return Response.ok(schedulerStatus).build();
 	}
-
-	// @GET
-	// @Path(CONNECTOR_ELEXIS_CONNECTORS)
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response getElexisDBConnectors() {
-	// List<IElexisConnector> elexisConnectors =
-	// ElexisConnectorManager.getElexisConnectors();
-	// List<String> collect = elexisConnectors.stream().map(e ->
-	// e.getClass().getName()).collect(Collectors.toList());
-	// GenericEntity<List<String>> entity = new
-	// GenericEntity<List<String>>(collect) {
-	// };
-	// return Response.ok(entity).build();
-	// }
-	//
-	// @POST
-	// @Path(CONNECTOR_ELEXIS_CONNECTORS)
-	// @RolesAllowed("admin")
-	// public Response setDefaultElexisDBConnector(String className) {
-	// if (className.isEmpty()) {
-	// ElexisConnectorManager.setSystemConnector(null);
-	// } else {
-	// Optional<IElexisConnector> connector =
-	// ElexisConnectorManager.getElexisConnectorByClassName(className);
-	// if (!connector.isPresent()) {
-	// return Response.status(Status.NOT_FOUND).build();
-	// }
-	// ElexisConnectorManager.setSystemConnector(connector.get());
-	// }
-	// return Response.ok().build();
-	// }
 
 	@GET
 	@Path("/{subResources:.*}")
