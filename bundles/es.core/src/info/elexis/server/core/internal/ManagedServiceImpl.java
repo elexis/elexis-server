@@ -1,5 +1,6 @@
 package info.elexis.server.core.internal;
 
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -15,7 +16,7 @@ public class ManagedServiceImpl implements ManagedService {
 
 	@Override
 	public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
-		Enumeration<String> keys = properties.keys();
+		Enumeration<String> keys = (properties!=null) ? properties.keys() : Collections.emptyEnumeration();
 		while(keys.hasMoreElements()) {
 			String key = keys.nextElement();
 			handleConfigUpdateForKey(key, properties.get(key));
