@@ -3,6 +3,7 @@ package info.elexis.server.core.security;
 import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.apache.shiro.SecurityUtils;
@@ -31,24 +32,23 @@ public class ShiroSecurityService {
 
 	private static Logger log = LoggerFactory.getLogger(ShiroSecurityService.class);
 
-	private static SecurityManager shiroSecurityManager;
+	private static SecurityManager shiroSecurityManager = ShiroAuthorizingRealmsManager.getSecurityManager();
 
 	static {
-		Path path = Application.getHomeDirectory().resolve("shiro.ini");
-		Realm realm;
-		if (path.toFile().exists()) {
-			realm = new IniRealm(path.toString());
-			log.info("Initialized security realm from " + path.toString());
-		} else {
-			URL resource = Activator.loadResourceFile("shiro.ini");
-			realm = new IniRealm("url:" + resource.toString());
-			log.warn("Using fallback security realm. Please provide a configuration in "
-					+ Application.getHomeDirectory().resolve("shiro.ini").toString());
-		}
+//		Path path = Application.getHomeDirectory().resolve("shiro.ini");
+//		Realm realm;
+//		if (path.toFile().exists()) {
+//			realm = new IniRealm(path.toString());
+//			log.info("Initialized security realm from " + path.toString());
+//		} else {
+//			URL resource = Activator.loadResourceFile("shiro.ini");
+//			realm = new IniRealm("url:" + resource.toString());
+//			log.warn("Using fallback security realm. Please provide a configuration in "
+//					+ Application.getHomeDirectory().resolve("shiro.ini").toString());
+//		}
 
 		// TODO add ElexisConnectorSecurityManager
-		shiroSecurityManager = new DefaultSecurityManager(realm);
-		SecurityUtils.setSecurityManager(shiroSecurityManager);
+
 	}
 
 	public static Optional<Serializable> authenticate(String userID, char[] password) {

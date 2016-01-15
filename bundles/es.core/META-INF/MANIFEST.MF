@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.200",
  org.eclipse.equinox.http.jetty;bundle-version="3.1.0",
  com.eclipsesource.jaxrs.publisher;bundle-version="5.0.0",
  com.eclipsesource.jaxrs.provider.security;bundle-version="2.2.0",
+ org.apache.commons.codec;bundle-version="1.6.0",
  org.apache.commons.io;bundle-version="2.2.0",
  org.apache.shiro.core;bundle-version="1.2.4"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

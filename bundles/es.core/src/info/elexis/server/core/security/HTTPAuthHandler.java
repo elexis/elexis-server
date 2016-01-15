@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.ws.rs.container.ContainerRequestContext;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.shiro.subject.Subject;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;

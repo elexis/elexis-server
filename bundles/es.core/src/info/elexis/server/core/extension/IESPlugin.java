@@ -5,6 +5,7 @@ import javax.ws.rs.core.Response;
 import it.sauronsoftware.cron4j.SchedulingPattern;
 import it.sauronsoftware.cron4j.Task;
 
+@Deprecated
 public interface IESPlugin {
 	
 	public String geti18nPluginDescription();
