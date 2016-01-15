@@ -2,6 +2,7 @@ package info.elexis.server.core.service;
 
 import static info.elexis.server.core.constants.RestPathConstants.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,7 @@ public class HTTPService {
 	UriInfo uriInfo;
 	@Context
 	HttpServletRequest request;
-	
+
 	private Logger log = LoggerFactory.getLogger(HTTPService.class);
 
 	@GET
@@ -51,14 +52,18 @@ public class HTTPService {
 	}
 
 	@GET
-	@Path(LOGIN+"/{userid}")
+	@Path(LOGIN + "/{userid}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getSessionId(@PathParam("userid") String userid, @HeaderParam("encoded") String oPassword) {
 		// TODO we should encode the IP into the session
 		Optional<String> password = Optional.ofNullable(oPassword);
 		if (password.isPresent()) {
-			String id = HTTPAuthHandler.getSessionId(userid, password.get()).toString();
-			return Response.ok(id).build();
+			Optional<Serializable> sessionId = HTTPAuthHandler.getSessionId(userid, password.get());
+			if (sessionId.isPresent()) {
+				return Response.ok(sessionId.get().toString()).build();
+			} else {
+				return Response.status(Response.Status.UNAUTHORIZED).build();
+			}
 		}
 		return Response.status(Response.Status.BAD_REQUEST).build();
 	}
@@ -96,7 +101,7 @@ public class HTTPService {
 		if (connectiono.isPresent()) {
 			dbc = connectiono.get();
 			dbc.password = "[PASSWORD REMOVED]";
-		} 
+		}
 		return Response.ok(dbc).build();
 	}
 
@@ -111,7 +116,7 @@ public class HTTPService {
 	@GET
 	@Path("/{subResources:.*}")
 	public Response getInESPluginBundle(@PathParam("subResources") String subResources) {
-		log.info("Unhandled GET on "+subResources);
+		log.info("Unhandled GET on " + subResources);
 		// consider access rights, call registered resources
 		return Response.noContent().build();
 	}
