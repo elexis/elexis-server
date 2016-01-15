@@ -28,9 +28,11 @@ public class User extends AbstractDBObjectWithExtInfo {
 	protected String salt;
 	
 	@Convert("booleanStringConverter")
+	@Column(name = "is_active")
 	protected boolean active;
 	
 	@Convert("booleanStringConverter")
+	@Column(name = "is_administrator")
 	protected boolean administrator;
 	
 	@Basic(fetch = FetchType.LAZY)
