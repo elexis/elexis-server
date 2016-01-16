@@ -1,11 +1,15 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,6 +42,15 @@ public class User extends AbstractDBObjectWithExtInfo {
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected String keystore;
+	
+	@ManyToMany
+    @JoinTable(name="USER_ROLE_JOINT",
+                joinColumns=
+                     @JoinColumn(name="USER_ID"),
+                inverseJoinColumns=
+                     @JoinColumn(name="ID")
+    )
+	protected Collection<Role> roles;
 
 	public Kontakt getKontakt() {
 		return kontakt;
@@ -85,5 +98,13 @@ public class User extends AbstractDBObjectWithExtInfo {
 
 	public void setKeystore(String keystore) {
 		this.keystore = keystore;
+	}
+	
+	public Collection<Role> getRoles() {
+		return roles;
+	}
+	
+	public void setRoles(Collection<Role> roles) {
+		this.roles = roles;
 	}
 }

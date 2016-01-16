@@ -1,8 +1,13 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.JoinColumn;
 
 import org.eclipse.persistence.annotations.Convert;
 
@@ -14,6 +19,15 @@ public class Role extends AbstractDBObjectWithExtInfo {
 	@Column(name = "ISSYSTEMROLE")
 	protected boolean systemRole;
 
+	@ManyToMany
+    @JoinTable(name="ROLE_RIGHT_JOINT",
+                joinColumns=
+                     @JoinColumn(name="ID"),
+                inverseJoinColumns=
+                     @JoinColumn(name="ROLE_ID")
+    )
+	protected Collection<Right> rights;
+	
 	public boolean isSystemRole() {
 		return systemRole;
 	}
@@ -21,4 +35,13 @@ public class Role extends AbstractDBObjectWithExtInfo {
 	public void setSystemRole(boolean systemRole) {
 		this.systemRole = systemRole;
 	}
+	
+	public Collection<Right> getRights() {
+		return rights;
+	}
+	
+	public void setRights(Collection<Right> rights) {
+		this.rights = rights;
+	}
+	
 }
