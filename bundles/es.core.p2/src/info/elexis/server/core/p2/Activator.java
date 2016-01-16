@@ -10,6 +10,8 @@ public class Activator implements BundleActivator {
 	public static final String BUNDLE_ID = "info.elexis.server.core.p2";
 	
 	private static BundleContext context;
+	
+	private static String sysUpdateTaskId;
 
 	static BundleContext getContext() {
 		return context;
@@ -22,7 +24,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-		Scheduler.INSTANCE.schedule(Scheduler.DAILY_NIGHT, new SystemUpdateTask());
+		sysUpdateTaskId = Scheduler.INSTANCE.schedule(Scheduler.DAILY_NIGHT, new SystemUpdateTask());
 	}
 
 	/*
@@ -30,6 +32,8 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		Scheduler.INSTANCE.deschedule(sysUpdateTaskId);
+		
 		Activator.context = null;
 	}
 

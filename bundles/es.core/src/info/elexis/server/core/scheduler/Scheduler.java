@@ -38,6 +38,10 @@ public enum Scheduler {
 		ss.register(task, schedulingPattern, id);
 		return id;
 	}
+	
+	public void deschedule(String taskId) {
+		scheduler.deschedule(taskId);
+	}
 
 	public SchedulerStatus getSchedulerStatus() {
 		return ss;
