@@ -12,9 +12,11 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Role</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.User</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes> 
 		<properties>

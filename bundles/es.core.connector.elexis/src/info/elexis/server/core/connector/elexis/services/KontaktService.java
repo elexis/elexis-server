@@ -8,7 +8,13 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Contac
 
 public class KontaktService extends AbstractService<Kontakt>{
 
-	public KontaktService() {
+	public static KontaktService INSTANCE = InstanceHolder.INSTANCE;
+	
+	private static final class InstanceHolder {
+		static final KontaktService INSTANCE = new KontaktService();
+	}
+
+	private KontaktService() {
 		super(Kontakt.class);
 	}
 
