@@ -8,9 +8,6 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.annotations.Component;
 
-import info.elexis.server.core.connector.elexis.ElexisDBConnection;
-import info.elexis.server.core.extension.DBConnection;
-
 @Component(property={"service.pid:String="+Activator.PLUGIN_ID}, immediate=true)
 public class ManagedServiceImpl implements ManagedService {
 
@@ -24,15 +21,15 @@ public class ManagedServiceImpl implements ManagedService {
 	}
 
 	private void handleConfigUpdateForKey(final String key, final Object object) {
-		switch (key) {
-		case ElexisDBConnection.CONFIG_KEY_CONNECTION:
-			DBConnection dbc = DBConnection.unmarshall((String)object);
-			ElexisDBConnection.setConnection(dbc);
-			break;
-
-		default:
-			break;
-		}
+//		switch (key) {
+//		case ElexisDBConnection.CONFIG_KEY_CONNECTION:
+//			DBConnection dbc = DBConnection.unmarshall((String)object);
+//			ElexisDBConnection.setConnection(dbc);
+//			break;
+//
+//		default:
+//			break;
+//		}
 		
 	}
 

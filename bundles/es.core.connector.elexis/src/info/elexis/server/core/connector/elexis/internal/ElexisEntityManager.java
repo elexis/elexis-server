@@ -1,7 +1,8 @@
-package info.elexis.server.core.connector.elexis.jpa.manager;
+package info.elexis.server.core.connector.elexis.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @Component
 public class ElexisEntityManager {
 
-	private Logger log = LoggerFactory.getLogger(ElexisEntityManager.class);
+	private static Logger log = LoggerFactory.getLogger(ElexisEntityManager.class);
 
 	private static EntityManagerFactoryBuilder factoryBuilder;
 	private static EntityManagerFactory factory;
@@ -26,13 +27,31 @@ public class ElexisEntityManager {
 	public ElexisEntityManager() {
 	}
 
-	@Reference(service = EntityManagerFactoryBuilder.class, cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.STATIC, unbind = "deactivate")
+	@Reference(
+			service = EntityManagerFactoryBuilder.class, 
+			cardinality = ReferenceCardinality.MANDATORY, 
+			policy = ReferencePolicy.STATIC, 
+			unbind = "deactivate")
 	public synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = factoryBuilder;
+		ElexisEntityManager.initializeEntityManager();
+	}
 
+	protected static void initializeEntityManager() {
+		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
+		if(!connection.isPresent()) {
+			log.error("No elexis-connection available, not initialization EntityManager");
+			return;
+		}	
+		
 		Map<String, Object> props = new HashMap<String, Object>();
-		try {
-			factory = factoryBuilder.createEntityManagerFactory(props);
+		try {			
+				props.put("javax.persistence.jdbc.driver", connection.get().rdbmsType.driverName);
+				props.put("javax.persistence.jdbc.url", connection.get().connectionString);
+				props.put("javax.persistence.jdbc.user", connection.get().username);
+				props.put("javax.persistence.jdbc.password", connection.get().password);
+			
+			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
 			em = factory.createEntityManager();
 		} catch (RuntimeException ite) {
 			log.error("Error activating component", ite);
@@ -49,9 +68,5 @@ public class ElexisEntityManager {
 
 	public static EntityManager em() {
 		return em;
-	}
-
-	public static EntityManagerFactory getEntityManagerFactory() {
-		return factory;
 	}
 }

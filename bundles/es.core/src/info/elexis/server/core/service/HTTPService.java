@@ -1,7 +1,6 @@
 package info.elexis.server.core.service;
 
 import static info.elexis.server.core.constants.RestPathConstants.BASE_URL_CORE;
-import static info.elexis.server.core.constants.RestPathConstants.ELEXIS_CONNECTION;
 import static info.elexis.server.core.constants.RestPathConstants.HALT;
 import static info.elexis.server.core.constants.RestPathConstants.LOGIN;
 import static info.elexis.server.core.constants.RestPathConstants.RESTART;
@@ -16,7 +15,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -29,8 +27,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.connector.elexis.ElexisDBConnection;
-import info.elexis.server.core.extension.DBConnection;
 import info.elexis.server.core.internal.Application;
 import info.elexis.server.core.scheduler.SchedulerService;
 import info.elexis.server.core.scheduler.SchedulerStatus;
@@ -87,27 +83,6 @@ public class HTTPService {
 	public Response restartApplication() {
 		Application.getInstance().restart();
 		return Response.ok().build();
-	}
-
-	@POST
-	@Path(ELEXIS_CONNECTION)
-	@RolesAllowed("admin")
-	public Response setData(DBConnection connection) {
-		ElexisDBConnection.updateConnection(connection);
-		return Response.ok().build();
-	}
-
-	@GET
-	@Path(ELEXIS_CONNECTION)
-	@Produces(MediaType.APPLICATION_XML)
-	public Response getElexisDBConnectionStatus() {
-		Optional<DBConnection> connectiono = ElexisDBConnection.getConnection();
-		DBConnection dbc = new DBConnection();
-		if (connectiono.isPresent()) {
-			dbc = connectiono.get();
-			dbc.password = "[PASSWORD REMOVED]";
-		}
-		return Response.ok(dbc).build();
 	}
 
 	@GET

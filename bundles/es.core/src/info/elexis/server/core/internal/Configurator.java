@@ -51,7 +51,6 @@ public class Configurator {
 		try {
 			configuration.update(properties);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

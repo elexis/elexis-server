@@ -8,7 +8,7 @@
  * Contributors:
  *     MEDEVIT <office@medevit.at> - initial API and implementation
  ******************************************************************************/
-package info.elexis.server.core.extension;
+package info.elexis.server.core.connector.elexis.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

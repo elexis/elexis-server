@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import org.apache.shiro.realm.text.IniRealm;
 
 import info.elexis.server.core.internal.Activator;
-import info.elexis.server.core.internal.Application;
+import info.elexis.server.core.util.CoreUtil;
 
 /**
  * This authorization realm is always included. If no ${user.home}/shiro.ini is
@@ -21,7 +21,7 @@ public class DefaultAuthorizingRealm extends IniRealm {
 	private static final String iniLocation;
 	
 	static {
-		Path path = Application.getHomeDirectory().resolve("shiro.ini");
+		Path path = CoreUtil.getHomeDirectory().resolve("shiro.ini");
 		if(path.toFile().exists()) {
 			iniLocation = path.toString();
 		} else {

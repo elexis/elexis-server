@@ -1,13 +1,9 @@
 package info.elexis.server.core.internal;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,14 +58,5 @@ public class Application implements IApplication {
 
 	public static Date getStarttime() {
 		return startTime;
-	}
-
-	public static Path getHomeDirectory() {
-		String userHomeProp = System.getProperty("user.home");
-		File homedir = new File(new File(userHomeProp), "elexis-server");
-		if (!homedir.exists()) {
-			homedir.mkdir();
-		}
-		return Paths.get(homedir.toURI());
 	}
 }

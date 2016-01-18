@@ -21,7 +21,7 @@ import org.eclipse.persistence.annotations.Convert;
 @XmlRootElement(name = "user")
 public class User extends AbstractDBObjectWithExtInfo {
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "KONTAKT_ID")
 	protected Kontakt kontakt;
 
