@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
+
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -18,16 +20,20 @@ public class AbstractService<T> {
 		this.clazz = clazz;
 	}
 
+	public static <T> T findById(Object id, Class<T> entityClass) {
+		return (T) em().find(entityClass, id);
+	}
+
 	public List<T> findAll(boolean includeElementsMarkedDeleted) {
-		CriteriaBuilder qb = ElexisEntityManager.em().getCriteriaBuilder();
+		CriteriaBuilder qb = em().getCriteriaBuilder();
 		CriteriaQuery<T> c = qb.createQuery(clazz);
-		
-		if(!includeElementsMarkedDeleted) {
+
+		if (!includeElementsMarkedDeleted) {
 			Root<T> r = c.from(clazz);
 			Predicate like = qb.like(r.get("deleted"), "0");
 			c = c.where(like);
 		}
-		
+
 		TypedQuery<T> q = ElexisEntityManager.em().createQuery(c);
 		return q.getResultList();
 	};
