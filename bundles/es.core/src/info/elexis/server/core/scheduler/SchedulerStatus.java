@@ -40,24 +40,6 @@ public class SchedulerStatus {
 	}
 
 	/**
-	 * Register a task with the Scheduler Status map
-	 * @param task
-	 * @param schedulingPattern
-	 * @param id
-	 */
-	public void register(Task task, SchedulingPattern schedulingPattern, String id) {
-		TaskStatus ts = getTaskStatusMap().get(task.getClass().getName());
-		if (ts == null) {
-			ts = new TaskStatus();
-		}
-		ts.className = task.getClass().getName();
-		ts.id = id;
-		ts.schedulingPattern = schedulingPattern.toString();
-
-		getTaskStatusMap().put(task.getClass().getName(), ts);
-	}
-
-	/**
 	 * Update an already registered task with an execution occurence
 	 * @param state 
 	 * @param task
@@ -76,5 +58,27 @@ public class SchedulerStatus {
 		if(state==STATE_SUCCESS) {
 			ts.lastExecutionDuration = ts.lastExecutionUpdate.getTime()-ts.lastStartTime.getTime();
 		}
+	}
+
+	/**
+	 * Register a task with the Scheduler Status map
+	 * @param task
+	 * @param schedulingPattern
+	 * @param taskId
+	 */
+	public void register(Task task, SchedulingPattern schedulingPattern, String taskId) {
+		TaskStatus ts = getTaskStatusMap().get(task.getClass().getName());
+		if (ts == null) {
+			ts = new TaskStatus();
+		}
+		ts.className = task.getClass().getName();
+		ts.id = taskId;
+		ts.schedulingPattern = schedulingPattern.toString();
+	
+		getTaskStatusMap().put(taskId, ts);
+	}
+
+	public void deregister(String taskId) {
+		getTaskStatusMap().remove(taskId);
 	}
 }

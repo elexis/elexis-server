@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Core Elexis-Server p2 management
 Bundle-SymbolicName: info.elexis.server.core.p2
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: info.elexis.server.core.p2.Activator
 Bundle-Vendor: elexis.info
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.equinox.ds,
@@ -32,4 +31,3 @@ Import-Package: javax.servlet;version="3.1.0",
  javax.ws.rs.core;version="2.0.1",
  org.osgi.service.component.annotations;version="1.2.0",
  org.slf4j
-Export-Package: info.elexis.server.core.p2

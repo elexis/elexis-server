@@ -1,6 +1,11 @@
 package info.elexis.server.core.service;
 
-import static info.elexis.server.core.constants.RestPathConstants.*;
+import static info.elexis.server.core.constants.RestPathConstants.BASE_URL_CORE;
+import static info.elexis.server.core.constants.RestPathConstants.ELEXIS_CONNECTION;
+import static info.elexis.server.core.constants.RestPathConstants.HALT;
+import static info.elexis.server.core.constants.RestPathConstants.LOGIN;
+import static info.elexis.server.core.constants.RestPathConstants.RESTART;
+import static info.elexis.server.core.constants.RestPathConstants.SCHEDULER;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -27,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import info.elexis.server.core.connector.elexis.ElexisDBConnection;
 import info.elexis.server.core.extension.DBConnection;
 import info.elexis.server.core.internal.Application;
-import info.elexis.server.core.scheduler.Scheduler;
+import info.elexis.server.core.scheduler.SchedulerService;
 import info.elexis.server.core.scheduler.SchedulerStatus;
 import info.elexis.server.core.security.HTTPAuthHandler;
 
@@ -109,7 +114,7 @@ public class HTTPService {
 	@Path(SCHEDULER)
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getSchedulerStatus() {
-		SchedulerStatus schedulerStatus = Scheduler.INSTANCE.getSchedulerStatus();
+		SchedulerStatus schedulerStatus = SchedulerService.getSchedulerStatus();
 		return Response.ok(schedulerStatus).build();
 	}
 
