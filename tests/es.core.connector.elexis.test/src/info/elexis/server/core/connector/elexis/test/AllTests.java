@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ UserServiceTest.class, ArtikelstammItemServiceTest.class })
+@SuiteClasses({ JPAQueryTest.class, UserServiceTest.class, ArtikelstammItemServiceTest.class, KontaktServiceTest.class,
+		PrescriptionTest.class })
 public class AllTests {
 }

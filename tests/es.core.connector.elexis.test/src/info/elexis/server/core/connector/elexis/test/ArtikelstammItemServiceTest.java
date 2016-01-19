@@ -11,8 +11,8 @@ public class ArtikelstammItemServiceTest {
 
 	@Test
 	public void testGetImportSetCumulatedVersion()  {
-		 int pharma = ArtikelstammItemService.getImportSetCumulatedVersion(TYPE.P);
-		 int nonPharma = ArtikelstammItemService.getImportSetCumulatedVersion(TYPE.N);
+		 int pharma = ArtikelstammItemService.INSTANCE.getImportSetCumulatedVersion(TYPE.P);
+		 int nonPharma = ArtikelstammItemService.INSTANCE.getImportSetCumulatedVersion(TYPE.N);
 		 assertTrue("pharma version is >0: "+pharma, pharma > 0);
 		 assertTrue("nonpharma version is >0: "+nonPharma, nonPharma > 0);
 	}
