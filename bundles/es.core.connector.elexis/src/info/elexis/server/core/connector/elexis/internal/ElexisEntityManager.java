@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.shiro.crypto.hash.format.ProvidedHashFormat;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -14,6 +15,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 
 @Component
 public class ElexisEntityManager {
@@ -24,14 +27,12 @@ public class ElexisEntityManager {
 	private static EntityManagerFactory factory;
 	private static EntityManager em;
 
-	public ElexisEntityManager() {
-	}
-
 	@Reference(
 			service = EntityManagerFactoryBuilder.class, 
 			cardinality = ReferenceCardinality.MANDATORY, 
 			policy = ReferencePolicy.STATIC, 
-			unbind = "deactivate")
+			unbind = "deactivate",
+			target = "(osgi.unit.name=elexis)")
 	public synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = factoryBuilder;
 		ElexisEntityManager.initializeEntityManager();
@@ -50,9 +51,11 @@ public class ElexisEntityManager {
 				props.put("javax.persistence.jdbc.url", connection.get().connectionString);
 				props.put("javax.persistence.jdbc.user", connection.get().username);
 				props.put("javax.persistence.jdbc.password", connection.get().password);
-			
+				
 			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
 			em = factory.createEntityManager();
+			
+			ProvidedEntityManager.setEntityManager(em);
 		} catch (RuntimeException ite) {
 			log.error("Error activating component", ite);
 			ite.printStackTrace();

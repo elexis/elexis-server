@@ -13,19 +13,22 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.200",
  info.elexis.server.core,
  com.mysql.jdbc;bundle-version="5.1.21",
  org.h2;bundle-version="1.3.170",
- org.postgresql;bundle-version="9.2.0"
+ org.postgresql;bundle-version="9.2.0",
+ org.apache.commons.collections4;bundle-version="4.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Meta-Persistence: META-INF/persistence.xml
 JPA-PersistenceUnits: elexis
-Export-Package: info.elexis.server.core.connector.elexis.jpa.model.annotated,
+Export-Package: info.elexis.server.core.connector.elexis.jpa,
+ info.elexis.server.core.connector.elexis.jpa.model.annotated,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.converter,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.id,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.listener,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.types
-Import-Package: javax.persistence;version="2.1.0",
+Import-Package: ch.elexis.core.constants,
+ javax.persistence;version="2.1.0",
  javax.persistence.criteria;version="2.1.0",
  javax.persistence.spi;version="2.1.0",
  javax.ws.rs;version="2.0.1",

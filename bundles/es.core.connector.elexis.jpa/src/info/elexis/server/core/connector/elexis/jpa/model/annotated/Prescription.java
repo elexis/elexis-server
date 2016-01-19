@@ -3,13 +3,16 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 import java.util.Date;
 
 import javax.persistence.Column;
+
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
+
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
 
@@ -21,8 +24,9 @@ public class Prescription extends AbstractDBObjectWithExtInfo {
 	@Column(length = 3)
 	private String anzahl;
 
-	@Column(length = 255)
-	private String artikel;
+	@Column
+	@Convert(value = "ElexisDBStoreToStringConverter")
+	private AbstractDBObject artikel;
 
 	/**
 	 * @deprecated store values in {@link #artikel}
@@ -59,11 +63,11 @@ public class Prescription extends AbstractDBObjectWithExtInfo {
 		this.anzahl = anzahl;
 	}
 
-	public String getArtikel() {
+	public AbstractDBObject getArtikel() {
 		return artikel;
 	}
 
-	public void setArtikel(String artikel) {
+	public void setArtikel(AbstractDBObject artikel) {
 		this.artikel = artikel;
 	}
 

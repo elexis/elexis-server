@@ -19,6 +19,23 @@ public class AbstractService<T extends AbstractDBObject> {
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
 	}
+	
+	public T create() throws InstantiationException, IllegalAccessException {
+		T obj = clazz.newInstance();
+		em().getTransaction().begin();
+		em().persist(obj);
+		em().getTransaction().commit();
+		return obj;
+	}
+	
+	/**
+	 * Create a transaction and flush all open changes onto the database
+	 */
+	public void flush() {
+		em().getTransaction().begin();
+		em().flush();
+		em().getTransaction().commit();
+	}
 
 	/**
 	 * Find an object by its primary id.
@@ -72,14 +89,18 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * removes the entry, to mark it as deleted use {@link #delete(Object)}
 	 */
 	public void remove(T entity) {
+		em().getTransaction().begin();
 		em().remove(entity);
+		em().getTransaction().commit();
 	}
 	
 	/**
-	 * Mark the entity as deleted
+	 * Mark the entity as deleted, performs as transaction
 	 * @param entity
 	 */
 	public void delete(T entity) {
+		em().getTransaction().begin();
 		entity.setDeleted(true);
+		em().getTransaction().commit();
 	}
 }
