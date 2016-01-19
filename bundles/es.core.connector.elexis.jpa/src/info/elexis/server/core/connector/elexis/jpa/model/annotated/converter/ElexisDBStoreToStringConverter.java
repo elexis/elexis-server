@@ -12,6 +12,7 @@ import ch.elexis.core.constants.StringConstants;
 import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 
 public class ElexisDBStoreToStringConverter implements Converter {
 
@@ -24,6 +25,7 @@ public class ElexisDBStoreToStringConverter implements Converter {
 	static {
 		stsClassBidiMap = new DualHashBidiMap<String, Class<? extends AbstractDBObject>>();
 		stsClassBidiMap.put("ch.artikelstamm.elexis.common.ArtikelstammItem", ArtikelstammItem.class);
+		stsClassBidiMap.put("ch.elexis.data.TarmedLeistung", TarmedLeistung.class);
 		// TODO add other values
 	}
 
