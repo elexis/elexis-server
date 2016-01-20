@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1452778629">
+<target name="Elexis-Server" sequenceNumber="1453300501">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.1.v20150831-1342"/>
       <unit id="org.eclipse.core.runtime.feature.feature.group" version="1.1.101.v20150903-1804"/>
+      <unit id="org.eclipse.emf.common.feature.group" version="2.11.0.v20150805-0538"/>
+      <unit id="org.eclipse.emf.ecore.feature.group" version="2.11.1.v20150805-0538"/>
       <unit id="org.eclipse.ecf.core.feature.feature.group" version="1.1.0.v20150810-1719"/>
       <unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.0.0.v20150810-1719"/>
       <unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.10.1.v20150810-1719"/>
@@ -48,6 +50,7 @@
       <unit id="org.apache.commons.dbcp" version="1.4.0"/>
       <unit id="org.apache.commons.pool" version="1.6.0"/>
       <unit id="bouncycastle.bcprov-jdk14" version="138.0.0"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.0.0.a20160119-1316"/>
       <unit id="org.eclipse.e4.ui.workbench.addons.swt" version="1.1.0.201506120605"/>
       <unit id="org.eclipse.e4.ui.workbench.renderers.swt" version="0.12.0.201506120605"/>
       <unit id="org.eclipse.e4.ui.workbench.swt" version="0.12.100.201506120605"/>
@@ -77,6 +80,7 @@
       <unit id="org.apache.httpcomponents.httpcore-nio" version="4.3.2"/>
       <unit id="org.json" version="20140107.0.0"/>
       <unit id="org.apache.shiro.core" version="1.2.4"/>
+      <unit id="org.apache.commons.collections4" version="4.1.0"/>
       <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
       <repository id="elexis-server" location="http://download.elexis.info/elexis-server/p2/target/"/>
     </location>

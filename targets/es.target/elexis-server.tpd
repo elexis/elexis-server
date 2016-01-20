@@ -3,6 +3,8 @@ target "Elexis-Server" with source allEnvironments
 location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
+	org.eclipse.emf.common.feature.group
+	org.eclipse.emf.ecore.feature.group
 	org.eclipse.ecf.core.feature.feature.group
 	org.eclipse.ecf.core.ssl.feature.feature.group
 	org.eclipse.ecf.filetransfer.feature.feature.group
@@ -49,6 +51,8 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
 	
+	at.medevit.ch.artikelstamm
+	
 	org.eclipse.e4.ui.workbench.addons.swt
 	org.eclipse.e4.ui.workbench.renderers.swt
 	org.eclipse.e4.ui.workbench.swt
@@ -82,6 +86,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.httpcomponents.httpcore-nio
 	org.json
 	org.apache.shiro.core
+	org.apache.commons.collections4
 	
 	com.eclipsesource.restfuse
 }
