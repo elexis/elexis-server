@@ -68,9 +68,13 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 
 	}
 
-	public static List<ArtikelstammItem> getAllArticlesOnStock() {
+	/**
+	 * return all articles on stock, that is with a defined (>0) minbestand, maxbestand or istbestand
+	 * @return
+	 */
+	public static List<ArtikelstammItem> getAllStockArticles() {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.add(ArtikelstammItem_.minbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.minbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
 		qbe.or(ArtikelstammItem_.maxbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
 		return qbe.execute();
 	}

@@ -4,6 +4,7 @@ import static info.elexis.server.core.connector.elexis.internal.ElexisEntityMana
 
 import java.util.List;
 
+import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -21,6 +22,8 @@ public class AbstractService<T extends AbstractDBObject> {
 
 	private static Logger log = LoggerFactory.getLogger(AbstractService.class);
 
+	private EntityTransaction transaction;
+	
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
 	}
@@ -153,5 +156,18 @@ public class AbstractService<T extends AbstractDBObject> {
 		em().getTransaction().begin();
 		entity.setDeleted(true);
 		em().getTransaction().commit();
+	}
+	
+	public void beginTransaction() {
+		transaction = em().getTransaction();
+		transaction.begin();
+	}
+	
+	public void commitTransaction() {
+		if(transaction==null) {
+			throw new IllegalStateException("transaction is null, execute #beginTransaction() first");
+		}
+		transaction.commit();
+		transaction = null;
 	}
 }

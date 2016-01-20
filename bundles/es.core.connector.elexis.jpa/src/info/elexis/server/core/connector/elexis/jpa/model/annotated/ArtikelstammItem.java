@@ -6,6 +6,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
+
 @Entity
 @Table(name = "artikelstamm_ch")
 public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
@@ -48,14 +50,14 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 	@Column(length = 6)
 	private String pkg_size;
 	
-	@Column(length = 1)
-	private String sl_entry;
+	@Convert(value = "booleanStringConverter")
+	private boolean sl_entry;
 	
 	@Column(length = 1)
 	private String ikscat;
 
-	@Column(length = 1)
-	private String limitation;
+	@Convert(value = "booleanStringConverter")
+	private boolean limitation;
 	
 	// spell error in creating table :(
 	@Column(length = 4, name="limitiation_pts")
@@ -68,17 +70,17 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 	@Column(length = 1)
 	private String generic_type;
 	
-	@Column(length = 1)
-	private String has_generic;
+	@Convert(value = "booleanStringConverter")
+	private boolean has_generic;
 	
-	@Column(length = 1)
-	private String lppv;
+	@Convert(value = "booleanStringConverter")
+	private boolean lppv;
 	
 	@Column(length = 6)
 	private String deductible;
 	
-	@Column(length = 1)
-	private String narcotic;
+	@Convert(value = "booleanStringConverter")
+	private boolean narcotic;
 	
 	@Column(length = 20)
 	private String narcotic_cas;
@@ -211,11 +213,11 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 		this.pkg_size = pkg_size;
 	}
 
-	public String getSl_entry() {
+	public boolean isSl_entry() {
 		return sl_entry;
 	}
 
-	public void setSl_entry(String sl_entry) {
+	public void setSl_entry(boolean sl_entry) {
 		this.sl_entry = sl_entry;
 	}
 
@@ -227,12 +229,12 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 		this.ikscat = ikscat;
 	}
 
-	public String getLimitation() {
-		return limitation;
-	}
-
-	public void setLimitation(String limitation) {
+	public void setLimitation(boolean limitation) {
 		this.limitation = limitation;
+	}
+	
+	public boolean isLimitation() {
+		return limitation;
 	}
 
 	public String getLimitation_pts() {
@@ -259,19 +261,19 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 		this.generic_type = generic_type;
 	}
 
-	public String getHas_generic() {
+	public boolean isHas_generic() {
 		return has_generic;
 	}
 
-	public void setHas_generic(String has_generic) {
+	public void setHas_generic(boolean has_generic) {
 		this.has_generic = has_generic;
 	}
 
-	public String getLppv() {
+	public boolean isLppv() {
 		return lppv;
 	}
 
-	public void setLppv(String lppv) {
+	public void setLppv(boolean lppv) {
 		this.lppv = lppv;
 	}
 
@@ -283,11 +285,11 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 		this.deductible = deductible;
 	}
 
-	public String getNarcotic() {
+	public boolean isNarcotic() {
 		return narcotic;
 	}
 
-	public void setNarcotic(String narcotic) {
+	public void setNarcotic(boolean narcotic) {
 		this.narcotic = narcotic;
 	}
 

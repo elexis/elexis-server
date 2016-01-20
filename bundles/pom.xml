@@ -21,6 +21,5 @@
                <module>es.core.p2</module>
                <module>es.core.connector.elexis</module>
                <module>es.core.connector.elexis.jpa</module>
-               <module>es.core.connector.elexis.jpa.config</module>
        </modules>
 </project>

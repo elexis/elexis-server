@@ -2,7 +2,6 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -16,8 +15,6 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.jpa.JpaQuery;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 /**
  * This class tries to resemble the Query class known by Elexis user by
