@@ -22,8 +22,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 @Component(service = HTTPService.class, immediate = true)
 @Path("/elexis/connector/")
 public class HTTPService {
-
-
 	
 	@POST
 	@Path(ELEXIS_CONNECTION)

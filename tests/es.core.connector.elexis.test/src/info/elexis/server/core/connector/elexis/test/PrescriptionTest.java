@@ -30,7 +30,7 @@ public class PrescriptionTest {
 	}
 
 	@Test
-	public void testSetArtikelOnPrescription() {
+	public void testSetArtikelOnPrescriptionViaStoreToString() {
 		JPAQuery<Prescription> query = new JPAQuery<Prescription>(Prescription.class);
 		query.add(Prescription_.artikel, JPAQuery.QUERY.LIKE, "ch.artikelstamm.elexis.common.ArtikelstammItem%");
 		List<Prescription> resultPrescription = query.execute();

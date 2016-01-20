@@ -10,6 +10,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
+import info.elexis.server.core.connector.elexis.services.JPACountQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 
 public class JPAQueryTest {
@@ -31,6 +32,17 @@ public class JPAQueryTest {
 
 		List<ArtikelstammItem> qre = qbe.execute();
 		assertNotNull(qre);
+	}
+	
+	@Test
+	public void testJPACountQueryWithMultipleConditions() {
+		JPACountQuery<ArtikelstammItem> qbec = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbec.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
+		qbec.add(ArtikelstammItem_.type, JPACountQuery.QUERY.EQUALS, "P");
+		qbec.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "35");
+
+		long result = qbec.count();
+		assertTrue(result > 5);
 	}
 
 }
