@@ -14,7 +14,7 @@ import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
 import at.medevit.ch.artikelstamm.ArtikelstammHelper;
 import ch.elexis.core.constants.StringConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.meta.ArtikelstammItem_;
 
 public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 
