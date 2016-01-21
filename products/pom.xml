@@ -17,6 +17,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>es.rootfiles.feature</module>
     <module>es.core.product.runtime</module>
     <module>es.updatesite</module>
   </modules>

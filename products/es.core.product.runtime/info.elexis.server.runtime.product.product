@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dorg.osgi.service.http.port=8380
+      <vmArgs>-Dorg.osgi.service.http.port=8380 -Djava.awt.headless=true
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -31,6 +31,7 @@
    <features>
       <feature id="info.elexis.server.core.feature" version="1.0.0.qualifier"/>
       <feature id="info.elexis.server.core.platform.feature" version="1.0.0.qualifier"/>
+      <feature id="info.elexis.server.rootfiles.feature" version="1.0.0.qualifier"/>
       <feature id="info.elexis.server.core.p2.feature" version="1.0.0.qualifier"/>
       <feature id="info.elexis.server.core.connector.elexis.jpa.feature" version="1.0.0.qualifier"/>
    </features>
