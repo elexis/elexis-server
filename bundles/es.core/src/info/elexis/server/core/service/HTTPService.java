@@ -1,10 +1,6 @@
 package info.elexis.server.core.service;
 
-import static info.elexis.server.core.constants.RestPathConstants.BASE_URL_CORE;
-import static info.elexis.server.core.constants.RestPathConstants.HALT;
-import static info.elexis.server.core.constants.RestPathConstants.LOGIN;
-import static info.elexis.server.core.constants.RestPathConstants.RESTART;
-import static info.elexis.server.core.constants.RestPathConstants.SCHEDULER;
+import static info.elexis.server.core.constants.RestPathConstants.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -91,6 +87,17 @@ public class HTTPService {
 	public Response getSchedulerStatus() {
 		SchedulerStatus schedulerStatus = SchedulerService.getSchedulerStatus();
 		return Response.ok(schedulerStatus).build();
+	}
+	
+	@GET
+	@Path(SCHEDULER_LAUNCH + "/{taskId}")
+	@RolesAllowed("admin")
+	public Response startScheduledTask(@PathParam("taskId") String taskId) {
+		boolean launched = SchedulerService.launchTask(taskId);
+		if(launched) {
+			return Response.ok().build();
+		}
+		return Response.status(Response.Status.NOT_FOUND).build();
 	}
 
 	@GET
