@@ -75,10 +75,10 @@ public class SchedulerStatus {
 		ts.id = taskId;
 		ts.schedulingPattern = schedulingPattern.toString();
 	
-		getTaskStatusMap().put(taskId, ts);
+		getTaskStatusMap().put(task.getClass().getName(), ts);
 	}
 
-	public void deregister(String taskId) {
-		getTaskStatusMap().remove(taskId);
+	public void deregister(Task task) {
+		getTaskStatusMap().remove(task.getClass().getName());
 	}
 }

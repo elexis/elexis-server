@@ -28,9 +28,8 @@ public class SchedulerService implements ISchedulerService {
 	@Override
 	public void deschedule(ISchedulerTask ast) {
 		log.debug("Removing scheduler task " + ast.getClass().getName());
-		String taskId = ast.getTaskId();
-		ss.deregister(taskId);
-		scheduler.deschedule(taskId);
+		ss.deregister(ast.getTask());
+		scheduler.deschedule(ast.getTaskId());
 	}
 
 	@Activate
