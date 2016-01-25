@@ -7,7 +7,11 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dorg.osgi.service.http.port=8380 -Djava.awt.headless=true
+      <vmArgs>-Dorg.osgi.service.http.port=8380 
+-Djava.awt.headless=true 
+-XX:MaxPermSize=256m
+-Xms128m
+-Xmx1024m
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
