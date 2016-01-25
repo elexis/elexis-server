@@ -91,14 +91,14 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 	@JoinColumn(name = "lieferantId")
 	private Kontakt lieferant;
 	
-	@Column(length = 4)
-	private String maxbestand;
+	@Convert(value = "IntegerStringConverter")
+	private int maxbestand;
 	
-	@Column(length = 4)
-	private String minbestand;
+	@Convert(value = "IntegerStringConverter")
+	private int minbestand;
 	
-	@Column(length = 4)
-	private String istbestand;
+	@Convert(value = "IntegerStringConverter")
+	private int istbestand;
 	
 	@Column(length = 4)
 	private String verkaufseinheit;
@@ -317,27 +317,27 @@ public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
 		this.lieferant = lieferant;
 	}
 
-	public String getMaxbestand() {
+	public int getMaxbestand() {
 		return maxbestand;
 	}
 
-	public void setMaxbestand(String maxbestand) {
+	public void setMaxbestand(int maxbestand) {
 		this.maxbestand = maxbestand;
 	}
 
-	public String getMinbestand() {
+	public int getMinbestand() {
 		return minbestand;
 	}
 
-	public void setMinbestand(String minbestand) {
+	public void setMinbestand(int minbestand) {
 		this.minbestand = minbestand;
 	}
 
-	public String getIstbestand() {
+	public int getIstbestand() {
 		return istbestand;
 	}
 
-	public void setIstbestand(String istbestand) {
+	public void setIstbestand(int istbestand) {
 		this.istbestand = istbestand;
 	}
 

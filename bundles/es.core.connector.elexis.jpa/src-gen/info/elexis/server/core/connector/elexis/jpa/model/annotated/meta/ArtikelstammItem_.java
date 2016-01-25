@@ -6,16 +6,16 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.3.2.v20111125-r10461", date="2016-01-20T16:24:51")
+@Generated(value="EclipseLink-2.3.2.v20111125-r10461", date="2016-01-24T20:40:12")
 @StaticMetamodel(ArtikelstammItem.class)
 public class ArtikelstammItem_ { 
 
     public static volatile SingularAttribute<ArtikelstammItem, String> bb;
     public static volatile SingularAttribute<ArtikelstammItem, Boolean> limitation;
     public static volatile SingularAttribute<ArtikelstammItem, String> prodno;
-    public static volatile SingularAttribute<ArtikelstammItem, String> istbestand;
+    public static volatile SingularAttribute<ArtikelstammItem, Integer> istbestand;
     public static volatile SingularAttribute<ArtikelstammItem, String> comp_gln;
-    public static volatile SingularAttribute<ArtikelstammItem, String> maxbestand;
+    public static volatile SingularAttribute<ArtikelstammItem, Integer> maxbestand;
     public static volatile SingularAttribute<ArtikelstammItem, String> verkaufseinheit;
     public static volatile SingularAttribute<ArtikelstammItem, String> type;
     public static volatile SingularAttribute<ArtikelstammItem, String> adddscr;
@@ -41,6 +41,6 @@ public class ArtikelstammItem_ {
     public static volatile SingularAttribute<ArtikelstammItem, String> deductible;
     public static volatile SingularAttribute<ArtikelstammItem, Boolean> lppv;
     public static volatile SingularAttribute<ArtikelstammItem, String> ppub;
-    public static volatile SingularAttribute<ArtikelstammItem, String> minbestand;
+    public static volatile SingularAttribute<ArtikelstammItem, Integer> minbestand;
 
 }
