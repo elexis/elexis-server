@@ -1,6 +1,8 @@
 package info.elexis.server.core.p2.internal;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -121,5 +123,17 @@ public class ProvisioningHelper {
 		}
 
 		return status;
+	}
+
+	public static Collection<IInstallableUnit> getAllInstalledFeatures() {
+		IProfileRegistry registry = Provisioner.getInstance().getProfileRegistry();
+		IProfile profile = registry.getProfile(IProfileRegistry.SELF);
+		if (profile == null) {
+			return Collections.emptyList();
+		}
+		IQueryResult<IInstallableUnit> result =
+			profile.query(QueryUtil.createIUGroupQuery(), new NullProgressMonitor());
+		return result.toUnmodifiableSet();
+		
 	}
 }

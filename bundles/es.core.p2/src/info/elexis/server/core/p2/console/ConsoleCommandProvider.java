@@ -35,12 +35,15 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	private String system(String argument) {
 		if (argument == null) {
-			return HELP_PREPEND + " system (update)";
+			return HELP_PREPEND + "system (executeUpdate | listFeatures)";
 		}
 
 		switch (argument) {
-		case "update":
+		case "executeUpdate":
 			return ProvisioningHelper.updateAllFeatures().getMessage();
+		case "listFeatures":
+			return ProvisioningHelper.getAllInstalledFeatures().stream()
+					.map(i -> i.getId() + " (" + i.getVersion() + ")").reduce((u, t) -> u + "\n" + t).get();
 		}
 
 		return getHelp();
@@ -49,7 +52,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 	private String repositories(final CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return HELP_PREPEND + " repositories (list | add | remove )";
+			return HELP_PREPEND + "repositories (list | add | remove )";
 		}
 		switch (argument) {
 		case "list":
@@ -67,7 +70,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 	private String repoManage(boolean b, CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return HELP_PREPEND + " repositories (list | add ) repo_url";
+			return HELP_PREPEND + "repositories (list | add ) repo_url";
 		}
 		if (b) {
 			return HTTPServiceHelper.doRepositoryAdd(argument).getStatusInfo().toString();
@@ -78,7 +81,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	@Override
 	public String getHelp() {
-		return HELP_PREPEND + " (system | repositories)";
+		return HELP_PREPEND + "(system | repositories)";
 	}
 
 }
