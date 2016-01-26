@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
@@ -103,10 +102,10 @@ public class ProvisioningHelper {
 		IQueryResult<IInstallableUnit> units = profile.query(query, new NullProgressMonitor());
 
 		UpdateOperation operation = new UpdateOperation(session, units.toUnmodifiableSet());
-		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(5000));
+		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(15000));
 		log.debug("CHECK_FOR_UPDATE {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
 				status.getCode());
-		if((!status.isOK() && status.getCode() == 10000 && status.getSeverity() == 1)) {
+		if ((!status.isOK() && status.getCode() == 10000 && status.getSeverity() == 1)) {
 			// no updates available
 			return status;
 		}
@@ -114,6 +113,11 @@ public class ProvisioningHelper {
 		if (status.getSeverity() != IStatus.ERROR) {
 			IStatus stat = ProvisioningHelper.performOperation(operation);
 			log.info("UPDATED {} / {}", stat.getCode(), stat.getMessage());
+		} else {
+			log.warn("UPDATE FAILED {} / {}", status.getCode(), status.getMessage());
+			if (status.isMultiStatus()) {
+				StatusUtil.printStatus(log, status);
+			} 
 		}
 
 		return status;
