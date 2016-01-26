@@ -38,11 +38,11 @@
    </plugins>
 
    <features>
-      <feature id="info.elexis.server.core.feature" version="1.0.0.qualifier"/>
-      <feature id="info.elexis.server.core.platform.feature" version="1.0.0.qualifier"/>
-      <feature id="info.elexis.server.rootfiles.feature" version="1.0.0.qualifier"/>
-      <feature id="info.elexis.server.core.p2.feature" version="1.0.0.qualifier"/>
-      <feature id="info.elexis.server.core.connector.elexis.jpa.feature" version="1.0.0.qualifier"/>
+      <feature id="info.elexis.server.core.feature" installMode="root"/>
+      <feature id="info.elexis.server.core.platform.feature" installMode="root"/>
+      <feature id="info.elexis.server.rootfiles.feature" installMode="root"/>
+      <feature id="info.elexis.server.core.p2.feature" installMode="root"/>
+      <feature id="info.elexis.server.core.connector.elexis.jpa.feature" installMode="root"/>
    </features>
 
    <configurations>
