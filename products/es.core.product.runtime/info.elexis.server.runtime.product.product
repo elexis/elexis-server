@@ -3,11 +3,13 @@
 
 <product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dorg.osgi.service.http.port=8380 
+      <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
+-Dorg.osgi.service.http.port=8380 
 -Djava.awt.headless=true 
 -XX:MaxPermSize=256m
 -Xms128m
@@ -19,6 +21,7 @@
 
    <windowImages/>
 
+
    <launcher name="elexis-server">
       <solaris/>
       <win useIco="false">
@@ -26,8 +29,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
    </plugins>
@@ -47,11 +52,15 @@
       <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
    </configurations>
+
+   <repositories>
+      <repository location="http://download.elexis.info/elexis-server/p2/master/" enabled="true" />
+   </repositories>
 
    <preferencesInfo>
       <targetfile overwrite="false"/>
