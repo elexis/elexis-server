@@ -1,9 +1,8 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
-
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -14,6 +13,7 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 
 public class AbstractService<T extends AbstractDBObject> {
@@ -23,6 +23,9 @@ public class AbstractService<T extends AbstractDBObject> {
 	private static Logger log = LoggerFactory.getLogger(AbstractService.class);
 
 	private EntityTransaction transaction;
+	
+	protected EntityManager em = ElexisEntityManager.em();
+	protected CriteriaBuilder cb = em.getCriteriaBuilder();
 	
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
@@ -52,13 +55,13 @@ public class AbstractService<T extends AbstractDBObject> {
 		try {
 			T obj = clazz.newInstance();
 			if (performCommit)
-				em().getTransaction().begin();
+				em.getTransaction().begin();
 			if (id != null) {
 				obj.setId(id);
 			}
-			em().persist(obj);
+			em.persist(obj);
 			if (performCommit)
-				em().getTransaction().commit();
+				em.getTransaction().commit();
 			return obj;
 		} catch (IllegalAccessException | InstantiationException e) {
 			log.error("Error creating instance " + clazz.getName(), e);
@@ -70,9 +73,9 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * Create a transaction and flush all open changes onto the database
 	 */
 	public void flush() {
-		em().getTransaction().begin();
-		em().flush();
-		em().getTransaction().commit();
+		em.getTransaction().begin();
+		em.flush();
+		em.getTransaction().commit();
 	}
 
 	/**
@@ -83,7 +86,7 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * @return
 	 */
 	public T findById(Object id) {
-		return (T) em().find(clazz, id);
+		return (T) em.find(clazz, id);
 	}
 
 	/**
@@ -94,12 +97,12 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * @return
 	 */
 	public List<T> findByIdStartingWith(String string) {
-		CriteriaBuilder qb = em().getCriteriaBuilder();
-		CriteriaQuery<T> c = qb.createQuery(clazz);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<T> c = cb.createQuery(clazz);
 		Root<T> r = c.from(clazz);
-		Predicate like = qb.like(r.get("id"), string + "%");
+		Predicate like = cb.like(r.get("id"), string + "%");
 		c = c.where(like);
-		TypedQuery<T> q = em().createQuery(c);
+		TypedQuery<T> q = em.createQuery(c);
 		return q.getResultList();
 	}
 
@@ -111,7 +114,7 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * @return
 	 */
 	public List<T> findAll(boolean includeElementsMarkedDeleted) {
-		CriteriaBuilder qb = em().getCriteriaBuilder();
+		CriteriaBuilder qb = em.getCriteriaBuilder();
 		CriteriaQuery<T> c = qb.createQuery(clazz);
 
 		if (!includeElementsMarkedDeleted) {
@@ -120,7 +123,7 @@ public class AbstractService<T extends AbstractDBObject> {
 			c = c.where(like);
 		}
 
-		TypedQuery<T> q = em().createQuery(c);
+		TypedQuery<T> q = em.createQuery(c);
 		return q.getResultList();
 	};
 
@@ -141,10 +144,10 @@ public class AbstractService<T extends AbstractDBObject> {
 	 */
 	public void remove(T entity, final boolean performCommit) {
 		if (performCommit)
-			em().getTransaction().begin();
-		em().remove(entity);
+			em.getTransaction().begin();
+		em.remove(entity);
 		if (performCommit)
-			em().getTransaction().commit();
+			em.getTransaction().commit();
 	}
 
 	/**
@@ -153,13 +156,13 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * @param entity
 	 */
 	public void delete(T entity) {
-		em().getTransaction().begin();
+		em.getTransaction().begin();
 		entity.setDeleted(true);
-		em().getTransaction().commit();
+		em.getTransaction().commit();
 	}
 	
 	public void beginTransaction() {
-		transaction = em().getTransaction();
+		transaction = em.getTransaction();
 		transaction.begin();
 	}
 	
