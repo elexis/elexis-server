@@ -26,8 +26,10 @@ public class ConsoleCommandProvider implements CommandProvider {
 			return;
 		case "system":
 			System.out.println(system(ci.nextArgument()));
+			return;
 		default:
-			break;
+			System.out.println(getHelp());
+			return;
 		}
 	}
 

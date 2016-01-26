@@ -53,11 +53,11 @@ public class RepoInfo {
 		StringBuilder sb = new StringBuilder();
 		sb.append("- MetaData Repositories ------------\n");
 		for (RepoElement re : metadataRepos) {
-			sb.append(re.name+"\t"+re.uri+"\n");
+			sb.append("\t"+re.name+"\t"+re.uri+"\n");
 		}
 		sb.append("- Artifact Repositories ------------\n");
 		for (RepoElement re : artifactRepos) {
-			sb.append(re.name+"\t"+re.uri+"\n");
+			sb.append("\t"+re.name+"\t"+re.uri+"\n");
 		}
 		sb.append("------------------------------------\n");
 		return sb.toString();
