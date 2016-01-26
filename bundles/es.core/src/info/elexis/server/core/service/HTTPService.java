@@ -3,9 +3,7 @@ package info.elexis.server.core.service;
 import static info.elexis.server.core.constants.RestPathConstants.*;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -41,11 +39,7 @@ public class HTTPService {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getStatus() {
-		long millis = new Date().getTime() - Application.getStarttime().getTime();
-		String result = "Uptime: " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(millis),
-				TimeUnit.MILLISECONDS.toSeconds(millis)
-						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-		return Response.ok(result).build();
+		return Response.ok(Application.getStatus()).build();
 	}
 
 	@GET
