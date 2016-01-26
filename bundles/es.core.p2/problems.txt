@@ -1,3 +1,36 @@
+Wenn beide realms aktiv sind:
+
+http://shiro.apache.org/authentication.html#Authentication-RealmAuthenticationOrder
+
+15:20:00.412 INFO  i.e.s.c.s.ShiroSecurityService - Authenticating admin @ org.apache.shiro.mgt.DefaultSecurityManager@321dce4e
+15:20:00.417 INFO  i.e.s.c.s.ShiroSecurityService - Created session 3499b393-b9d4-4dda-a458-310236419da9 for user admin @ org.apache.shiro.mgt.DefaultSecurityManager@321dce4e
+15:20:00.433 WARN  i.e.s.c.s.ShiroSecurityService - Tried to get subject for non existing session 3499b393-b9d4-4dda-a458-310236419da9
+org.apache.shiro.session.UnknownSessionException: There is no session with id [3499b393-b9d4-4dda-a458-310236419da9]
+	at org.apache.shiro.session.mgt.eis.AbstractSessionDAO.readSession(AbstractSessionDAO.java:170) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at org.apache.shiro.session.mgt.DefaultSessionManager.retrieveSessionFromDataSource(DefaultSessionManager.java:236) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at org.apache.shiro.session.mgt.DefaultSessionManager.retrieveSession(DefaultSessionManager.java:222) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at org.apache.shiro.session.mgt.AbstractValidatingSessionManager.doGetSession(AbstractValidatingSessionManager.java:118) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at org.apache.shiro.session.mgt.AbstractNativeSessionManager.lookupSession(AbstractNativeSessionManager.java:108) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at org.apache.shiro.session.mgt.AbstractNativeSessionManager.getSession(AbstractNativeSessionManager.java:100) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at org.apache.shiro.mgt.SessionsSecurityManager.getSession(SessionsSecurityManager.java:125) ~[org.apache.shiro.core_1.2.4.jar:1.2.4]
+	at info.elexis.server.core.security.ShiroSecurityService.getSubjectBySessionId(ShiroSecurityService.java:75) ~[info.elexis.server.core_1.0.0.201601211200.jar:na]
+	at info.elexis.server.core.security.HTTPAuthHandler.isUserInRole(HTTPAuthHandler.java:26) [info.elexis.server.core_1.0.0.201601211200.jar:na]
+	at com.eclipsesource.jaxrs.provider.security.impl.SecurityContextImpl.isUserInRole(SecurityContextImpl.java:56) [com.eclipsesource.jaxrs.provider.security_2.2.0.201511150719.jar:na]
+	at org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature$RolesAllowedRequestFilter.filter(RolesAllowedDynamicFeature.java:143) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.server.ContainerFilteringStage.apply(ContainerFilteringStage.java:132) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.server.ContainerFilteringStage.apply(ContainerFilteringStage.java:68) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.process.internal.Stages.process(Stages.java:197) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.server.ServerRuntime$2.run(ServerRuntime.java:318) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:271) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:267) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:315) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:297) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:267) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:317) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:305) [com.eclipsesource.jaxrs.jersey-min_2.22.1.jar:na]
+
+
+================
 
 org.eclipse.equinox.p2.core.ProvisionException: Error while reading from repository ->
 https://wiki.eclipse.org/Disabling_Apache_Httpclient

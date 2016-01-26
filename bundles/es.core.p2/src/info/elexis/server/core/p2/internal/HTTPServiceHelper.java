@@ -22,7 +22,7 @@ public class HTTPServiceHelper {
 
 	private static Logger log = LoggerFactory.getLogger(HTTPServiceHelper.class);
 
-	public static Response doRepositoryList(String filterStr) {
+	public static RepoInfo getRepoInfo(String filterStr) {
 		int filter = IRepositoryManager.REPOSITORIES_ALL;
 		try {
 			if (filterStr != null) {
@@ -30,7 +30,7 @@ public class HTTPServiceHelper {
 			}
 		} catch (NumberFormatException localException) {
 			log.error("NaN " + filterStr, localException);
-			return Response.status(Response.Status.BAD_REQUEST).build();
+			throw new IllegalArgumentException("NaN " + filterStr);
 		}
 
 		RepoInfo info = new RepoInfo();
@@ -67,8 +67,16 @@ public class HTTPServiceHelper {
 			}
 			info.addArtifactRepoElement(repoName, repoLoc);
 		}
+		return info;
+	}
 
-		return Response.ok(info).build();
+	public static Response doRepositoryList(String filterStr) {
+		try {
+			RepoInfo info = getRepoInfo(filterStr);
+			return Response.ok(info).build();
+		} catch (IllegalArgumentException e) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
 	}
 
 	public static Response doRepositoryAdd(String locStr) {
