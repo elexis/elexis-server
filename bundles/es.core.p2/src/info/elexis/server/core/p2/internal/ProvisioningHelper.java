@@ -2,9 +2,11 @@ package info.elexis.server.core.p2.internal;
 
 import java.net.URI;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
@@ -93,14 +95,14 @@ public class ProvisioningHelper {
 		ProvisioningHelper.refreshRepositories();
 
 		IProfileRegistry registry = Provisioner.getInstance().getProfileRegistry();
-		IProfile profile = registry.getProfile(Provisioner.getInstance().getCurrentProfile());
+		IProfile profile = registry.getProfile(IProfileRegistry.SELF);
+		Assert.isNotNull(profile);
 		ProvisioningSession session = new ProvisioningSession(agent);
 
 		IQuery<IInstallableUnit> query = QueryUtil.createIUAnyQuery();
 		IQueryResult<IInstallableUnit> units = profile.query(query, new NullProgressMonitor());
 
 		UpdateOperation operation = new UpdateOperation(session, units.toUnmodifiableSet());
-		operation.setProfileId(Provisioner.getInstance().getCurrentProfile());
 		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(5000));
 		log.debug("CHECK_FOR_UPDATE {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
 				status.getCode());
