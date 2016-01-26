@@ -3,6 +3,7 @@ package info.elexis.server.core.scheduler;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -80,5 +81,18 @@ public class SchedulerStatus {
 
 	public void deregister(Task task) {
 		getTaskStatusMap().remove(task.getClass().getName());
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("- SchedulerStatus -------------\n");
+		Set<String> keySet = getTaskStatusMap().keySet();
+		for (String key : keySet) {
+			TaskStatus taskStatus = getTaskStatusMap().get(key);
+			sb.append(key+":\t"+taskStatus.className+" ["+taskStatus.id+"] "+taskStatus.lastState+"\n");
+		}
+		sb.append("-------------------------------");
+		return sb.toString();
 	}
 }
