@@ -106,6 +106,10 @@ public class ProvisioningHelper {
 		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(5000));
 		log.debug("CHECK_FOR_UPDATE {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
 				status.getCode());
+		if((!status.isOK() && status.getCode() == 10000 && status.getSeverity() == 1)) {
+			// no updates available
+			return status;
+		}
 
 		if (status.getSeverity() != IStatus.ERROR) {
 			IStatus stat = ProvisioningHelper.performOperation(operation);

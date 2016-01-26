@@ -46,10 +46,6 @@ public class Provisioner {
 		return this.agent;
 	}
 
-	public String getCurrentProfile() {
-		return "profile";
-	}
-
 	public IMetadataRepositoryManager getMetadataRepositoryManager() {
 		return (IMetadataRepositoryManager) getProvisioningAgent().getService(IMetadataRepositoryManager.SERVICE_NAME);
 	}
