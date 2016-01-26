@@ -32,7 +32,7 @@ public class SchedulerListenerImpl implements SchedulerListener {
 	@Override
 	public void taskFailed(TaskExecutor executor, Throwable exception) {
 		ss.updateExecution(STATE_FAIL, executor.getTask(), executor);
-		log.warn("FAIL " + toString(executor));
+		log.warn("FAIL " + toString(executor), exception);
 	}
 
 	private String toString(TaskExecutor executor) {
