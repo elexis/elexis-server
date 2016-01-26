@@ -1,6 +1,7 @@
 package info.elexis.server.core.internal;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -58,5 +59,12 @@ public class Application implements IApplication {
 
 	public static Date getStarttime() {
 		return startTime;
+	}
+
+	public static String getStatus() {
+		long millis = new Date().getTime() - Application.getStarttime().getTime();
+		return "Uptime: " + String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(millis),
+				TimeUnit.MILLISECONDS.toSeconds(millis)
+						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
 	}
 }
