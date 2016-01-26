@@ -3,6 +3,8 @@ package info.elexis.server.core.connector.elexis.services;
 import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
 
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -58,18 +60,35 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		}
 	}
 
-	public static void setImportSetDataQuality(TYPE importStammType, Integer dataquality) {
-		// TODO Auto-generated method stub
-
+	public void setImportSetDataQuality(TYPE importStammType, Integer dataquality) {
+		ArtikelstammItem version = findById(VERSION_ENTRY_ID);
+		switch (importStammType) {
+		case N:
+			version.setBb(Integer.toString(dataquality));
+			return;
+		case P:
+			version.setType(Integer.toString(dataquality));
+			return;
+		}
 	}
 
-	public static void setImportSetCreationDate(TYPE importStammType, Date time) {
-		// TODO Auto-generated method stub
-
+	public void setImportSetCreationDate(TYPE importStammType, Date creationDate) {
+		ArtikelstammItem version = findById(VERSION_ENTRY_ID);
+		DateFormat df = new SimpleDateFormat("ddMMyy HH:mm");
+		switch (importStammType) {
+		case N:
+			version.setAdddscr(df.format(creationDate.getTime()));
+			return;
+		case P:
+			version.setDscr(df.format(creationDate.getTime()));
+			return;
+		}
 	}
 
 	/**
-	 * return all articles on stock, that is with a defined (>0) minbestand, maxbestand or istbestand
+	 * return all articles on stock, that is with a defined (>0) minbestand,
+	 * maxbestand or istbestand
+	 * 
 	 * @return
 	 */
 	public static List<ArtikelstammItem> getAllStockArticles() {
@@ -94,7 +113,8 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		return em().createQuery(update).executeUpdate();
 	}
 
-	public ArtikelstammItem create(int cummulatedVersion, TYPE type, String gtin, BigInteger phar, String dscr, String addscr) {
+	public ArtikelstammItem create(int cummulatedVersion, TYPE type, String gtin, BigInteger phar, String dscr,
+			String addscr) {
 		em().getTransaction().begin();
 		String id = ArtikelstammHelper.createUUID(cummulatedVersion, type, gtin, phar);
 		String pharmacode = (phar != null) ? String.format("%07d", phar) : "0000000";
@@ -108,5 +128,17 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		ai.setBb(StringConstants.ZERO);
 		em().getTransaction().commit();
 		return ai;
+	}
+
+	public boolean isLagerartikel(ArtikelstammItem ai) {
+		if (ai.getIstbestand() > 0) {
+			return true;
+		}
+
+		if (ai.getMinbestand() > 0 || ai.getMaxbestand() > 0) {
+			return true;
+		}
+
+		return false;
 	}
 }
