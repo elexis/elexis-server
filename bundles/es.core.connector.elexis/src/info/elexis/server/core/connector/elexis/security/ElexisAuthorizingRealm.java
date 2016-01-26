@@ -18,7 +18,12 @@ import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 
-@Component(service = Realm.class, immediate = true)
+/**
+ * DISABLED
+ * @author marco
+ *
+ */
+@Component(service = Realm.class, immediate = true, enabled = false)
 public class ElexisAuthorizingRealm extends AuthorizingRealm {
 
 	public static final String REALM_NAME = "elexis-db-realm";
@@ -35,7 +40,7 @@ public class ElexisAuthorizingRealm extends AuthorizingRealm {
 		if (oUser.isPresent()) {
 			User user = oUser.get();
 			SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-			if(user.isAdministrator()) {
+			if (user.isAdministrator()) {
 				// TODO
 				info.addRole("admin");
 			}
@@ -68,4 +73,12 @@ public class ElexisAuthorizingRealm extends AuthorizingRealm {
 		return Optional.ofNullable(ElexisEntityManager.em().find(User.class, userid));
 	}
 
+	@Override
+	public boolean supports(AuthenticationToken token) {
+		if (ElexisEntityManager.em() != null && ElexisEntityManager.em().isOpen()) {
+			// we can only support authentication if we are connected
+			return super.supports(token);
+		}
+		return false;
+	}
 }
