@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.shiro.crypto.hash.format.ProvidedHashFormat;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -33,7 +32,7 @@ public class ElexisEntityManager {
 			policy = ReferencePolicy.STATIC, 
 			unbind = "deactivate",
 			target = "(osgi.unit.name=elexis)")
-	public synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
+	protected synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = factoryBuilder;
 		ElexisEntityManager.initializeEntityManager();
 	}
@@ -55,6 +54,7 @@ public class ElexisEntityManager {
 			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
 			em = factory.createEntityManager();
 			
+			// TODO refactor this
 			ProvidedEntityManager.setEntityManager(em);
 		} catch (RuntimeException ite) {
 			log.error("Error activating component", ite);
@@ -62,7 +62,7 @@ public class ElexisEntityManager {
 		}
 	}
 
-	public synchronized void deactivate(EntityManagerFactoryBuilder factoryBuilder) {
+	protected synchronized void deactivate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = null;
 		if (em() != null) {
 			em.close();

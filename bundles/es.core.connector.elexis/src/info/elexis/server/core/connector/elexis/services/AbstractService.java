@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.meta.Xid_;
 
 public class AbstractService<T extends AbstractDBObject> {
 
@@ -23,10 +27,10 @@ public class AbstractService<T extends AbstractDBObject> {
 	private static Logger log = LoggerFactory.getLogger(AbstractService.class);
 
 	private EntityTransaction transaction;
-	
+
 	protected EntityManager em = ElexisEntityManager.em();
 	protected CriteriaBuilder cb = em.getCriteriaBuilder();
-	
+
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
 	}
@@ -34,7 +38,7 @@ public class AbstractService<T extends AbstractDBObject> {
 	public T create() {
 		return create(null, true);
 	}
-	
+
 	/**
 	 * 
 	 * @param performCommit
@@ -128,6 +132,33 @@ public class AbstractService<T extends AbstractDBObject> {
 	};
 
 	/**
+	 * @param object
+	 * @param domain
+	 * @return the ID for a given object in the domain as stored by the
+	 *         {@link Xid} or <code>null</code>, if not found
+	 */
+	public String getDomainId(T object, String domain) {
+		CriteriaBuilder qb = em.getCriteriaBuilder();
+		CriteriaQuery<Xid> c = qb.createQuery(Xid.class);
+		Root<Xid> r = c.from(Xid.class);
+		Predicate like = qb.like(r.get(Xid_.domain), domain);
+		Predicate objId = qb.like(r.get(Xid_.object), object.getId());
+		// TODO add type as criteria?
+		c = c.where(like, objId);
+
+		List<Xid> results = em.createQuery(c).getResultList();
+		if(results.size()==1) {
+			return results.get(0).getDomainId();
+		}
+		if(results.size()==0) {
+			return null;
+		}
+		
+		log.warn("Multiple domainId entries for {} in domain {} found.", object.getId(), domain);
+		return null;
+	}
+
+	/**
 	 * Removes an entity from the database. <b>WARNING</b> this call effectively
 	 * removes the entry, to mark it as deleted use {@link #delete(Object)}
 	 */
@@ -160,14 +191,14 @@ public class AbstractService<T extends AbstractDBObject> {
 		entity.setDeleted(true);
 		em.getTransaction().commit();
 	}
-	
+
 	public void beginTransaction() {
 		transaction = em.getTransaction();
 		transaction.begin();
 	}
-	
+
 	public void commitTransaction() {
-		if(transaction==null) {
+		if (transaction == null) {
 			throw new IllegalStateException("transaction is null, execute #beginTransaction() first");
 		}
 		transaction.commit();
