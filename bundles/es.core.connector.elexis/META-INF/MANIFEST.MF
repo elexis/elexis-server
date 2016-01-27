@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  info.elexis.server.core,
  info.elexis.server.core.connector.elexis.jpa;bundle-version="1.0.0";visibility:=reexport,
  at.medevit.ch.artikelstamm;bundle-version="3.0.0";visibility:=reexport,
- ch.rgw.utility
+ ch.rgw.utility;bundle-version="3.1.0";visibility:=reexport,
+ ch.elexis.core;bundle-version="3.1.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
