@@ -115,6 +115,9 @@ public class ProvisioningHelper {
 		if (status.getSeverity() != IStatus.ERROR) {
 			IStatus stat = ProvisioningHelper.performOperation(operation);
 			log.info("UPDATED {} / {}", stat.getCode(), stat.getMessage());
+			if(stat.isMultiStatus()) {
+				StatusUtil.printStatus(log, stat);
+			}
 		} else {
 			log.warn("UPDATE FAILED {} / {}", status.getCode(), status.getMessage());
 			if (status.isMultiStatus()) {
