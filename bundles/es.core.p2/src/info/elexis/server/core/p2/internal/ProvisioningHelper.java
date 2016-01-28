@@ -25,6 +25,8 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.elexis.server.core.common.StatusUtil;
+
 public class ProvisioningHelper {
 
 	private static Logger log = LoggerFactory.getLogger(ProvisioningHelper.class);
