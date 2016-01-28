@@ -12,17 +12,14 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -33,9 +30,7 @@ import org.eclipse.persistence.annotations.WriteTransformer;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisContactTypeTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ContactType;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO3166_ALPHA_2_CountryCode;
 
@@ -50,7 +45,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO316
 @XmlRootElement(name = "contact")
 @NamedQueries({ @NamedQuery(name = "ListContacts", query = "SELECT c FROM Kontakt c"),
 		@NamedQuery(name = "FindContactByMatchCode", query = "SELECT c FROM Kontakt c WHERE c.id = ?1"),
-		@NamedQuery(name = "FindContactByPatientId", query = "SELECT c FROM Kontakt c WHERE c.patientNr = ?1 AND c.deleted = false")})
+		@NamedQuery(name = "FindContactByPatientId", query = "SELECT c FROM Kontakt c WHERE c.patientNr = ?1 AND c.deleted = false") })
 public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable {
 	protected static final long serialVersionUID = 1L;
 
@@ -123,14 +118,6 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 	@Convert("booleanStringConverter")
 	protected boolean istLabor;
 
-	/**
-	 * This non-persisted type converts the values of istPerson and
-	 * istOrganisation into the single Enumeration values {@link Contact}, hence
-	 * no getters and setters for istPerson and istOrganisation are provided
-	 */
-	@ReadTransformer(transformerClass = ElexisContactTypeTransformer.class)
-	protected ContactType contactType;
-
 	@Column(length = 3)
 	@Converter(name = "FuzzyCountryToEnumConverter", converterClass = FuzzyCountryToEnumConverter.class)
 	@Convert(value = "FuzzyCountryToEnumConverter")
@@ -183,11 +170,6 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 
 	@Column(length = 255)
 	protected String website;
-
-	// TODO: We don't want foreign key creation here
-	@OneToMany
-	@JoinColumn(name = "object")
-	protected Set<Xid> xid;
 
 	// ---------------------------------------------
 	public Kontakt() {
@@ -444,24 +426,6 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 		this.website = website;
 	}
 
-	public ContactType getContactType() {
-		return contactType;
-	}
-
-	public void setContactType(ContactType c) {
-		switch (c) {
-		case PERSON:
-			setIstPerson(true);
-			break;
-		case ORGANIZATION:
-			setIstOrganisation(true);
-			break;
-		default:
-			break;
-		}
-		contactType = c;
-	}
-
 	public boolean isIstPerson() {
 		return istPerson;
 	}
@@ -476,13 +440,5 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 
 	public void setIstOrganisation(boolean istOrganisation) {
 		this.istOrganisation = istOrganisation;
-	}
-
-	public Set<Xid> getXid() {
-		return xid;
-	}
-
-	public void setXid(Set<Xid> xid) {
-		this.xid = xid;
 	}
 }

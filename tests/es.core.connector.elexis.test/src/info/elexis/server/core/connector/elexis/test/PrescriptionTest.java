@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.meta.ArtikelstammItem_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.meta.Prescription_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 

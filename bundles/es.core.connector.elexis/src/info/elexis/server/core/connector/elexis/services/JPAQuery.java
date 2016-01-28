@@ -15,10 +15,12 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.jpa.JpaQuery;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject_;
 
 /**
  * This class tries to resemble the Query class known by Elexis user by
  * employing JPA CriteriaQueries.
+ * 
  * 
  * @param <T>
  */
@@ -28,7 +30,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		LIKE, EQUALS, LESS_OR_EQUAL, GREATER
 	};
 
-	private Class<T> clazz;
+	private static volatile SingularAttribute<?, Integer> id;
 
 	private CriteriaBuilder cb = em().getCriteriaBuilder();
 	private CriteriaQuery<T> cq;
@@ -37,12 +39,16 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	private Predicate predicate;
 
-	public JPAQuery(Class<T> clazz) {
-		this.clazz = clazz;
+	private boolean includeDeleted;
 
+	public JPAQuery(Class<T> clazz) {
+		this(clazz, false);
+	}
+
+	public JPAQuery(Class<T> clazz, boolean includeDeleted) {
 		cq = cb.createQuery(clazz);
 		root = cq.from(clazz);
-		query = null;
+		this.includeDeleted = includeDeleted;
 	}
 
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, String string) {
@@ -54,7 +60,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 			predicate = cb.and(predicate, predIn);
 		}
 	}
-	
+
 	public void or(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, String string) {
 		Predicate predIn = derivePredicate(attribute, qt, string);
 
@@ -86,6 +92,9 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	public List<T> execute() {
 		cq = cq.where(predicate);
+		if (!includeDeleted) {
+			add(AbstractDBObject_.id, QUERY.EQUALS, "0");
+		}
 		query = em().createQuery(cq);
 		return query.getResultList();
 	}

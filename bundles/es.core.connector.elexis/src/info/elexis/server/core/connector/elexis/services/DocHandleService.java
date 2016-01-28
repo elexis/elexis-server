@@ -9,7 +9,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.meta.DocHandle_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle_;
 
 public class DocHandleService extends AbstractService<DocHandle> {
 

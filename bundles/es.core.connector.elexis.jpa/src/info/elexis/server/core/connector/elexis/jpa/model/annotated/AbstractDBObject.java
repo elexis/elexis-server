@@ -19,7 +19,7 @@ public abstract class AbstractDBObject {
 	@Id
 	@GeneratedValue(generator = "system-uuid")
 	@Column(unique = true, nullable = false, length = 25)
-	protected String id;
+	private String id;
 	
 	@Column
 	@Convert("booleanStringConverter")

@@ -14,9 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.meta.Xid_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 
 public class AbstractService<T extends AbstractDBObject> {
 
@@ -56,6 +58,7 @@ public class AbstractService<T extends AbstractDBObject> {
 	public T create(String id, final boolean performCommit) {
 		try {
 			T obj = clazz.newInstance();
+			obj.setDeleted(false);
 			if (performCommit)
 				em.getTransaction().begin();
 			if (id != null) {
@@ -136,24 +139,46 @@ public class AbstractService<T extends AbstractDBObject> {
 	 *         {@link Xid} or <code>null</code>, if not found
 	 */
 	public String getDomainId(T object, String domain) {
-		CriteriaBuilder qb = em.getCriteriaBuilder();
-		CriteriaQuery<Xid> c = qb.createQuery(Xid.class);
-		Root<Xid> r = c.from(Xid.class);
-		Predicate like = qb.like(r.get(Xid_.domain), domain);
-		Predicate objId = qb.like(r.get(Xid_.object), object.getId());
+		JPAQuery<Xid> qre = new JPAQuery<Xid>(Xid.class);
+		qre.add(Xid_.domain, JPAQuery.QUERY.LIKE, domain);
+		qre.add(Xid_.object, JPAQuery.QUERY.LIKE, object.getId());
 		// TODO add type as criteria?
-		c = c.where(like, objId);
+		List<Xid> results = qre.execute();
 
-		List<Xid> results = em.createQuery(c).getResultList();
-		if(results.size()==1) {
+		if (results.size() == 1) {
 			return results.get(0).getDomainId();
 		}
-		if(results.size()==0) {
+		if (results.size() == 0) {
 			return null;
 		}
-		
+
 		log.warn("Multiple domainId entries for {} in domain {} found.", object.getId(), domain);
 		return null;
+	}
+
+	/**
+	 * Set or create an {@link Xid} for the provided values. If an existing entry is found,
+	 * the domainId value will be overwritten.
+	 * @param obj
+	 * @param domain
+	 * @param domainId
+	 * @param quality
+	 */
+	public void setDomainId(T obj, String domain, String domainId, XidQuality quality) {
+		JPAQuery<Xid> qre = new JPAQuery<Xid>(Xid.class);
+		qre.add(Xid_.domain, JPAQuery.QUERY.LIKE, domain);
+		qre.add(Xid_.object, JPAQuery.QUERY.LIKE, obj.getId());
+		qre.add(Xid_.type, JPAQuery.QUERY.LIKE, ElexisTypeMap.getKeyForObject(obj));
+		List<Xid> result = qre.execute();
+		if (result.size() == 0) {
+			XidService.INSTANCE.create(domain, domainId, obj, quality, ElexisTypeMap.getKeyForObject(obj));
+			return;
+		} else if (result.size() == 1) {
+			Xid xid = result.get(0);
+			xid.setDomainId(domainId);
+			return;
+		}
+		log.error("Multiple XID entries for {}, {}", domain, obj.getId());
 	}
 
 	/**

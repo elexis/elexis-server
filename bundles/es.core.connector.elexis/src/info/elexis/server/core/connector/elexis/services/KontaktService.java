@@ -1,10 +1,10 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ContactType;
 
 public class KontaktService extends AbstractService<Kontakt> {
 
@@ -18,27 +18,25 @@ public class KontaktService extends AbstractService<Kontakt> {
 		super(Kontakt.class);
 	}
 
-	private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+	private final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-	public static String getLabel(Kontakt k, boolean includeDateOfBirth) {
-		ContactType contactType = k.getContactType();
-		switch (contactType) {
-		case PERSON:
+	public String getLabel(Kontakt k, boolean includeDateOfBirth) {
+		if (k.isIstPerson()) {
 			boolean istPatient = k.isIstPatient();
 			if (istPatient) {
 				LocalDate geburtsdatum = k.getGeburtsdatum();
 				if (!includeDateOfBirth) {
 					return k.getBezeichnung2() + "," + k.getBezeichnung1() + " [" + k.getPatientNr() + "]";
 				}
-				String gbd = (geburtsdatum != null) ? "(" + sdf.format(k.getGeburtsdatum()) + ")" : "";
+				String gbd = (geburtsdatum != null) ? "(" + k.getGeburtsdatum().format(sdf) + ")" : "";
 				return k.getBezeichnung2() + "," + k.getBezeichnung1() + " " + gbd + " [" + k.getPatientNr() + "]";
 			}
 
 			return k.getBezeichnung2() + " " + k.getBezeichnung1();
-		case ORGANIZATION:
+		} else if (k.isIstOrganisation()) {
 			return k.getBezeichnung1() + " " + k.getBezeichnung2();
-		default:
-			return k.getId() + " " + k.getContactType().name();
+		} else {
+			return k.getId() + " " + k.getBezeichnung1();
 		}
 	}
 }
