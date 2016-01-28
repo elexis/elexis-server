@@ -5,13 +5,13 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ContactType;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO3166_ALPHA_2_CountryCode;
-import java.util.Date;
+import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.3.2.v20111125-r10461", date="2016-01-28T08:02:46")
+@Generated(value="EclipseLink-2.3.2.v20111125-r10461", date="2016-01-28T08:15:02")
 @StaticMetamodel(Kontakt.class)
 public class Kontakt_ { 
 
@@ -25,7 +25,7 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, String> bezeichnung2;
     public static volatile SingularAttribute<Kontakt, String> bezeichnung3;
     public static volatile SingularAttribute<Kontakt, Boolean> istLabor;
-    public static volatile SingularAttribute<Kontakt, Date> geburtsdatum;
+    public static volatile SingularAttribute<Kontakt, LocalDate> geburtsdatum;
     public static volatile SingularAttribute<Kontakt, String> titel;
     public static volatile SetAttribute<Kontakt, Xid> xid;
     public static volatile SingularAttribute<Kontakt, Boolean> istOrganisation;

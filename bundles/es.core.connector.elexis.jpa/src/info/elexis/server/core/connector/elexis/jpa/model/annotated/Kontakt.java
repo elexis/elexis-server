@@ -11,7 +11,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -96,7 +96,7 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	protected Date geburtsdatum;
+	protected LocalDate geburtsdatum;
 
 	@Converter(name = "FuzzyGenderToEnumConverter", converterClass = FuzzyGenderToEnumConverter.class)
 	@Convert("FuzzyGenderToEnumConverter")
@@ -276,11 +276,11 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 	/**
 	 * @return date if value is set, else <code>null</code>
 	 */
-	public Date getGeburtsdatum() {
+	public LocalDate getGeburtsdatum() {
 		return geburtsdatum;
 	}
 
-	public void setGeburtsdatum(Date geburtsdatum) {
+	public void setGeburtsdatum(LocalDate geburtsdatum) {
 		this.geburtsdatum = geburtsdatum;
 	}
 
