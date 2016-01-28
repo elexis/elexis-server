@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -26,11 +27,11 @@ public class Faelle extends AbstractDBObject {
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	private Date datumBis;
+	private LocalDate datumBis;
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	private Date datumVon;
+	private LocalDate datumVon;
 
 	@Column(length = 80)
 	private String diagnosen;
@@ -84,22 +85,22 @@ public class Faelle extends AbstractDBObject {
 	/**
 	 * @return date if value is set, else <code>null</code>
 	 */
-	public Date getDatumBis() {
+	public LocalDate getDatumBis() {
 		return datumBis;
 	}
 
-	public void setDatumBis(Date datumBis) {
+	public void setDatumBis(LocalDate datumBis) {
 		this.datumBis = datumBis;
 	}
 
 	/**
 	 * @return date if value is set, else <code>null</code>
 	 */
-	public Date getDatumVon() {
+	public LocalDate getDatumVon() {
 		return datumVon;
 	}
 
-	public void setDatumVon(Date datumVon) {
+	public void setDatumVon(LocalDate datumVon) {
 		this.datumVon = datumVon;
 	}
 

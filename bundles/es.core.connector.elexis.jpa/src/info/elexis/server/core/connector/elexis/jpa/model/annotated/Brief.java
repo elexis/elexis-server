@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -26,15 +26,15 @@ public class Brief extends AbstractDBObject {
 	
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	protected Date datum;
+	protected LocalDate datum;
 	
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	protected Date modifiziert;
+	protected LocalDate modifiziert;
 	
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	protected Date gedruckt;
+	protected LocalDate gedruckt;
 	
 	@OneToOne
 	@JoinColumn(name = "absenderID")
@@ -74,27 +74,27 @@ public class Brief extends AbstractDBObject {
 		this.betreff = betreff;
 	}
 
-	public Date getDatum() {
+	public LocalDate getDatum() {
 		return datum;
 	}
 
-	public void setDatum(Date datum) {
+	public void setDatum(LocalDate datum) {
 		this.datum = datum;
 	}
 
-	public Date getModifiziert() {
+	public LocalDate getModifiziert() {
 		return modifiziert;
 	}
 
-	public void setModifiziert(Date modifiziert) {
+	public void setModifiziert(LocalDate modifiziert) {
 		this.modifiziert = modifiziert;
 	}
 
-	public Date getGedruckt() {
+	public LocalDate getGedruckt() {
 		return gedruckt;
 	}
 
-	public void setGedruckt(Date gedruckt) {
+	public void setGedruckt(LocalDate gedruckt) {
 		this.gedruckt = gedruckt;
 	}
 

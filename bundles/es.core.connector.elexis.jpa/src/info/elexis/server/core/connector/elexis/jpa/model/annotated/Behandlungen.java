@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -34,7 +34,7 @@ public class Behandlungen extends AbstractDBObject {
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	private Date datum;
+	private LocalDate datum;
 
 	@Column(length = 25, name = "diagnosen")
 	private String diagnosenId;
@@ -74,11 +74,11 @@ public class Behandlungen extends AbstractDBObject {
 	/**
 	 * @return date if value is set, else <code>null</code>
 	 */
-	public Date getDatum() {
+	public LocalDate getDatum() {
 		return datum;
 	}
 
-	public void setDatum(Date datum) {
+	public void setDatum(LocalDate datum) {
 		this.datum = datum;
 	}
 
