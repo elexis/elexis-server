@@ -1,9 +1,8 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
-
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -12,7 +11,6 @@ import javax.persistence.Table;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
-
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
 
@@ -39,11 +37,11 @@ public class Prescription extends AbstractDBObjectWithExtInfo {
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	private Date dateFrom;
+	private LocalDate dateFrom;
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	private Date dateUntil;
+	private LocalDate dateUntil;
 
 	@Column(length = 255)
 	private String dosis;
@@ -87,19 +85,19 @@ public class Prescription extends AbstractDBObjectWithExtInfo {
 		this.bemerkung = bemerkung;
 	}
 
-	public Date getDateFrom() {
+	public LocalDate getDateFrom() {
 		return dateFrom;
 	}
 
-	public void setDateFrom(Date dateFrom) {
+	public void setDateFrom(LocalDate dateFrom) {
 		this.dateFrom = dateFrom;
 	}
 
-	public Date getDateUntil() {
+	public LocalDate getDateUntil() {
 		return dateUntil;
 	}
 
-	public void setDateUntil(Date dateUntil) {
+	public void setDateUntil(LocalDate dateUntil) {
 		this.dateUntil = dateUntil;
 	}
 
