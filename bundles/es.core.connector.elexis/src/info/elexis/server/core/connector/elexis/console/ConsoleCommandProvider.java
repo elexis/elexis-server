@@ -6,7 +6,7 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
 
 import info.elexis.server.core.common.StatusUtil;
-import info.elexis.server.core.connector.elexis.internal.ElexisDBConnection;
+import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider implements CommandProvider {

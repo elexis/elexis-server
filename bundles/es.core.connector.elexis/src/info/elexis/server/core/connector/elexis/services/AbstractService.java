@@ -163,22 +163,23 @@ public class AbstractService<T extends AbstractDBObject> {
 	 * @param domain
 	 * @param domainId
 	 * @param quality
+	 * @return <code>null</code> on error
 	 */
-	public void setDomainId(T obj, String domain, String domainId, XidQuality quality) {
+	public Xid setDomainId(T obj, String domain, String domainId, XidQuality quality) {
 		JPAQuery<Xid> qre = new JPAQuery<Xid>(Xid.class);
 		qre.add(Xid_.domain, JPAQuery.QUERY.LIKE, domain);
 		qre.add(Xid_.object, JPAQuery.QUERY.LIKE, obj.getId());
 		qre.add(Xid_.type, JPAQuery.QUERY.LIKE, ElexisTypeMap.getKeyForObject(obj));
 		List<Xid> result = qre.execute();
 		if (result.size() == 0) {
-			XidService.INSTANCE.create(domain, domainId, obj, quality, ElexisTypeMap.getKeyForObject(obj));
-			return;
+			return XidService.INSTANCE.create(domain, domainId, obj, quality, ElexisTypeMap.getKeyForObject(obj));
 		} else if (result.size() == 1) {
 			Xid xid = result.get(0);
 			xid.setDomainId(domainId);
-			return;
+			return xid;
 		}
 		log.error("Multiple XID entries for {}, {}", domain, obj.getId());
+		return null;
 	}
 
 	/**

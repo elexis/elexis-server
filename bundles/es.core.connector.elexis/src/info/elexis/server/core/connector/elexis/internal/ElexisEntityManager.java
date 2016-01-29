@@ -15,6 +15,8 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.elexis.server.core.connector.elexis.common.DBConnection;
+import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 
 @Component
@@ -37,7 +39,7 @@ public class ElexisEntityManager {
 		ElexisEntityManager.initializeEntityManager();
 	}
 
-	protected static void initializeEntityManager() {
+	public static void initializeEntityManager() {
 		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
 		if(!connection.isPresent()) {
 			log.error("No elexis-connection available, not initialization EntityManager");

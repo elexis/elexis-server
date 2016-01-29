@@ -16,13 +16,14 @@ public class XidService extends AbstractService<Xid> {
 		super(Xid.class);
 	}
 
-	public void create(String domain, String domainId, AbstractDBObject obj, XidQuality quality, String type) {
+	public Xid create(String domain, String domainId, AbstractDBObject obj, XidQuality quality, String type) {
 		Xid xid = create();
 		xid.setDomain(domain);
 		xid.setDomainId(domainId);
 		xid.setObject(obj.getId());
 		xid.setQuality(quality);
 		xid.setType(type);
+		return xid;
 	}
 
 }

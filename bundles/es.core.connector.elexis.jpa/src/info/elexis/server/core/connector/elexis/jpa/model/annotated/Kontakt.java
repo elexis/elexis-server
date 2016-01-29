@@ -12,14 +12,17 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -170,7 +173,16 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 
 	@Column(length = 255)
 	protected String website;
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "object", insertable = false)
+	protected List<Xid> xids;
+	
 
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patientID", insertable = false)
+	protected List<Faelle> faelle;
+	
 	// ---------------------------------------------
 	public Kontakt() {
 	}
@@ -440,5 +452,21 @@ public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable
 
 	public void setIstOrganisation(boolean istOrganisation) {
 		this.istOrganisation = istOrganisation;
+	}
+	
+	public List<Xid> getXids() {
+		return xids;
+	}
+	
+	public void setXids(List<Xid> xids) {
+		this.xids = xids;
+	}
+	
+	public List<Faelle> getFaelle() {
+		return faelle;
+	}
+	
+	public void setFaelle(List<Faelle> faelle) {
+		this.faelle = faelle;
 	}
 }

@@ -1,13 +1,16 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Faelle;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO3166_ALPHA_2_CountryCode;
 import java.time.LocalDate;
 import javax.annotation.Generated;
+import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-01-28T15:14:02")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-01-29T12:43:14")
 @StaticMetamodel(Kontakt.class)
 public class Kontakt_ { 
 
@@ -19,6 +22,7 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, String> bezeichnung1;
     public static volatile SingularAttribute<Kontakt, String> bezeichnung2;
     public static volatile SingularAttribute<Kontakt, String> bezeichnung3;
+    public static volatile ListAttribute<Kontakt, Faelle> faelle;
     public static volatile SingularAttribute<Kontakt, Boolean> istLabor;
     public static volatile SingularAttribute<Kontakt, LocalDate> geburtsdatum;
     public static volatile SingularAttribute<Kontakt, String> titel;
@@ -41,6 +45,7 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, String> ort;
     public static volatile SingularAttribute<Kontakt, Boolean> istAnwender;
     public static volatile SingularAttribute<Kontakt, String> bemerkung;
+    public static volatile ListAttribute<Kontakt, Xid> xids;
     public static volatile SingularAttribute<Kontakt, String> gruppe;
     public static volatile SingularAttribute<Kontakt, String> famAnamnese;
     public static volatile SingularAttribute<Kontakt, String> plz;

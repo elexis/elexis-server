@@ -15,20 +15,20 @@ import javax.ws.rs.core.Response;
 import org.eclipse.core.runtime.IStatus;
 import org.osgi.service.component.annotations.Component;
 
-import info.elexis.server.core.connector.elexis.internal.DBConnection;
-import info.elexis.server.core.connector.elexis.internal.ElexisDBConnection;
+import info.elexis.server.core.connector.elexis.common.DBConnection;
+import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 
 @Component(service = HTTPService.class, immediate = true)
 @Path("/elexis/connector/")
 public class HTTPService {
 
-	@POST
-	@Path(ELEXIS_CONNECTION)
-	@RolesAllowed("admin")
-	public Response setData(DBConnection connection) {
-		ElexisDBConnection.setConnection(connection);
-		return Response.ok().build();
-	}
+//	@POST
+//	@Path(ELEXIS_CONNECTION)
+//	@RolesAllowed("admin")
+//	public Response setData(DBConnection connection) {
+//		ElexisDBConnection.setConnection(connection);
+//		return Response.ok().build();
+//	}
 
 	@GET
 	@Path(ELEXIS_CONNECTION)

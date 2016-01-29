@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.internal;
+package info.elexis.server.core.connector.elexis.common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.elexis.server.core.connector.elexis.internal.BundleConstants;
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.util.CoreUtil;
 
@@ -45,7 +47,7 @@ public class ElexisDBConnection {
 		return Optional.ofNullable(connection);
 	}
 
-	public static void setConnection(DBConnection connection) {
+	private static void setConnection(DBConnection connection) {
 		ElexisDBConnection.connection = connection;
 
 		try (OutputStream os = Files.newOutputStream(connectionConfigPath, StandardOpenOption.WRITE);) {
@@ -54,7 +56,7 @@ public class ElexisDBConnection {
 			log.error("Error marshalling connection", e);
 		}
 
-		ElexisEntityManager.initializeEntityManager();
+//		ElexisEntityManager.initializeEntityManager();
 	}
 
 	public static IStatus getDatabaseInformation() {

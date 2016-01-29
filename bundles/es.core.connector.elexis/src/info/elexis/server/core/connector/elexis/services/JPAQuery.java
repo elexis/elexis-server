@@ -30,8 +30,6 @@ public class JPAQuery<T extends AbstractDBObject> {
 		LIKE, EQUALS, LESS_OR_EQUAL, GREATER
 	};
 
-	private static volatile SingularAttribute<?, Integer> id;
-
 	private CriteriaBuilder cb = em().getCriteriaBuilder();
 	private CriteriaQuery<T> cq;
 	private Root<T> root;
@@ -53,7 +51,17 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, String string) {
 		Predicate predIn = derivePredicate(attribute, qt, string);
-
+		
+		if (predicate == null) {
+			predicate = predIn;
+		} else {
+			predicate = cb.and(predicate, predIn);
+		}
+	}
+	
+	public void add(SingularAttribute<?, Boolean> attribute, QUERY qt, boolean bool) {
+		Predicate predIn = derivePredicate(attribute, qt, bool);
+		
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
@@ -73,18 +81,18 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	@SuppressWarnings("unchecked")
 	private Predicate derivePredicate(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt,
-			String string) {
+			Object value) {
 		switch (qt) {
 		case LIKE:
-			return cb.like(root.get(attribute), string);
+			return cb.like(root.get(attribute), value.toString());
 		case EQUALS:
-			return cb.equal(root.get(attribute), string);
+			return cb.equal(root.get(attribute), value);
 		case LESS_OR_EQUAL:
 			Path<Integer> pathLE = root.get(attribute);
-			return cb.le(pathLE, Integer.parseInt(string));
+			return cb.le(pathLE, Integer.parseInt(value.toString()));
 		case GREATER:
 			Path<Integer> pathG = root.get(attribute);
-			return cb.gt(pathG, Integer.parseInt(string));
+			return cb.gt(pathG, Integer.parseInt(value.toString()));
 		default:
 			throw new IllegalArgumentException();
 		}
