@@ -11,7 +11,6 @@
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
 -Dorg.osgi.service.http.port=8380 
 -Djava.awt.headless=true 
--XX:MaxPermSize=256m
 -Xms128m
 -Xmx1024m
       </vmArgs>
@@ -33,7 +32,6 @@
    <vm>
    </vm>
 
-
    <plugins>
    </plugins>
 
@@ -49,13 +47,15 @@
       <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="2" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
       <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
    </configurations>
 
    <repositories>
