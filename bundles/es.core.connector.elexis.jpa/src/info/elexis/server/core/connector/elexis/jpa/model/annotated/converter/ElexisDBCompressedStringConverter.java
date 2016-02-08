@@ -36,10 +36,11 @@ public class ElexisDBCompressedStringConverter implements Converter {
 	
 	@Override
 	public String convertDataValueToObjectValue(Object dataValue, Session session){
-		if (dataValue == null)
+		byte[] dataValueB = (byte[]) dataValue;
+		if (dataValue == null || dataValueB.length==0)
 			return "";
 		try {
-			byte[] exp = CompEx.expand((byte[]) dataValue);
+			byte[] exp = CompEx.expand(dataValueB);
 			return StringTool.createString(exp);
 		} catch (Exception e) {
 			e.printStackTrace();

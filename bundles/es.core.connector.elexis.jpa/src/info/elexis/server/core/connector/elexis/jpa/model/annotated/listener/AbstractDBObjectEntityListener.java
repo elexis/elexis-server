@@ -12,6 +12,7 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated.listener;
 
 import java.math.BigInteger;
 
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
@@ -27,5 +28,10 @@ public class AbstractDBObjectEntityListener {
 	@PreUpdate
 	public void preUpdate(AbstractDBObject o) {
 		o.setLastupdate(BigInteger.valueOf(System.currentTimeMillis()));
+	}
+	
+	@PrePersist
+	public void prePersist(AbstractDBObject o) {
+		preUpdate(o);
 	}
 }

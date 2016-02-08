@@ -17,6 +17,7 @@ public class ElexisTypeMap {
 		stsClassBidiMap.put("ch.artikelstamm.elexis.common.ArtikelstammItem", ArtikelstammItem.class);
 		stsClassBidiMap.put("ch.elexis.data.TarmedLeistung", TarmedLeistung.class);
 		stsClassBidiMap.put("ch.elexis.data.Fall", Faelle.class);
+		stsClassBidiMap.put("ch.elexis.data.Patient", Kontakt.class);
 		// TODO add other values
 	}
 

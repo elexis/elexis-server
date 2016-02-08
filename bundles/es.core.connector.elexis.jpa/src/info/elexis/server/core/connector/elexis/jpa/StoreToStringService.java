@@ -27,15 +27,15 @@ public enum StoreToStringService {
 	}
 	
 
-	public AbstractDBObject createFromString(String dbData) {
-		if (dbData == null) {
+	public AbstractDBObject createFromString(String storeToString) {
+		if (storeToString == null) {
 			log.warn("StoreToString is null");
 			return null;
 		}
 
-		String[] split = dbData.split(StringConstants.DOUBLECOLON);
+		String[] split = storeToString.split(StringConstants.DOUBLECOLON);
 		if (split.length != 2) {
-			log.warn("Array size not 2: " + dbData);
+			log.warn("Array size not 2: " + storeToString);
 			return null;
 		}
 

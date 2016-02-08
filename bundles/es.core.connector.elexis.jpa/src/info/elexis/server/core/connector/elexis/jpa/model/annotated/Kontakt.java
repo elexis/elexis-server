@@ -20,12 +20,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ReadTransformer;
@@ -39,16 +39,14 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO316
 
 /**
  * The persistent class for the Elexis KONTAKT database table. Valid from DB
- * Version >1.8.11
+ * Version 3.1.0
  * 
  * @author M. Descher, MEDEVIT, Austria
  */
 @Entity
 @Table(name = "KONTAKT")
 @XmlRootElement(name = "contact")
-@NamedQueries({ @NamedQuery(name = "ListContacts", query = "SELECT c FROM Kontakt c"),
-		@NamedQuery(name = "FindContactByMatchCode", query = "SELECT c FROM Kontakt c WHERE c.id = ?1"),
-		@NamedQuery(name = "FindContactByPatientId", query = "SELECT c FROM Kontakt c WHERE c.patientNr = ?1 AND c.deleted = false") })
+@Cache(type=CacheType.NONE)
 public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable {
 	protected static final long serialVersionUID = 1L;
 
