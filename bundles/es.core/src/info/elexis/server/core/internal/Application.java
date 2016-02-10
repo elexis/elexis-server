@@ -26,6 +26,7 @@ public class Application implements IApplication {
 		logger.info("Starting " + Application.class.getName() + "...");
 		instance = this;
 
+		context.applicationRunning();
 		while (!restart && !shutdown) {
 			Thread.sleep(2000);
 		}

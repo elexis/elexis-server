@@ -1,10 +1,12 @@
 package info.elexis.server.core.connector.elexis.jpa;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
 /**
  * Resolve storeToString entities into the resp. objects, and serialize those entities
@@ -16,7 +18,7 @@ public enum StoreToStringService {
 
 	private static Logger log = LoggerFactory.getLogger(StoreToStringService.class);
 	
-	public String storeToString(AbstractDBObject adbo) {
+	public String storeToString(AbstractDBObjectIdDeleted adbo) {
 		String classKey = ElexisTypeMap.getKeyForObject(adbo);
 		if(classKey==null) {
 			log.warn("Could not resolve {} to storeToString name", adbo.getClass());
@@ -27,28 +29,28 @@ public enum StoreToStringService {
 	}
 	
 
-	public AbstractDBObject createFromString(String storeToString) {
+	public Optional<AbstractDBObjectIdDeleted> createFromString(String storeToString) {
 		if (storeToString == null) {
 			log.warn("StoreToString is null");
-			return null;
+			return Optional.empty();
 		}
 
 		String[] split = storeToString.split(StringConstants.DOUBLECOLON);
 		if (split.length != 2) {
 			log.warn("Array size not 2: " + storeToString);
-			return null;
+			return Optional.empty();
 		}
 
 		// map string to classname
 		String className = split[0];
 		String id = split[1];
-		Class<? extends AbstractDBObject> clazz = ElexisTypeMap.get(className);
+		Class<? extends AbstractDBObjectIdDeleted> clazz = ElexisTypeMap.get(className);
 		if (clazz == null) {
 			log.warn("Could not resolve class {}", className);
-			return null;
+			return Optional.empty();
 		}
 
-		return ProvidedEntityManager.em().find(clazz, id);
+		return Optional.ofNullable(ProvidedEntityManager.em().find(clazz, id));
 	}
 
 }

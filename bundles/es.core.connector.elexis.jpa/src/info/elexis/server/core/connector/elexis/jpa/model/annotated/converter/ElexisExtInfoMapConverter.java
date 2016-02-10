@@ -44,8 +44,6 @@ public class ElexisExtInfoMapConverter implements Converter {
 	
 	@Override
 	public byte[] convertObjectValueToDataValue(Object objectValue, Session session){
-		if (objectValue == null)
-			return new byte[0];
 		if (objectValue instanceof HashMap) {
 			Hashtable<Object, Object> ov = (Hashtable<Object, Object>) objectValue;
 			return flatten(ov);

@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 
@@ -16,7 +16,7 @@ public class XidService extends AbstractService<Xid> {
 		super(Xid.class);
 	}
 
-	public Xid create(String domain, String domainId, AbstractDBObject obj, XidQuality quality, String type) {
+	public Xid create(String domain, String domainId, AbstractDBObjectIdDeleted obj, XidQuality quality, String type) {
 		Xid xid = create();
 		xid.setDomain(domain);
 		xid.setDomainId(domainId);

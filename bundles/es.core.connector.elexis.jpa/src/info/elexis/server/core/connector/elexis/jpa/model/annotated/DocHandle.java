@@ -17,7 +17,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "CH_ELEXIS_OMNIVORE_DATA")
-public class DocHandle extends AbstractDBObject {
+public class DocHandle extends AbstractDBObjectIdDeleted {
 
 	@OneToOne
 	@JoinColumn(name = "PatID")

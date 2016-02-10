@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="info.elexis.server.core.connector.elexis.jpa.feature"
-      label="Elexis Database JPA based connector"
+      id="info.elexis.server.core.connector.elexis.feature"
+      label="Elexis Connector"
       version="1.0.0.qualifier"
       provider-name="medevit.at">
 
@@ -175,6 +175,20 @@
 
    <plugin
          id="org.eclipse.emf.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="info.elexis.server.core.connector.elexis.jaxrs"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="info.elexis.server.elexis.common"
          download-size="0"
          install-size="0"
          version="0.0.0"

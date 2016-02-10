@@ -5,6 +5,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "TARMED")
-public class TarmedLeistung extends AbstractDBObject {
+public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 
 }

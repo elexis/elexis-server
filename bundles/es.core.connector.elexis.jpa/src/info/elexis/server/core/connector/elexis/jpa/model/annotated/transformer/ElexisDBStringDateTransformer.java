@@ -22,7 +22,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
 public class ElexisDBStringDateTransformer implements AttributeTransformer, FieldTransformer {
 
@@ -49,7 +49,7 @@ public class ElexisDBStringDateTransformer implements AttributeTransformer, Fiel
 		try {
 			dob = LocalDate.parse(dateString, yyyyMMdd);
 		} catch (DateTimeParseException e) {
-			log.warn("Error parsing {} in {}", dateString, ((AbstractDBObject) object).getId(), e);
+			log.warn("Error parsing {} in {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(), e);
 		}
 		return dob;
 	}

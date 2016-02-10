@@ -48,4 +48,12 @@ public class KontaktService extends AbstractService<Kontakt> {
 		// not defined in Elexis Patient#getConstraint
 		return qre.execute();
 	}
+
+	public Kontakt createPatient() {
+		Kontakt pat = create(false);
+		pat.setIstPatient(true);
+		pat.setIstPerson(true);
+		flush();
+		return pat;
+	}
 }

@@ -4,16 +4,17 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Faelle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 
 public class ElexisTypeMap {
-	private static final BidiMap<String, Class<? extends AbstractDBObject>> stsClassBidiMap;
+	private static final BidiMap<String, Class<? extends AbstractDBObjectIdDeleted>> stsClassBidiMap;
 
 	static {
-		stsClassBidiMap = new DualHashBidiMap<String, Class<? extends AbstractDBObject>>();
+		stsClassBidiMap = new DualHashBidiMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
 		stsClassBidiMap.put("ch.artikelstamm.elexis.common.ArtikelstammItem", ArtikelstammItem.class);
 		stsClassBidiMap.put("ch.elexis.data.TarmedLeistung", TarmedLeistung.class);
 		stsClassBidiMap.put("ch.elexis.data.Fall", Faelle.class);
@@ -23,7 +24,7 @@ public class ElexisTypeMap {
 
 	// TODO we can not deterministically map person to patient, anwender, mandant as
 	// we do not know what was initially intended
-	public static String getKeyForObject(AbstractDBObject obj) {
+	public static String getKeyForObject(AbstractDBObjectIdDeleted obj) {
 		if (obj instanceof Kontakt) {
 			Kontakt k = (Kontakt) obj;
 			if (k.isIstPerson()) {
@@ -40,7 +41,7 @@ public class ElexisTypeMap {
 		return stsClassBidiMap.getKey(obj.getClass());
 	}
 
-	public static Class<? extends AbstractDBObject> get(String value) {
+	public static Class<? extends AbstractDBObjectIdDeleted> get(String value) {
 		return stsClassBidiMap.get(value);
 	}
 }

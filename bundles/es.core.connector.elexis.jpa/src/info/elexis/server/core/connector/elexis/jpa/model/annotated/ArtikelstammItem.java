@@ -10,7 +10,7 @@ import org.eclipse.persistence.annotations.Convert;
 
 @Entity
 @Table(name = "artikelstamm_ch")
-public class ArtikelstammItem extends AbstractDBObjectWithExtInfo {
+public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 1)
 	private String type;
 	

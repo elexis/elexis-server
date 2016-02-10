@@ -18,7 +18,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "behandlungen")
-public class Behandlungen extends AbstractDBObject {
+public class Behandlungen extends AbstractDBObjectIdDeleted {
 
 	// TODO
 	@OneToOne

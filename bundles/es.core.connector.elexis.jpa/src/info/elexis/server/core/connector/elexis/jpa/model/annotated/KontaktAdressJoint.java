@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @NamedQueries({
 		@NamedQuery(name = KontaktAdressJoint.QUERY_findAllIDisMyKontakt, query = "SELECT e FROM KontaktAdressJoint e WHERE e.myKontakt = :id"),
 		@NamedQuery(name = KontaktAdressJoint.QUERY_findAllIDisOtherKontakt, query = "SELECT e FROM KontaktAdressJoint e WHERE e.otherKontakt = :id") })
-public class KontaktAdressJoint extends AbstractDBObject {
+public class KontaktAdressJoint extends AbstractDBObjectIdDeleted {
 
 	public static final String QUERY_findAllIDisMyKontakt = "QUERY_findAllIDisMyKontakt";
 	public static final String QUERY_findAllIDisOtherKontakt = "QUERY_findAllIDisOtherKontakt";

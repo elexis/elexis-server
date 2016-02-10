@@ -9,13 +9,13 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  org.eclipse.core.runtime,
  javax.persistence;bundle-version="2.1.0";visibility:=reexport,
  org.eclipse.persistence.jpa;bundle-version="2.6.1",
- org.eclipse.persistence.asm;bundle-version="5.0.1",
  org.apache.shiro.core;bundle-version="1.2.4",
  info.elexis.server.core,
  info.elexis.server.core.connector.elexis.jpa;bundle-version="1.0.0";visibility:=reexport,
  at.medevit.ch.artikelstamm;bundle-version="3.0.0";visibility:=reexport,
  ch.rgw.utility;bundle-version="3.1.0";visibility:=reexport,
- ch.elexis.core;bundle-version="3.1.0";visibility:=reexport
+ ch.elexis.core;bundle-version="3.1.0";visibility:=reexport,
+ info.elexis.server.elexis.common;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
@@ -23,4 +23,5 @@ Import-Package: javax.ws.rs;version="1.1.1",
  javax.ws.rs.core;version="1.1.1",
  org.slf4j;version="1.7.2"
 Export-Package: info.elexis.server.core.connector.elexis.common,
+ info.elexis.server.core.connector.elexis.locking,
  info.elexis.server.core.connector.elexis.services

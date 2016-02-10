@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import it.sauronsoftware.cron4j.Task;
 
-@Component(name = "SchedulerService")
+@Component
 public class SchedulerService implements ISchedulerService {
 
 	private Logger log = LoggerFactory.getLogger(SchedulerService.class);

@@ -15,7 +15,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "HEAP2")
-public class Heap2 extends AbstractDBObject {
+public class Heap2 extends AbstractDBObjectIdDeleted {
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)

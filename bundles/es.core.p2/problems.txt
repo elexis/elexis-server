@@ -2,6 +2,10 @@ Wenn beide realms aktiv sind:
 
 http://shiro.apache.org/authentication.html#Authentication-RealmAuthenticationOrder
 
+https://wiki.eclipse.org/Disabling_Apache_Httpclient
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=344905
+
+
 15:20:00.412 INFO  i.e.s.c.s.ShiroSecurityService - Authenticating admin @ org.apache.shiro.mgt.DefaultSecurityManager@321dce4e
 15:20:00.417 INFO  i.e.s.c.s.ShiroSecurityService - Created session 3499b393-b9d4-4dda-a458-310236419da9 for user admin @ org.apache.shiro.mgt.DefaultSecurityManager@321dce4e
 15:20:00.433 WARN  i.e.s.c.s.ShiroSecurityService - Tried to get subject for non existing session 3499b393-b9d4-4dda-a458-310236419da9

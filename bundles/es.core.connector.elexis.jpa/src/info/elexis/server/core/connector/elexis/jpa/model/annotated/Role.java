@@ -13,7 +13,7 @@ import org.eclipse.persistence.annotations.Convert;
 
 @Entity
 @Table(name = "ROLE")
-public class Role extends AbstractDBObjectWithExtInfo {
+public class Role extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Convert("booleanStringConverter")
 	@Column(name = "ISSYSTEMROLE")

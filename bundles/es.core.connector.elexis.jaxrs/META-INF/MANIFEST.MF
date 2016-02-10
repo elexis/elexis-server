@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jaxrs
+Bundle-SymbolicName: info.elexis.server.core.connector.elexis.jaxrs
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/*.xml
+Require-Bundle: org.eclipse.equinox.ds,
+ org.eclipse.osgi.services,
+ info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
+ info.elexis.server.elexis.common,
+ org.eclipse.core.runtime
+Import-Package: javax.ws.rs;version="2.0.1",
+ javax.ws.rs.core;version="2.0.1"
+Bundle-ActivationPolicy: lazy

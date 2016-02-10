@@ -17,7 +17,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "faelle")
-public class Faelle extends AbstractDBObject {
+public class Faelle extends AbstractDBObjectIdDeleted {
 
 	@Column(length = 25)
 	private String betriebsNummer;

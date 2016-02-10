@@ -1,8 +1,10 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Optional;
+
 import ch.elexis.core.constants.StringConstants;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
 public class VerrechnetService extends AbstractService<Verrechnet> {
@@ -17,7 +19,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		super(Verrechnet.class);
 	}
 
-	public AbstractDBObject getVerrechenbar(Verrechnet vr) {
+	public Optional<AbstractDBObjectIdDeleted> getVerrechenbar(Verrechnet vr) {
 		String klasse = vr.getKlasse();
 		String leistungenCode = vr.getLeistungenCode();
 

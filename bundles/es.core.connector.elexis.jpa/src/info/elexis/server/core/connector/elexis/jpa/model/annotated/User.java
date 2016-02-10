@@ -19,7 +19,7 @@ import org.eclipse.persistence.annotations.Convert;
 @Entity
 @Table(name = "USER_")
 @XmlRootElement(name = "user")
-public class User extends AbstractDBObjectWithExtInfo {
+public class User extends AbstractDBObjectIdDeletedExtInfo {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "KONTAKT_ID")

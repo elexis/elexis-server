@@ -16,11 +16,12 @@ import org.slf4j.LoggerFactory;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 
-public class AbstractService<T extends AbstractDBObject> {
+public class AbstractService<T extends AbstractDBObjectIdDeleted> {
 
 	private final Class<T> clazz;
 
@@ -28,13 +29,20 @@ public class AbstractService<T extends AbstractDBObject> {
 
 	private EntityTransaction transaction;
 
-	protected EntityManager em = ElexisEntityManager.em();
-	protected CriteriaBuilder cb = em.getCriteriaBuilder();
+	protected EntityManager em;
+	protected CriteriaBuilder cb;
 
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
+		
+		em = ElexisEntityManager.em();
+		cb = em.getCriteriaBuilder();
 	}
 
+	/**
+	 * Sychronous operation. Element is directly persisted, leading to id creation.
+	 * @return
+	 */
 	public T create() {
 		return create(null, true);
 	}

@@ -9,9 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheType;
+
 @Entity
 @Table(name = "config")
-public class Config implements Serializable {
+@Cache(type=CacheType.NONE)
+public class Config extends AbstractDBObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id

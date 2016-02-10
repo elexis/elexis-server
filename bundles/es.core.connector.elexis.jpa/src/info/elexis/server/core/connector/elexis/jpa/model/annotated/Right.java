@@ -10,7 +10,7 @@ import org.eclipse.persistence.annotations.Convert;
 
 @Entity
 @Table(name = "RIGHT_")
-public class Right extends AbstractDBObject {
+public class Right extends AbstractDBObjectIdDeleted {
 
 	@Convert("booleanStringConverter")
 	@Column(name = "LOG_EXECUTION")

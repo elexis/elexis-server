@@ -3,6 +3,7 @@ package info.elexis.server.core.common;
 import java.io.PrintStream;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 
 // TODO refactor ...
@@ -38,4 +39,10 @@ public class StatusUtil {
 			log.println(indent + status.getMessage());
 		}
 	}
+
+	public static IStatus errorSeeLog(String pluginId) {
+		return new Status(Status.ERROR,pluginId, "Execution error, see log.");
+	}
+	
+	
 }

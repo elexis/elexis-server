@@ -16,7 +16,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "patient_artikel_joint")
-public class Prescription extends AbstractDBObjectWithExtInfo {
+public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	// TODO incomplete
 	
 	@Column(length = 3)

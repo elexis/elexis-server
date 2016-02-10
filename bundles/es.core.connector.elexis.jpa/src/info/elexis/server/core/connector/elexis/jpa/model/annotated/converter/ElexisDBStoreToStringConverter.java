@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
 public class ElexisDBStoreToStringConverter implements Converter {
 
@@ -22,7 +23,7 @@ public class ElexisDBStoreToStringConverter implements Converter {
 			return null;
 		}
 		
-		return StoreToStringService.INSTANCE.storeToString((AbstractDBObject) objectValue);
+		return StoreToStringService.INSTANCE.storeToString((AbstractDBObjectIdDeleted) objectValue);
 	}
 
 	@Override

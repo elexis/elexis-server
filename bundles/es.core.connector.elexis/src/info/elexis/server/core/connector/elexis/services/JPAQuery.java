@@ -15,7 +15,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.jpa.JpaQuery;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 
 /**
  * This class tries to resemble the Query class known by Elexis user by
@@ -30,7 +30,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		LIKE, EQUALS, LESS_OR_EQUAL, GREATER
 	};
 
-	private CriteriaBuilder cb = em().getCriteriaBuilder();
+	private CriteriaBuilder cb;
 	private CriteriaQuery<T> cq;
 	private Root<T> root;
 	private TypedQuery<T> query;
@@ -44,6 +44,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	public JPAQuery(Class<T> clazz, boolean includeDeleted) {
+		cb = em().getCriteriaBuilder();
 		cq = cb.createQuery(clazz);
 		root = cq.from(clazz);
 		this.includeDeleted = includeDeleted;
@@ -101,7 +102,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	public List<T> execute() {
 		cq = cq.where(predicate);
 		if (!includeDeleted) {
-			add(AbstractDBObject_.id, QUERY.EQUALS, "0");
+			add(AbstractDBObjectIdDeleted_.id, QUERY.EQUALS, "0");
 		}
 		query = em().createQuery(cq);
 		return query.getResultList();

@@ -47,7 +47,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO316
 @Table(name = "KONTAKT")
 @XmlRootElement(name = "contact")
 @Cache(type=CacheType.NONE)
-public class Kontakt extends AbstractDBObjectWithExtInfo implements Serializable {
+public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Serializable {
 	protected static final long serialVersionUID = 1L;
 
 	@Basic(fetch = FetchType.LAZY)

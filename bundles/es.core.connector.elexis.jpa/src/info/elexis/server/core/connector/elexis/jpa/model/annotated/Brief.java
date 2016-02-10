@@ -19,7 +19,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "BRIEFE")
-public class Brief extends AbstractDBObject {
+public class Brief extends AbstractDBObjectIdDeleted {
 
 	@Column(length = 80)
 	protected String betreff;

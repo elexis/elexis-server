@@ -29,16 +29,17 @@ public class JPACountQuery<T extends AbstractDBObject> {
 
 	private Class<T> clazz;
 
-	private CriteriaBuilder cb = em().getCriteriaBuilder();
+	private CriteriaBuilder cb;
 	private CriteriaQuery<Long> query;
 	private Root<T> root;
 	private TypedQuery<Long> tq;
-	
+
 	private List<Predicate> conditions = new LinkedList<Predicate>();
 
 	public JPACountQuery(Class<T> clazz) {
 		this.clazz = clazz;
 
+		cb = em().getCriteriaBuilder();
 		query = cb.createQuery(Long.class);
 		root = query.from(clazz);
 		query.select(cb.count(root));
@@ -63,12 +64,12 @@ public class JPACountQuery<T extends AbstractDBObject> {
 		default:
 			throw new IllegalArgumentException();
 		}
-		
+
 		conditions.add(pred);
 	}
 
 	public long count() {
-		if(conditions.size()>0) {
+		if (conditions.size() > 0) {
 			query = query.where(conditions.toArray(new Predicate[0]));
 		}
 		tq = em().createQuery(query);

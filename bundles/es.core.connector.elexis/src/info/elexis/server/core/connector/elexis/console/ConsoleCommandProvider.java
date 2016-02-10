@@ -7,6 +7,7 @@ import org.osgi.service.component.annotations.Component;
 
 import info.elexis.server.core.common.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
+import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider implements CommandProvider {
@@ -22,7 +23,12 @@ public class ConsoleCommandProvider implements CommandProvider {
 			IStatus dbi = ElexisDBConnection.getDatabaseInformation();
 			StatusUtil.printStatus(System.out, dbi);
 			break;
-
+		case "listLocks":
+			System.out.println(LockService.consoleListLocks());
+			break;
+		case "clearAllLocks":
+			LockService.clearAllLocks();
+			break;
 		default:
 			break;
 		}
@@ -30,6 +36,6 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	@Override
 	public String getHelp() {
-		return "Usage: es_elc (connectionStatus)";
+		return "Usage: es_elc (connectionStatus | listLocks | clearAllLocks !!WARN!!)";
 	}
 }

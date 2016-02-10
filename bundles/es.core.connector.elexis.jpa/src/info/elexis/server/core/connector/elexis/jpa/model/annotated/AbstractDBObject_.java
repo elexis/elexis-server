@@ -7,7 +7,5 @@ import javax.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(AbstractDBObject.class)
 public class AbstractDBObject_ {
-	public static volatile SingularAttribute<AbstractDBObject, String> id;
-	public static volatile SingularAttribute<AbstractDBObject, Boolean> deleted;
 	public static volatile SingularAttribute<AbstractDBObject, BigInteger> lastupdate;
 }

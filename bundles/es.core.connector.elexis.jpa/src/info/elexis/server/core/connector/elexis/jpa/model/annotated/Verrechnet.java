@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "LEISTUNGEN")
-public class Verrechnet extends AbstractDBObject {
+public class Verrechnet extends AbstractDBObjectIdDeleted {
 
 	@OneToOne
 	@JoinColumn(name = "userID")

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/info.elexis.server.core.connector.elexis.jpa.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.connector.elexis.jpa.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.core.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.core.platform.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.platform.feature" version="1.0.0.qualifier"/>
+   <feature url="features/info.elexis.server.core.connector.elexis.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.connector.elexis.feature" version="1.0.0.qualifier"/>
 </site>

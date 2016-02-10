@@ -9,7 +9,7 @@ import javax.persistence.MappedSuperclass;
 import org.eclipse.persistence.annotations.Convert;
 
 @MappedSuperclass
-public abstract class AbstractDBObjectWithExtInfo extends AbstractDBObject {
+public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectIdDeleted {
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisExtInfoMapConverter")
