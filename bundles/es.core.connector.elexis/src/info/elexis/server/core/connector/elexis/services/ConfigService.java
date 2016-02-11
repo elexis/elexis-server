@@ -21,7 +21,7 @@ public class ConfigService {
 	}
 
 	private ConfigService() {
-		em = ElexisEntityManager.em();
+		em = ElexisEntityManager.createEntityManager();
 	}
 
 	/**

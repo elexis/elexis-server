@@ -1,24 +1,50 @@
 package info.elexis.server.core.connector.elexis.jpa;
 
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import java.util.HashMap;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Faelle;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 
 public class ElexisTypeMap {
-	private static final BidiMap<String, Class<? extends AbstractDBObjectIdDeleted>> stsClassBidiMap;
+	
+	private static final HashMap<String, Class<? extends AbstractDBObjectIdDeleted>> stsToClassMap;
+	private static final HashMap<Class<? extends AbstractDBObjectIdDeleted>, String> classToStsMap;
 
+	public static final String TYPE_ARTIKELSTAMM = "ch.artikelstamm.elexis.common.ArtikelstammItem";
+	public static final String TYPE_TARMEDLEISTUNG = "ch.elexis.data.TarmedLeistung";
+	public static final String TYPE_FALL = "ch.elexis.data.Fall";
+	
+	public static final String TYPE_PATIENT = "ch.elexis.data.Patient";
+	public static final String TYPE_PERSON = "ch.elexis.data.Person";
+	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
+	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
+	
 	static {
-		stsClassBidiMap = new DualHashBidiMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
-		stsClassBidiMap.put("ch.artikelstamm.elexis.common.ArtikelstammItem", ArtikelstammItem.class);
-		stsClassBidiMap.put("ch.elexis.data.TarmedLeistung", TarmedLeistung.class);
-		stsClassBidiMap.put("ch.elexis.data.Fall", Faelle.class);
-		stsClassBidiMap.put("ch.elexis.data.Patient", Kontakt.class);
+		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
+		classToStsMap = new HashMap<Class<? extends AbstractDBObjectIdDeleted>, String>();
+
+		// bi-directional mappable
+		stsToClassMap.put(TYPE_ARTIKELSTAMM, ArtikelstammItem.class);
+		classToStsMap.put(ArtikelstammItem.class, TYPE_ARTIKELSTAMM);
+		stsToClassMap.put(TYPE_TARMEDLEISTUNG, TarmedLeistung.class);
+		classToStsMap.put(TarmedLeistung.class, TYPE_TARMEDLEISTUNG);
+		stsToClassMap.put(TYPE_FALL, Fall.class);
+		classToStsMap.put(Fall.class, TYPE_FALL);
+		
+		// uni-directional mappable
+		stsToClassMap.put("ch.elexis.artikel_ch.data.Medikament", Artikel.class);
+		stsToClassMap.put("ch.elexis.eigenartikel.Eigenartikel", Artikel.class);
+		stsToClassMap.put("ch.elexis.artikel_ch.data.Medical", Artikel.class);
+		stsToClassMap.put("ch.elexis.artikel_ch.data.MiGelArtikel", Artikel.class);
+		stsToClassMap.put(TYPE_KONTAKT, Kontakt.class);
+		stsToClassMap.put(TYPE_ORGANISATION, Kontakt.class);
+		stsToClassMap.put(TYPE_PATIENT, Kontakt.class);	
+		stsToClassMap.put(TYPE_PERSON, Kontakt.class);
+		
 		// TODO add other values
 	}
 
@@ -29,19 +55,22 @@ public class ElexisTypeMap {
 			Kontakt k = (Kontakt) obj;
 			if (k.isIstPerson()) {
 				if (k.isIstPatient()) {
-					return "ch.elexis.data.Patient";
+					return TYPE_PATIENT;
 				}
-				return "ch.elexis.data.Person";
+				return TYPE_PERSON;
 			} else if (k.isIstOrganisation()) {
-				return "ch.elexis.data.Organisation";
+				return TYPE_ORGANISATION;
 			}
 
-			return "ch.elexis.data.Kontakt";
+			return TYPE_KONTAKT;
+		} else if (obj instanceof Artikel) {
+			// TODO
 		}
-		return stsClassBidiMap.getKey(obj.getClass());
+		
+		return classToStsMap.get(obj.getClass());
 	}
 
 	public static Class<? extends AbstractDBObjectIdDeleted> get(String value) {
-		return stsClassBidiMap.get(value);
+		return stsToClassMap.get(value);
 	}
 }

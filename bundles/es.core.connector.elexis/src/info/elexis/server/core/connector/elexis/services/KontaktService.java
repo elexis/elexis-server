@@ -4,8 +4,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 
 public class KontaktService extends AbstractService<Kontakt> {
 
@@ -41,19 +45,59 @@ public class KontaktService extends AbstractService<Kontakt> {
 		}
 	}
 
-	public List<Kontakt> findAllPatients(boolean b) {
-		JPAQuery<Kontakt> qre = new JPAQuery<Kontakt>(Kontakt.class);
-		qre.add(Kontakt_.istPatient, JPAQuery.QUERY.EQUALS, true);
-		// qre.add(Kontakt_.istPerson, JPAQuery.QUERY.EQUALS, true);
-		// not defined in Elexis Patient#getConstraint
-		return qre.execute();
-	}
-
+	/**
+	 * 
+	 * @return a managed {@link Kontakt} entity
+	 */
 	public Kontakt createPatient() {
 		Kontakt pat = create(false);
 		pat.setIstPatient(true);
 		pat.setIstPerson(true);
+		pat.setPatientNr(Integer.toString(findAndIncrementPatientNr()));
 		flush();
 		return pat;
+	}
+
+	/**
+	 * Finds the current patient number, checks for uniqueness, retrieves it and
+	 * increments by one
+	 * 
+	 * @return
+	 */
+	private int findAndIncrementPatientNr() {
+		int ret = 0;
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			em.getTransaction().begin();
+			Config patNr = em.find(Config.class, "PatientNummer");
+			if (patNr == null) {
+				Config patNrConfig = new Config();
+				patNrConfig.setParam("PatientNummer");
+				patNrConfig.setWert("1");
+				em.persist(patNrConfig);
+				ret = 1;
+			} else {
+				em.lock(patNr, LockModeType.PESSIMISTIC_WRITE);
+				ret = Integer.parseInt(patNr.getWert());
+				ret+=1;
+
+				while (true) {
+					@SuppressWarnings("rawtypes")
+					List resultList = em.createQuery("SELECT k FROM Kontakt k WHERE k.patientNr=" + ret)
+							.getResultList();
+					if (resultList.size() == 0) {
+						break;
+					} else {
+						ret += 1;
+					}
+				}
+
+				patNr.setWert(Integer.toString(ret));
+			}
+			em.getTransaction().commit();
+			return ret;
+		} finally {
+			em.close();
+		}
 	}
 }

@@ -70,12 +70,12 @@ public class ElexisAuthorizingRealm extends AuthorizingRealm {
 	}
 
 	private Optional<User> getUserById(String userid) {
-		return Optional.ofNullable(ElexisEntityManager.em().find(User.class, userid));
+		return Optional.ofNullable(ElexisEntityManager.createEntityManager().find(User.class, userid));
 	}
 
 	@Override
 	public boolean supports(AuthenticationToken token) {
-		if (ElexisEntityManager.em() != null && ElexisEntityManager.em().isOpen()) {
+		if (ElexisEntityManager.createEntityManager() != null && ElexisEntityManager.createEntityManager().isOpen()) {
 			// we can only support authentication if we are connected
 			return super.supports(token);
 		}

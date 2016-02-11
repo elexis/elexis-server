@@ -21,4 +21,8 @@ public abstract class AbstractDBObject {
 	public void setLastupdate(BigInteger lastupdate) {
 		this.lastupdate = lastupdate;
 	}
+	
+	public String getLabel(){
+		return getClass().getName();
+	};
 }

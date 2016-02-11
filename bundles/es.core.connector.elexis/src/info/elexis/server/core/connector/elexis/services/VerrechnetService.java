@@ -23,6 +23,6 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		String klasse = vr.getKlasse();
 		String leistungenCode = vr.getLeistungenCode();
 
-		return StoreToStringService.INSTANCE.createFromString(klasse + StringConstants.DOUBLECOLON + leistungenCode);
+		return StoreToStringService.INSTANCE.createDetachedFromString(klasse + StringConstants.DOUBLECOLON + leistungenCode);
 	}
 }

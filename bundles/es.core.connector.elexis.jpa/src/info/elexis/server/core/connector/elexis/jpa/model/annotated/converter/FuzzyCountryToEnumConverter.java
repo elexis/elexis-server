@@ -14,11 +14,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO3166_ALPHA_2_CountryCode;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Country;
 
 /**
  * This converter allows "fuzziness" within the country value of an existing
- * database. The values should be set to {@link ISO3166_ALPHA_2_CountryCode} but
+ * database. The values should be set to {@link Country} but
  * it can't be guaranteed, so in case a value not equal to the defined set is
  * observed it simply returns null instead of an Exception.
  */
@@ -31,22 +31,17 @@ public class FuzzyCountryToEnumConverter implements Converter {
 		if (objectValue == null) {
 			return "";
 		}
-		ISO3166_ALPHA_2_CountryCode c = (ISO3166_ALPHA_2_CountryCode) objectValue;
+		Country c = (Country) objectValue;
 		return c.name();
 	}
 
 	@Override
-	public ISO3166_ALPHA_2_CountryCode convertDataValueToObjectValue(Object dataValue, Session session) {
-		String in = (String) dataValue;
-		ISO3166_ALPHA_2_CountryCode ret = null;
+	public Country convertDataValueToObjectValue(Object dataValue, Session session) {
 		try {
-			ret = ISO3166_ALPHA_2_CountryCode.valueOf(in);
-		} catch (IllegalArgumentException e) {
-			ret = ISO3166_ALPHA_2_CountryCode.NDF;
-		} catch (NullPointerException e) {
-			ret = ISO3166_ALPHA_2_CountryCode.NDF;
-		}
-		return ret;
+			return Country.valueOf((String) dataValue);
+		} catch (IllegalArgumentException | NullPointerException e) {
+			return Country.NDF;
+		} 
 	}
 
 	@Override

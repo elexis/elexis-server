@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
@@ -105,17 +106,22 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	 * @param importStammType
 	 */
 	public int resetAllBlackboxMarks(TYPE importStammType) {
-		CriteriaBuilder cb = em().getCriteriaBuilder();
-		CriteriaUpdate<ArtikelstammItem> update = cb.createCriteriaUpdate(ArtikelstammItem.class);
-		Root<ArtikelstammItem> e = update.from(ArtikelstammItem.class);
-		update.set(ArtikelstammItem_.bb, StringConstants.ZERO);
-		update.where(cb.equal(e.get(ArtikelstammItem_.type), importStammType.name()));
-		return em().createQuery(update).executeUpdate();
+		EntityManager em = createEntityManager();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaUpdate<ArtikelstammItem> update = cb.createCriteriaUpdate(ArtikelstammItem.class);
+			Root<ArtikelstammItem> e = update.from(ArtikelstammItem.class);
+			update.set(ArtikelstammItem_.bb, StringConstants.ZERO);
+			update.where(cb.equal(e.get(ArtikelstammItem_.type), importStammType.name()));
+			return em.createQuery(update).executeUpdate();
+		} finally {
+			em.close();
+		}
 	}
 
 	public ArtikelstammItem create(int cummulatedVersion, TYPE type, String gtin, BigInteger phar, String dscr,
 			String addscr) {
-		em().getTransaction().begin();
+		em.getTransaction().begin();
 		String id = ArtikelstammHelper.createUUID(cummulatedVersion, type, gtin, phar);
 		String pharmacode = (phar != null) ? String.format("%07d", phar) : "0000000";
 		ArtikelstammItem ai = create(id, false);
@@ -126,7 +132,7 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		ai.setDscr(dscr);
 		ai.setAdddscr(addscr);
 		ai.setBb(StringConstants.ZERO);
-		em().getTransaction().commit();
+		em.getTransaction().commit();
 		return ai;
 	}
 

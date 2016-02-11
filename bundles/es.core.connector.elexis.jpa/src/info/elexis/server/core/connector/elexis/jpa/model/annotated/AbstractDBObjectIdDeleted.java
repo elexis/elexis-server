@@ -51,4 +51,8 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	public void setLastupdate(BigInteger lastupdate) {
 		this.lastupdate = lastupdate;
 	}
+	
+	public String getLabel(){
+		return getId()+"@"+getClass().getName()+" "+isDeleted();
+	};
 }

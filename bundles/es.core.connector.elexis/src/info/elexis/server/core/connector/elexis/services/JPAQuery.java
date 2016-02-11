@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
 
 import java.util.List;
 
@@ -14,6 +14,8 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.jpa.JpaQuery;
 
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 
@@ -44,7 +46,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	public JPAQuery(Class<T> clazz, boolean includeDeleted) {
-		cb = em().getCriteriaBuilder();
+		cb = ElexisEntityManager.getCriteriaBuilder();
 		cq = cb.createQuery(clazz);
 		root = cq.from(clazz);
 		this.includeDeleted = includeDeleted;
@@ -104,7 +106,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		if (!includeDeleted) {
 			add(AbstractDBObjectIdDeleted_.id, QUERY.EQUALS, "0");
 		}
-		query = em().createQuery(cq);
+		query = createEntityManager().createQuery(cq);
 		return query.getResultList();
 	}
 

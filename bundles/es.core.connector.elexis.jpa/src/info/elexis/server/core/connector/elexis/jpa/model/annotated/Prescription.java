@@ -24,7 +24,7 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column
 	@Convert(value = "ElexisDBStoreToStringConverter")
-	private AbstractDBObject artikel;
+	private AbstractDBObjectIdDeleted artikel;
 
 	/**
 	 * @deprecated store values in {@link #artikel}
@@ -61,11 +61,11 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 		this.anzahl = anzahl;
 	}
 
-	public AbstractDBObject getArtikel() {
+	public AbstractDBObjectIdDeleted getArtikel() {
 		return artikel;
 	}
 
-	public void setArtikel(AbstractDBObject artikel) {
+	public void setArtikel(AbstractDBObjectIdDeleted artikel) {
 		this.artikel = artikel;
 	}
 

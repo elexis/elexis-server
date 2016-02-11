@@ -3,11 +3,13 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle_;
 
@@ -24,6 +26,7 @@ public class DocHandleService extends AbstractService<DocHandle> {
 	}
 
 	public List<String> getAllCategories() {
+		EntityManager em = ElexisEntityManager.createEntityManager();
 		CriteriaQuery<DocHandle> cq = cb.createQuery(DocHandle.class);
 		Root<DocHandle> root = cq.from(DocHandle.class);
 		Predicate like = cb.like(root.get(DocHandle_.category), "%text/category%");

@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated.converter;
 
+import java.util.Optional;
+
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
@@ -7,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
 public class ElexisDBStoreToStringConverter implements Converter {
@@ -18,17 +19,23 @@ public class ElexisDBStoreToStringConverter implements Converter {
 
 	@Override
 	public Object convertObjectValueToDataValue(Object objectValue, Session session) {
-		if(!(objectValue instanceof AbstractDBObject)) {
+		if (!(objectValue instanceof AbstractDBObjectIdDeleted)) {
 			log.warn(" {} is not an AbstractDBObject", objectValue.getClass());
 			return null;
 		}
-		
+
 		return StoreToStringService.INSTANCE.storeToString((AbstractDBObjectIdDeleted) objectValue);
 	}
 
 	@Override
 	public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-		return StoreToStringService.INSTANCE.createFromString((String) dataValue);
+		Optional<AbstractDBObjectIdDeleted> object = StoreToStringService.INSTANCE
+				.createDetachedFromString((String) dataValue);
+		if(object.isPresent()) {
+			return object.get();
+		}
+		log.warn("Could not create object from store to string: "+dataValue);
+		return null;
 	}
 
 	@Override
@@ -37,7 +44,7 @@ public class ElexisDBStoreToStringConverter implements Converter {
 	}
 
 	@Override
-	public void initialize(DatabaseMapping mapping, Session session) {}
-
+	public void initialize(DatabaseMapping mapping, Session session) {
+	}
 
 }

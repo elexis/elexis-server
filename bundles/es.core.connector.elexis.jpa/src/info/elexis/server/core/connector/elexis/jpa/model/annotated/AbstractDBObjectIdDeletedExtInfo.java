@@ -22,4 +22,8 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 	public void setExtInfo(Map<Object, Object> extInfo) {
 		this.extInfo = extInfo;
 	}
+	
+	public String getLabel(){
+		return getId()+"@"+getClass().getName()+" "+isDeleted();
+	};
 }

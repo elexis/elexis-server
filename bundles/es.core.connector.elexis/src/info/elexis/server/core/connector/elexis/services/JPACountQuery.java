@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.em;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class JPACountQuery<T extends AbstractDBObject> {
 	public JPACountQuery(Class<T> clazz) {
 		this.clazz = clazz;
 
-		cb = em().getCriteriaBuilder();
+		cb = createEntityManager().getCriteriaBuilder();
 		query = cb.createQuery(Long.class);
 		root = query.from(clazz);
 		query.select(cb.count(root));
@@ -72,7 +72,7 @@ public class JPACountQuery<T extends AbstractDBObject> {
 		if (conditions.size() > 0) {
 			query = query.where(conditions.toArray(new Predicate[0]));
 		}
-		tq = em().createQuery(query);
+		tq = createEntityManager().createQuery(query);
 		return tq.getSingleResult();
 	}
 }

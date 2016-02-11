@@ -18,12 +18,12 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "behandlungen")
-public class Behandlungen extends AbstractDBObjectIdDeleted {
+public class Behandlung extends AbstractDBObjectIdDeleted {
 
 	// TODO
 	@OneToOne
 	@JoinColumn(name = "fallId")
-	private Faelle fall;
+	private Fall fall;
 
 	@OneToOne
 	@JoinColumn(name = "mandantId")
@@ -47,11 +47,11 @@ public class Behandlungen extends AbstractDBObjectIdDeleted {
 	@Column(length = 20000000)
 	private byte[] eintrag;
 
-	public Faelle getFall() {
+	public Fall getFall() {
 		return fall;
 	}
 
-	public void setFall(Faelle fall) {
+	public void setFall(Fall fall) {
 		this.fall = fall;
 	}
 

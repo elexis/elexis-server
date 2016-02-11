@@ -60,7 +60,7 @@ public class ElexisDBConnection {
 	}
 
 	public static IStatus getDatabaseInformation() {
-		EntityManager em = ElexisEntityManager.em();
+		EntityManager em = ElexisEntityManager.createEntityManager();
 		if (em == null) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Entity Manager is null.");
 		}
@@ -71,8 +71,8 @@ public class ElexisDBConnection {
 		}
 
 		String dbv = cDBV.getWert();
-		String elVersion = ElexisEntityManager.em().find(Config.class, "ElexisVersion").getWert();
-		String created = ElexisEntityManager.em().find(Config.class, "created").getWert();
+		String elVersion = ElexisEntityManager.createEntityManager().find(Config.class, "ElexisVersion").getWert();
+		String created = ElexisEntityManager.createEntityManager().find(Config.class, "created").getWert();
 		String statusInfo = "Connected with Elexis " + elVersion + ", DB " + dbv + " (" + created + ")";
 
 		return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);

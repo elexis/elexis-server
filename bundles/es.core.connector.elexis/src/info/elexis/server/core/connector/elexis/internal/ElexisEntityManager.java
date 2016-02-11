@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaBuilder;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,7 +27,6 @@ public class ElexisEntityManager {
 
 	private static EntityManagerFactoryBuilder factoryBuilder;
 	private static EntityManagerFactory factory;
-	private static EntityManager em;
 
 	@Reference(
 			service = EntityManagerFactoryBuilder.class, 
@@ -54,10 +54,8 @@ public class ElexisEntityManager {
 				props.put("javax.persistence.jdbc.password", connection.get().password);
 				
 			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
-			em = factory.createEntityManager();
-			
 			// TODO refactor this
-			ProvidedEntityManager.setEntityManager(em);
+			ProvidedEntityManager.setEntityManagerFactory(factory);
 		} catch (RuntimeException ite) {
 			log.error("Error activating component", ite);
 			ite.printStackTrace();
@@ -66,12 +64,13 @@ public class ElexisEntityManager {
 
 	protected synchronized void deactivate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = null;
-		if (em() != null) {
-			em.close();
-		}
+	}
+	
+	public static CriteriaBuilder getCriteriaBuilder() {
+		return factory.getCriteriaBuilder();
 	}
 
-	public static EntityManager em() {
-		return em;
+	public static EntityManager createEntityManager() {
+		return factory.createEntityManager();
 	}
 }

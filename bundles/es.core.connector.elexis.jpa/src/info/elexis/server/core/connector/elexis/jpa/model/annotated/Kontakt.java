@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 MEDEVIT <office@medevit.at>.
+ * Copyright (c) 2016 MEDEVIT <office@medevit.at>.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,8 +34,8 @@ import org.eclipse.persistence.annotations.WriteTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Country;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.ISO3166_ALPHA_2_CountryCode;
 
 /**
  * The persistent class for the Elexis KONTAKT database table. Valid from DB
@@ -122,7 +122,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Column(length = 3)
 	@Converter(name = "FuzzyCountryToEnumConverter", converterClass = FuzzyCountryToEnumConverter.class)
 	@Convert(value = "FuzzyCountryToEnumConverter")
-	protected ISO3166_ALPHA_2_CountryCode land;
+	protected Country land;
 
 	@Column(length = 30)
 	protected String natelNr;
@@ -179,7 +179,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patientID", insertable = false)
-	protected List<Faelle> faelle;
+	protected List<Fall> faelle;
 	
 	// ---------------------------------------------
 	public Kontakt() {
@@ -324,11 +324,11 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.istPatient = istPatient;
 	}
 
-	public ISO3166_ALPHA_2_CountryCode getLand() {
+	public Country getLand() {
 		return land;
 	}
 
-	public void setLand(ISO3166_ALPHA_2_CountryCode land) {
+	public void setLand(Country land) {
 		this.land = land;
 	}
 
@@ -460,11 +460,11 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.xids = xids;
 	}
 	
-	public List<Faelle> getFaelle() {
+	public List<Fall> getFaelle() {
 		return faelle;
 	}
 	
-	public void setFaelle(List<Faelle> faelle) {
+	public void setFaelle(List<Fall> faelle) {
 		this.faelle = faelle;
 	}
 }

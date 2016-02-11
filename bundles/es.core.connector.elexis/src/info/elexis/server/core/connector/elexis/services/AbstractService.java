@@ -10,6 +10,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +19,12 @@ import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 
-public class AbstractService<T extends AbstractDBObjectIdDeleted> {
+public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 
 	private final Class<T> clazz;
 
@@ -35,7 +38,7 @@ public class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
 		
-		em = ElexisEntityManager.em();
+		em = ElexisEntityManager.createEntityManager();
 		cb = em.getCriteriaBuilder();
 	}
 
@@ -132,11 +135,12 @@ public class AbstractService<T extends AbstractDBObjectIdDeleted> {
 
 		if (!includeElementsMarkedDeleted) {
 			Root<T> r = c.from(clazz);
-			Predicate like = qb.like(r.get("deleted"), "0");
-			c = c.where(like);
+			Predicate delPred = qb.equal(r.get(AbstractDBObjectIdDeleted_.deleted), false);
+			c = c.where(delPred);
 		}
 
 		TypedQuery<T> q = em.createQuery(c);
+		q.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
 		return q.getResultList();
 	};
 
