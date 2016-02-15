@@ -16,7 +16,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 
 @Entity
 @Table(name = "faelle")
-public class Fall extends AbstractDBObjectIdDeleted {
+public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 25)
 	private String betriebsNummer;
@@ -133,14 +133,6 @@ public class Fall extends AbstractDBObjectIdDeleted {
 
 	public void setDiagnosen(String diagnosen) {
 		this.diagnosen = diagnosen;
-	}
-
-	public byte[] getExtInfo() {
-		return this.extInfo;
-	}
-
-	public void setExtInfo(byte[] extInfo) {
-		this.extInfo = extInfo;
 	}
 
 	public String getFallNummer() {

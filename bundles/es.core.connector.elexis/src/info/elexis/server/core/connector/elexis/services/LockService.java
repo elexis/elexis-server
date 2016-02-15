@@ -27,14 +27,14 @@ public class LockService implements ILockService {
 	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
-			log.info("Binding log service contributor " + isc.getClass());
+			log.info("Binding lock service contributor " + isc.getClass());
 			contributors.add(isc);
 		}
 	}
 
 	protected void unsetLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
-			log.info("Unbinding log service contributor " + isc.getClass());
+			log.info("Unbinding lock service contributor " + isc.getClass());
 			contributors.remove(isc);
 		}
 	}
@@ -45,14 +45,21 @@ public class LockService implements ILockService {
 			return false;
 		}
 
-		synchronized (locks) {
-			// is there an entry for any requested element
-			for (LockInfo lock : lockInfos) {
-				if (locks.containsKey(lock.getElementId())) {
+		for (LockInfo li : lockInfos) {
+			// TODO what if user and system id are ident?
+			LockInfo lie = locks.get(li.getElementId());
+			if (lie != null) {
+				if (lie.getUser().equals(li.getUser()) && lie.getSystemUuid().equals(li.getSystemUuid())) {
+					// its the requesters lock (username and systemUuid match)
+					return true;
+				} else {
 					return false;
 				}
 			}
+		}
 
+		synchronized (locks) {
+			// is there an entry for any requested element
 			synchronized (contributors) {
 				for (ILockServiceContributor iLockServiceContributor : contributors) {
 					if (!iLockServiceContributor.acquireLocks(lockInfos)) {
@@ -112,7 +119,7 @@ public class LockService implements ILockService {
 		StringBuilder sb = new StringBuilder();
 		for (LockInfo lockInfo : getAllLockInfo()) {
 			sb.append(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
-					+ lockInfo.getCreationDate() + "\n");
+					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid().toString() + "]\n");
 		}
 		return sb.toString();
 	}

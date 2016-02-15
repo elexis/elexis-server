@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" immediate="true" name="info.elexis.server.core.internal.ManagedServiceImpl">
-    <implementation class="info.elexis.server.core.internal.ManagedServiceImpl"/>
-    <service servicefactory="false">
-        <provide interface="org.osgi.service.cm.ManagedService"/>
-    </service>
-    <property name="service.pid" value="info.elexis.server.core"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="info.elexis.server.core.internal.ManagedServiceImpl">
+   <implementation class="info.elexis.server.core.internal.ManagedServiceImpl"/>
+   <service servicefactory="false">
+      <provide interface="org.osgi.service.cm.ManagedService"/>
+   </service>
+   <property name="service.pid" type="String" value="info.elexis.server.core"/>
 </scr:component>

@@ -41,17 +41,16 @@ public class ElexisDBStringDateTransformer implements AttributeTransformer, Fiel
 
 	@Override
 	public LocalDate buildAttributeValue(Record row, Object object, Session session) {
-		LocalDate dob = null;
 		String dateString = (String) row.get(mapping.getAttributeName());
 		// TODO unset has to be represented with null, that is ""
 		if (dateString == null || dateString.length() == 0)
-			return dob;
+			return null;
 		try {
-			dob = LocalDate.parse(dateString, yyyyMMdd);
+			return LocalDate.parse(dateString, yyyyMMdd);
 		} catch (DateTimeParseException e) {
 			log.warn("Error parsing {} in {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(), e);
 		}
-		return dob;
+		return null;
 	}
 
 	@Override

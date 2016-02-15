@@ -8,6 +8,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 
 public class ElexisTypeMap {
 	
@@ -23,6 +24,8 @@ public class ElexisTypeMap {
 	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
 	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
 	
+	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
+	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
 		classToStsMap = new HashMap<Class<? extends AbstractDBObjectIdDeleted>, String>();
@@ -34,6 +37,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(TarmedLeistung.class, TYPE_TARMEDLEISTUNG);
 		stsToClassMap.put(TYPE_FALL, Fall.class);
 		classToStsMap.put(Fall.class, TYPE_FALL);
+		stsToClassMap.put(TYPE_TERMIN, Termin.class);
+		classToStsMap.put(Termin.class, TYPE_TERMIN);
 		
 		// uni-directional mappable
 		stsToClassMap.put("ch.elexis.artikel_ch.data.Medikament", Artikel.class);

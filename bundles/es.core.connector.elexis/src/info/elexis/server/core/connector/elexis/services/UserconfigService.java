@@ -6,21 +6,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig;
 
-public class ConfigService {
+public class UserconfigService {
 
-	private static Logger log = LoggerFactory.getLogger(ConfigService.class);
+	private static Logger log = LoggerFactory.getLogger(UserconfigService.class);
 
-	public static ConfigService INSTANCE = InstanceHolder.INSTANCE;
+	public static UserconfigService INSTANCE = InstanceHolder.INSTANCE;
 
 	protected EntityManager em;
 
 	private static final class InstanceHolder {
-		static final ConfigService INSTANCE = new ConfigService();
+		static final UserconfigService INSTANCE = new UserconfigService();
 	}
 
-	private ConfigService() {
+	private UserconfigService() {
 		em = ElexisEntityManager.createEntityManager();
 	}
 
@@ -31,28 +31,8 @@ public class ConfigService {
 	 * @param entityClass
 	 * @return
 	 */
-	public Config findById(Object id) {
-		return em.find(Config.class, id);
-	}
-	
-	public String get(String key, String defValue) {
-		Config val = findById(key);
-		if(val!=null) {
-			return val.getWert();
-		} else {
-			return defValue;
-		}
-	}
-	
-	public boolean set(String key, String value){
-		Config val = findById(key);
-		if (val == null) {
-			val = create(key, true);	
-			em.persist(val);
-		}
-		val.setWert(value);
-		flush();
-		return true;
+	public Userconfig findById(Object id) {
+		return em.find(Userconfig.class, id);
 	}
 
 	/**
@@ -61,8 +41,8 @@ public class ConfigService {
 	 * @param performCommit
 	 * @return
 	 */
-	public Config create(String param, final boolean performCommit) {
-		Config obj = new Config();
+	public Userconfig create(String param, final boolean performCommit) {
+		Userconfig obj = new Userconfig();
 		if (performCommit)
 			em.getTransaction().begin();
 		if (param != null) {
@@ -82,4 +62,5 @@ public class ConfigService {
 		em.flush();
 		em.getTransaction().commit();
 	}
+
 }

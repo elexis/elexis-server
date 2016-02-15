@@ -14,7 +14,7 @@
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBCompressedStringConverter" />
 	<converter name="ElexisDBStoreToStringConverter"
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStoreToStringConverter" />
-		<converter name="IntegerStringConverter"
+	<converter name="IntegerStringConverter"
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.IntegerStringConverter" />
 	<object-type-converter name="booleanStringConverter"
 		object-type="java.lang.Boolean" data-type="java.lang.String">
@@ -22,10 +22,4 @@
 		<conversion-value object-value="false" data-value="0" />
 	</object-type-converter>
 	<sequence-generator name="system-uuid"></sequence-generator>
-
-	<named-query name="ListPatients">
-		<query>SELECT c FROM Kontakt c WHERE c.istPatient = true AND c.deleted
-			= false</query>
-		<hint name="eclipselink.cache-usage" value="DoNotCheckCache" />
-	</named-query>
 </entity-mappings>

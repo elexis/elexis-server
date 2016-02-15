@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Country;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
@@ -10,7 +11,7 @@ import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-02-11T11:54:06")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-02-15T14:35:55")
 @StaticMetamodel(Kontakt.class)
 public class Kontakt_ { 
 
@@ -36,6 +37,7 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, String> telefon2;
     public static volatile SingularAttribute<Kontakt, String> website;
     public static volatile SingularAttribute<Kontakt, String> strasse;
+    public static volatile ListAttribute<Kontakt, Userconfig> userconfig;
     public static volatile SingularAttribute<Kontakt, String> diagnosen;
     public static volatile SingularAttribute<Kontakt, Boolean> istPatient;
     public static volatile SingularAttribute<Kontakt, String> natelNr;

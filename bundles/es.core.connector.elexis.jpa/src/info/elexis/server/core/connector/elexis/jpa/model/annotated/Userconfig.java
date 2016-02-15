@@ -3,23 +3,37 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheType;
 
 @Entity
-@Table(name = "config")
+@Table(name = "userconfig")
 @Cache(type=CacheType.NONE)
-public class Config extends AbstractDBObject {
+public class Userconfig extends AbstractDBObject {
+
+	@OneToOne
+	@JoinColumn(name = "UserID")
+	private Kontakt owner;
 	
 	@Id
 	@Column(unique = true, nullable = false, length = 80)
 	private String param;
-
+	
 	@Lob
 	private String wert;
+
+	public Kontakt getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Kontakt owner) {
+		this.owner = owner;
+	}
 
 	public String getParam() {
 		return param;
@@ -36,4 +50,5 @@ public class Config extends AbstractDBObject {
 	public void setWert(String wert) {
 		this.wert = wert;
 	}
+	
 }

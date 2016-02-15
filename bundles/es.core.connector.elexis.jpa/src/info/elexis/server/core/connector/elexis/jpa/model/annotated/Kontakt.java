@@ -175,11 +175,14 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "object", insertable = false)
 	protected List<Xid> xids;
-	
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patientID", insertable = false)
 	protected List<Fall> faelle;
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "UserID", insertable = false)
+	protected List<Userconfig> userconfig;
 	
 	// ---------------------------------------------
 	public Kontakt() {
@@ -466,5 +469,13 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	
 	public void setFaelle(List<Fall> faelle) {
 		this.faelle = faelle;
+	}
+	
+	public List<Userconfig> getUserconfig() {
+		return userconfig;
+	}
+	
+	public void setUserconfig(List<Userconfig> userconfig) {
+		this.userconfig = userconfig;
 	}
 }
