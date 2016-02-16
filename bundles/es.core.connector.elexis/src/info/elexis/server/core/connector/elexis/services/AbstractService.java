@@ -184,7 +184,7 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 		qre.add(Xid_.type, JPAQuery.QUERY.LIKE, ElexisTypeMap.getKeyForObject(obj));
 		List<Xid> result = qre.execute();
 		if (result.size() == 0) {
-			return XidService.INSTANCE.create(domain, domainId, obj, quality, ElexisTypeMap.getKeyForObject(obj));
+			return XidService.INSTANCE.create(domain, domainId, obj, quality);
 		} else if (result.size() == 1) {
 			Xid xid = result.get(0);
 			xid.setDomainId(domainId);

@@ -8,10 +8,11 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender
 import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-02-15T14:35:55")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-02-16T14:31:45")
 @StaticMetamodel(Kontakt.class)
 public class Kontakt_ { 
 
@@ -47,7 +48,7 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, String> ort;
     public static volatile SingularAttribute<Kontakt, Boolean> istAnwender;
     public static volatile SingularAttribute<Kontakt, String> bemerkung;
-    public static volatile ListAttribute<Kontakt, Xid> xids;
+    public static volatile MapAttribute<Kontakt, String, Xid> xids;
     public static volatile SingularAttribute<Kontakt, String> gruppe;
     public static volatile SingularAttribute<Kontakt, String> famAnamnese;
     public static volatile SingularAttribute<Kontakt, String> plz;
