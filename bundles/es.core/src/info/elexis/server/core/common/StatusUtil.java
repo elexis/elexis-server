@@ -1,6 +1,9 @@
 package info.elexis.server.core.common;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -41,8 +44,17 @@ public class StatusUtil {
 	}
 
 	public static IStatus errorSeeLog(String pluginId) {
-		return new Status(Status.ERROR,pluginId, "Execution error, see log.");
+		return new Status(Status.ERROR, pluginId, "Execution error, see log.");
 	}
-	
-	
+
+	public static String printStatus(IStatus status) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			PrintStream ps = new PrintStream(baos);
+			printStatus(ps, status);
+			return baos.toString(Charset.defaultCharset().toString());
+		} catch (IOException e) {
+			return e.getMessage();
+		}
+	}
+
 }

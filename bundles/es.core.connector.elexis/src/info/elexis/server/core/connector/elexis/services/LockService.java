@@ -24,7 +24,20 @@ public class LockService implements ILockService {
 
 	private static Logger log = LoggerFactory.getLogger(LockService.class);
 
-	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
+	/**
+	 * If true, a missing lock service contributor is a severe error which
+	 * disable acquiring locks!
+	 */
+	private static final boolean failOnMissingLockServiceContributor;
+
+	static {
+		failOnMissingLockServiceContributor = (System.getProperty("acceptMissingLockServiceContributor") == null);
+	}
+
+	@Reference(service = ILockServiceContributor.class, 
+			cardinality = ReferenceCardinality.MULTIPLE, 
+			policy = ReferencePolicy.DYNAMIC, 
+			unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
 			log.info("Binding lock service contributor " + isc.getClass());
@@ -61,6 +74,11 @@ public class LockService implements ILockService {
 		synchronized (locks) {
 			// is there an entry for any requested element
 			synchronized (contributors) {
+				if (contributors.size() == 0 && failOnMissingLockServiceContributor) {
+					log.error("System defined to require a lock service contributor. None available, denying locks!");
+					return false;
+				}
+
 				for (ILockServiceContributor iLockServiceContributor : contributors) {
 					if (!iLockServiceContributor.acquireLocks(lockInfos)) {
 						return false;

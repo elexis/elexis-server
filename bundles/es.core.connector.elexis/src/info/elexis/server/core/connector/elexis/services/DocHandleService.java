@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -25,15 +24,14 @@ public class DocHandleService extends AbstractService<DocHandle> {
 		super(DocHandle.class);
 	}
 
-	public List<String> getAllCategories() {
+	public List<DocHandle> getAllCategories() {
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		CriteriaQuery<DocHandle> cq = cb.createQuery(DocHandle.class);
 		Root<DocHandle> root = cq.from(DocHandle.class);
-		Predicate like = cb.like(root.get(DocHandle_.category), "%text/category%");
+		Predicate like = cb.like(root.get(DocHandle_.mimetype), "%text/category%");
 		cq = cq.where(like);
 		TypedQuery<DocHandle> q = em.createQuery(cq);
-		List<DocHandle> resultList = q.getResultList();
-		return resultList.stream().map(r -> r.getCategory()).distinct().collect(Collectors.toList());
+		return q.getResultList();
 	}
 
 }

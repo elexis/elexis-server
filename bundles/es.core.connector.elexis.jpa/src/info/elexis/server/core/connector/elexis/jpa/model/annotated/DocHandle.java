@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,10 +43,6 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 
 	@Lob
 	protected byte[] doc;
-
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	protected Date creationDate;
 
 	public Kontakt getKontakt() {
 		return kontakt;
@@ -111,13 +106,5 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 
 	public void setDoc(byte[] doc) {
 		this.doc = doc;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
 	}
 }
