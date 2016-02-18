@@ -8,6 +8,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 
@@ -19,15 +20,13 @@ public class ElexisTypeMap {
 	public static final String TYPE_ARTIKELSTAMM = "ch.artikelstamm.elexis.common.ArtikelstammItem";
 	public static final String TYPE_TARMEDLEISTUNG = "ch.elexis.data.TarmedLeistung";
 	public static final String TYPE_FALL = "ch.elexis.data.Fall";
-	
 	public static final String TYPE_PATIENT = "ch.elexis.data.Patient";
 	public static final String TYPE_PERSON = "ch.elexis.data.Person";
 	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
 	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
-	
 	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
-	
 	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
+	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
 	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
@@ -44,6 +43,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(Termin.class, TYPE_TERMIN);
 		stsToClassMap.put(TYPE_DOCHANDLE, DocHandle.class);
 		classToStsMap.put(DocHandle.class, TYPE_DOCHANDLE);
+		stsToClassMap.put(TYPE_PRESCRIPTION, Prescription.class);
+		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
 		
 		// uni-directional mappable
 		stsToClassMap.put("ch.elexis.artikel_ch.data.Medikament", Artikel.class);

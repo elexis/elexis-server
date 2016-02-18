@@ -34,10 +34,7 @@ public class LockService implements ILockService {
 		failOnMissingLockServiceContributor = (System.getProperty("acceptMissingLockServiceContributor") == null);
 	}
 
-	@Reference(service = ILockServiceContributor.class, 
-			cardinality = ReferenceCardinality.MULTIPLE, 
-			policy = ReferencePolicy.DYNAMIC, 
-			unbind = "unsetLockServiceContributor")
+	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
 			log.info("Binding lock service contributor " + isc.getClass());
@@ -53,21 +50,20 @@ public class LockService implements ILockService {
 	}
 
 	@Override
-	public boolean acquireLocks(final List<LockInfo> lockInfos) {
-		if (lockInfos == null) {
+	public boolean acquireLock(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
+		if (lockInfo == null) {
 			return false;
 		}
 
-		for (LockInfo li : lockInfos) {
-			// TODO what if user and system id are ident?
-			LockInfo lie = locks.get(li.getElementId());
-			if (lie != null) {
-				if (lie.getUser().equals(li.getUser()) && lie.getSystemUuid().equals(li.getSystemUuid())) {
-					// its the requesters lock (username and systemUuid match)
-					return true;
-				} else {
-					return false;
-				}
+		// TODO what if user and system id are ident?
+		LockInfo lie = locks.get(lockInfo.getElementId());
+		if (lie != null) {
+			if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+				// its the requesters lock (username and systemUuid match)
+				return true;
+			} else {
+				return false;
 			}
 		}
 
@@ -80,37 +76,54 @@ public class LockService implements ILockService {
 				}
 
 				for (ILockServiceContributor iLockServiceContributor : contributors) {
-					if (!iLockServiceContributor.acquireLocks(lockInfos)) {
+					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
+						continue;
+					}
+					if (!iLockServiceContributor.acquireLock(lockInfo)) {
 						return false;
 					}
 				}
 			}
 
-			lockInfos.stream().forEach(o -> locks.put(o.getElementId(), o));
+			locks.put(lockInfo.getElementId(), lockInfo);
 
 			return true;
 		}
 	}
 
 	@Override
-	public boolean releaseLocks(final List<LockInfo> lockInfos) {
-		if (lockInfos == null) {
+	public boolean acquireLock(final LockInfo lockInfo) {
+		return acquireLock(lockInfo, null);
+	}
+
+	@Override
+	public boolean releaseLock(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
+		if (lockInfo == null) {
 			return false;
 		}
 
 		synchronized (locks) {
 			synchronized (contributors) {
 				for (ILockServiceContributor iLockServiceContributor : contributors) {
-					if (!iLockServiceContributor.releaseLocks(lockInfos)) {
+					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
+						continue;
+					}
+					if (!iLockServiceContributor.releaseLock(lockInfo)) {
 						return false;
 					}
 				}
 			}
 
-			lockInfos.stream().forEach(o -> locks.remove(o.getElementId()));
+			locks.remove(lockInfo.getElementId());
 
 			return true;
 		}
+	}
+
+	@Override
+	public boolean releaseLock(final LockInfo lockInfo) {
+		return releaseLock(lockInfo, null);
 	}
 
 	@Override
@@ -137,7 +150,7 @@ public class LockService implements ILockService {
 		StringBuilder sb = new StringBuilder();
 		for (LockInfo lockInfo : getAllLockInfo()) {
 			sb.append(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
-					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid().toString() + "]\n");
+					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
 		}
 		return sb.toString();
 	}

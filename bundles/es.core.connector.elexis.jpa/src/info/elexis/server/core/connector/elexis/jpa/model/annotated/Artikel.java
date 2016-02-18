@@ -71,7 +71,7 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	private LocalDate validTo;
 
-	@Column(length = 255)
+	@Column(length = 255, name="ATC_code")
 	private String atcCode;
 	
 	@Override

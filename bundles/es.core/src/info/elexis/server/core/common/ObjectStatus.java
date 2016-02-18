@@ -1,6 +1,5 @@
 package info.elexis.server.core.common;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 /**
@@ -34,8 +33,11 @@ public class ObjectStatus extends Status {
 		return object;
 	}
 
-	public static IStatus OK_STATUS(Object object) {
+	public static ObjectStatus OK_STATUS(Object object) {
 		return new ObjectStatus(OK, unknownId, OK, "ok", null, object);
 	}
 
+	public static ObjectStatus CANCEL_STATUS(Object object) {
+		return new ObjectStatus(CANCEL, unknownId, CANCEL, "cancel", null, object);
+	}
 }

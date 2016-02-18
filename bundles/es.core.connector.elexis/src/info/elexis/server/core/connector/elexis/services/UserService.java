@@ -1,9 +1,13 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User_;
 
 public class UserService extends AbstractService<User> {
 
@@ -24,5 +28,17 @@ public class UserService extends AbstractService<User> {
 		Collection<Role> roles = u.getRoles();
 		long count = roles.stream().filter(f -> role.equalsIgnoreCase(f.getId())).count();
 		return (count > 0l);
+	}
+
+	public Optional<User> findByKontakt(Kontakt kontakt) {
+		JPAQuery<User> qre = new JPAQuery<User>(User.class);
+		qre.add(User_.kontakt, JPAQuery.QUERY.EQUALS, kontakt);
+		List<User> result = qre.execute();
+		if(result.size()==1) {
+			return Optional.of(result.get(0));
+		} else {
+			return Optional.empty();
+		}
+		
 	}
 }

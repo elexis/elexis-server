@@ -27,9 +27,9 @@ public class LockService implements ILockService {
 	public boolean acquireOrReleaseLocks(LockRequest request) {
 		switch (request.getRequestType()) {
 		case ACQUIRE:
-			return LockServiceInstance.INSTANCE.acquireLocks(request.getLockInfos());
+			return LockServiceInstance.INSTANCE.acquireLock(request.getLockInfo());
 		case RELEASE:
-			return LockServiceInstance.INSTANCE.releaseLocks(request.getLockInfos());
+			return LockServiceInstance.INSTANCE.releaseLock(request.getLockInfo());
 		}
 		return false;
 	}

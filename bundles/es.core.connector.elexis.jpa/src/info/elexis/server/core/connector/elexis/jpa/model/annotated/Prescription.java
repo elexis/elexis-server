@@ -2,8 +2,10 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -22,6 +24,7 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 3)
 	private String anzahl;
 
+	@Basic(fetch = FetchType.LAZY)
 	@Column
 	@Convert(value = "ElexisDBStoreToStringConverter")
 	private AbstractDBObjectIdDeleted artikel;
@@ -48,7 +51,7 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	@OneToOne
 	@JoinColumn(name = "patientID")
-	private Kontakt patientID;
+	private Kontakt patient;
 
 	@Column(length = 25)
 	private String rezeptID;
@@ -109,12 +112,12 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 		this.dosis = dosis;
 	}
 
-	public Kontakt getPatientID() {
-		return patientID;
+	public Kontakt getPatient() {
+		return patient;
 	}
 
-	public void setPatientID(Kontakt patientID) {
-		this.patientID = patientID;
+	public void setPatient(Kontakt patient) {
+		this.patient = patient;
 	}
 
 	public String getRezeptID() {

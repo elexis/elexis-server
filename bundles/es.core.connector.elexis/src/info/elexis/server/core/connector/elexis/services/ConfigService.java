@@ -21,6 +21,7 @@ public class ConfigService {
 	}
 
 	private ConfigService() {
+		new Config(); // TODO refactor make sure the jpa bundle is loaded before continuing
 		em = ElexisEntityManager.createEntityManager();
 	}
 

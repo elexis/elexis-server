@@ -52,8 +52,8 @@ public class JPAQuery<T extends AbstractDBObject> {
 		this.includeDeleted = includeDeleted;
 	}
 
-	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, String string) {
-		Predicate predIn = derivePredicate(attribute, qt, string);
+	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
+		Predicate predIn = derivePredicate(attribute, qt, object);
 		
 		if (predicate == null) {
 			predicate = predIn;
