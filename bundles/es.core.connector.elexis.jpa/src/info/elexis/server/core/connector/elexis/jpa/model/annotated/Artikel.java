@@ -76,7 +76,7 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	
 	@Override
 	public String getLabel() {
-		return getNameIntern();
+		return getName();
 	}
 
 	public String getEan() {
