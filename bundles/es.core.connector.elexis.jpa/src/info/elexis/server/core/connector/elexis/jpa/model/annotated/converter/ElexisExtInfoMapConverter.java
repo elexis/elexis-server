@@ -37,8 +37,8 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class ElexisExtInfoMapConverter implements Converter {
 	
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -1939779538183350309L;
+
 	@Override
 	public void initialize(DatabaseMapping mapping, Session session){}
 	

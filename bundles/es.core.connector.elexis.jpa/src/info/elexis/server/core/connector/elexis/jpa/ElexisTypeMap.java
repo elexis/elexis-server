@@ -5,6 +5,7 @@ import java.util.HashMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -27,6 +28,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
 	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
 	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
+	public static final String TYPE_KONSULTATION = "ch.elexis.data.Konsultation";
 	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
@@ -45,6 +47,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(DocHandle.class, TYPE_DOCHANDLE);
 		stsToClassMap.put(TYPE_PRESCRIPTION, Prescription.class);
 		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
+		stsToClassMap.put(TYPE_KONSULTATION, Behandlung.class);
+		classToStsMap.put(Behandlung.class, TYPE_KONSULTATION);
 		
 		// uni-directional mappable
 		stsToClassMap.put("ch.elexis.artikel_ch.data.Medikament", Artikel.class);

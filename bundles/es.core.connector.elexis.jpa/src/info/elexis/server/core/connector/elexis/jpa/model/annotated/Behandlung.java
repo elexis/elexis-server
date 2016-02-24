@@ -7,13 +7,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 
+import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
 
 @Entity
@@ -42,10 +43,9 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Column(length = 25, name = "leistungen")
 	private String leistungenId;
 
-	@Lob
 	@Basic(fetch = FetchType.LAZY)
-	@Column(length = 20000000)
-	private byte[] eintrag;
+	@Convert(value = "VersionedResourceConverter")
+	private VersionedResource eintrag;
 
 	public Fall getFall() {
 		return fall;
@@ -98,11 +98,11 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 		this.leistungenId = leistungenId;
 	}
 
-	public byte[] getEintrag() {
+	public VersionedResource getEintrag() {
 		return eintrag;
 	}
 
-	public void setEintrag(byte[] eintrag) {
+	public void setEintrag(VersionedResource eintrag) {
 		this.eintrag = eintrag;
 	}
 }

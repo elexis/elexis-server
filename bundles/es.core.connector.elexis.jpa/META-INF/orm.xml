@@ -16,6 +16,8 @@
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStoreToStringConverter" />
 	<converter name="IntegerStringConverter"
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.IntegerStringConverter" />
+		<converter name="VersionedResourceConverter"
+		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.VersionedResourceConverter" />
 	<object-type-converter name="booleanStringConverter"
 		object-type="java.lang.Boolean" data-type="java.lang.String">
 		<conversion-value object-value="true" data-value="1" />

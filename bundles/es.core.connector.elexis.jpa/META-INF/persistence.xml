@@ -13,6 +13,8 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Role</class>
