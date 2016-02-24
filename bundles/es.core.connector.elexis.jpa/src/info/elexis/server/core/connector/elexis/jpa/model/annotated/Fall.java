@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -34,9 +33,6 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 80)
 	private String diagnosen;
-
-	@Lob()
-	private byte[] extInfo;
 
 	@Column(length = 25)
 	private String fallNummer;

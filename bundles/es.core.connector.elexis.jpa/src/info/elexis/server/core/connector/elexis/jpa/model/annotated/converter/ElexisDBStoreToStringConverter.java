@@ -19,6 +19,10 @@ public class ElexisDBStoreToStringConverter implements Converter {
 
 	@Override
 	public Object convertObjectValueToDataValue(Object objectValue, Session session) {
+		if(objectValue==null) {
+			return null;
+		}
+		
 		if (!(objectValue instanceof AbstractDBObjectIdDeleted)) {
 			log.warn(" {} is not an AbstractDBObject", objectValue.getClass());
 			return null;
