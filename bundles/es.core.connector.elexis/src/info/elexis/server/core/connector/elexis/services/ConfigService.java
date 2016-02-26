@@ -1,5 +1,8 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
@@ -7,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config_;
 
 public class ConfigService {
 
@@ -82,5 +86,25 @@ public class ConfigService {
 		em.getTransaction().begin();
 		em.flush();
 		em.getTransaction().commit();
+	}
+
+	public LocalDate getDate(String key) {
+		Config value = findById(key);
+		if(value!=null) {
+			// TODO
+			log.error("Implement me!!");
+		}
+		return null;
+	}
+
+	/**
+	 * Get all nodes starting with nodePrefix
+	 * @param nodePrefix
+	 * @return
+	 */
+	public List<Config> getNodes(String nodePrefix) {
+		JPAQuery<Config> query = new JPAQuery<Config>(Config.class);
+		query.add(Config_.param, JPAQuery.QUERY.LIKE, nodePrefix+"%");
+		return query.execute();
 	}
 }

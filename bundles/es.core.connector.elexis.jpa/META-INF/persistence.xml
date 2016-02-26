@@ -15,10 +15,13 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Role</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedKumulation</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.User</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig</class>

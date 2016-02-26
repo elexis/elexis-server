@@ -4,6 +4,8 @@ import static info.elexis.server.core.connector.elexis.internal.ElexisEntityMana
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,7 +17,6 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.jpa.JpaQuery;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
-import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 
@@ -54,17 +55,17 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
 		Predicate predIn = derivePredicate(attribute, qt, object);
-		
+
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
 			predicate = cb.and(predicate, predIn);
 		}
 	}
-	
+
 	public void add(SingularAttribute<?, Boolean> attribute, QUERY qt, boolean bool) {
 		Predicate predIn = derivePredicate(attribute, qt, bool);
-		
+
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
@@ -117,6 +118,17 @@ public class JPAQuery<T extends AbstractDBObject> {
 			return query.unwrap(JpaQuery.class).getDatabaseQuery().getSQLString();
 		}
 		return super.toString();
+	}
+
+	public T executeGetSingleResult() {
+		List<T> result = execute();
+		if (result.size() == 1) {
+			return result.get(0);
+		} else if (result.size() == 0) {
+			throw new NoResultException();
+		} else {
+			throw new NonUniqueResultException();
+		}
 	}
 
 }

@@ -3,7 +3,7 @@ package info.elexis.server.core.connector.elexis.locking;
 import java.util.Optional;
 
 import info.elexis.server.elexis.common.types.LockInfo;
-
+import info.elexis.server.elexis.common.types.LockResponse;
 
 public interface ILockService {
 	/**
@@ -14,15 +14,18 @@ public interface ILockService {
 	 * @return
 	 */
 
-	public boolean acquireLock(LockInfo lockInfo);
-	
+	public LockResponse acquireLock(LockInfo lockInfo);
+
 	/**
 	 * To be implemented by a {@link ILockServiceContributor} only!
+	 * 
 	 * @param lockInfos
-	 * @param lockServiceContributorClass to skip
+	 * @param lockServiceContributorClass
+	 *            to skip
 	 * @return
 	 */
-	public boolean acquireLock(LockInfo lockInfos, Class<? extends ILockServiceContributor> lockServiceContributorClass);
+	public LockResponse acquireLock(LockInfo lockInfos,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass);
 
 	/**
 	 * 
@@ -30,10 +33,11 @@ public interface ILockService {
 	 * @param userId
 	 * @return
 	 */
-	public boolean releaseLock(LockInfo lockInfos);
+	public LockResponse releaseLock(LockInfo lockInfos);
 
-	public boolean releaseLock(LockInfo lockInfos, Class<? extends ILockServiceContributor> lockServiceContributorClass);
-	
+	public LockResponse releaseLock(LockInfo lockInfos,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass);
+
 	public boolean isLocked(String storeToString);
 
 	public Optional<LockInfo> getLockInfo(String storeToString);

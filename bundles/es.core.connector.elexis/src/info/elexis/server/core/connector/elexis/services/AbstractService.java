@@ -223,6 +223,7 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @param entity
 	 */
 	public void delete(T entity) {
+		// TODO any required actions here?
 		em.getTransaction().begin();
 		entity.setDeleted(true);
 		em.getTransaction().commit();

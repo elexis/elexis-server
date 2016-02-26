@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.persistence.Basic;
@@ -16,6 +17,9 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 	protected Map<Object, Object> extInfo;
 	
 	public Map<Object, Object> getExtInfo() {
+		if(extInfo==null) {
+			extInfo=new Hashtable<Object, Object>();
+		}
 		return extInfo;
 	}
 

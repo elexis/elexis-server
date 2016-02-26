@@ -1,12 +1,15 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig_;
 
 public class UserconfigService {
 
@@ -61,6 +64,19 @@ public class UserconfigService {
 		em.getTransaction().begin();
 		em.flush();
 		em.getTransaction().commit();
+	}
+
+	public boolean get(String userId, String key, boolean defValue) {
+		JPAQuery<Userconfig> query = new JPAQuery<Userconfig>(Userconfig.class);
+		query.add(Userconfig_.owner, JPAQuery.QUERY.LIKE, userId);
+		query.add(Userconfig_.param, JPAQuery.QUERY.EQUALS, key);
+		try {
+			Userconfig result = query.executeGetSingleResult();
+			String param = result.getParam();
+			return ("1".equals(param) || "true".equalsIgnoreCase(param));
+		} catch (NoResultException | NonUniqueResultException e) {
+			return defValue;
+		}
 	}
 
 }

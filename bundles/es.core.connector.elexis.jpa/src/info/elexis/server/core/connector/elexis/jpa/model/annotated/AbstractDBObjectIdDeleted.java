@@ -42,6 +42,7 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+		// TODO if true, remove all Xids
 	}
 	
 	public BigInteger getLastupdate() {

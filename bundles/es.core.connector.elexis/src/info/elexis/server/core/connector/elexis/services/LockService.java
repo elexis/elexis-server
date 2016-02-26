@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 import info.elexis.server.elexis.common.types.LockInfo;
+import info.elexis.server.elexis.common.types.LockResponse;
+import info.elexis.server.elexis.common.types.LockResponse.Status;
 
 @Component(service = {})
 public class LockService implements ILockService {
@@ -50,10 +52,10 @@ public class LockService implements ILockService {
 	}
 
 	@Override
-	public boolean acquireLock(LockInfo lockInfo,
+	public LockResponse acquireLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		if (lockInfo == null) {
-			return false;
+			return LockResponse.DENIED(lockInfo);
 		}
 
 		// TODO what if user and system id are ident?
@@ -61,9 +63,9 @@ public class LockService implements ILockService {
 		if (lie != null) {
 			if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
 				// its the requesters lock (username and systemUuid match)
-				return true;
+				return LockResponse.OK;
 			} else {
-				return false;
+				return LockResponse.DENIED(lie);
 			}
 		}
 
@@ -72,7 +74,7 @@ public class LockService implements ILockService {
 			synchronized (contributors) {
 				if (contributors.size() == 0 && failOnMissingLockServiceContributor) {
 					log.error("System defined to require a lock service contributor. None available, denying locks!");
-					return false;
+					return new LockResponse(Status.ERROR, null);
 				}
 
 				for (ILockServiceContributor iLockServiceContributor : contributors) {
@@ -80,27 +82,27 @@ public class LockService implements ILockService {
 						continue;
 					}
 					if (!iLockServiceContributor.acquireLock(lockInfo)) {
-						return false;
+						return LockResponse.DENIED(lockInfo);
 					}
 				}
 			}
 
 			locks.put(lockInfo.getElementId(), lockInfo);
 
-			return true;
+			return LockResponse.OK;
 		}
 	}
 
 	@Override
-	public boolean acquireLock(final LockInfo lockInfo) {
+	public LockResponse acquireLock(final LockInfo lockInfo) {
 		return acquireLock(lockInfo, null);
 	}
 
 	@Override
-	public boolean releaseLock(LockInfo lockInfo,
+	public LockResponse releaseLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		if (lockInfo == null) {
-			return false;
+			return LockResponse.DENIED(lockInfo);
 		}
 
 		synchronized (locks) {
@@ -110,19 +112,19 @@ public class LockService implements ILockService {
 						continue;
 					}
 					if (!iLockServiceContributor.releaseLock(lockInfo)) {
-						return false;
+						return LockResponse.DENIED(lockInfo);
 					}
 				}
 			}
 
 			locks.remove(lockInfo.getElementId());
 
-			return true;
+			return LockResponse.OK;
 		}
 	}
 
 	@Override
-	public boolean releaseLock(final LockInfo lockInfo) {
+	public LockResponse releaseLock(final LockInfo lockInfo) {
 		return releaseLock(lockInfo, null);
 	}
 

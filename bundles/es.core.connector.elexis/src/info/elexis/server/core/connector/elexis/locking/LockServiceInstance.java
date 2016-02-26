@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import info.elexis.server.core.connector.elexis.services.LockService;
 import info.elexis.server.elexis.common.types.LockInfo;
+import info.elexis.server.elexis.common.types.LockResponse;
 
 public enum LockServiceInstance implements ILockService{
 
@@ -22,23 +23,23 @@ public enum LockServiceInstance implements ILockService{
 	}
 
 	@Override
-	public boolean acquireLock(LockInfo lockInfos) {
+	public LockResponse acquireLock(LockInfo lockInfos) {
 		return ls.acquireLock(lockInfos);
 	}
 
 	@Override
-	public boolean releaseLock(LockInfo lockInfos) {
+	public LockResponse releaseLock(LockInfo lockInfos) {
 		return ls.releaseLock(lockInfos);
 	}
 
 	@Override
-	public boolean acquireLock(LockInfo lockInfo,
+	public LockResponse acquireLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		return ls.acquireLock(lockInfo, lockServiceContributorClass);
 	}
 
 	@Override
-	public boolean releaseLock(LockInfo lockInfo,
+	public LockResponse releaseLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		return ls.releaseLock(lockInfo, lockServiceContributorClass);
 	}

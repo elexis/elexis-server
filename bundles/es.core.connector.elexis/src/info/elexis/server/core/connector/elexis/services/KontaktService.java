@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -79,7 +80,7 @@ public class KontaktService extends AbstractService<Kontakt> {
 			} else {
 				em.lock(patNr, LockModeType.PESSIMISTIC_WRITE);
 				ret = Integer.parseInt(patNr.getWert());
-				ret+=1;
+				ret += 1;
 
 				while (true) {
 					@SuppressWarnings("rawtypes")
@@ -99,5 +100,21 @@ public class KontaktService extends AbstractService<Kontakt> {
 		} finally {
 			em.close();
 		}
+	}
+
+	/**
+	 * 
+	 * @param k
+	 * @return the age in years, or -1 if not applicable
+	 */
+	public static int getAgeInYears(Kontakt k) {
+		LocalDate dob = k.getGeburtsdatum();
+		if (dob == null) {
+			return -1;
+		}
+
+		LocalDate now = LocalDate.now();
+		long years = ChronoUnit.YEARS.between(dob, now);
+		return (int) years;
 	}
 }
