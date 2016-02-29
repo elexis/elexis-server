@@ -78,7 +78,10 @@ public class TarmedLeistungService extends AbstractService<TarmedLeistung> {
 		return qre.executeGetSingleResult();
 	}
 
-	public static TarmedLeistung getFromCode(String code, TimeTool date) {		
+	public static TarmedLeistung findFromCode(String code, TimeTool date) {
+		if(date==null) {
+			date = new TimeTool();
+		}
 		JPAQuery<TarmedLeistung> query = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
 		query.add(TarmedLeistung_.code, JPAQuery.QUERY.LIKE, code);
 		List<TarmedLeistung> leistungen = query.execute();

@@ -8,6 +8,8 @@ import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 import info.elexis.server.elexis.common.jaxrs.ILockService;
 import info.elexis.server.elexis.common.types.LockInfo;
 import info.elexis.server.elexis.common.types.LockRequest;
+import info.elexis.server.elexis.common.types.LockResponse;
+import info.elexis.server.elexis.common.types.LockResponse.Status;
 
 @Component(service = LockService.class, immediate = true)
 public class LockService implements ILockService {
@@ -24,13 +26,13 @@ public class LockService implements ILockService {
 	}
 
 	@Override
-	public boolean acquireOrReleaseLocks(LockRequest request) {
+	public LockResponse acquireOrReleaseLocks(LockRequest request) {
 		switch (request.getRequestType()) {
 		case ACQUIRE:
 			return LockServiceInstance.INSTANCE.acquireLock(request.getLockInfo());
 		case RELEASE:
 			return LockServiceInstance.INSTANCE.releaseLock(request.getLockInfo());
 		}
-		return false;
+		return new LockResponse(Status.ERROR, null);
 	}
 }

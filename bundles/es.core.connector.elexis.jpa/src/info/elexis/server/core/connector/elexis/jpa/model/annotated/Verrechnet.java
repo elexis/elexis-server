@@ -77,11 +77,18 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 		return getLeistungenText();
 	}
 
+	public Map<Object, Object> getDetail() {
+		if (detail == null) {
+			detail = new Hashtable<Object, Object>();
+		}
+		return detail;
+	}
+
 	public void setDetail(final String key, final String value) {
 		if (value == null) {
-			detail.remove(key);
+			getDetail().remove(key);
 		} else {
-			detail.put(key, value);
+			getDetail().put(key, value);
 		}
 	}
 
@@ -155,13 +162,6 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 
 	public void setScale2(int scale2) {
 		this.scale2 = scale2;
-	}
-
-	public Map<Object, Object> getDetail() {
-		if (detail == null) {
-			detail = new Hashtable<Object, Object>();
-		}
-		return detail;
 	}
 
 	public String getKlasse() {

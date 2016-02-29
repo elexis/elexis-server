@@ -15,6 +15,7 @@ import info.elexis.server.core.connector.elexis.billable.IVerrechenbar;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
@@ -23,7 +24,7 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.UserconfigService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
-public class LaborTarif2009Optifier implements IOptifier {
+public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 
 	public static final String OPTIMIZE_ADDITION_INITDEADLINE = "30.06.2013";
 
@@ -33,35 +34,36 @@ public class LaborTarif2009Optifier implements IOptifier {
 	/**
 	 * Add and recalculate the various possible amendments
 	 */
-	public IStatus add(IVerrechenbar code, Behandlung kons, String userId, String mandatorId) {
+	public IStatus add(IVerrechenbar<Labor2009Tarif> code, Behandlung kons, Kontakt userContact,
+			Kontakt mandatorContact) {
 
-		boolean bOptify = UserconfigService.INSTANCE.get(userId, Preferences.LEISTUNGSCODES_OPTIFY, true);
+		boolean bOptify = UserconfigService.INSTANCE.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
 
-		if (code instanceof Labor2009Tarif) {
-			if (bOptify) {
-				Labor2009Tarif tarif = ((Labor2009Tarif) code);
+		if (bOptify) {
+			Labor2009Tarif tarif = (Labor2009Tarif) code.getEntity();
 
-				boolean validDate = isValidOn(tarif, kons.getDatum());
-				if (!validDate) {
-					return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-							code.getCode() + " (" + tarif.getGueltigVon() + "-" + tarif.getGueltigBis()
-									+ ") Gültigkeit beinhaltet nicht das Konsultationsdatum " + kons.getDatum());
-				}
+			boolean validDate = isValidOn(tarif, kons.getDatum());
+			if (!validDate) {
+				return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
+						code.getCode() + " (" + tarif.getGueltigVon() + "-" + tarif.getGueltigBis()
+								+ ") Gültigkeit beinhaltet nicht das Konsultationsdatum " + kons.getDatum());
 			}
-
-			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
-			IStatus res = optify(kons, userId, mandatorId);
-			if (!res.isOK()) {
-				VerrechnetService.INSTANCE.delete(newVerrechnet);
-			}
-			return res;
 		}
-		return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "No Lab2009Tarif");
+
+		newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
+		IStatus res = optify(kons, userContact, mandatorContact);
+		if (!res.isOK()) {
+			VerrechnetService.INSTANCE.delete(newVerrechnet);
+		}
+		return res;
 	}
 
 	private boolean isValidOn(Labor2009Tarif tarif, LocalDate datum) {
 		LocalDate validFrom = tarif.getGueltigVon();
 		LocalDate validTo = tarif.getGueltigBis();
+		if (validTo == null) {
+			validTo = LocalDate.of(2199, 12, 31);
+		}
 		if (validFrom == null || validTo == null) {
 			if (log == null) {
 				log = LoggerFactory.getLogger(DefaultOptifier.class);
@@ -76,7 +78,7 @@ public class LaborTarif2009Optifier implements IOptifier {
 	}
 
 	@Override
-	public IStatus optify(Behandlung kons, String userId, String mandatorId) {
+	public IStatus optify(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		try {
 			boolean haveKons = false;
 
@@ -189,7 +191,7 @@ public class LaborTarif2009Optifier implements IOptifier {
 				}
 			}
 
-			return ObjectStatus.OK_STATUS(kons);
+			return ObjectStatus.OK_STATUS(newVerrechnet);
 		} catch (Exception ex) {
 			log.error("Error optifying.", ex);
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Tarif not installed correctly");
@@ -233,9 +235,9 @@ public class LaborTarif2009Optifier implements IOptifier {
 	}
 
 	@Override
-	public IStatus remove(Verrechnet code, Behandlung kons) {
-		// TODO Auto-generated method stub
-		return null;
+	public IStatus remove(Verrechnet code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+		VerrechnetService.INSTANCE.delete(code);
+		return optify(kons, userContact, mandatorContact);
 	}
 
 }

@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config_;
@@ -91,8 +92,8 @@ public class ConfigService {
 	public LocalDate getDate(String key) {
 		Config value = findById(key);
 		if(value!=null) {
-			// TODO
-			log.error("Implement me!!");
+			TimeTool tt = new TimeTool(value.getWert());
+			return tt.toZonedDateTime().toLocalDate();
 		}
 		return null;
 	}

@@ -1,13 +1,18 @@
 package info.elexis.server.core.connector.elexis.billable;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IStatus;
 
 import ch.rgw.tools.StringTool;
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.LaborTarif2009Optifier;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 
-public class VerrechenbarLabor2009Tarif implements IVerrechenbar{
+public class VerrechenbarLabor2009Tarif implements IVerrechenbar<Labor2009Tarif> {
 
 	private final Labor2009Tarif laborTarif;
 
@@ -41,8 +46,31 @@ public class VerrechenbarLabor2009Tarif implements IVerrechenbar{
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, String userId, String mandatorId) {
-		return new LaborTarif2009Optifier().add(this, kons, userId, mandatorId);
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+		return new LaborTarif2009Optifier().add(this, kons, userContact, mandatorContact);
+	}
+
+	@Override
+	public List<Object> getActions(Object context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Labor2009Tarif getEntity() {
+		return laborTarif;
+	}
+
+	@Override
+	public int getTP(TimeTool date, Fall fall) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getFactor(TimeTool dat, Fall fall) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.billable.optifier;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import info.elexis.server.core.common.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IVerrechenbar;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
@@ -19,14 +19,15 @@ public class DefaultOptifier implements IOptifier {
 	private Verrechnet newVerrechnet;
 	private Logger log;
 
-	public IStatus optify(final Behandlung kons, String userId, String mandatorId) {
+	public IStatus optify(final Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		return Status.OK_STATUS;
 	}
 
-	public IStatus add(final IVerrechenbar code, final Behandlung kons, final String userId, final String mandatorId) {
+	public IStatus add(final IVerrechenbar code, final Behandlung kons, final Kontakt userContact,
+			final Kontakt mandatorContact) {
 		Verrechnet foundVerrechnet = null;
 		for (Verrechnet verrechnet : kons.getVerrechnet()) {
-			 Optional<IVerrechenbar> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
+			Optional<IVerrechenbar> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
 			if (!vrElement.isPresent()) {
 				// #2454 This should not happen, may however if we have to
 				// consider
@@ -56,9 +57,7 @@ public class DefaultOptifier implements IOptifier {
 		return ObjectStatus.OK_STATUS(newVerrechnet);
 	}
 
-	public IStatus remove(final Verrechnet v, final Behandlung kons) {
-		List<Verrechnet> old = kons.getVerrechnet();
-		old.remove(v);
+	public IStatus remove(final Verrechnet v, final Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		VerrechnetService.INSTANCE.delete(v);
 		return Status.OK_STATUS;
 	}

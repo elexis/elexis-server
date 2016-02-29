@@ -48,7 +48,7 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 	private String code;
 
 	@OneToOne
-	@JoinColumn(referencedColumnName ="code", insertable = false)
+	@JoinColumn(name = "id", insertable = false, updatable = false)
 	private TarmedExtension extension;
 
 	@Transient

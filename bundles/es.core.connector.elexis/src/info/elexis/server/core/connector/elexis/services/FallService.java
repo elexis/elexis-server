@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import ch.elexis.core.model.FallConstants;
 import ch.rgw.tools.StringTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
 public class FallService extends AbstractService<Fall> {
 
@@ -19,6 +21,25 @@ public class FallService extends AbstractService<Fall> {
 
 	private FallService() {
 		super(Fall.class);
+	}
+
+	/**
+	 * create a {@link Fall} with the resp. mandatory attributes
+	 * @param patient
+	 * @param label
+	 * @param reason
+	 * @param billingMethod
+	 * @return
+	 */
+	public Fall create(Kontakt patient, String label, String reason, String billingMethod) {
+		Fall fall = create();
+		fall.setPatientKontakt(patient);
+		fall.setBezeichnung(label);
+		fall.setGrund(reason);
+		fall.setDatumVon(LocalDate.now());
+		fall.getExtInfo().put(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
+		flush();
+		return fall;
 	}
 
 	public static String getAbrechnungsSystem(Fall fall) {

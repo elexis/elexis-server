@@ -25,7 +25,7 @@ public class Userconfig extends AbstractDBObject {
 	private String param;
 	
 	@Lob
-	private String wert;
+	private String value;
 
 	public Kontakt getOwner() {
 		return owner;
@@ -43,12 +43,12 @@ public class Userconfig extends AbstractDBObject {
 		this.param = param;
 	}
 
-	public String getWert() {
-		return wert;
+	public String getValue() {
+		return value;
 	}
 
-	public void setWert(String wert) {
-		this.wert = wert;
+	public void setValue(String value) {
+		this.value = value;
 	}
 	
 }

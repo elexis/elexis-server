@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.billable.optifier;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.FallService;
@@ -30,7 +32,7 @@ import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 /**
  * port of TarmedOptifier from Elexis RCP
  */
-public class TarmedOptifier implements IOptifier {
+public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	private static final String TL = "TL"; //$NON-NLS-1$
 	private static final String AL = "AL"; //$NON-NLS-1$
 	public static final int OK = 0;
@@ -64,11 +66,11 @@ public class TarmedOptifier implements IOptifier {
 	 * werden kann und kann sie ggf. zurückweisen oder modifizieren.
 	 */
 
-	public IStatus add(IVerrechenbar code, Behandlung kons, String userId, String mandatorId) {
+	public IStatus add(IVerrechenbar<TarmedLeistung> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 
-		bOptify = UserconfigService.INSTANCE.get(userId, Preferences.LEISTUNGSCODES_OPTIFY, true);
+		bOptify = UserconfigService.INSTANCE.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
 
-		TarmedLeistung tc = (TarmedLeistung) code;
+		TarmedLeistung tc = code.getEntity();
 		List<Verrechnet> lst = kons.getVerrechnet();
 		boolean checkBezug = false;
 		boolean bezugOK = true;
@@ -77,7 +79,14 @@ public class TarmedOptifier implements IOptifier {
 		 * Fachspezialisierung des aktuellen Mandanten usw. vereinbar ist
 		 */
 
-		Map<Object, Object> ext = tc.getExtension().getLimits();
+		Map<Object, Object> ext;
+		
+		TarmedExtension extension = tc.getExtension();
+		if(extension==null) {
+			ext = Collections.emptyMap(); 
+		} else {
+			ext = extension.getLimits();
+		}
 
 		// Bezug prüfen
 		String bezug = (String) ext.get("Bezug"); //$NON-NLS-1$
@@ -112,23 +121,27 @@ public class TarmedOptifier implements IOptifier {
 			}
 
 			if ("KVG".equalsIgnoreCase(gesetz) && tc.getCode().matches("39.0011")) {
-				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0010"), kons, userId, mandatorId);
+				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0010"), kons, userContact,
+						mandatorContact);
 			} else if (!gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0010")) {
-				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0011"), kons, userId, mandatorId);
+				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0011"), kons, userContact,
+						mandatorContact);
 			}
 
 			if ("KVG".equalsIgnoreCase(gesetz) && tc.getCode().matches("39.0016")) {
-				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0015"), kons, userId, mandatorId);
+				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0015"), kons, userContact,
+						mandatorContact);
 			} else if (!gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0015")) {
-				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0016"), kons, userId, mandatorId);
+				return add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0016"), kons, userContact,
+						mandatorContact);
 			}
 
 			if ("KVG".equalsIgnoreCase(gesetz) && tc.getCode().matches("39.0021")) {
-				return this.add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0020"), kons, userId,
-						mandatorId);
+				return this.add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0020"), kons, userContact,
+						mandatorContact);
 			} else if (!gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0020")) {
-				return this.add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0021"), kons, userId,
-						mandatorId);
+				return this.add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0021"), kons, userContact,
+						mandatorContact);
 			}
 		}
 
@@ -159,7 +172,7 @@ public class TarmedOptifier implements IOptifier {
 			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
 			// Exclusionen
 			if (bOptify) {
-				TarmedLeistung newTarmed = (TarmedLeistung) code;
+				TarmedLeistung newTarmed = code.getEntity();
 				for (Verrechnet v : lst) {
 					Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
 					if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
@@ -236,7 +249,8 @@ public class TarmedOptifier implements IOptifier {
 							Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE
 									.getVerrechenbar(newVerrechnet);
 							if (verrechenbar.isPresent() && verrechenbar.get().getCode().equals("00.0020")) {
-								boolean result = UserconfigService.INSTANCE.get(mandatorId, BILL_ELECTRONICALLY, false);
+								boolean result = UserconfigService.INSTANCE.get(mandatorContact, BILL_ELECTRONICALLY,
+										false);
 								if (result) {
 									break;
 								}
@@ -278,8 +292,8 @@ public class TarmedOptifier implements IOptifier {
 		// check if it's an X-RAY service and add default tax if so
 		// default xray tax will only be added once (see above)
 		if (tc.getParent().startsWith(CHAPTER_XRAY)) {
-			add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode(DEFAULT_TAX_XRAY_ROOM), kons, userId,
-					mandatorId);
+			add(TarmedLeistungService.INSTANCE.getVerrechenbarFromCode(DEFAULT_TAX_XRAY_ROOM), kons, userContact,
+					mandatorContact);
 		}
 
 		// double factor =
@@ -339,7 +353,7 @@ public class TarmedOptifier implements IOptifier {
 
 		// Zuschlag Kinder
 		else if ("00.0010".equals(tcid) || "00.0060".equals(tcid)) {
-			boolean result = UserconfigService.INSTANCE.get(mandatorId, PREF_ADDCHILDREN, false);
+			boolean result = UserconfigService.INSTANCE.get(mandatorContact, PREF_ADDCHILDREN, false);
 
 			if (result) {
 				Fall f = kons.getFall();
@@ -348,9 +362,9 @@ public class TarmedOptifier implements IOptifier {
 					if (p != null) {
 						int alter = KontaktService.getAgeInYears(p);
 						if (alter >= 0 && alter < 6) {
-							TarmedLeistung tl = TarmedLeistungService.getFromCode("00.0040",
+							TarmedLeistung tl = TarmedLeistungService.findFromCode("00.0040",
 									new TimeTool(kons.getDatum()));
-							add(new VerrechenbarTarmedLeistung(tl), kons, userId, mandatorId);
+							add(new VerrechenbarTarmedLeistung(tl), kons, userContact, mandatorContact);
 						}
 					}
 				}
@@ -442,16 +456,16 @@ public class TarmedOptifier implements IOptifier {
 				break;
 
 			}
-			return ObjectStatus.OK_STATUS(newVerrechnet);
+			
 			// return new Result<IVerrechenbar>(Result.SEVERITY.OK,
 			// PREISAENDERUNG, "Preis", null, false); //$NON-NLS-1$
 		}
-		return Status.OK_STATUS;
+		return ObjectStatus.OK_STATUS(newVerrechnet);
 		// return new Result<IVerrechenbar>(null);
 	}
 
 	@Override
-	public IStatus optify(Behandlung kons, String userId, String mandatorId) {
+	public IStatus optify(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		List<TarmedLeistung> postponed = new LinkedList<TarmedLeistung>();
 		for (Verrechnet vv : kons.getVerrechnet()) {
 			Optional<IVerrechenbar> iv = VerrechnetService.INSTANCE.getVerrechenbar(vv);
@@ -473,7 +487,7 @@ public class TarmedOptifier implements IOptifier {
 	 * keine Prüfungen, sondern erfüllt nur die Anfrage..
 	 */
 	@Override
-	public IStatus remove(Verrechnet code, Behandlung kons) {
+	public IStatus remove(Verrechnet code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		VerrechnetService.INSTANCE.delete(code);
 		return Status.OK_STATUS;
 	}
