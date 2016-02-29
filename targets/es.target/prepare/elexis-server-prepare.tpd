@@ -16,7 +16,6 @@ location "http://download.eclipse.org/eclipse/updates/4.5/" {
 	org.eclipse.equinox.p2.core.feature.feature.group
 	org.eclipse.equinox.p2.extras.feature.feature.group
 	org.eclipse.equinox.p2.discovery.feature.feature.group
-	org.eclipse.pde.junit.runtime
 	org.eclipse.core.net
 	org.eclipse.core.net.linux.x86
 	org.eclipse.core.net.linux.x86_64
@@ -104,8 +103,9 @@ location "http://download.eclipse.org/rt/eclipselink/updates/" {
 	javax.validation
 }
 
-location "http://download.eclipse.org/gemini/jpa/updates/1.2.0-M1/" {
+location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 	org.eclipse.gemini.jpa.feature.feature.group
+
 }
 
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
