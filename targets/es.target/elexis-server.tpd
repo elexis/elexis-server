@@ -50,6 +50,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.dbcp
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
+	info.elexis.server.elexis.common
 	
 	at.medevit.ch.artikelstamm
 	

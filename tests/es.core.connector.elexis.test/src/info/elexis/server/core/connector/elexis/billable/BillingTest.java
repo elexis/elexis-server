@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.elexis.core.model.FallConstants;
@@ -52,7 +51,6 @@ public class BillingTest {
 	}
 
 	@Test
-	@Ignore
 	public void testAddLaborTarif2009Billing() {
 
 		Labor2009Tarif immunglobulinValid = Labor2009TarifService.INSTANCE.findById("a6e58fc71c723bd54016760");
@@ -76,11 +74,12 @@ public class BillingTest {
 	public void testAddTarmedBilling() {
 		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null);
 		TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null);
+		TarmedLeistung code_000750 = TarmedLeistungService.findFromCode("00.0750", null);
 		assertNotNull(code_000015);
 		assertNotNull(code_000010);
+		assertNotNull(code_000750);
 		
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
-//		VerrechenbarTarmedLeistung vlt_000015 = new VerrechenbarTarmedLeistung(code_000015);
 		
 		IStatus status = vlt_000010.add(consultation, patient, mandator);
 		assertTrue(status.getMessage(), status.isOK());
@@ -93,7 +92,10 @@ public class BillingTest {
 		assertEquals(1634, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 		assertEquals(100, vr.getScale2());
-
+		
+		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
+		status = ivlt_000750.add(consultation, patient, mandator);
+		assertTrue(status.getMessage(), !status.isOK());
 	}
 
 }
