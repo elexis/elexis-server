@@ -25,7 +25,7 @@ public class TarmedLeistungService extends AbstractService<TarmedLeistung> {
 	}
 
 	public IVerrechenbar getVerrechenbarFromCode(String code) {
-		TarmedLeistung tl = getFromCode(code);
+		TarmedLeistung tl = findFromCode(code, null);
 		return new VerrechenbarTarmedLeistung(tl);
 	}
 
@@ -70,12 +70,6 @@ public class TarmedLeistungService extends AbstractService<TarmedLeistung> {
 			return true;
 		}
 		return false;
-	}
-	
-	public TarmedLeistung getFromCode(String code) {
-		JPAQuery<TarmedLeistung> qre = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
-		qre.add(TarmedLeistung_.code, JPAQuery.QUERY.LIKE, code);
-		return qre.executeGetSingleResult();
 	}
 
 	public static TarmedLeistung findFromCode(String code, TimeTool date) {

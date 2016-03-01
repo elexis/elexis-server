@@ -175,8 +175,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				TarmedLeistung newTarmed = code.getEntity();
 				for (Verrechnet v : lst) {
 					Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
-					if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
-						TarmedLeistung tarmed = (TarmedLeistung) verrechenbar.get();
+					if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+						TarmedLeistung tarmed = (TarmedLeistung) verrechenbar.get().getEntity();
 						// check if new has an exclusion for this verrechnet
 						// tarmed
 						IStatus resCompatible = isCompatible(tarmed, newTarmed);
@@ -304,8 +304,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			double sum = 0.0;
 			for (Verrechnet v : lst) {
 				Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
-				if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
-					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get();
+				if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 					if ("OP I".equals(tl.getSparte())) {
 						/*
 						 * int tech = tl.getTL(); double abzug = tech 4.0 /
@@ -336,8 +336,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			double sumTL = 0.0;
 			for (Verrechnet v : lst) {
 				Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
-				if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
-					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get();
+				if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 					String tlc = tl.getCode();
 					double z = v.getZahl();
 					if (tlc.matches("29.20[12345678]0") || (tlc.equals("29.2200"))) {
@@ -377,8 +377,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			double sumTL = 0.0;
 			for (Verrechnet v : lst) {
 				Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
-				if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
-					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get();
+				if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 					String tlc = tl.getCode();
 					int z = v.getZahl();
 					if ("04.1910".equals(tlc) || "04.1920".equals(tlc) || "04.1940".equals(tlc)
@@ -412,8 +412,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			case 70: // 25% zu allen AL von 60 (tel.)
 				for (Verrechnet v : lst) {
 					Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
-					if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
-						TarmedLeistung tl = (TarmedLeistung) verrechenbar.get();
+					if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+						TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 						if (tl.getCode().startsWith("00.25")) { //$NON-NLS-1$
 							continue;
 						}
@@ -434,8 +434,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			case 90: // 50% zu allen AL von 70 (tel.)
 				for (Verrechnet v : lst) {
 					Optional<IVerrechenbar> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(v);
-					if (verrechenbar.isPresent() && verrechenbar.get() instanceof TarmedLeistung) {
-						TarmedLeistung tl = (TarmedLeistung) verrechenbar.get();
+					if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+						TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 						if (tl.getCode().startsWith("00.25")) { //$NON-NLS-1$
 							continue;
 						}
@@ -529,7 +529,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	 * @return true OK if they are compatible, WARNING if it matches an
 	 *         exclusion case
 	 */
-	private IStatus isCompatible(TarmedLeistung tarmedCode, TarmedLeistung tarmed) {
+	public IStatus isCompatible(TarmedLeistung tarmedCode, TarmedLeistung tarmed) {
 		String notCompatible = TarmedLeistungService.getExclusionsForTarmedLeistung(tarmed, null);
 
 		// there are some exclusions to consider

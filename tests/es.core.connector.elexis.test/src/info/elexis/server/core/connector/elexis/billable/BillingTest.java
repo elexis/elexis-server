@@ -1,8 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
@@ -11,6 +9,7 @@ import org.junit.Test;
 
 import ch.elexis.core.model.FallConstants;
 import info.elexis.server.core.common.ObjectStatus;
+import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -42,7 +41,7 @@ public class BillingTest {
 
 	@After
 	public void teardownPatientAndBehandlung() {
-		if(vr!=null) {
+		if (vr != null) {
 			VerrechnetService.INSTANCE.remove(vr);
 		}
 		BehandlungService.INSTANCE.remove(consultation);
@@ -69,7 +68,7 @@ public class BillingTest {
 		status = invalidLabTarif.add(consultation, patient, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
 	}
-	
+
 	@Test
 	public void testAddTarmedBilling() {
 		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null);
@@ -78,24 +77,97 @@ public class BillingTest {
 		assertNotNull(code_000015);
 		assertNotNull(code_000010);
 		assertNotNull(code_000750);
-		
+
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
-		
+
 		IStatus status = vlt_000010.add(consultation, patient, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
-		
+
 		assertEquals("0.92", vr.getVk_scale());
 		assertEquals(1776, vr.getVk_tp());
 		assertEquals(1634, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 		assertEquals(100, vr.getScale2());
-		
+
 		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
 		status = ivlt_000750.add(consultation, patient, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
+	}
+
+	@Test
+	public void testAddCompatibleAndIncompatibleTarmedBilling() {
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null);
+		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null);
+		TarmedLeistung tlTapingCat1 = (TarmedLeistung) TarmedLeistungService.findFromCode("01.0110", null);
+
+		VerrechenbarTarmedLeistung tlBaseXRayV = new VerrechenbarTarmedLeistung(tlBaseXRay);
+		VerrechenbarTarmedLeistung tlUltrasoundV = new VerrechenbarTarmedLeistung(tlUltrasound);
+		VerrechenbarTarmedLeistung tlTapingCat1V = new VerrechenbarTarmedLeistung(tlTapingCat1);
+
+		IStatus status = tlUltrasoundV.add(consultation, patient, mandator);
+		assertTrue(status.isOK());
+		status = tlBaseXRayV.add(consultation, patient, mandator);
+		assertFalse(status.isOK());
+		status = tlTapingCat1V.add(consultation, patient, mandator);
+		assertTrue(status.isOK());
+	}
+
+	@Test
+	public void testAddMultipleIncompatibleTarmedBilling() {
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null);
+		VerrechenbarTarmedLeistung tlBaseXRayV = new VerrechenbarTarmedLeistung(tlBaseXRay);
+
+		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null);
+		VerrechenbarTarmedLeistung tlUltrasoundV = new VerrechenbarTarmedLeistung(tlUltrasound);
+
+		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null);
+		VerrechenbarTarmedLeistung tlBaseRadiologyHospitalV = new VerrechenbarTarmedLeistung(tlBaseRadiologyHospital);
+
+		IStatus status = tlBaseXRayV.add(consultation, patient, mandator);
+		assertTrue(status.isOK());
+		status = tlUltrasoundV.add(consultation, patient, mandator);
+		assertFalse(status.isOK());
+		status = tlBaseRadiologyHospitalV.add(consultation, patient, mandator);
+		assertFalse(status.isOK());
+	}
+
+	@Test
+	public void testIsCompatibleTarmedBilling() {
+		TarmedOptifier optifier = new TarmedOptifier();
+
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null);
+		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null);
+		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null);
+		TarmedLeistung tlBaseFirst5Min = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null);
+
+		IStatus resCompatible = optifier.isCompatible(tlBaseXRay, tlUltrasound);
+		assertFalse(resCompatible.isOK());
+		String resText = "";
+		if (!resCompatible.getMessage().isEmpty()) {
+			resText = resCompatible.getMessage();
+		}
+		assertEquals("39.3005 nicht kombinierbar mit 39.0020", resText);
+		resCompatible = optifier.isCompatible(tlUltrasound, tlBaseXRay);
+		assertTrue(resCompatible.isOK());
+
+		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseRadiologyHospital);
+		assertFalse(resCompatible.isOK());
+		if (!resCompatible.getMessage().isEmpty()) {
+			resText = resCompatible.getMessage();
+		}
+		assertEquals("39.0015 nicht kombinierbar mit 39.0020", resText);
+
+		resCompatible = optifier.isCompatible(tlBaseRadiologyHospital, tlUltrasound);
+		assertFalse(resCompatible.isOK());
+
+		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseFirst5Min);
+		assertTrue(resCompatible.isOK());
+
+		resCompatible = optifier.isCompatible(tlBaseFirst5Min, tlBaseRadiologyHospital);
+		assertTrue(resCompatible.isOK());
 	}
 
 }

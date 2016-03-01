@@ -53,45 +53,49 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		} else if (object instanceof Labor2009Tarif) {
 			return new VerrechenbarLabor2009Tarif((Labor2009Tarif) object);
 		}
-	
+
 		log.warn("Unsupported object for create verrechenbar {}", object.getClass().getName());
 		return null;
 	}
 
 	public Verrechnet create(IVerrechenbar iv, Behandlung kons, int count) {
-			Verrechnet v = create(false);
-			v.setLeistungenText(iv.getText());
-			String keyForObject = ElexisTypeMap.getKeyForObject((AbstractDBObjectIdDeleted) iv.getEntity());
-			v.setKlasse(keyForObject);
-			v.setLeistungenCode(iv.getId());
-			v.setLeistungenText(iv.getText());
-			v.setBehandlung(kons);
-			v.setZahl(count);
-	
-			TimeTool dat = new TimeTool(kons.getDatum());
-			Fall fall = kons.getFall();
-			int tp = iv.getTP(dat, fall);
-			double factor = iv.getFactor(dat, fall);
-			long preis = Math.round(tp * factor);
-			
-			v.setEk_kosten(Integer.parseInt(iv.getCost(dat).getCentsAsString()));
-			v.setVk_tp(tp);
-			v.setVk_scale(Double.toString(factor));
-			v.setVk_preis((int) preis);
-			v.setScale(100);
-			v.setScale2(100);
-	
-			flush();
-			return v;
-	
-	//		if (iv instanceof Artikel) {
-	//			((Artikel) iv).einzelAbgabe(1);
-	//		}
-	//		// call the adjusters
-	//		for (IVerrechnetAdjuster adjuster : adjusters) {
-	//			adjuster.adjust(this);
-	//		}
-		}
+		em.getTransaction().begin();
+
+		Verrechnet v = create(false);
+		em.merge(kons);
+		v.setLeistungenText(iv.getText());
+		String keyForObject = ElexisTypeMap.getKeyForObject((AbstractDBObjectIdDeleted) iv.getEntity());
+		v.setKlasse(keyForObject);
+		v.setLeistungenCode(iv.getId());
+		v.setLeistungenText(iv.getText());
+		v.setBehandlung(kons);
+		v.setZahl(count);
+
+		TimeTool dat = new TimeTool(kons.getDatum());
+		Fall fall = kons.getFall();
+		int tp = iv.getTP(dat, fall);
+		double factor = iv.getFactor(dat, fall);
+		long preis = Math.round(tp * factor);
+
+		v.setEk_kosten(Integer.parseInt(iv.getCost(dat).getCentsAsString()));
+		v.setVk_tp(tp);
+		v.setVk_scale(Double.toString(factor));
+		v.setVk_preis((int) preis);
+		v.setScale(100);
+		v.setScale2(100);
+		
+		em.getTransaction().commit();
+
+		return v;
+
+		// if (iv instanceof Artikel) {
+		// ((Artikel) iv).einzelAbgabe(1);
+		// }
+		// // call the adjusters
+		// for (IVerrechnetAdjuster adjuster : adjusters) {
+		// adjuster.adjust(this);
+		// }
+	}
 
 	public Optional<IVerrechenbar> getVerrechenbar(Verrechnet vr) {
 		String klasse = vr.getKlasse();
@@ -131,6 +135,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 	}
 
 	public void changeCount(Verrechnet foundVerrechnet, int i) {
+		throw new UnsupportedOperationException();
 		// TODO Auto-generated method stub
 
 	}

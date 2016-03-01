@@ -20,17 +20,21 @@ public class BehandlungService extends AbstractService<Behandlung> {
 
 	/**
 	 * Create a {@link Behandlung} with mandatory attributes
+	 * 
 	 * @param fall
 	 * @param mandator
 	 * @return
 	 */
 	public Behandlung create(Fall fall, Kontakt mandator) {
-		Behandlung cons = create();
+		em.getTransaction().begin();
+		Behandlung cons = create(false);
+		em.merge(fall);
+		em.merge(mandator);
 		cons.setDatum(LocalDate.now());
 		cons.setFall(fall);
 		cons.setMandant(mandator);
-//		fall.getPatient().setInfoElement("LetzteBehandlung", getId());
-		flush();
+		// TODO fall.getPatient().setInfoElement("LetzteBehandlung", getId());
+		em.getTransaction().commit();
 		return cons;
 	}
 }

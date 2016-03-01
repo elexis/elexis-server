@@ -32,13 +32,15 @@ public class FallService extends AbstractService<Fall> {
 	 * @return
 	 */
 	public Fall create(Kontakt patient, String label, String reason, String billingMethod) {
-		Fall fall = create();
+		em.getTransaction().begin();
+		Fall fall = create(false);
+		em.merge(patient);
 		fall.setPatientKontakt(patient);
 		fall.setBezeichnung(label);
 		fall.setGrund(reason);
 		fall.setDatumVon(LocalDate.now());
 		fall.getExtInfo().put(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
-		flush();
+		em.getTransaction().commit();
 		return fall;
 	}
 

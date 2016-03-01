@@ -51,11 +51,12 @@ public class KontaktService extends AbstractService<Kontakt> {
 	 * @return a managed {@link Kontakt} entity
 	 */
 	public Kontakt createPatient() {
+		em.getTransaction().begin();
 		Kontakt pat = create(false);
 		pat.setIstPatient(true);
 		pat.setIstPerson(true);
 		pat.setPatientNr(Integer.toString(findAndIncrementPatientNr()));
-		flush();
+		em.getTransaction().commit();
 		return pat;
 	}
 
