@@ -42,7 +42,6 @@
 <stringAttribute key="product" value="info.elexis.server.core.ElexisServer"/>
 <booleanAttribute key="run_in_ui_thread" value="false"/>
 <setAttribute key="selected_features">
-<setEntry value="info.elexis.server.core.connector.elexis.jpa.feature:default"/>
 <setEntry value="info.elexis.server.core.feature:default"/>
 <setEntry value="info.elexis.server.core.p2.feature:default"/>
 <setEntry value="info.elexis.server.core.platform.feature:default"/>
