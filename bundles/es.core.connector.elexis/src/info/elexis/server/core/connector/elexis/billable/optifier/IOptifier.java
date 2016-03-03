@@ -2,7 +2,7 @@ package info.elexis.server.core.connector.elexis.billable.optifier;
 
 import org.eclipse.core.runtime.IStatus;
 
-import info.elexis.server.core.connector.elexis.billable.IVerrechenbar;
+import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
@@ -25,7 +25,7 @@ public interface IOptifier<T> {
 	 *            the mandator this operation is executed for
 	 * @return Result mit der möglicherweise veränderten Liste
 	 */
-	public IStatus add(IVerrechenbar<T> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact);
+	public IStatus add(IBillable<T> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact);
 
 	/**
 	 * Eine Leistung aus einer Konsultation entfernen; die Liste ggf. anpassen

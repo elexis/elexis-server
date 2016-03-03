@@ -81,8 +81,10 @@ public class LockService implements ILockService {
 					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
 						continue;
 					}
-					if (!iLockServiceContributor.acquireLock(lockInfo)) {
-						return LockResponse.DENIED(lockInfo);
+
+					LockResponse lr = iLockServiceContributor.acquireLock(lockInfo);
+					if (!lr.isOk()) {
+						return lr;
 					}
 				}
 			}
@@ -111,8 +113,10 @@ public class LockService implements ILockService {
 					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
 						continue;
 					}
-					if (!iLockServiceContributor.releaseLock(lockInfo)) {
-						return LockResponse.DENIED(lockInfo);
+
+					LockResponse lr = iLockServiceContributor.releaseLock(lockInfo);
+					if (!lr.isOk()) {
+						return lr;
 					}
 				}
 			}

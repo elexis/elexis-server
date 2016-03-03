@@ -1,20 +1,25 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 
-import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
-import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 
 public class ArtikelstammItemServiceTest {
 
 	@Test
 	public void testGetImportSetCumulatedVersion()  {
-		 int pharma = ArtikelstammItemService.INSTANCE.getImportSetCumulatedVersion(TYPE.P);
-		 int nonPharma = ArtikelstammItemService.INSTANCE.getImportSetCumulatedVersion(TYPE.N);
-		 assertTrue("pharma version is >0: "+pharma, pharma > 0);
-		 assertTrue("nonpharma version is >0: "+nonPharma, nonPharma > 0);
+		 int pharma = ArtikelstammItemService.INSTANCE.getCurrentVersion();
+		 assertTrue("version is >0: "+pharma, pharma > 0);
+	}
+	
+	@Test
+	public void testFindAllEntries() {
+		List<ArtikelstammItem> findAll = ArtikelstammItemService.INSTANCE.findAll(true);
+		assertTrue(findAll.size()>0);
 	}
 
 }

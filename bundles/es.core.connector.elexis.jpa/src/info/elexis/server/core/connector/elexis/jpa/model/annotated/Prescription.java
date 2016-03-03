@@ -19,7 +19,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.
 @Entity
 @Table(name = "patient_artikel_joint")
 public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
-	// TODO incomplete
 	
 	@Column(length = 3)
 	private String anzahl;
@@ -28,13 +27,7 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	@Column
 	@Convert(value = "ElexisDBStoreToStringConverter")
 	private AbstractDBObjectIdDeleted artikel;
-
-	/**
-	 * @deprecated store values in {@link #artikel}
-	 */
-	@Column(length = 25)
-	private String artikelID;
-
+	
 	@Column(length = 255)
 	private String bemerkung;
 
@@ -70,14 +63,6 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setArtikel(AbstractDBObjectIdDeleted artikel) {
 		this.artikel = artikel;
-	}
-
-	public String getArtikelID() {
-		return artikelID;
-	}
-
-	public void setArtikelID(String artikelID) {
-		this.artikelID = artikelID;
 	}
 
 	public String getBemerkung() {

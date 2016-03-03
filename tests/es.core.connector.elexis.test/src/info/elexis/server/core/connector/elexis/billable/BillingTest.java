@@ -1,6 +1,9 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
@@ -10,22 +13,26 @@ import org.junit.Test;
 import ch.elexis.core.model.FallConstants;
 import info.elexis.server.core.common.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
+import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.Labor2009TarifService;
+import info.elexis.server.core.connector.elexis.services.PhysioLeistungService;
 import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 public class BillingTest {
 
 	private Kontakt patient;
+	private Kontakt userContact;
 	private Fall testFall;
 	private Kontakt mandator;
 	private Behandlung consultation;
@@ -36,6 +43,7 @@ public class BillingTest {
 		patient = KontaktService.INSTANCE.createPatient();
 		testFall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
 		mandator = KontaktService.INSTANCE.findById("td741d2ac3354679104"); // dz
+		userContact = KontaktService.INSTANCE.findById("td741d2ac3354679104"); // dz
 		consultation = BehandlungService.INSTANCE.create(testFall, mandator);
 	}
 
@@ -51,36 +59,78 @@ public class BillingTest {
 
 	@Test
 	public void testAddLaborTarif2009Billing() {
-
 		Labor2009Tarif immunglobulinValid = Labor2009TarifService.INSTANCE.findById("a6e58fc71c723bd54016760");
 		assertNotNull(immunglobulinValid);
 		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
 
-		IStatus status = validLabTarif.add(consultation, patient, mandator);
+		IStatus status = validLabTarif.add(consultation, userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
+		
+		assertEquals(12000, vr.getVk_tp());
+		assertEquals(12000, vr.getVk_preis());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
+		assertEquals(immunglobulinValid.getId(), vr.getLeistungenCode());
+		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(ElexisTypeMap.TYPE_LABOR2009TARIF, vr.getKlasse());
+		assertEquals(1, vr.getZahl());
 
 		Labor2009Tarif immunglobulinInvalid = Labor2009TarifService.INSTANCE.findById("ub49a50af4d3e51e40906");
 		VerrechenbarLabor2009Tarif invalidLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinInvalid);
 
-		status = invalidLabTarif.add(consultation, patient, mandator);
+		status = invalidLabTarif.add(consultation, userContact, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
 	}
 
 	@Test
+	public void testAddLaborTarif2009BillingFindByCode() {
+		Labor2009Tarif immunglobulinValid = Labor2009TarifService.findFromCode("1442.00").get();
+		assertNotNull(immunglobulinValid);
+		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
+		IStatus status = validLabTarif.add(consultation, userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+	}
+
+	@Test
+	public void testAddPhysioLeistungBilling() {
+		PhysioLeistung validDefault = PhysioLeistungService.findFromCode("7301").get();
+		assertNotNull(validDefault);
+		VerrechenbarPhysioLeistung validPhysTarif = new VerrechenbarPhysioLeistung(validDefault);
+		IStatus status = validPhysTarif.add(consultation, userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+		
+		assertEquals("0.92", vr.getVk_scale());
+		assertEquals(4800, vr.getVk_tp());
+		assertEquals(4416, vr.getVk_preis());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
+		assertEquals(validDefault.getId(), vr.getLeistungenCode());
+		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(ElexisTypeMap.TYPE_PHYSIOLEISTUNG, vr.getKlasse());
+		assertEquals(1, vr.getZahl());
+	}
+
+	@Test
 	public void testAddTarmedBilling() {
-		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null);
-		TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null);
-		TarmedLeistung code_000750 = TarmedLeistungService.findFromCode("00.0750", null);
+		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
+		TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null).get();
+		TarmedLeistung code_000750 = TarmedLeistungService.findFromCode("00.0750", null).get();
 		assertNotNull(code_000015);
 		assertNotNull(code_000010);
 		assertNotNull(code_000750);
 
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
 
-		IStatus status = vlt_000010.add(consultation, patient, mandator);
+		IStatus status = vlt_000010.add(consultation, userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
@@ -91,46 +141,50 @@ public class BillingTest {
 		assertEquals(1634, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 		assertEquals(100, vr.getScale2());
+		assertEquals(ElexisTypeMap.TYPE_TARMEDLEISTUNG, vr.getKlasse());
+		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(1, vr.getZahl());
 
 		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
-		status = ivlt_000750.add(consultation, patient, mandator);
+		status = ivlt_000750.add(consultation, userContact, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
 	}
 
 	@Test
 	public void testAddCompatibleAndIncompatibleTarmedBilling() {
-		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null);
-		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null);
-		TarmedLeistung tlTapingCat1 = (TarmedLeistung) TarmedLeistungService.findFromCode("01.0110", null);
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
+		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
+		TarmedLeistung tlTapingCat1 = (TarmedLeistung) TarmedLeistungService.findFromCode("01.0110", null).get();
 
 		VerrechenbarTarmedLeistung tlBaseXRayV = new VerrechenbarTarmedLeistung(tlBaseXRay);
 		VerrechenbarTarmedLeistung tlUltrasoundV = new VerrechenbarTarmedLeistung(tlUltrasound);
 		VerrechenbarTarmedLeistung tlTapingCat1V = new VerrechenbarTarmedLeistung(tlTapingCat1);
 
-		IStatus status = tlUltrasoundV.add(consultation, patient, mandator);
+		IStatus status = tlUltrasoundV.add(consultation, userContact, mandator);
 		assertTrue(status.isOK());
-		status = tlBaseXRayV.add(consultation, patient, mandator);
+		status = tlBaseXRayV.add(consultation, userContact, mandator);
 		assertFalse(status.isOK());
-		status = tlTapingCat1V.add(consultation, patient, mandator);
+		status = tlTapingCat1V.add(consultation, userContact, mandator);
 		assertTrue(status.isOK());
 	}
 
 	@Test
 	public void testAddMultipleIncompatibleTarmedBilling() {
-		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null);
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
 		VerrechenbarTarmedLeistung tlBaseXRayV = new VerrechenbarTarmedLeistung(tlBaseXRay);
 
-		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null);
+		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
 		VerrechenbarTarmedLeistung tlUltrasoundV = new VerrechenbarTarmedLeistung(tlUltrasound);
 
-		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null);
+		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null)
+				.get();
 		VerrechenbarTarmedLeistung tlBaseRadiologyHospitalV = new VerrechenbarTarmedLeistung(tlBaseRadiologyHospital);
 
-		IStatus status = tlBaseXRayV.add(consultation, patient, mandator);
+		IStatus status = tlBaseXRayV.add(consultation, userContact, mandator);
 		assertTrue(status.isOK());
-		status = tlUltrasoundV.add(consultation, patient, mandator);
+		status = tlUltrasoundV.add(consultation, userContact, mandator);
 		assertFalse(status.isOK());
-		status = tlBaseRadiologyHospitalV.add(consultation, patient, mandator);
+		status = tlBaseRadiologyHospitalV.add(consultation, userContact, mandator);
 		assertFalse(status.isOK());
 	}
 
@@ -138,10 +192,11 @@ public class BillingTest {
 	public void testIsCompatibleTarmedBilling() {
 		TarmedOptifier optifier = new TarmedOptifier();
 
-		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null);
-		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null);
-		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null);
-		TarmedLeistung tlBaseFirst5Min = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null);
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
+		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
+		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null)
+				.get();
+		TarmedLeistung tlBaseFirst5Min = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null).get();
 
 		IStatus resCompatible = optifier.isCompatible(tlBaseXRay, tlUltrasound);
 		assertFalse(resCompatible.isOK());

@@ -1,11 +1,12 @@
 package info.elexis.server.core.connector.elexis.locking;
 
 import info.elexis.server.elexis.common.types.LockInfo;
+import info.elexis.server.elexis.common.types.LockResponse;
 
 public interface ILockServiceContributor {
 
-	boolean acquireLock(LockInfo lockInfos);
+	LockResponse acquireLock(LockInfo lockInfos);
 
-	boolean releaseLock(LockInfo lockInfos);
+	LockResponse releaseLock(LockInfo lockInfos);
 
 }

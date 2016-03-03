@@ -13,99 +13,99 @@ import org.eclipse.persistence.annotations.Convert;
 public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 1)
 	private String type;
-	
+
 	@Column(length = 1)
 	private String bb;
-	
+
 	@Column(name = "CUMM_VERSION", length = 4)
 	private String cummVersion;
-	
+
 	@Column(length = 14)
 	private String gtin;
-	
+
 	@Column(length = 7)
 	private String phar;
-	
+
 	@Column(length = 50)
 	private String dscr;
-	
+
 	@Column(length = 50)
 	private String adddscr;
-	
+
 	@Column(length = 10)
 	private String atc;
-	
+
 	@Column(length = 13)
 	private String comp_gln;
-	
+
 	@Column(length = 255)
 	private String comp_name;
-	
+
 	@Column(length = 10)
 	private String pexf;
-	
+
 	@Column(length = 10)
 	private String ppub;
 
 	@Column(length = 6)
 	private String pkg_size;
-	
-	@Convert(value = "booleanStringConverter")
-	private boolean sl_entry;
-	
+
+	// @Convert(value = "booleanStringConverter")
+	// private boolean sl_entry;
+
 	@Column(length = 1)
 	private String ikscat;
 
-	@Convert(value = "booleanStringConverter")
-	private boolean limitation;
-	
+	// @Convert(value = "booleanStringConverter")
+	// private boolean limitation;
+
 	// spell error in creating table :(
-	@Column(length = 4, name="limitiation_pts")
+	@Column(length = 4, name = "limitiation_pts")
 	private String limitation_pts;
-	
+
 	@Column
 	@Lob
 	private String limitation_txt;
-	
+
 	@Column(length = 1)
 	private String generic_type;
-	
-	@Convert(value = "booleanStringConverter")
-	private boolean has_generic;
-	
-	@Convert(value = "booleanStringConverter")
-	private boolean lppv;
-	
+
+	// @Convert(value = "booleanStringConverter")
+	// private boolean has_generic;
+
+	// @Convert(value = "booleanStringConverter")
+	// private boolean lppv;
+
 	@Column(length = 6)
 	private String deductible;
-	
-	@Convert(value = "booleanStringConverter")
-	private boolean narcotic;
-	
+
+	// @Convert(value = "booleanStringConverter")
+	// private boolean narcotic;
+
 	@Column(length = 20)
 	private String narcotic_cas;
-	
+
 	@Column(length = 1)
 	private String vaccine;
-	
+
 	@JoinColumn(name = "lieferantId")
 	private Kontakt lieferant;
-	
+
 	@Convert(value = "IntegerStringConverter")
 	private int maxbestand;
-	
+
 	@Convert(value = "IntegerStringConverter")
 	private int minbestand;
-	
+
 	@Convert(value = "IntegerStringConverter")
 	private int istbestand;
-	
+
 	@Column(length = 4)
 	private String verkaufseinheit;
-	
+
 	@Column(length = 4)
 	private String anbruch;
-	
+
 	@Column(length = 10)
 	private String prodno;
 
@@ -213,28 +213,12 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.pkg_size = pkg_size;
 	}
 
-	public boolean isSl_entry() {
-		return sl_entry;
-	}
-
-	public void setSl_entry(boolean sl_entry) {
-		this.sl_entry = sl_entry;
-	}
-
 	public String getIkscat() {
 		return ikscat;
 	}
 
 	public void setIkscat(String ikscat) {
 		this.ikscat = ikscat;
-	}
-
-	public void setLimitation(boolean limitation) {
-		this.limitation = limitation;
-	}
-	
-	public boolean isLimitation() {
-		return limitation;
 	}
 
 	public String getLimitation_pts() {
@@ -261,36 +245,12 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.generic_type = generic_type;
 	}
 
-	public boolean isHas_generic() {
-		return has_generic;
-	}
-
-	public void setHas_generic(boolean has_generic) {
-		this.has_generic = has_generic;
-	}
-
-	public boolean isLppv() {
-		return lppv;
-	}
-
-	public void setLppv(boolean lppv) {
-		this.lppv = lppv;
-	}
-
 	public String getDeductible() {
 		return deductible;
 	}
 
 	public void setDeductible(String deductible) {
 		this.deductible = deductible;
-	}
-
-	public boolean isNarcotic() {
-		return narcotic;
-	}
-
-	public void setNarcotic(boolean narcotic) {
-		this.narcotic = narcotic;
 	}
 
 	public String getNarcotic_cas() {
@@ -367,7 +327,6 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Override
 	public String getLabel() {
-		return getDscr()+" ("+getAdddscr()+")";
+		return (getAdddscr().length() > 0) ? getDscr() + " (" + getAdddscr() + ")" : getDscr();
 	}
 }
-

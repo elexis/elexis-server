@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
 import ch.rgw.tools.TimeTool;
-import info.elexis.server.core.connector.elexis.billable.IVerrechenbar;
+import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
@@ -47,7 +47,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return v;
 	}
 
-	private IVerrechenbar createVerrechenbarForObject(AbstractDBObjectIdDeleted object) {
+	private IBillable createVerrechenbarForObject(AbstractDBObjectIdDeleted object) {
 		if (object instanceof TarmedLeistung) {
 			return new VerrechenbarTarmedLeistung((TarmedLeistung) object);
 		} else if (object instanceof Labor2009Tarif) {
@@ -58,7 +58,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return null;
 	}
 
-	public Verrechnet create(IVerrechenbar iv, Behandlung kons, int count) {
+	public Verrechnet create(IBillable iv, Behandlung kons, int count) {
 		em.getTransaction().begin();
 
 		Verrechnet v = create(false);
@@ -97,7 +97,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		// }
 	}
 
-	public Optional<IVerrechenbar> getVerrechenbar(Verrechnet vr) {
+	public Optional<IBillable> getVerrechenbar(Verrechnet vr) {
 		String klasse = vr.getKlasse();
 		String leistungenCode = vr.getLeistungenCode();
 

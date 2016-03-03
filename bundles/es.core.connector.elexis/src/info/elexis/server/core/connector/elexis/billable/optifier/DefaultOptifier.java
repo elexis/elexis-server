@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.common.ObjectStatus;
-import info.elexis.server.core.connector.elexis.billable.IVerrechenbar;
+import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
@@ -23,11 +23,11 @@ public class DefaultOptifier implements IOptifier {
 		return Status.OK_STATUS;
 	}
 
-	public IStatus add(final IVerrechenbar code, final Behandlung kons, final Kontakt userContact,
+	public IStatus add(final IBillable code, final Behandlung kons, final Kontakt userContact,
 			final Kontakt mandatorContact) {
 		Verrechnet foundVerrechnet = null;
 		for (Verrechnet verrechnet : kons.getVerrechnet()) {
-			Optional<IVerrechenbar> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
+			Optional<IBillable> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
 			if (!vrElement.isPresent()) {
 				// #2454 This should not happen, may however if we have to
 				// consider

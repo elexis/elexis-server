@@ -7,8 +7,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
@@ -16,6 +19,7 @@ import javax.persistence.criteria.Root;
 import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
 import at.medevit.ch.artikelstamm.ArtikelstammHelper;
 import ch.elexis.core.constants.StringConstants;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 
@@ -33,70 +37,20 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 
 	private static final String VERSION_ENTRY_ID = "VERSION";
 
-	/**
-	 * @param stammType
-	 * @return The version of the resp {@link TYPE}, or 99999 if not found or
-	 *         error
-	 */
-	public int getImportSetCumulatedVersion(TYPE stammType) {
+	public int getCurrentVersion() {
 		ArtikelstammItem ai = findById(VERSION_ENTRY_ID);
-		switch (stammType) {
-		case N:
-			return Integer.parseInt(ai.getPexf());
-		case P:
-			return Integer.parseInt(ai.getPpub());
-		}
-		return 99999;
+		return Integer.parseInt(ai.getPpub());
 	}
 
-	public void setImportSetCumulatedVersion(TYPE importStammType, Integer version) {
+	public void setCurrentVersion(Integer version) {
 		ArtikelstammItem ai = findById(VERSION_ENTRY_ID);
-		switch (importStammType) {
-		case N:
-			ai.setPexf(Integer.toString(version));
-			return;
-		case P:
-			ai.setPpub(Integer.toString(version));
-			return;
-		}
+		ai.setPpub(Integer.toString(version));
 	}
 
-	public void setImportSetDataQuality(TYPE importStammType, Integer dataquality) {
-		ArtikelstammItem version = findById(VERSION_ENTRY_ID);
-		switch (importStammType) {
-		case N:
-			version.setBb(Integer.toString(dataquality));
-			return;
-		case P:
-			version.setType(Integer.toString(dataquality));
-			return;
-		}
-	}
-
-	public void setImportSetCreationDate(TYPE importStammType, Date creationDate) {
+	public void setImportSetCreationDate(Date creationDate) {
 		ArtikelstammItem version = findById(VERSION_ENTRY_ID);
 		DateFormat df = new SimpleDateFormat("ddMMyy HH:mm");
-		switch (importStammType) {
-		case N:
-			version.setAdddscr(df.format(creationDate.getTime()));
-			return;
-		case P:
-			version.setDscr(df.format(creationDate.getTime()));
-			return;
-		}
-	}
-
-	/**
-	 * return all articles on stock, that is with a defined (>0) minbestand,
-	 * maxbestand or istbestand
-	 * 
-	 * @return
-	 */
-	public static List<ArtikelstammItem> getAllStockArticles() {
-		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.or(ArtikelstammItem_.minbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
-		qbe.or(ArtikelstammItem_.maxbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
-		return qbe.execute();
+		version.setDscr(df.format(creationDate.getTime()));
 	}
 
 	/**
@@ -146,5 +100,28 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		}
 
 		return false;
+	}
+
+	/**
+	 * return all articles on stock, that is with a defined (>0) minbestand,
+	 * maxbestand or istbestand
+	 * 
+	 * @return
+	 */
+	public static List<ArtikelstammItem> getAllStockArticles() {
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.or(ArtikelstammItem_.minbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.maxbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
+		return qbe.execute();
+	}
+
+	public static Optional<ArtikelstammItem> findByGTIN(String itemCode) {
+		try {
+			JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+			qbe.add(ArtikelstammItem_.gtin, JPAQuery.QUERY.LIKE, itemCode);
+			return Optional.ofNullable(qbe.executeGetSingleResult());
+		} catch (NoResultException | NonUniqueResultException e) {
+			return Optional.empty();
+		}
 	}
 }

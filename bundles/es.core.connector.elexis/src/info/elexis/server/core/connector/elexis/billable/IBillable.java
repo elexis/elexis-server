@@ -9,7 +9,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
-public interface IVerrechenbar<T> extends ICodeElement {
+public interface IBillable<T> extends ICodeElement {
 
 	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact);
 

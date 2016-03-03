@@ -80,7 +80,6 @@ location "http://download.eclipse.org/rt/rap/incubator/3.0/e4/target/site/" {
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
-	com.google.guava [15.0.0.v201403281430,15.0.0.v201403281430]
 	org.tukaani.xz
 	osgi.enterprise
 	javax.ejb // required by org.eclipse.persistence.jpars
@@ -121,6 +120,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.shiro.core
 	org.apache.shiro.web
 	org.apache.commons.collections4
+	com.google.guava
+	se.ugli.bigqueue
 }
 
 // RestFuse

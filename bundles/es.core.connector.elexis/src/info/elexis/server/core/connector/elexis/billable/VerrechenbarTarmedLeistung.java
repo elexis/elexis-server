@@ -13,7 +13,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistu
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
-public class VerrechenbarTarmedLeistung implements IVerrechenbar<TarmedLeistung> {
+public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 
 	private final TarmedLeistung tarmedLeistung;
 

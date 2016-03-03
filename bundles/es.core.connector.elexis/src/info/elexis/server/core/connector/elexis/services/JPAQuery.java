@@ -120,6 +120,12 @@ public class JPAQuery<T extends AbstractDBObject> {
 		return super.toString();
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws NoResultException
+	 * @throws NonUniqueResultException
+	 */
 	public T executeGetSingleResult() {
 		List<T> result = execute();
 		if (result.size() == 1) {

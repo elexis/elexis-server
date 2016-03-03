@@ -11,8 +11,10 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
+import info.elexis.server.core.connector.elexis.services.FallService;
+import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
-public class VerrechenbarLabor2009Tarif implements IVerrechenbar<Labor2009Tarif> {
+public class VerrechenbarLabor2009Tarif implements IBillable<Labor2009Tarif> {
 
 	private final Labor2009Tarif laborTarif;
 
@@ -63,14 +65,17 @@ public class VerrechenbarLabor2009Tarif implements IVerrechenbar<Labor2009Tarif>
 
 	@Override
 	public int getTP(TimeTool date, Fall fall) {
-		// TODO Auto-generated method stub
-		return 0;
+		double tp = 0.0d;
+		try {
+			tp = Double.parseDouble(laborTarif.getTp());
+		} catch (Exception e) {
+		}
+		return (int) Math.round(tp * 100.0);
 	}
 
 	@Override
-	public double getFactor(TimeTool dat, Fall fall) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getFactor(TimeTool date, Fall fall) {
+		return VerrechnetService.INSTANCE.getVKMultiplikator(date, "EAL2009");
 	}
 
 }

@@ -7,11 +7,10 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-02-26T15:31:36")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-03-03T12:13:10")
 @StaticMetamodel(Prescription.class)
 public class Prescription_ { 
 
-    public static volatile SingularAttribute<Prescription, String> artikelID;
     public static volatile SingularAttribute<Prescription, String> rezeptID;
     public static volatile SingularAttribute<Prescription, AbstractDBObjectIdDeleted> artikel;
     public static volatile SingularAttribute<Prescription, String> anzahl;

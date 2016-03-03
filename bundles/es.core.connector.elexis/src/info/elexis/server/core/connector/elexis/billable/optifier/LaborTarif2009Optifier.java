@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.Preferences;
 import info.elexis.server.core.common.ObjectStatus;
-import info.elexis.server.core.connector.elexis.billable.IVerrechenbar;
+import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -34,7 +34,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 	/**
 	 * Add and recalculate the various possible amendments
 	 */
-	public IStatus add(IVerrechenbar<Labor2009Tarif> code, Behandlung kons, Kontakt userContact,
+	public IStatus add(IBillable<Labor2009Tarif> code, Behandlung kons, Kontakt userContact,
 			Kontakt mandatorContact) {
 
 		boolean bOptify = UserconfigService.INSTANCE.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
@@ -103,7 +103,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 			int z470720 = 0;
 
 			for (Verrechnet v : list) {
-				Optional<IVerrechenbar> iv = VerrechnetService.INSTANCE.getVerrechenbar(v);
+				Optional<IBillable> iv = VerrechnetService.INSTANCE.getVerrechenbar(v);
 				if (iv.isPresent() && iv.get() instanceof Labor2009Tarif) {
 					String cc = iv.get().getCode();
 					if (cc.equals("4708.00")) { // Übergangszuschlag //$NON-NLS-1$
