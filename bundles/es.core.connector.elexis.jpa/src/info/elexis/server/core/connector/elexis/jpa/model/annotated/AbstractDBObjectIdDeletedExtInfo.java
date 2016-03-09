@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.FetchType;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 
@@ -15,10 +16,10 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisExtInfoMapConverter")
 	protected Map<Object, Object> extInfo;
-	
+
 	public Map<Object, Object> getExtInfo() {
-		if(extInfo==null) {
-			extInfo=new Hashtable<Object, Object>();
+		if (extInfo == null) {
+			extInfo = new Hashtable<Object, Object>();
 		}
 		return extInfo;
 	}
@@ -26,8 +27,13 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 	public void setExtInfo(Map<Object, Object> extInfo) {
 		this.extInfo = extInfo;
 	}
-	
-	public String getLabel(){
-		return getId()+"@"+getClass().getName()+" "+isDeleted();
+
+	@Transient
+	public String getExtInfoAsString(Object key) {
+		return (String) getExtInfo().get(key);
+	}
+
+	public String getLabel() {
+		return getId() + "@" + getClass().getName() + " " + isDeleted();
 	};
 }

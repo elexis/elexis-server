@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1457008761">
+<target name="Elexis-Server" sequenceNumber="1457098278">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -62,6 +62,7 @@
       <unit id="org.apache.commons.pool" version="1.6.0"/>
       <unit id="bouncycastle.bcprov-jdk14" version="138.0.0"/>
       <unit id="info.elexis.server.elexis.common" version="3.1.0.a20160226-1450"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.1.0.a20160301-1056"/>
       <repository location="http://download.elexis.info/elexis.3.core/snapshot/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">

@@ -1,8 +1,8 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Optional;
+
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class UserconfigService {
 			em.getTransaction().commit();
 		return obj;
 	}
-	
+
 	/**
 	 * Create a transaction and flush all open changes onto the database
 	 */
@@ -71,11 +71,11 @@ public class UserconfigService {
 		JPAQuery<Userconfig> query = new JPAQuery<Userconfig>(Userconfig.class);
 		query.add(Userconfig_.owner, JPAQuery.QUERY.EQUALS, userContact);
 		query.add(Userconfig_.param, JPAQuery.QUERY.EQUALS, key);
-		try {
-			Userconfig result = query.executeGetSingleResult();
-			String param = result.getParam();
+		Optional<Userconfig> result = query.executeGetSingleResult();
+		if (result.isPresent()) {
+			String param = result.get().getParam();
 			return ("1".equals(param) || "true".equalsIgnoreCase(param));
-		} catch (NoResultException | NonUniqueResultException e) {
+		} else {
 			return defValue;
 		}
 	}

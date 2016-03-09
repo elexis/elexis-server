@@ -73,14 +73,13 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		}
 	}
 
-	public ArtikelstammItem create(int cummulatedVersion, TYPE type, String gtin, BigInteger phar, String dscr,
-			String addscr) {
+	public ArtikelstammItem create(int cummulatedVersion, String gtin, BigInteger phar, String dscr, String addscr) {
 		em.getTransaction().begin();
-		String id = ArtikelstammHelper.createUUID(cummulatedVersion, type, gtin, phar);
+		String id = ArtikelstammHelper.createUUID(cummulatedVersion, gtin, phar, true);
 		String pharmacode = (phar != null) ? String.format("%07d", phar) : "0000000";
 		ArtikelstammItem ai = create(id, false);
 		ai.setCummVersion(Integer.toString(cummulatedVersion));
-		ai.setType(type.name());
+		// ai.setType(type.name());
 		ai.setGtin(gtin);
 		ai.setPhar(pharmacode);
 		ai.setDscr(dscr);
@@ -116,12 +115,8 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	}
 
 	public static Optional<ArtikelstammItem> findByGTIN(String itemCode) {
-		try {
-			JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-			qbe.add(ArtikelstammItem_.gtin, JPAQuery.QUERY.LIKE, itemCode);
-			return Optional.ofNullable(qbe.executeGetSingleResult());
-		} catch (NoResultException | NonUniqueResultException e) {
-			return Optional.empty();
-		}
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.add(ArtikelstammItem_.gtin, JPAQuery.QUERY.LIKE, itemCode);
+		return qbe.executeGetSingleResult();
 	}
 }

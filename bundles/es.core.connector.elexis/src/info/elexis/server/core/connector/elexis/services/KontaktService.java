@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -11,6 +12,9 @@ import javax.persistence.LockModeType;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class KontaktService extends AbstractService<Kontakt> {
 
@@ -50,12 +54,16 @@ public class KontaktService extends AbstractService<Kontakt> {
 	 * 
 	 * @return a managed {@link Kontakt} entity
 	 */
-	public Kontakt createPatient() {
+	public Kontakt createPatient(String firstName, String lastName, LocalDate dateOfBirth, Gender sex) {
 		em.getTransaction().begin();
 		Kontakt pat = create(false);
 		pat.setIstPatient(true);
 		pat.setIstPerson(true);
 		pat.setPatientNr(Integer.toString(findAndIncrementPatientNr()));
+		pat.setBezeichnung1(lastName);
+		pat.setBezeichnung2(firstName);
+		pat.setGeburtsdatum(dateOfBirth);
+		pat.setGeschlecht(sex);
 		em.getTransaction().commit();
 		return pat;
 	}
@@ -117,5 +125,20 @@ public class KontaktService extends AbstractService<Kontakt> {
 		LocalDate now = LocalDate.now();
 		long years = ChronoUnit.YEARS.between(dob, now);
 		return (int) years;
+	}
+
+	public List<Kontakt> findAllPatients() {
+		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
+		query.add(Kontakt_.istPerson, QUERY.EQUALS, true);
+		query.add(Kontakt_.istPatient, QUERY.EQUALS, true);
+		return query.execute();
+	}
+
+	public static Optional<Kontakt> findPatientByPatientNumber(int randomPatientNumber) {
+		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
+		query.add(Kontakt_.istPerson, QUERY.EQUALS, true);
+		query.add(Kontakt_.istPatient, QUERY.EQUALS, true);
+		query.add(Kontakt_.patientNr, QUERY.EQUALS, Integer.toString(randomPatientNumber));
+		return query.executeGetSingleResult();
 	}
 }

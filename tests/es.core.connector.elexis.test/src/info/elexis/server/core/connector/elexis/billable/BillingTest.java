@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
+
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
 import org.junit.Before;
@@ -21,6 +23,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tar
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
@@ -40,7 +43,7 @@ public class BillingTest {
 
 	@Before
 	public void setupPatientAndBehandlung() {
-		patient = KontaktService.INSTANCE.createPatient();
+		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
 		testFall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
 		mandator = KontaktService.INSTANCE.findById("td741d2ac3354679104"); // dz
 		userContact = KontaktService.INSTANCE.findById("td741d2ac3354679104"); // dz

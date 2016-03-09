@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,6 +27,11 @@ public class LockService implements ILockService {
 
 	private static Logger log = LoggerFactory.getLogger(LockService.class);
 
+	/**
+	 * A unique id for this instance of Elexis. Changes on every restart
+	 */
+	public static final UUID systemUuid = UUID.randomUUID();
+	
 	/**
 	 * If true, a missing lock service contributor is a severe error which
 	 * disable acquiring locks!
@@ -159,6 +165,10 @@ public class LockService implements ILockService {
 					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
 		}
 		return sb.toString();
+	}
+
+	public static String getSystemuuid() {
+		return systemUuid.toString();
 	}
 
 }

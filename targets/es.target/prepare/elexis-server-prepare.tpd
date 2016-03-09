@@ -61,6 +61,7 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
 	info.elexis.server.elexis.common
+	ch.elexis.core.hl7.v2x
 }
 
 location "http://download.elexis.info/elexis.3.base/snapshot/" {
@@ -95,16 +96,15 @@ location "http://download.eclipse.org/ecp/releases/releases_target_17/" {
 
 // for es.core.connector.elexis.jpa
 location "http://download.eclipse.org/rt/eclipselink/updates/" {
-	org.eclipse.persistence.jpa.feature.group 
-	org.eclipse.persistence.moxy.feature.group
-	org.eclipse.persistence.jpars
-	org.eclipse.persistence.dbws.feature.group
+	org.eclipse.persistence.jpa.feature.group
+	org.eclipse.persistence.moxy.feature.group 
+	org.eclipse.persistence.jpars 
+	org.eclipse.persistence.dbws.feature.group 
 	javax.validation
 }
 
 location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 	org.eclipse.gemini.jpa.feature.feature.group
-
 }
 
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies

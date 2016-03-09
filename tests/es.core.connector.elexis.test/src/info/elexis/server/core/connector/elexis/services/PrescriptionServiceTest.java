@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.After;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 
 public class PrescriptionServiceTest {
 
@@ -20,7 +22,7 @@ public class PrescriptionServiceTest {
 
 	@Before
 	public void setupPatientAndBehandlung() {
-		patient = KontaktService.INSTANCE.createPatient();
+		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.UNDEFINED);
 		article = ArtikelstammItemService.INSTANCE.findById("0768056318007949855760001");
 		product = ArtikelstammItemService.INSTANCE.findById("563182");
 		assertNotNull(article);

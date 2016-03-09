@@ -26,7 +26,8 @@ public class ConfigService {
 	}
 
 	private ConfigService() {
-		new Config(); // TODO refactor make sure the jpa bundle is loaded before continuing
+		new Config(); // TODO refactor make sure the jpa bundle is loaded before
+						// continuing
 		em = ElexisEntityManager.createEntityManager();
 	}
 
@@ -40,24 +41,34 @@ public class ConfigService {
 	public Config findById(Object id) {
 		return em.find(Config.class, id);
 	}
-	
+
 	public String get(String key, String defValue) {
 		Config val = findById(key);
-		if(val!=null) {
+		if (val != null) {
 			return val.getWert();
 		} else {
 			return defValue;
 		}
 	}
-	
-	public boolean set(String key, String value){
-		Config val = findById(key);
+
+	/**
+	 * synchronous set
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public boolean set(String key, String value) {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		em.getTransaction().begin();
+		Config val = em.find(Config.class, key);
 		if (val == null) {
-			val = create(key, true);	
+			val = create(key, true);
 			em.persist(val);
 		}
 		val.setWert(value);
-		flush();
+		em.getTransaction().commit();
+		em.close();
 		return true;
 	}
 
@@ -79,7 +90,7 @@ public class ConfigService {
 			em.getTransaction().commit();
 		return obj;
 	}
-	
+
 	/**
 	 * Create a transaction and flush all open changes onto the database
 	 */
@@ -91,7 +102,7 @@ public class ConfigService {
 
 	public LocalDate getDate(String key) {
 		Config value = findById(key);
-		if(value!=null) {
+		if (value != null) {
 			TimeTool tt = new TimeTool(value.getWert());
 			return tt.toZonedDateTime().toLocalDate();
 		}
@@ -100,12 +111,13 @@ public class ConfigService {
 
 	/**
 	 * Get all nodes starting with nodePrefix
+	 * 
 	 * @param nodePrefix
 	 * @return
 	 */
 	public List<Config> getNodes(String nodePrefix) {
 		JPAQuery<Config> query = new JPAQuery<Config>(Config.class);
-		query.add(Config_.param, JPAQuery.QUERY.LIKE, nodePrefix+"%");
+		query.add(Config_.param, JPAQuery.QUERY.LIKE, nodePrefix + "%");
 		return query.execute();
 	}
 }

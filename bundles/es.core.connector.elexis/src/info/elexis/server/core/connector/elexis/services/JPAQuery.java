@@ -3,9 +3,8 @@ package info.elexis.server.core.connector.elexis.services;
 import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -105,7 +104,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	public List<T> execute() {
 		cq = cq.where(predicate);
 		if (!includeDeleted) {
-			add(AbstractDBObjectIdDeleted_.id, QUERY.EQUALS, "0");
+			add(AbstractDBObjectIdDeleted_.id, QUERY.EQUALS, false);
 		}
 		query = createEntityManager().createQuery(cq);
 		return query.getResultList();
@@ -121,20 +120,14 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	/**
-	 * 
-	 * @return
-	 * @throws NoResultException
-	 * @throws NonUniqueResultException
+	 * @return the element if the respective list contains exactly one element
 	 */
-	public T executeGetSingleResult() {
+	public Optional<T> executeGetSingleResult() {
 		List<T> result = execute();
 		if (result.size() == 1) {
-			return result.get(0);
-		} else if (result.size() == 0) {
-			throw new NoResultException();
-		} else {
-			throw new NonUniqueResultException();
+			return Optional.of(result.get(0));
 		}
+		return Optional.empty();
 	}
 
 }
