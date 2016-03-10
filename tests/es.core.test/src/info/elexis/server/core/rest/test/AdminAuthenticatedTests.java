@@ -17,6 +17,8 @@ import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.Header;
 import com.eclipsesource.restfuse.annotation.HttpTest;
 
+import info.elexis.server.core.rest.test.common.TestHelper;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(HttpJUnitRunner.class)
 public class AdminAuthenticatedTests {
@@ -39,12 +41,19 @@ public class AdminAuthenticatedTests {
 
 	// initializes the admin session, has to be executed as first test
 	@HttpTest(method = Method.GET, path = LOGIN + "/admin", headers = { @Header(name = "encoded", value = "admin") })
-	public void testAA_authenticateAgainstService() {
+	public void testAA_authenticateAgainstDefaultAuthorizingRealm() {
 		String body = response.getBody();
 		assertOk(response);
 		AdminAuthenticatedTests.adminSessionId = body;
 	}
 	
+//	@HttpTest(method = Method.GET, path = LOGIN + "/dz", headers = { @Header(name = "encoded", value = "dz") })
+//	public void testAB_authenticateAgainstElexisAuthorizingRealm() {
+//		String body = response.getBody();
+//		assertOk(response);
+//		AdminAuthenticatedTests.adminSessionId = body;
+//	}
+//	
 	@HttpTest(method = Method.POST, path = ELEXIS_CONNECTION, content = "invalidStuff")
 	public void testSetElexisConnectionPostInvalidObject() {
 		assertBadRequest(response);

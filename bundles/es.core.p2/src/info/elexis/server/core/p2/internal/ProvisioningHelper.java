@@ -25,7 +25,7 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.common.StatusUtil;
+import info.elexis.server.core.common.status.StatusUtil;
 
 public class ProvisioningHelper {
 
@@ -117,6 +117,8 @@ public class ProvisioningHelper {
 		if (status.getSeverity() != IStatus.ERROR) {
 			IStatus stat = ProvisioningHelper.performOperation(operation);
 			log.info("UPDATED {} / {}", stat.getCode(), stat.getMessage());
+			// TODO Show single updates
+			// TODO perform restart
 			if(stat.isMultiStatus()) {
 				StatusUtil.printStatus(log, stat);
 			}
