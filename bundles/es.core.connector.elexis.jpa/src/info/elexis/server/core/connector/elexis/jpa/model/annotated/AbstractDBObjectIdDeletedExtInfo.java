@@ -15,12 +15,9 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisExtInfoMapConverter")
-	protected Map<Object, Object> extInfo;
+	protected Map<Object, Object> extInfo = new Hashtable<Object, Object>();
 
 	public Map<Object, Object> getExtInfo() {
-		if (extInfo == null) {
-			extInfo = new Hashtable<Object, Object>();
-		}
 		return extInfo;
 	}
 
@@ -33,6 +30,7 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 		return (String) getExtInfo().get(key);
 	}
 
+	@Transient
 	public String getLabel() {
 		return getId() + "@" + getClass().getName() + " " + isDeleted();
 	};

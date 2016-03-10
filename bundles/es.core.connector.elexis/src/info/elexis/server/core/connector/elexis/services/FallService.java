@@ -25,6 +25,7 @@ public class FallService extends AbstractService<Fall> {
 
 	/**
 	 * create a {@link Fall} with the resp. mandatory attributes
+	 * 
 	 * @param patient
 	 * @param label
 	 * @param reason

@@ -15,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -25,6 +24,8 @@ import java.util.zip.ZipOutputStream;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Converts the Elexis extInfo byte array into the contained Map<Object, Object>. 
@@ -37,6 +38,8 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class ElexisExtInfoMapConverter implements Converter {
 	
+	private Logger log = LoggerFactory.getLogger(ElexisExtInfoMapConverter.class);
+	
 	private static final long serialVersionUID = -1939779538183350309L;
 
 	@Override
@@ -44,10 +47,11 @@ public class ElexisExtInfoMapConverter implements Converter {
 	
 	@Override
 	public byte[] convertObjectValueToDataValue(Object objectValue, Session session){
-		if (objectValue instanceof HashMap) {
+		if (objectValue instanceof Hashtable) {
 			Hashtable<Object, Object> ov = (Hashtable<Object, Object>) objectValue;
 			return flatten(ov);
 		}
+		log.error("Could not convert into byte array "+objectValue);
 		return null;
 	}
 	
