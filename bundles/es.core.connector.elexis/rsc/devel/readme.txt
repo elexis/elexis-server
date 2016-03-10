@@ -1,0 +1,1 @@
+Sample files required for usage, put them into your home directory /elexis-server/

@@ -16,10 +16,11 @@ import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
-import info.elexis.server.core.util.CoreUtil;
+
 
 public class ElexisDBConnection {
 

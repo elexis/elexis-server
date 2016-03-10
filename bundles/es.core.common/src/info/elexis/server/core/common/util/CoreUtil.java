@@ -1,4 +1,4 @@
-package info.elexis.server.core.util;
+package info.elexis.server.core.common.util;
 
 import java.io.File;
 import java.nio.file.Path;

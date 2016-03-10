@@ -1,10 +1,13 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -61,6 +64,10 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 25)
 	private String versNummer;
 
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FallID", insertable = false)
+	protected List<Behandlung> consultations;
+	
 	public String getBetriebsNummer() {
 		return this.betriebsNummer;
 	}
@@ -169,6 +176,14 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setVersNummer(String versNummer) {
 		this.versNummer = versNummer;
+	}
+	
+	public List<Behandlung> getConsultations() {
+		return consultations;
+	}
+	
+	public void setConsultations(List<Behandlung> consultations) {
+		this.consultations = consultations;
 	}
 
 }

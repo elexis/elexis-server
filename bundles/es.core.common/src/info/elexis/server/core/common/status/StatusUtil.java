@@ -1,4 +1,4 @@
-package info.elexis.server.core.common;
+package info.elexis.server.core.common.status;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

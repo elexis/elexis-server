@@ -28,9 +28,9 @@ public class KontaktService extends AbstractService<Kontakt> {
 		super(Kontakt.class);
 	}
 
-	private final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	private static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-	public String getLabel(Kontakt k, boolean includeDateOfBirth) {
+	public static String getLabel(Kontakt k, boolean includeDateOfBirth) {
 		if (k.isIstPerson()) {
 			boolean istPatient = k.isIstPatient();
 			if (istPatient) {

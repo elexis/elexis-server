@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Elexis Server Core Common
+Bundle-SymbolicName: info.elexis.server.core.common
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.11.1"
+Import-Package: org.slf4j
+Export-Package: info.elexis.server.core.common.status,
+ info.elexis.server.core.common.util

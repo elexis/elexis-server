@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.model.FallConstants;
-import info.elexis.server.core.common.ObjectStatus;
+import info.elexis.server.core.common.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -19,7 +21,7 @@ public class ShiroAuthorizingRealmsManager {
 
 	private static Logger log = LoggerFactory.getLogger(ShiroAuthorizingRealmsManager.class);
 	
-	private static SecurityManager shiroSecurityManager;
+	private static DefaultSecurityManager shiroSecurityManager;
 	private static Collection<Realm> allRealms = new LinkedList<Realm>();
 	
 	static {
@@ -52,7 +54,15 @@ public class ShiroAuthorizingRealmsManager {
 	
 	private static synchronized void updateSecurityManager() {
 		Collection<Realm> allRealms = ShiroAuthorizingRealmsManager.getAllRealms();
+		
 		shiroSecurityManager = new DefaultSecurityManager(allRealms);
+		
+		
+		ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
+		FirstSuccessfulStrategy firstSuccessfulStrategy = new FirstSuccessfulStrategy();
+		authenticator.setAuthenticationStrategy(firstSuccessfulStrategy);
+		shiroSecurityManager.setAuthenticator(authenticator);
+
 		SecurityUtils.setSecurityManager(shiroSecurityManager);
 	}
 	

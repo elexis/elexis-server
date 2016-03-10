@@ -5,8 +5,8 @@ import java.nio.file.Path;
 
 import org.apache.shiro.realm.text.IniRealm;
 
+import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.internal.Activator;
-import info.elexis.server.core.util.CoreUtil;
 
 /**
  * This authorization realm is always included. If no ${user.home}/shiro.ini is

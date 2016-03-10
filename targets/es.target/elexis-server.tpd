@@ -30,9 +30,11 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.codec
 	org.apache.commons.exec
 	org.apache.commons.io [2.2.0,3.0.0)
+	org.apache.commons.beanutils
 	org.junit
 	org.hamcrest.core
 	org.hamcrest.library
+	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
@@ -51,6 +53,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
 	info.elexis.server.elexis.common
+	ch.elexis.core.hl7.v2x
 	
 	at.medevit.ch.artikelstamm
 	
@@ -62,7 +65,6 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.eclipse.rap.rwt
 	org.eclipse.rap.rwt.osgi
 	
-	com.google.guava [15.0.0.v201403281430,15.0.0.v201403281430]
 	org.tukaani.xz
 	osgi.enterprise
 	javax.ejb // required by org.eclipse.persistence.jpars
@@ -78,7 +80,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
-	com.mashape.unirest.java
+com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
 	org.apache.httpcomponents.httpclient
@@ -87,7 +89,10 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.httpcomponents.httpcore-nio
 	org.json
 	org.apache.shiro.core
+	org.apache.shiro.web
 	org.apache.commons.collections4
+	com.google.guava
+	se.ugli.bigqueue
 	
 	com.eclipsesource.restfuse
 }

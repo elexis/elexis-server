@@ -89,16 +89,11 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2015082115334
 	javax.xml.soap // required by org.eclipse.persistence.jpars
 }
 
-// EMF Forms
-location "http://download.eclipse.org/ecp/releases/releases_target_17/" {
-	
-}
-
 // for es.core.connector.elexis.jpa
 location "http://download.eclipse.org/rt/eclipselink/updates/" {
 	org.eclipse.persistence.jpa.feature.group
 	org.eclipse.persistence.moxy.feature.group 
-	org.eclipse.persistence.jpars 
+	org.eclipse.persistence.jpars
 	org.eclipse.persistence.dbws.feature.group 
 	javax.validation
 }

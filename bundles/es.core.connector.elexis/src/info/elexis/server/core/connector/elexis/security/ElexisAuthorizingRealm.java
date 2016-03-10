@@ -23,7 +23,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
  * @author marco
  *
  */
-@Component(service = Realm.class, immediate = true, enabled = false)
+@Component(service = Realm.class, enabled = false)
 public class ElexisAuthorizingRealm extends AuthorizingRealm {
 
 	public static final String REALM_NAME = "elexis-db-realm";

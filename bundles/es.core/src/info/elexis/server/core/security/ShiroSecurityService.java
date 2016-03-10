@@ -22,7 +22,7 @@ public class ShiroSecurityService {
 	private static Logger log = LoggerFactory.getLogger(ShiroSecurityService.class);
 
 	private static SecurityManager shiroSecurityManager = ShiroAuthorizingRealmsManager.getSecurityManager();
-
+	
 	public static Optional<Serializable> authenticate(String userID, char[] password) {
 		log.info("Authenticating " + userID + " @ " + shiroSecurityManager);
 
@@ -30,7 +30,7 @@ public class ShiroSecurityService {
 		Subject subject = new Subject.Builder().buildSubject();
 		try {
 			subject.login(token);
-
+			
 			Session session = subject.getSession();
 			log.info("Created session " + session.getId() + " for user " + userID + " @ " + shiroSecurityManager);
 			return Optional.of(session.getId());

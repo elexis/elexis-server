@@ -16,6 +16,7 @@
 	</parent>
 
 	<modules>
+		<module>es.core.common</module>
               	<module>es.core</module>
                	<module>es.core.logging</module>
                	<module>es.core.p2</module>
