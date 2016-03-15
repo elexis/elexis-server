@@ -17,6 +17,8 @@ import info.elexis.server.core.common.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
+import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -539,7 +541,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		String klasse = v.getKlasse();
 		String leistungenCode = v.getLeistungenCode();
 
-		if (klasse.equals(tmpl.getClass().getName())) {
+		String keyForObject = ElexisTypeMap.getKeyForObject((AbstractDBObjectIdDeleted) tmpl.getEntity());
+		
+		if (klasse.equals(keyForObject)) {
 			if (leistungenCode.equals(tmpl.getId())) {
 				return true;
 			}
