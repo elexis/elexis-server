@@ -45,6 +45,7 @@ public class ElexisExtInfoMapConverter implements Converter {
 	@Override
 	public void initialize(DatabaseMapping mapping, Session session){}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public byte[] convertObjectValueToDataValue(Object objectValue, Session session){
 		if (objectValue instanceof Hashtable) {

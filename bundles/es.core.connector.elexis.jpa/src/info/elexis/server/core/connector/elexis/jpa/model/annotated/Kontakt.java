@@ -191,6 +191,12 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	public Kontakt() {
 	}
 
+	@Override
+	public String getLabel() {
+		String label = super.getLabel();
+		return label+" - "+getBezeichnung1()+","+getBezeichnung2()+","+getBezeichnung3();
+	}
+	
 	public String getAllergien() {
 		return allergien;
 	}
