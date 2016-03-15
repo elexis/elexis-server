@@ -64,6 +64,8 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
 	ch.elexis.core.hl7.v2x
+	org.apache.poi
+	ch.elexis.core.importer.div
 }
 
 location "http://download.elexis.info/elexis.3.base/snapshot/" {
