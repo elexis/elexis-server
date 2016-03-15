@@ -50,6 +50,12 @@ public class FallService extends AbstractService<Fall> {
 		if (StringTool.isNothing(ret)) {
 			String[] systeme = getAbrechnungsSysteme();
 			String altGesetz = fall.getGesetz();
+			if(altGesetz==null) {
+				altGesetz = (String) fall.getExtInfo().get("xGesetz");
+			}
+			if(altGesetz==null) {
+				altGesetz = "";
+			}
 			int idx = StringTool.getIndex(systeme, altGesetz);
 			if (idx == -1) {
 				ret = systeme[0];
