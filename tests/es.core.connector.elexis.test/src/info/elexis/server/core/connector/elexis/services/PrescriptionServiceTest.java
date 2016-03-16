@@ -9,10 +9,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 
 public class PrescriptionServiceTest {
 

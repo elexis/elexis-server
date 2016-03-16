@@ -40,4 +40,8 @@ public class ObjectStatus extends Status {
 	public static ObjectStatus CANCEL_STATUS(Object object) {
 		return new ObjectStatus(CANCEL, unknownId, CANCEL, "cancel", null, object);
 	}
+	
+	public static ObjectStatus INFO_STATUS(Object object) {
+		return new ObjectStatus(INFO, unknownId, INFO, "info", null, object);
+	}
 }

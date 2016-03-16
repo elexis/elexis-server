@@ -76,12 +76,12 @@ public class ElexisTypeMap {
 	public static String getKeyForObject(AbstractDBObjectIdDeleted obj) {
 		if (obj instanceof Kontakt) {
 			Kontakt k = (Kontakt) obj;
-			if (k.isIstPerson()) {
-				if (k.isIstPatient()) {
+			if (k.isPerson()) {
+				if (k.isPatient()) {
 					return TYPE_PATIENT;
 				}
 				return TYPE_PERSON;
-			} else if (k.isIstOrganisation()) {
+			} else if (k.isOrganisation()) {
 				return TYPE_ORGANISATION;
 			}
 

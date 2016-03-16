@@ -12,10 +12,10 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.elexis.core.model.PatientConstants;
+import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 
 public class KontaktServiceTest {
@@ -54,7 +54,7 @@ public class KontaktServiceTest {
 		KontaktService.INSTANCE.flush();
 		
 		assertNotNull(id);
-		assertNotNull(patient.getPatientNr());
+		assertNotNull(patient.getCode());
 
 		Kontakt findById = KontaktService.INSTANCE.findById(id);
 		assertNotNull(findById);

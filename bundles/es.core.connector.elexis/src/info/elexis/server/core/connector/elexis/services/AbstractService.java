@@ -28,7 +28,7 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 
 	private final Class<T> clazz;
 
-	private static Logger log = LoggerFactory.getLogger(AbstractService.class);
+	protected static Logger log = LoggerFactory.getLogger(AbstractService.class);
 
 	private EntityTransaction transaction;
 

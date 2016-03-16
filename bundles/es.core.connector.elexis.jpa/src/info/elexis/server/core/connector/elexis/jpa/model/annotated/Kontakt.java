@@ -24,6 +24,7 @@ import javax.persistence.Lob;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.Cache;
@@ -33,11 +34,14 @@ import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.types.ContactType;
+import ch.elexis.core.types.Country;
+import ch.elexis.core.types.Gender;
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Country;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 
 /**
  * The persistent class for the Elexis KONTAKT database table. Valid from DB
@@ -49,24 +53,26 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender
 @Table(name = "KONTAKT")
 @XmlRootElement(name = "contact")
 @Cache(type = CacheType.NONE)
-public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Serializable {
+public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Serializable, IPatient {
 	protected static final long serialVersionUID = 1L;
 
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
-	protected String allergien;
+	@Column(name = "allergien")
+	protected String allergies;
 
 	@Lob()
 	protected String anschrift;
 
 	@Lob()
-	protected String bemerkung;
+	@Column(name = "bemerkung")
+	protected String comment;
 
-	@Column(length = 255)
-	protected String bezeichnung1;
+	@Column(length = 255, name = "bezeichnung1")
+	protected String description1;
 
-	@Column(length = 255)
-	protected String bezeichnung2;
+	@Column(length = 255, name = "bezeichnung2")
+	protected String description2;
 
 	/**
 	 * Contains the following values in the respective instantiations of contact
@@ -75,8 +81,8 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	 * username/mandant short name isIstOrganisation(): contact person
 	 * isIstLabor(): ?
 	 */
-	@Column(length = 255)
-	protected String bezeichnung3;
+	@Column(length = 255, name = "bezeichnung3")
+	protected String description3;
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisDBCompressedStringConverter")
@@ -87,50 +93,64 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	// @Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisDBCompressedStringConverter")
-	protected String famAnamnese;
+	@Column(name = "famAnamnese")
+	protected String familyAnamnese;
+
+	// @Basic(fetch = FetchType.LAZY)
+	@Convert(value = "ElexisDBCompressedStringConverter")
+	@Column(name = "persAnamnese")
+	protected String personalAnamnese;
 
 	@Column(length = 30)
 	protected String fax;
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	protected LocalDate geburtsdatum;
+	@Column(name = "geburtsdatum")
+	protected LocalDate dob;
 
 	@Converter(name = "FuzzyGenderToEnumConverter", converterClass = FuzzyGenderToEnumConverter.class)
 	@Convert("FuzzyGenderToEnumConverter")
-	protected Gender geschlecht;
+	@Column(name = "geschlecht")
+	protected Gender gender;
 
 	@Column(length = 10)
 	protected String gruppe;
 
 	@Convert("booleanStringConverter")
-	protected boolean istPerson;
+	@Column(name = "istPerson")
+	protected boolean person;
 
 	@Convert("booleanStringConverter")
-	protected boolean istPatient;
+	@Column(name = "istPatient")
+	protected boolean patient;
 
 	@Convert("booleanStringConverter")
-	protected boolean istAnwender;
+	@Column(name = "istAnwender")
+	protected boolean user;
 
 	@Convert("booleanStringConverter")
-	protected boolean istMandant;
+	@Column(name = "istMandant")
+	protected boolean mandator;
 
 	@Convert("booleanStringConverter")
-	protected boolean istOrganisation;
+	@Column(name = "istOrganisation")
+	protected boolean organisation;
 
 	@Convert("booleanStringConverter")
-	protected boolean istLabor;
+	@Column(name = "istLabor")
+	protected boolean laboratory;
 
-	@Column(length = 3)
+	@Column(length = 3, name = "land")
 	@Converter(name = "FuzzyCountryToEnumConverter", converterClass = FuzzyCountryToEnumConverter.class)
 	@Convert(value = "FuzzyCountryToEnumConverter")
-	protected Country land;
+	protected Country country;
 
-	@Column(length = 30)
-	protected String natelNr;
+	@Column(length = 30, name = "natelNr")
+	protected String mobile;
 
-	@Column(length = 255)
-	protected String ort;
+	@Column(length = 255, name = "ort")
+	protected String city;
 
 	/**
 	 * Contains according to contact-type manifestation:<br>
@@ -138,32 +158,33 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	 * isOrganization /<br>
 	 * isPerson: ID
 	 */
-	@Column(length = 40)
-	protected String patientNr;
+	@Column(length = 40, name = "patientNr")
+	protected String code;
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisDBCompressedStringConverter")
 	protected String persAnamnese;
 
-	@Column(length = 6)
-	protected String plz;
+	@Column(length = 6, name = "plz")
+	protected String zip;
 
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
-	protected String risiken;
+	@Column(name = "risiken")
+	protected String risk;
 
-	@Column(length = 255)
-	protected String strasse;
+	@Column(length = 255, name = "strasse")
+	protected String street;
 
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected byte[] sysAnamnese;
 
-	@Column(length = 30)
-	protected String telefon1;
+	@Column(length = 30, name = "telefon1")
+	protected String phone1;
 
-	@Column(length = 30)
-	protected String telefon2;
+	@Column(length = 30, name = "telefon2")
+	protected String phone2;
 
 	@Column(length = 255)
 	protected String titel;
@@ -194,15 +215,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Override
 	public String getLabel() {
 		String label = super.getLabel();
-		return label+" - "+getBezeichnung1()+","+getBezeichnung2()+","+getBezeichnung3();
-	}
-	
-	public String getAllergien() {
-		return allergien;
-	}
-
-	public void setAllergien(String allergien) {
-		this.allergien = allergien;
+		return label + " - " + getDescription1() + "," + getDescription2() + "," + getDescription3();
 	}
 
 	public String getAnschrift() {
@@ -213,36 +226,12 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.anschrift = anschrift;
 	}
 
-	public String getBemerkung() {
-		return bemerkung;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
-	public void setBemerkung(String bemerkung) {
-		this.bemerkung = bemerkung;
-	}
-
-	public String getBezeichnung1() {
-		return bezeichnung1;
-	}
-
-	public void setBezeichnung1(String bezeichnung1) {
-		this.bezeichnung1 = bezeichnung1;
-	}
-
-	public String getBezeichnung2() {
-		return bezeichnung2;
-	}
-
-	public void setBezeichnung2(String bezeichnung2) {
-		this.bezeichnung2 = bezeichnung2;
-	}
-
-	public String getBezeichnung3() {
-		return bezeichnung3;
-	}
-
-	public void setBezeichnung3(String bezeichnung3) {
-		this.bezeichnung3 = bezeichnung3;
+	public String getComment() {
+		return comment;
 	}
 
 	public String getDiagnosen() {
@@ -261,12 +250,12 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.email = email;
 	}
 
-	public String getFamAnamnese() {
-		return famAnamnese;
+	public String getFamilyAnamnese() {
+		return familyAnamnese;
 	}
 
-	public void setFamAnamnese(String famAnamnese) {
-		this.famAnamnese = famAnamnese;
+	public void setFamilyAnamnese(String familyAnamnese) {
+		this.familyAnamnese = familyAnamnese;
 	}
 
 	public String getFax() {
@@ -277,23 +266,12 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.fax = fax;
 	}
 
-	/**
-	 * @return date if value is set, else <code>null</code>
-	 */
-	public LocalDate getGeburtsdatum() {
-		return geburtsdatum;
+	public LocalDate getDob() {
+		return dob;
 	}
 
-	public void setGeburtsdatum(LocalDate geburtsdatum) {
-		this.geburtsdatum = geburtsdatum;
-	}
-
-	public Gender getGeschlecht() {
-		return geschlecht;
-	}
-
-	public void setGeschlecht(Gender geschlecht) {
-		this.geschlecht = geschlecht;
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
 	}
 
 	public String getGruppe() {
@@ -304,68 +282,36 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.gruppe = gruppe;
 	}
 
-	public boolean isIstAnwender() {
-		return istAnwender;
+	public boolean isUser() {
+		return user;
 	}
 
-	public void setIstAnwender(boolean istAnwender) {
-		this.istAnwender = istAnwender;
+	public void setUser(boolean user) {
+		this.user = user;
 	}
 
-	public boolean isIstLabor() {
-		return istLabor;
+	public boolean isLaboratory() {
+		return laboratory;
+	}
+	
+	public void setLaboratory(boolean laboratory) {
+		this.laboratory = laboratory;
 	}
 
-	public void setIstLabor(boolean istLabor) {
-		this.istLabor = istLabor;
+	public String getCity() {
+		return city;
 	}
 
-	public boolean isIstMandant() {
-		return istMandant;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
-	public void setIstMandant(boolean istMandant) {
-		this.istMandant = istMandant;
+	public String getCode() {
+		return code;
 	}
 
-	public boolean isIstPatient() {
-		return istPatient;
-	}
-
-	public void setIstPatient(boolean istPatient) {
-		this.istPatient = istPatient;
-	}
-
-	public Country getLand() {
-		return land;
-	}
-
-	public void setLand(Country land) {
-		this.land = land;
-	}
-
-	public String getNatelNr() {
-		return natelNr;
-	}
-
-	public void setNatelNr(String natelNr) {
-		this.natelNr = natelNr;
-	}
-
-	public String getOrt() {
-		return ort;
-	}
-
-	public void setOrt(String ort) {
-		this.ort = ort;
-	}
-
-	public String getPatientNr() {
-		return patientNr;
-	}
-
-	public void setPatientNr(String patientNr) {
-		this.patientNr = patientNr;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getPersAnamnese() {
@@ -376,28 +322,12 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.persAnamnese = persAnamnese;
 	}
 
-	public String getPlz() {
-		return plz;
+	public String getRisk() {
+		return risk;
 	}
 
-	public void setPlz(String plz) {
-		this.plz = plz;
-	}
-
-	public String getRisiken() {
-		return risiken;
-	}
-
-	public void setRisiken(String risiken) {
-		this.risiken = risiken;
-	}
-
-	public String getStrasse() {
-		return strasse;
-	}
-
-	public void setStrasse(String strasse) {
-		this.strasse = strasse;
+	public void setRisk(String risk) {
+		this.risk = risk;
 	}
 
 	public byte[] getSysAnamnese() {
@@ -406,22 +336,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	public void setSysAnamnese(byte[] sysAnamnese) {
 		this.sysAnamnese = sysAnamnese;
-	}
-
-	public String getTelefon1() {
-		return telefon1;
-	}
-
-	public void setTelefon1(String telefon1) {
-		this.telefon1 = telefon1;
-	}
-
-	public String getTelefon2() {
-		return telefon2;
-	}
-
-	public void setTelefon2(String telefon2) {
-		this.telefon2 = telefon2;
 	}
 
 	public String getTitel() {
@@ -448,22 +362,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.website = website;
 	}
 
-	public boolean isIstPerson() {
-		return istPerson;
-	}
-
-	public void setIstPerson(boolean istPerson) {
-		this.istPerson = istPerson;
-	}
-
-	public boolean isIstOrganisation() {
-		return istOrganisation;
-	}
-
-	public void setIstOrganisation(boolean istOrganisation) {
-		this.istOrganisation = istOrganisation;
-	}
-
 	public Map<String, Xid> getXids() {
 		return xids;
 	}
@@ -486,5 +384,197 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	public void setUserconfig(List<Userconfig> userconfig) {
 		this.userconfig = userconfig;
+	}
+
+	public String getPhone2() {
+		return phone2;
+	}
+
+	public void setPhone2(String phone2) {
+		this.phone2 = phone2;
+	}
+
+	public String getDescription1() {
+		return description1;
+	}
+
+	public void setDescription1(String description1) {
+		this.description1 = description1;
+	}
+
+	public String getDescription2() {
+		return description2;
+	}
+
+	public void setDescription2(String description2) {
+		this.description2 = description2;
+	}
+
+	public String getDescription3() {
+		return description3;
+	}
+
+	public void setDescription3(String description3) {
+		this.description3 = description3;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getPhone1() {
+		return phone1;
+	}
+
+	public void setPhone1(String phone1) {
+		this.phone1 = phone1;
+	}
+
+	public boolean isPerson() {
+		return person;
+	}
+
+	public void setPerson(boolean person) {
+		this.person = person;
+	}
+
+	public boolean isPatient() {
+		return patient;
+	}
+
+	public void setPatient(boolean patient) {
+		this.patient = patient;
+	}
+
+	public boolean isMandator() {
+		return mandator;
+	}
+
+	public void setMandator(boolean mandator) {
+		this.mandator = mandator;
+	}
+
+	public boolean isOrganisation() {
+		return organisation;
+	}
+
+	public void setOrganisation(boolean organisation) {
+		this.organisation = organisation;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
+	}
+
+	@Override
+	@Transient
+	public ContactType getContactType() {
+		if (isOrganisation()) {
+			if (isLaboratory()) {
+				return ContactType.LABORATORY;
+			}
+			return ContactType.ORGANIZATION;
+		} else {
+			if (isPatient()) {
+				return ContactType.PATIENT;
+			}
+			return ContactType.PERSON;
+		}
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
+	public String getAllergies() {
+		return allergies;
+	}
+
+	public void setAllergies(String allergies) {
+		this.allergies = allergies;
+	}
+
+	public String getPersonalAnamnese() {
+		return personalAnamnese;
+	}
+
+	public void setPersonalAnamnese(String personalAnamnese) {
+		this.personalAnamnese = personalAnamnese;
+	}
+
+	@Override
+	@Transient
+	public void setContactType(ContactType value) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	@Transient
+	public TimeTool getDateOfBirth() {
+		return new TimeTool(getDob());
+	}
+
+	@Override
+	@Transient
+	public void setDateOfBirth(TimeTool value) {
+		setDob(value.toLocalDate());
+	}
+
+	@Override
+	@Transient
+	public String getFirstName() {
+		return getDescription2();
+	}
+
+	@Override
+	@Transient
+	public String getFamilyName() {
+		return getDescription1();
+	}
+
+	@Override
+	@Transient
+	public String getPatientNr() {
+		return getCode();
+	}
+
+	@Override
+	@Transient
+	public void setPatientNr(String patientNr) {
+		setCode(patientNr);
+	}
+
+	@Override
+	@Transient
+	public String getPatientLabel() {
+		return getLabel();
 	}
 }

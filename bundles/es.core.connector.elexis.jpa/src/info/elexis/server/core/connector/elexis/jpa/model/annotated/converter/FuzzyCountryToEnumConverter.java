@@ -14,7 +14,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Country;
+import ch.elexis.core.types.Country;
+
 
 /**
  * This converter allows "fuzziness" within the country value of an existing

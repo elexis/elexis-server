@@ -9,11 +9,12 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 
+import ch.elexis.core.model.IContact;
+import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.Gender;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class KontaktService extends AbstractService<Kontakt> {
@@ -30,26 +31,6 @@ public class KontaktService extends AbstractService<Kontakt> {
 
 	private static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-	public static String getLabel(Kontakt k, boolean includeDateOfBirth) {
-		if (k.isIstPerson()) {
-			boolean istPatient = k.isIstPatient();
-			if (istPatient) {
-				LocalDate geburtsdatum = k.getGeburtsdatum();
-				if (!includeDateOfBirth) {
-					return k.getBezeichnung2() + "," + k.getBezeichnung1() + " [" + k.getPatientNr() + "]";
-				}
-				String gbd = (geburtsdatum != null) ? "(" + k.getGeburtsdatum().format(sdf) + ")" : "";
-				return k.getBezeichnung2() + "," + k.getBezeichnung1() + " " + gbd + " [" + k.getPatientNr() + "]";
-			}
-
-			return k.getBezeichnung2() + " " + k.getBezeichnung1();
-		} else if (k.isIstOrganisation()) {
-			return k.getBezeichnung1() + " " + k.getBezeichnung2();
-		} else {
-			return k.getId() + " " + k.getBezeichnung1();
-		}
-	}
-
 	/**
 	 * 
 	 * @return a managed {@link Kontakt} entity
@@ -57,15 +38,27 @@ public class KontaktService extends AbstractService<Kontakt> {
 	public Kontakt createPatient(String firstName, String lastName, LocalDate dateOfBirth, Gender sex) {
 		em.getTransaction().begin();
 		Kontakt pat = create(false);
-		pat.setIstPatient(true);
-		pat.setIstPerson(true);
-		pat.setPatientNr(Integer.toString(findAndIncrementPatientNr()));
-		pat.setBezeichnung1(lastName);
-		pat.setBezeichnung2(firstName);
-		pat.setGeburtsdatum(dateOfBirth);
-		pat.setGeschlecht(sex);
+		pat.setPatient(true);
+		pat.setPerson(true);
+		pat.setCode(Integer.toString(findAndIncrementPatientNr()));
+		pat.setDescription1(lastName);
+		pat.setDescription2(firstName);
+		pat.setDob(dateOfBirth);
+		pat.setGender(sex);
 		em.getTransaction().commit();
 		return pat;
+	}
+
+	private IContact createLaboratory(String identifier, String name) {
+		em.getTransaction().begin();
+		Kontakt laboratory = create(false);
+		laboratory.setDescription1(name);
+		laboratory.setDescription2("Labor");
+		laboratory.setCode(identifier);
+		laboratory.setOrganisation(true);
+		laboratory.setLaboratory(true);
+		em.getTransaction().commit();
+		return laboratory;
 	}
 
 	/**
@@ -117,7 +110,7 @@ public class KontaktService extends AbstractService<Kontakt> {
 	 * @return the age in years, or -1 if not applicable
 	 */
 	public static int getAgeInYears(Kontakt k) {
-		LocalDate dob = k.getGeburtsdatum();
+		LocalDate dob = k.getDob();
 		if (dob == null) {
 			return -1;
 		}
@@ -129,16 +122,40 @@ public class KontaktService extends AbstractService<Kontakt> {
 
 	public List<Kontakt> findAllPatients() {
 		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
-		query.add(Kontakt_.istPerson, QUERY.EQUALS, true);
-		query.add(Kontakt_.istPatient, QUERY.EQUALS, true);
+		query.add(Kontakt_.person, QUERY.EQUALS, true);
+		query.add(Kontakt_.patient, QUERY.EQUALS, true);
 		return query.execute();
 	}
 
 	public static Optional<Kontakt> findPatientByPatientNumber(int randomPatientNumber) {
 		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
-		query.add(Kontakt_.istPerson, QUERY.EQUALS, true);
-		query.add(Kontakt_.istPatient, QUERY.EQUALS, true);
-		query.add(Kontakt_.patientNr, QUERY.EQUALS, Integer.toString(randomPatientNumber));
+		query.add(Kontakt_.person, QUERY.EQUALS, true);
+		query.add(Kontakt_.patient, QUERY.EQUALS, true);
+		query.add(Kontakt_.code, QUERY.EQUALS, Integer.toString(randomPatientNumber));
 		return query.executeGetSingleResult();
+	}
+
+	public Optional<IContact> findLaboratory(String identifier) {
+		if (identifier == null || identifier.isEmpty()) {
+			throw new IllegalArgumentException("Labor identifier [" + identifier + "] invalid.");
+		}
+		
+		IContact laboratory = null;	
+		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
+		query.add(Kontakt_.code, QUERY.LIKE,  "%" + identifier + "%");
+		query.or(Kontakt_.description1, QUERY.LIKE,  "%" + identifier + "%");
+		List<Kontakt> results = query.execute();
+		if (results.isEmpty()) {
+			log.warn(
+					"Found no Labor for identifier [" + identifier + "]. Created new Labor contact.");
+			return Optional.empty();
+		} else {
+			laboratory = results.get(0);
+			if (results.size() > 1) {
+				log.warn("Found more than one Labor for identifier [" + identifier
+					+ "]. This can cause problems when importing results.");
+			}
+		}
+		return Optional.ofNullable(laboratory);
 	}
 }

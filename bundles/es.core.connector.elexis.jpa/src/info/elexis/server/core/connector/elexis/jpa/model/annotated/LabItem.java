@@ -5,56 +5,60 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 
+import ch.elexis.core.model.ILabItem;
+import ch.elexis.core.types.LabItemTyp;
+
 @Entity
 @Table(name = "laboritems")
-public class LabItem extends AbstractDBObjectIdDeleted  {
+public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 
 	@Column(name = "kuerzel", length = 80)
 	private String code;
-	
+
 	@Column(name = "titel", length = 80)
-	private String title;
-	
+	private String name;
+
 	@OneToOne
 	@JoinColumn(name = "laborID")
 	private Kontakt labor;
-	
-	@Column(name = "RefMann", length=256)
+
+	@Column(name = "RefMann", length = 256)
 	private String referenceMale;
-	
-	@Column(name = "RefFrauOrTx", length=256)
-	private String referenceFemaleOrTx;
-	
+
+	@Column(name = "RefFrauOrTx", length = 256)
+	private String referenceFemale;
+
 	@Column(name = "einheit", length = 20)
 	private String unit;
-	
+
 	@Column(name = "typ", length = 1)
 	private String type;
-	
+
 	@Column(name = "Gruppe", length = 25)
 	private String group;
-	
-	@Convert(value = "IntegerStringConverter")
-	private int priority;
-	
+
+	@Column(name = "prio", length = 3)
+	private String priority;
+
 	@Column(length = 128)
 	private String billingCode;
-	
+
 	@Column(length = 100)
 	private String export;
-	
+
 	@Column(length = 128)
 	private String loinccode;
-	
-	@Column(length = 1)
-	private String visible;
-	
-	@Column(length = 16)
-	private String digits;
-	
+
+	@Convert("booleanStringConverter")
+	private boolean visible;
+
+	@Convert(value = "IntegerStringConverter")
+	private int digits;
+
 	@Column(length = 255)
 	private String formula;
 
@@ -64,14 +68,6 @@ public class LabItem extends AbstractDBObjectIdDeleted  {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public Kontakt getLabor() {
@@ -90,12 +86,12 @@ public class LabItem extends AbstractDBObjectIdDeleted  {
 		this.referenceMale = referenceMale;
 	}
 
-	public String getReferenceFemaleOrTx() {
-		return referenceFemaleOrTx;
+	public String getReferenceFemale() {
+		return referenceFemale;
 	}
 
-	public void setReferenceFemaleOrTx(String referenceFemaleOrTx) {
-		this.referenceFemaleOrTx = referenceFemaleOrTx;
+	public void setReferenceFemale(String referenceFemale) {
+		this.referenceFemale = referenceFemale;
 	}
 
 	public String getUnit() {
@@ -122,14 +118,6 @@ public class LabItem extends AbstractDBObjectIdDeleted  {
 		this.group = group;
 	}
 
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
 	public String getBillingCode() {
 		return billingCode;
 	}
@@ -154,20 +142,12 @@ public class LabItem extends AbstractDBObjectIdDeleted  {
 		this.loinccode = loinccode;
 	}
 
-	public String getVisible() {
+	public boolean isVisible() {
 		return visible;
 	}
 
-	public void setVisible(String visible) {
+	public void setVisible(boolean visible) {
 		this.visible = visible;
-	}
-
-	public String getDigits() {
-		return digits;
-	}
-
-	public void setDigits(String digits) {
-		this.digits = digits;
 	}
 
 	public String getFormula() {
@@ -177,4 +157,82 @@ public class LabItem extends AbstractDBObjectIdDeleted  {
 	public void setFormula(String formula) {
 		this.formula = formula;
 	}
+
+	public int getDigits() {
+		return digits;
+	}
+
+	public void setDigits(int digits) {
+		this.digits = digits;
+	}
+
+	public String getPriority() {
+		return priority;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	@Transient
+	public LabItemTyp getTyp() {
+		int typ = 1;
+		try {
+			typ = Integer.parseInt(getType());
+		} catch (NumberFormatException nfe) {
+		}
+
+		switch (typ) {
+		case 0:
+			return LabItemTyp.NUMERIC;
+		case 1:
+			return LabItemTyp.TEXT;
+		case 2:
+			return LabItemTyp.ABSOLUTE;
+		case 3:
+			return LabItemTyp.FORMULA;
+		case 4:
+			return LabItemTyp.DOCUMENT;
+		default:
+			return LabItemTyp.TEXT;
+		}
+	}
+
+	@Override
+	@Transient
+	public void setTyp(LabItemTyp type) {
+		String tp = "1";
+		if (type == LabItemTyp.NUMERIC) {
+			tp = "0";
+		} else if (type == LabItemTyp.ABSOLUTE) {
+			tp = "2";
+		} else if (type == LabItemTyp.FORMULA) {
+			tp = "3";
+		} else if (type == LabItemTyp.DOCUMENT) {
+			tp = "4";
+		}
+		setType(tp);
+	}
+
+	@Override
+	@Transient
+	public String getKuerzel() {
+		return getCode();
+	}
+
+	@Override
+	@Transient
+	public void setKuerzel(String value) {
+		setCode(value);
+	}
+
 }
