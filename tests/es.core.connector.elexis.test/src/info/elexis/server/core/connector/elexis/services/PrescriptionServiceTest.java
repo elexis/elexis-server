@@ -38,15 +38,22 @@ public class PrescriptionServiceTest {
 	public void testAddAndRemovePrescription() {
 		Prescription articlePres = PrescriptionService.INSTANCE.create(article, patient, "1-1-0-0");
 		Prescription productPres = PrescriptionService.INSTANCE.create(product, patient, "1-1-0-0");
-		
+		Prescription deletedPres = PrescriptionService.INSTANCE.create(article, patient, "1-1-2-1");
+		deletedPres.setDeleted(true);
+		Prescription recipePres = PrescriptionService.INSTANCE.create(article, patient, "1-1-2-1");
+		recipePres.setRezeptID("nonExistRecipeId");
+		PrescriptionService.INSTANCE.flush();
+
 		assertNotNull(articlePres.getDateFrom());
 		assertNotNull(productPres.getDateFrom());
-		
+
 		List<Prescription> prescList = PrescriptionService.findAllNonDeletedPrescriptionsForPatient(patient);
 		assertEquals(2, prescList.size());
-		
+
 		PrescriptionService.INSTANCE.remove(articlePres);
 		PrescriptionService.INSTANCE.remove(productPres);
+		PrescriptionService.INSTANCE.remove(deletedPres);
+		PrescriptionService.INSTANCE.remove(recipePres);
 	}
 
 }

@@ -102,10 +102,10 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	public List<T> execute() {
-		cq = cq.where(predicate);
 		if (!includeDeleted) {
-			add(AbstractDBObjectIdDeleted_.id, QUERY.EQUALS, false);
+			add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
 		}
+		cq = cq.where(predicate);
 		query = createEntityManager().createQuery(cq);
 		return query.getResultList();
 	}

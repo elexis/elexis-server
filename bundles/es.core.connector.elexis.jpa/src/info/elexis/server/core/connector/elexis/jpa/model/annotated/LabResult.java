@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +10,11 @@ import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
 
 @Entity
@@ -24,7 +27,8 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	private LocalDate datum;
+	@Column(name = "datum")
+	private LocalDate date;
 
 	@Column(length = 6)
 	private String zeit;
@@ -33,11 +37,11 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "ItemID")
 	private LabItem item;
 	
-	@Column(length = 255)
-	private String resultat;
+	@Column(length = 255, name ="resultat")
+	private String result;
 	
-	@Column(length = 10)
-	private String flags;
+	@Convert(value = "IntegerStringConverter")
+	private int flags;
 	
 	@Column(length = 30)
 	private String origin;
@@ -48,14 +52,17 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 255)
 	private String unit;
 	
-	@Column(length = 24)
-	private String analysetime;
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	private LocalDateTime analysetime;
 	
-	@Column(length = 24)
-	private String observationtime;
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	private LocalDateTime observationtime;
 	
-	@Column(length = 24)
-	private String transmissiontime;
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	private LocalDateTime transmissiontime;
 	
 	@Column(length = 255)
 	private String refMale;
@@ -74,14 +81,6 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 		this.patient = patient;
 	}
 
-	public LocalDate getDatum() {
-		return datum;
-	}
-
-	public void setDatum(LocalDate datum) {
-		this.datum = datum;
-	}
-
 	public String getZeit() {
 		return zeit;
 	}
@@ -96,22 +95,6 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setItem(LabItem item) {
 		this.item = item;
-	}
-
-	public String getResultat() {
-		return resultat;
-	}
-
-	public void setResultat(String resultat) {
-		this.resultat = resultat;
-	}
-
-	public String getFlags() {
-		return flags;
-	}
-
-	public void setFlags(String flags) {
-		this.flags = flags;
 	}
 
 	public String getOrigin() {
@@ -138,30 +121,6 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 		this.unit = unit;
 	}
 
-	public String getAnalysetime() {
-		return analysetime;
-	}
-
-	public void setAnalysetime(String analysetime) {
-		this.analysetime = analysetime;
-	}
-
-	public String getObservationtime() {
-		return observationtime;
-	}
-
-	public void setObservationtime(String observationtime) {
-		this.observationtime = observationtime;
-	}
-
-	public String getTransmissiontime() {
-		return transmissiontime;
-	}
-
-	public void setTransmissiontime(String transmissiontime) {
-		this.transmissiontime = transmissiontime;
-	}
-
 	public String getRefMale() {
 		return refMale;
 	}
@@ -185,4 +144,45 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	public void setOriginId(String originId) {
 		this.originId = originId;
 	}
+	
+	public String getResult() {
+		return result;
+	}
+	
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	public LocalDateTime getAnalysetime() {
+		return analysetime;
+	}
+	
+	public void setAnalysetime(LocalDateTime analysetime) {
+		this.analysetime = analysetime;
+	}
+
+	public LocalDateTime getObservationtime() {
+		return observationtime;
+	}
+
+	public void setObservationtime(LocalDateTime observationtime) {
+		this.observationtime = observationtime;
+	}
+
+	public LocalDateTime getTransmissiontime() {
+		return transmissiontime;
+	}
+
+	public void setTransmissiontime(LocalDateTime transmissiontime) {
+		this.transmissiontime = transmissiontime;
+	}
+	
+	public int getFlags() {
+		return flags;
+	}
+
+	public void setFlags(int flags) {
+		this.flags = flags;
+	}
+
 }

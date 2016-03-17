@@ -160,11 +160,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	 */
 	@Column(length = 40, name = "patientNr")
 	protected String code;
-
-	@Basic(fetch = FetchType.LAZY)
-	@Convert(value = "ElexisDBCompressedStringConverter")
-	protected String persAnamnese;
-
+	
 	@Column(length = 6, name = "plz")
 	protected String zip;
 
@@ -312,14 +308,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public String getPersAnamnese() {
-		return persAnamnese;
-	}
-
-	public void setPersAnamnese(String persAnamnese) {
-		this.persAnamnese = persAnamnese;
 	}
 
 	public String getRisk() {

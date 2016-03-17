@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.*;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
@@ -19,9 +17,9 @@ import javax.persistence.criteria.Root;
 import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
 import at.medevit.ch.artikelstamm.ArtikelstammHelper;
 import ch.elexis.core.constants.StringConstants;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 
@@ -109,14 +107,20 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	 */
 	public static List<ArtikelstammItem> getAllStockArticles() {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.or(ArtikelstammItem_.minbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
-		qbe.or(ArtikelstammItem_.maxbestand, JPAQuery.QUERY.GREATER, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.minbestand, QUERY.GREATER, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.maxbestand, QUERY.GREATER, StringConstants.ZERO);
 		return qbe.execute();
 	}
 
 	public static Optional<ArtikelstammItem> findByGTIN(String itemCode) {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.add(ArtikelstammItem_.gtin, JPAQuery.QUERY.LIKE, itemCode);
+		qbe.add(ArtikelstammItem_.gtin, QUERY.LIKE, itemCode);
+		return qbe.executeGetSingleResult();
+	}
+
+	public static Optional<ArtikelstammItem> findByProductNumber(String code) {
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.add(ArtikelstammItem_.prodno, QUERY.LIKE, code);
 		return qbe.executeGetSingleResult();
 	}
 }

@@ -49,6 +49,9 @@ public class KontaktService extends AbstractService<Kontakt> {
 		return pat;
 	}
 
+	/**
+	 * @deprecated unfinished
+	 */
 	private IContact createLaboratory(String identifier, String name) {
 		em.getTransaction().begin();
 		Kontakt laboratory = create(false);
@@ -86,7 +89,7 @@ public class KontaktService extends AbstractService<Kontakt> {
 
 				while (true) {
 					@SuppressWarnings("rawtypes")
-					List resultList = em.createQuery("SELECT k FROM Kontakt k WHERE k.patientNr=" + ret)
+					List resultList = em.createQuery("SELECT k FROM Kontakt k WHERE k.code=" + ret)
 							.getResultList();
 					if (resultList.size() == 0) {
 						break;

@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.*;
 
 import java.util.LinkedList;
 import java.util.List;
