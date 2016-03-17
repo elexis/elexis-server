@@ -7,9 +7,9 @@ import javax.ws.rs.core.Response;
 import org.eclipse.core.runtime.IStatus;
 import org.osgi.service.component.annotations.Component;
 
+import ch.elexis.core.server.IConnectorService;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
-import info.elexis.server.elexis.common.jaxrs.IConnectorService;
 
 @Component(service = ConnectorService.class, immediate = true)
 public class ConnectorService implements IConnectorService {

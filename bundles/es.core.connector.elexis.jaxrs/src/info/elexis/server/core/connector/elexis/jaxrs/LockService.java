@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 
+import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.lock.types.LockRequest;
+import ch.elexis.core.lock.types.LockResponse;
+import ch.elexis.core.lock.types.LockResponse.Status;
+import ch.elexis.core.server.ILockService;
 import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
-import info.elexis.server.elexis.common.jaxrs.ILockService;
-import info.elexis.server.elexis.common.types.LockInfo;
-import info.elexis.server.elexis.common.types.LockRequest;
-import info.elexis.server.elexis.common.types.LockResponse;
-import info.elexis.server.elexis.common.types.LockResponse.Status;
 
 @Component(service = LockService.class, immediate = true)
 public class LockService implements ILockService {

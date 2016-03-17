@@ -59,7 +59,6 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	org.apache.commons.dbcp
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
-	info.elexis.server.elexis.common
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
 	ch.elexis.core.hl7.v2x

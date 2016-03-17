@@ -2,8 +2,8 @@ package info.elexis.server.core.connector.elexis.locking;
 
 import java.util.Optional;
 
-import info.elexis.server.elexis.common.types.LockInfo;
-import info.elexis.server.elexis.common.types.LockResponse;
+import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.lock.types.LockResponse;
 
 public interface ILockService {
 	/**

@@ -13,11 +13,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.lock.types.LockResponse;
+import ch.elexis.core.lock.types.LockResponse.Status;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
-import info.elexis.server.elexis.common.types.LockInfo;
-import info.elexis.server.elexis.common.types.LockResponse;
-import info.elexis.server.elexis.common.types.LockResponse.Status;
 
 @Component(service = {})
 public class LockService implements ILockService {

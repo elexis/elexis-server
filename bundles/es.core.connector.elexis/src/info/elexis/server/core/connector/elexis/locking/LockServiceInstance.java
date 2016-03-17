@@ -2,9 +2,9 @@ package info.elexis.server.core.connector.elexis.locking;
 
 import java.util.Optional;
 
+import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.lock.types.LockResponse;
 import info.elexis.server.core.connector.elexis.services.LockService;
-import info.elexis.server.elexis.common.types.LockInfo;
-import info.elexis.server.elexis.common.types.LockResponse;
 
 public enum LockServiceInstance implements ILockService{
 
