@@ -9,6 +9,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
@@ -33,6 +34,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_KONSULTATION = "ch.elexis.data.Konsultation";
 	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
 	public static final String TYPE_LABOR2009TARIF = "ch.elexis.labortarif2009.data.Labor2009Tarif";
+	public static final String TYPE_LABRESULT = "ch.elexis.data.LabResult";
 	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
@@ -57,6 +59,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(PhysioLeistung.class, TYPE_PHYSIOLEISTUNG);
 		stsToClassMap.put(TYPE_LABOR2009TARIF, Labor2009Tarif.class);
 		classToStsMap.put(Labor2009Tarif.class, TYPE_LABOR2009TARIF);
+		stsToClassMap.put(TYPE_LABRESULT, LabResult.class);
+		classToStsMap.put(LabResult.class, TYPE_LABRESULT);
 		
 		// uni-directional mappable
 		stsToClassMap.put("ch.elexis.artikel_ch.data.Medikament", Artikel.class);

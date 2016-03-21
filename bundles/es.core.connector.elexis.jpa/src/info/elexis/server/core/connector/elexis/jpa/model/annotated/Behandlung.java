@@ -13,11 +13,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Converter;
 
 import ch.rgw.tools.VersionedResource;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "behandlungen")
@@ -35,8 +34,8 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Column(length = 25)
 	private String rechnungsId;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datum;
 
 	@Column(length = 25, name = "diagnosen")
@@ -48,7 +47,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "VersionedResourceConverter")
 	private VersionedResource eintrag;
-	
+
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BEHANDLUNG", insertable = false)
 	private List<Verrechnet> verrechnet;
@@ -105,7 +104,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	}
 
 	public VersionedResource getEintrag() {
-		if(eintrag == null) {
+		if (eintrag == null) {
 			eintrag = VersionedResource.load(null);
 		}
 		return eintrag;
@@ -114,11 +113,11 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	public void setEintrag(VersionedResource eintrag) {
 		this.eintrag = eintrag;
 	}
-	
+
 	public List<Verrechnet> getVerrechnet() {
 		return verrechnet;
 	}
-	
+
 	public void setVerrechnet(List<Verrechnet> verrechnet) {
 		this.verrechnet = verrechnet;
 	}

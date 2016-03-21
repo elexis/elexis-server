@@ -1,7 +1,5 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.math.BigInteger;
-
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
@@ -25,9 +23,6 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	@Convert("booleanStringConverter")
 	protected boolean deleted;
 	
-	// Transparently updated by the EntityListener
-	protected BigInteger lastupdate;
-	
 	public String getId() {
 		return id;
 	}
@@ -43,14 +38,6 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 		// TODO if true, remove all Xids
-	}
-	
-	public BigInteger getLastupdate() {
-		return lastupdate;
-	}
-
-	public void setLastupdate(BigInteger lastupdate) {
-		this.lastupdate = lastupdate;
 	}
 	
 	public String getLabel(){

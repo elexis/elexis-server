@@ -15,7 +15,6 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
 
 import ch.elexis.core.types.Gender;
-;
 
 /**
  * This converter allows "fuzziness" within the country value of an existing

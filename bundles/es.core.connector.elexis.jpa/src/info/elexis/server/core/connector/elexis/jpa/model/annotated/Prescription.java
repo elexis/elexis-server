@@ -11,15 +11,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Converter;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "patient_artikel_joint")
 public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
-	
+
 	@Column(length = 3)
 	private String anzahl;
 
@@ -27,16 +26,16 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	@Column
 	@Convert(value = "ElexisDBStoreToStringConverter")
 	private AbstractDBObjectIdDeleted artikel;
-	
+
 	@Column(length = 255)
 	private String bemerkung;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate dateFrom;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate dateUntil;
 
 	@Column(length = 255)

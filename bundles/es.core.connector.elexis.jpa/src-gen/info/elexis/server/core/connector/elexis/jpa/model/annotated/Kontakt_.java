@@ -12,12 +12,11 @@ import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-03-16T14:51:27")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-03-21T11:29:12")
 @StaticMetamodel(Kontakt.class)
 public class Kontakt_ { 
 
     public static volatile SingularAttribute<Kontakt, String> allergies;
-    public static volatile SingularAttribute<Kontakt, String> persAnamnese;
     public static volatile SingularAttribute<Kontakt, Country> country;
     public static volatile SingularAttribute<Kontakt, String> code;
     public static volatile SingularAttribute<Kontakt, Gender> gender;

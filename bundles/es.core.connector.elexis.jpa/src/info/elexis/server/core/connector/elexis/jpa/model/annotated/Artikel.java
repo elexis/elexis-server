@@ -8,10 +8,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "artikel")
@@ -63,17 +63,17 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 8)
 	private String lastImport;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate validFrom;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate validTo;
 
-	@Column(length = 255, name="ATC_code")
+	@Column(length = 255, name = "ATC_code")
 	private String atcCode;
-	
+
 	@Override
 	public String getLabel() {
 		return getName();

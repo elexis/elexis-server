@@ -11,11 +11,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
 
 @Entity
 @Table(name = "laborwerte")
@@ -25,8 +26,8 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "PatientID")
 	private Kontakt patient;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	@Column(name = "datum")
 	private LocalDate date;
 
@@ -36,40 +37,41 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@OneToOne
 	@JoinColumn(name = "ItemID")
 	private LabItem item;
-	
-	@Column(length = 255, name ="resultat")
+
+	@Column(length = 255, name = "resultat")
 	private String result;
-	
+
 	@Convert(value = "IntegerStringConverter")
 	private int flags;
-	
+
 	@Column(length = 30)
 	private String origin;
-	
+
 	@Lob
+	@Column(name = "Kommentar")
 	private String comment;
-	
+
 	@Column(length = 255)
 	private String unit;
-	
+
 	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	private LocalDateTime analysetime;
-	
+
 	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	private LocalDateTime observationtime;
-	
+
 	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	private LocalDateTime transmissiontime;
-	
+
 	@Column(length = 255)
 	private String refMale;
-	
+
 	@Column(length = 255)
 	private String refFemale;
-	
+
 	@Column(length = 25)
 	private String originId;
 
@@ -144,19 +146,19 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	public void setOriginId(String originId) {
 		this.originId = originId;
 	}
-	
+
 	public String getResult() {
 		return result;
 	}
-	
+
 	public void setResult(String result) {
 		this.result = result;
 	}
-	
+
 	public LocalDateTime getAnalysetime() {
 		return analysetime;
 	}
-	
+
 	public void setAnalysetime(LocalDateTime analysetime) {
 		this.analysetime = analysetime;
 	}
@@ -176,7 +178,7 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	public void setTransmissiontime(LocalDateTime transmissiontime) {
 		this.transmissiontime = transmissiontime;
 	}
-	
+
 	public int getFlags() {
 		return flags;
 	}

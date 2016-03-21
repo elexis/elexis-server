@@ -89,8 +89,7 @@ public class KontaktService extends AbstractService<Kontakt> {
 
 				while (true) {
 					@SuppressWarnings("rawtypes")
-					List resultList = em.createQuery("SELECT k FROM Kontakt k WHERE k.code=" + ret)
-							.getResultList();
+					List resultList = em.createQuery("SELECT k FROM Kontakt k WHERE k.code=" + ret).getResultList();
 					if (resultList.size() == 0) {
 						break;
 					} else {
@@ -123,7 +122,7 @@ public class KontaktService extends AbstractService<Kontakt> {
 		return (int) years;
 	}
 
-	public List<Kontakt> findAllPatients() {
+	public static List<Kontakt> findAllPatients() {
 		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
 		query.add(Kontakt_.person, QUERY.EQUALS, true);
 		query.add(Kontakt_.patient, QUERY.EQUALS, true);
@@ -138,27 +137,53 @@ public class KontaktService extends AbstractService<Kontakt> {
 		return query.executeGetSingleResult();
 	}
 
-	public Optional<IContact> findLaboratory(String identifier) {
+	public static Optional<IContact> findLaboratory(String identifier) {
 		if (identifier == null || identifier.isEmpty()) {
 			throw new IllegalArgumentException("Labor identifier [" + identifier + "] invalid.");
 		}
-		
-		IContact laboratory = null;	
+
+		IContact laboratory = null;
 		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
-		query.add(Kontakt_.code, QUERY.LIKE,  "%" + identifier + "%");
-		query.or(Kontakt_.description1, QUERY.LIKE,  "%" + identifier + "%");
+		query.add(Kontakt_.code, QUERY.LIKE, "%" + identifier + "%");
+		query.or(Kontakt_.description1, QUERY.LIKE, "%" + identifier + "%");
 		List<Kontakt> results = query.execute();
 		if (results.isEmpty()) {
-			log.warn(
-					"Found no Labor for identifier [" + identifier + "]. Created new Labor contact.");
+			log.warn("Found no Labor for identifier [" + identifier + "]. Created new Labor contact.");
 			return Optional.empty();
 		} else {
 			laboratory = results.get(0);
 			if (results.size() > 1) {
 				log.warn("Found more than one Labor for identifier [" + identifier
-					+ "]. This can cause problems when importing results.");
+						+ "]. This can cause problems when importing results.");
 			}
 		}
 		return Optional.ofNullable(laboratory);
+	}
+
+	// TODO normalize
+	public static List<Kontakt> findPersonByMultipleOptionalParameters(String firstName, String lastName, Gender gender,
+			String city, String street, String zip) {
+		JPAQuery<Kontakt> query = new JPAQuery<Kontakt>(Kontakt.class);
+		query.add(Kontakt_.person, QUERY.EQUALS, true);
+		if (firstName != null) {
+			// TODO TEST
+			query.addLikeNormalized(Kontakt_.description1, "%" + firstName.trim() + "%");
+		}
+		if (lastName != null) {
+			query.add(Kontakt_.description2, QUERY.LIKE, "%" + lastName.trim() + "%");
+		}
+		if (gender != null) {
+			query.add(Kontakt_.gender, QUERY.EQUALS, gender);
+		}
+		if (city != null) {
+			query.add(Kontakt_.city, QUERY.LIKE, "%" + city.trim() + "%");
+		}
+		if (street != null) {
+			query.add(Kontakt_.street, QUERY.LIKE, "%" + street.trim() + "%");
+		}
+		if (zip != null) {
+			query.add(Kontakt_.zip, QUERY.LIKE, "%" + zip.trim() + "%");
+		}
+		return query.execute();
 	}
 }

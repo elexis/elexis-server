@@ -13,13 +13,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 
 import ch.elexis.core.model.ReminderConstants.Status;
 import ch.elexis.core.model.ReminderConstants.Typ;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "reminders")
@@ -44,8 +43,8 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	@JoinTable(name = "reminders_responsible_link", joinColumns = @JoinColumn(name = "ReminderID") , inverseJoinColumns = @JoinColumn(name = "ResponsibleID") )
 	private Collection<Kontakt> responsible;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate dateDue;
 
 	@Enumerated(EnumType.ORDINAL)

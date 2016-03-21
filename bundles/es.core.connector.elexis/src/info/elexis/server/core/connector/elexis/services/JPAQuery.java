@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +65,15 @@ public class JPAQuery<T extends AbstractDBObject> {
 	public void add(SingularAttribute<?, Boolean> attribute, QUERY qt, boolean bool) {
 		Predicate predIn = derivePredicate(attribute, qt, bool);
 
+		if (predicate == null) {
+			predicate = predIn;
+		} else {
+			predicate = cb.and(predicate, predIn);
+		}
+	}
+
+	public void addLikeNormalized(@SuppressWarnings("rawtypes") SingularAttribute attribute, String value) {
+		Predicate predIn = cb.like(cb.lower(root.get(attribute)), value.toString().toLowerCase());
 		if (predicate == null) {
 			predicate = predIn;
 		} else {

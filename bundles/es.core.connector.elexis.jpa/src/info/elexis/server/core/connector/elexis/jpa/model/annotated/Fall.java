@@ -11,10 +11,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "faelle")
@@ -26,12 +26,12 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 80)
 	private String bezeichnung;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datumBis;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datumVon;
 
 	@Column(length = 80)
@@ -67,7 +67,7 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "FallID", insertable = false)
 	protected List<Behandlung> consultations;
-	
+
 	public String getBetriebsNummer() {
 		return this.betriebsNummer;
 	}
@@ -177,11 +177,11 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	public void setVersNummer(String versNummer) {
 		this.versNummer = versNummer;
 	}
-	
+
 	public List<Behandlung> getConsultations() {
 		return consultations;
 	}
-	
+
 	public void setConsultations(List<Behandlung> consultations) {
 		this.consultations = consultations;
 	}

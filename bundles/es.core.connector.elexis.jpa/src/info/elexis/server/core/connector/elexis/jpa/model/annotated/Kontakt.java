@@ -31,17 +31,15 @@ import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
 
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.types.ContactType;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import ch.rgw.tools.TimeTool;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
 
 /**
  * The persistent class for the Elexis KONTAKT database table. Valid from DB
@@ -104,8 +102,8 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Column(length = 30)
 	protected String fax;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	@Column(name = "geburtsdatum")
 	protected LocalDate dob;
 
@@ -160,7 +158,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	 */
 	@Column(length = 40, name = "patientNr")
 	protected String code;
-	
+
 	@Column(length = 6, name = "plz")
 	protected String zip;
 
@@ -289,7 +287,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	public boolean isLaboratory() {
 		return laboratory;
 	}
-	
+
 	public void setLaboratory(boolean laboratory) {
 		this.laboratory = laboratory;
 	}

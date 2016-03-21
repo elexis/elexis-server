@@ -8,10 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "vk_preise")
@@ -21,18 +21,18 @@ public class VKPreis extends AbstractDBObject {
 	@GeneratedValue(generator = "system-uuid")
 	@Column(length = 25)
 	private String id;
-	
+
 	@Column(length = 80)
 	private String typ;
-	
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datum_von;
-	
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datum_bis;
-	
+
 	@Column(length = 8)
 	private String multiplikator;
 
@@ -55,15 +55,15 @@ public class VKPreis extends AbstractDBObject {
 	public LocalDate getDatum_von() {
 		return datum_von;
 	}
-	
+
 	public void setDatum_von(LocalDate datum_von) {
 		this.datum_von = datum_von;
 	}
-	
+
 	public LocalDate getDatum_bis() {
 		return datum_bis;
 	}
-	
+
 	public void setDatum_bis(LocalDate datum_bis) {
 		this.datum_bis = datum_bis;
 	}
@@ -76,4 +76,3 @@ public class VKPreis extends AbstractDBObject {
 		this.multiplikator = multiplikator;
 	}
 }
-

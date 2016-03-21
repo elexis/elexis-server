@@ -6,10 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "TARMED_KUMULATION")
@@ -18,7 +18,7 @@ public class TarmedKumulation extends AbstractDBObjectIdDeleted {
 	public static final String TYP_EXCLUSION = "E";
 	public static final String TYP_INCLUSION = "I";
 	public static final String TYP_EXCLUSIVE = "X";
-	
+
 	@Column(length = 25)
 	private String masterCode;
 
@@ -40,12 +40,12 @@ public class TarmedKumulation extends AbstractDBObjectIdDeleted {
 	@Column(length = 1)
 	private String validSide;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate validFrom;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTransformer.class)
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	private LocalDate validTo;
 
 	public String getMasterCode() {
