@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
@@ -15,6 +16,7 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisExtInfoMapConverter")
+	@Column(columnDefinition = "BLOB")
 	protected Map<Object, Object> extInfo = new Hashtable<Object, Object>();
 
 	public Map<Object, Object> getExtInfo() {

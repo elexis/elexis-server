@@ -106,7 +106,8 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	}
 
 	/**
-	 * Returns a list of elements according to fuzzy ID starts with matching
+	 * Returns a list of elements according to fuzzy ID starts with matching.
+	 * Useful with deterministic Id strings.
 	 * 
 	 * @param string
 	 * @param entityClass

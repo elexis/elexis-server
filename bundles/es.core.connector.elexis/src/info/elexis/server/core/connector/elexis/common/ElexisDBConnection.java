@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.common.util.CoreUtil;
+import info.elexis.server.core.connector.elexis.common.DBConnection.DBType;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
@@ -31,7 +32,14 @@ public class ElexisDBConnection {
 
 	static {
 		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
-		if (connectionConfigPath.toFile().exists()) {
+		if (isTestMode()) {
+			connection = new DBConnection();
+			connection.connectionString = "jdbc:h2:mem:elexisTest;DB_CLOSE_DELAY=-1";
+			connection.rdbmsType = DBType.H2;
+			connection.username = "sa";
+			connection.password = "";
+			setConnection(connection);
+		} else if (connectionConfigPath.toFile().exists()) {
 			try {
 				InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ);
 				connection = DBConnection.unmarshall(is);
@@ -58,6 +66,16 @@ public class ElexisDBConnection {
 		}
 
 //		ElexisEntityManager.initializeEntityManager();
+	}
+
+	public static boolean isTestMode() {
+		String testMode = System.getProperty("es.test");
+		if (testMode != null && !testMode.isEmpty()) {
+			if (testMode.equalsIgnoreCase("true")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static IStatus getDatabaseInformation() {

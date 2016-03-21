@@ -84,6 +84,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisDBCompressedStringConverter")
+	@Column(columnDefinition = "BLOB")
 	protected String diagnosen;
 
 	@Column(length = 255)
@@ -91,12 +92,12 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	// @Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisDBCompressedStringConverter")
-	@Column(name = "famAnamnese")
+	@Column(name = "famAnamnese", columnDefinition = "BLOB")
 	protected String familyAnamnese;
 
 	// @Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisDBCompressedStringConverter")
-	@Column(name = "persAnamnese")
+	@Column(name = "persAnamnese", columnDefinition = "BLOB")
 	protected String personalAnamnese;
 
 	@Column(length = 30)

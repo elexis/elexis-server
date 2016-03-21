@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.internal;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -46,13 +45,18 @@ public class ElexisEntityManager {
 			return;
 		}	
 		
-		Map<String, Object> props = new HashMap<String, Object>();
-		try {			
-				props.put("javax.persistence.jdbc.driver", connection.get().rdbmsType.driverName);
-				props.put("javax.persistence.jdbc.url", connection.get().connectionString);
-				props.put("javax.persistence.jdbc.user", connection.get().username);
-				props.put("javax.persistence.jdbc.password", connection.get().password);
-				
+		HashMap<String, Object> props = new HashMap<String, Object>();
+		try {
+			props.put("javax.persistence.jdbc.driver", connection.get().rdbmsType.driverName);
+			props.put("javax.persistence.jdbc.url", connection.get().connectionString);
+			props.put("javax.persistence.jdbc.user", connection.get().username);
+			props.put("javax.persistence.jdbc.password", connection.get().password);
+			props.put("eclipselink.ddl-generation", "none");
+			if (ElexisDBConnection.isTestMode()) {
+				props.put("eclipselink.ddl-generation", "drop-and-create-tables");
+				props.put("eclipselink.ddl-generation.output-mode", "database");
+			}
+
 			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
 			// TODO refactor this
 			ProvidedEntityManager.setEntityManagerFactory(factory);

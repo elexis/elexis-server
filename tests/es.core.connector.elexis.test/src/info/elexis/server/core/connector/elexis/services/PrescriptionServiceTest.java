@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,28 +11,30 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 
 public class PrescriptionServiceTest {
 
 	private Kontakt patient;
-	private AbstractDBObjectIdDeleted article;
-	private AbstractDBObjectIdDeleted product;
+	private ArtikelstammItem article;
+	private ArtikelstammItem product;
 
 	@Before
-	public void setupPatientAndBehandlung() {
+	public void before() {
 		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.UNDEFINED);
-		article = ArtikelstammItemService.INSTANCE.findById("0768056318007949855760001");
-		product = ArtikelstammItemService.INSTANCE.findById("563182");
+		article = ArtikelstammItemService.INSTANCE.create("0768056318007949855760001", true);
+		product = ArtikelstammItemService.INSTANCE.create("563182", true);
 		assertNotNull(article);
 		assertNotNull(product);
 	}
 
 	@After
-	public void teardownPatientAndBehandlung() {
+	public void after() {
 		KontaktService.INSTANCE.remove(patient);
+		ArtikelstammItemService.INSTANCE.remove(article);
+		ArtikelstammItemService.INSTANCE.remove(product);
 	}
 
 	@Test
