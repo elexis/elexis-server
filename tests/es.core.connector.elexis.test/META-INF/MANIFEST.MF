@@ -8,4 +8,3 @@ Fragment-Host: info.elexis.server.core.connector.elexis;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
  org.eclipse.gemini.jpa;bundle-version="1.2.0"
-Service-Component: OSGI-INF/info.elexis.server.core.connector.locking.LockServiceTest.xml
