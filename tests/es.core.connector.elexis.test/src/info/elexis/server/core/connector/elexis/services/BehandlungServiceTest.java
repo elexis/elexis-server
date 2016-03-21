@@ -29,7 +29,7 @@ public class BehandlungServiceTest {
 
 	@Test
 	public void testGetAllConsultationsForPatient() {
-		Kontakt myPatient = KontaktService.INSTANCE.findById("z7562af3f31f535503455");
+		Kontakt myPatient = KontaktService.INSTANCE.findById("z7562af3f31f535503455").get();
 		List<Behandlung> consultations = BehandlungService.findAllConsultationsForPatient(myPatient);
 		assertTrue(consultations.size() > 0);
 		assertTrue(consultations.get(0).getDatum().isAfter(consultations.get(1).getDatum()));

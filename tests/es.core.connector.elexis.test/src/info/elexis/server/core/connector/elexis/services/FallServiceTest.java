@@ -39,7 +39,7 @@ public class FallServiceTest {
 	public void testCreateKontaktStringStringString() {
 		fall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
 
-		Fall storedFall = FallService.INSTANCE.findById(fall.getId());
+		Fall storedFall = FallService.INSTANCE.findById(fall.getId()).get();
 		assertEquals(fall.getPatientKontakt().getId(), storedFall.getPatientKontakt().getId());
 		assertEquals(fall.getBezeichnung(), storedFall.getBezeichnung());
 		assertEquals(fall.getGesetz(), storedFall.getGesetz());

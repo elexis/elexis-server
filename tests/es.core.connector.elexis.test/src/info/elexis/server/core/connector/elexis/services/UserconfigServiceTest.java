@@ -1,8 +1,8 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import org.junit.Test;
-
 import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import ch.elexis.core.constants.Preferences;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -12,7 +12,7 @@ public class UserconfigServiceTest {
 
 	@Test
 	public void testGet() {
-		User dzUser = UserService.INSTANCE.findById("dz");
+		User dzUser = UserService.INSTANCE.findById("dz").get();
 		assertNotNull(dzUser);
 		Kontakt kontakt = dzUser.getKontakt();
 		assertNotNull(kontakt);

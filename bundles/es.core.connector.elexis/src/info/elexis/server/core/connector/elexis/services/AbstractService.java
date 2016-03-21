@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -101,8 +102,8 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @param entityClass
 	 * @return
 	 */
-	public T findById(Object id) {
-		return (T) em.find(clazz, id);
+	public Optional<T> findById(Object id) {
+		return Optional.ofNullable((T) em.find(clazz, id));
 	}
 
 	/**

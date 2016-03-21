@@ -1,9 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,10 +16,10 @@ public class KontaktServiceTest {
 	@Test
 	public void testCreateAndDeleteKontakt() throws InstantiationException, IllegalAccessException {
 		Kontakt val = KontaktService.INSTANCE.create();
-		Kontakt findById = KontaktService.INSTANCE.findById(val.getId());
+		Kontakt findById = KontaktService.INSTANCE.findById(val.getId()).get();
 		assertEquals(val.getId(), findById.getId());
 		KontaktService.INSTANCE.remove(val);	
-		Kontakt found = KontaktService.INSTANCE.findById(val.getId());
+		Kontakt found = KontaktService.INSTANCE.findById(val.getId()).get();
 		assertNull(found);
 	}
 	
@@ -42,7 +39,7 @@ public class KontaktServiceTest {
 		
 		assertNotNull(id);
 		assertNotNull(patient.getCode());
-		Kontakt findById = KontaktService.INSTANCE.findById(id);
+		Kontakt findById = KontaktService.INSTANCE.findById(id).get();
 		assertNotNull(findById);
 		assertTrue(findById == patient);
 

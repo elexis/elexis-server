@@ -23,7 +23,7 @@ public class LabItemService extends AbstractService<LabItem> {
 		LabItem labItem = create(false);
 		labItem.setCode(code);
 		labItem.setName(title);
-		labItem.setLabor(KontaktService.INSTANCE.findById(laboratory.getId()));
+		labItem.setLabor(KontaktService.INSTANCE.findById(laboratory.getId()).get());
 		labItem.setReferenceMale(refMale);
 		labItem.setReferenceFemale(refFemale);
 		labItem.setUnit(unit);

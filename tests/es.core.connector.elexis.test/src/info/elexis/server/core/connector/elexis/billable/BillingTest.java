@@ -1,9 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 
@@ -45,8 +42,8 @@ public class BillingTest {
 	public void setupPatientAndBehandlung() {
 		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
 		testFall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
-		mandator = KontaktService.INSTANCE.findById("td741d2ac3354679104"); // dz
-		userContact = KontaktService.INSTANCE.findById("td741d2ac3354679104"); // dz
+		mandator = KontaktService.INSTANCE.findById("td741d2ac3354679104").get(); // dz
+		userContact = KontaktService.INSTANCE.findById("td741d2ac3354679104").get(); // dz
 		consultation = BehandlungService.INSTANCE.create(testFall, mandator);
 	}
 
@@ -62,7 +59,7 @@ public class BillingTest {
 
 	@Test
 	public void testAddLaborTarif2009Billing() {
-		Labor2009Tarif immunglobulinValid = Labor2009TarifService.INSTANCE.findById("a6e58fc71c723bd54016760");
+		Labor2009Tarif immunglobulinValid = Labor2009TarifService.INSTANCE.findById("a6e58fc71c723bd54016760").get();
 		assertNotNull(immunglobulinValid);
 		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
 
@@ -81,7 +78,7 @@ public class BillingTest {
 		assertEquals(ElexisTypeMap.TYPE_LABOR2009TARIF, vr.getKlasse());
 		assertEquals(1, vr.getZahl());
 
-		Labor2009Tarif immunglobulinInvalid = Labor2009TarifService.INSTANCE.findById("ub49a50af4d3e51e40906");
+		Labor2009Tarif immunglobulinInvalid = Labor2009TarifService.INSTANCE.findById("ub49a50af4d3e51e40906").get();
 		VerrechenbarLabor2009Tarif invalidLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinInvalid);
 
 		status = invalidLabTarif.add(consultation, userContact, mandator);

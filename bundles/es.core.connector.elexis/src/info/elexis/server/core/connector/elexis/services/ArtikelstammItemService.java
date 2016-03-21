@@ -36,19 +36,27 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	private static final String VERSION_ENTRY_ID = "VERSION";
 
 	public int getCurrentVersion() {
-		ArtikelstammItem ai = findById(VERSION_ENTRY_ID);
-		return Integer.parseInt(ai.getPpub());
+		Optional<ArtikelstammItem> ai = findById(VERSION_ENTRY_ID);
+		if (ai.isPresent()) {
+			return Integer.parseInt(ai.get().getPpub());
+		}
+		return -1;
 	}
 
 	public void setCurrentVersion(Integer version) {
-		ArtikelstammItem ai = findById(VERSION_ENTRY_ID);
-		ai.setPpub(Integer.toString(version));
+		Optional<ArtikelstammItem> ai = findById(VERSION_ENTRY_ID);
+		if (ai.isPresent()) {
+			ai.get().setPpub(Integer.toString(version));
+		}
 	}
 
 	public void setImportSetCreationDate(Date creationDate) {
-		ArtikelstammItem version = findById(VERSION_ENTRY_ID);
-		DateFormat df = new SimpleDateFormat("ddMMyy HH:mm");
-		version.setDscr(df.format(creationDate.getTime()));
+		Optional<ArtikelstammItem> version = findById(VERSION_ENTRY_ID);
+		if (version.isPresent()) {
+			DateFormat df = new SimpleDateFormat("ddMMyy HH:mm");
+			version.get().setDscr(df.format(creationDate.getTime()));
+		}
+
 	}
 
 	/**
