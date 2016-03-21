@@ -51,7 +51,11 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.dbcp
 	org.apache.commons.pool
 	bouncycastle.bcprov-jdk14
+	com.ibm.icu
+	ca.uhn.hapi.osgi-base
 	ch.elexis.core.hl7.v2x
+	org.apache.poi
+	ch.elexis.core.importer.div
 	
 	at.medevit.ch.artikelstamm
 	
