@@ -53,7 +53,6 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	ch.rgw.utility [3.2.0,3.3.0)
 	ch.elexis.core [3.2.0,3.3.0)
 	org.postgresql
-	com.mysql.jdbc
 	org.h2
 	org.jdom
 	org.apache.commons.dbcp
@@ -119,6 +118,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
+	com.mysql.jdbc
 }
 
 // RestFuse
