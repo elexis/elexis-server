@@ -45,7 +45,6 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	ch.rgw.utility
 	ch.elexis.core
 	org.postgresql
-	com.mysql.jdbc
 	org.h2
 	org.jdom
 	org.apache.commons.dbcp
@@ -82,7 +81,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
-com.mashape.unirest.java
+	com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
 	org.apache.httpcomponents.httpclient
@@ -95,6 +94,7 @@ com.mashape.unirest.java
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
+	com.mysql.jdbc
 	
 	com.eclipsesource.restfuse
 }
