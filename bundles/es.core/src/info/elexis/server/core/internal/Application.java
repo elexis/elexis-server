@@ -1,6 +1,7 @@
 package info.elexis.server.core.internal;
 
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.equinox.app.IApplication;
@@ -25,6 +26,9 @@ public class Application implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		logger.info("Starting " + Application.class.getName() + "...");
 		instance = this;
+
+		TimeZone tzone = TimeZone.getTimeZone("CET");
+		TimeZone.setDefault(tzone);
 
 		context.applicationRunning();
 		while (!restart && !shutdown) {

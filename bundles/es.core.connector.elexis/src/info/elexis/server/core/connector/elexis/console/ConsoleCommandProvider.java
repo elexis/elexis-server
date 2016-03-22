@@ -4,6 +4,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.common.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
@@ -12,26 +14,33 @@ import info.elexis.server.core.connector.elexis.services.LockService;
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider implements CommandProvider {
 
-	public void _es_elc(CommandInterpreter ci) throws Exception {
+	private Logger log = LoggerFactory.getLogger(ConsoleCommandProvider.class);
+
+	public void _es_elc(CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
-		if (argument == null) {
-			System.out.println(getHelp());
-			return;
+		try {
+			if (argument == null) {
+				System.out.println(getHelp());
+				return;
+			}
+			switch (argument) {
+			case "connectionStatus":
+				IStatus dbi = ElexisDBConnection.getDatabaseInformation();
+				StatusUtil.printStatus(System.out, dbi);
+				break;
+			case "listLocks":
+				System.out.println(LockService.consoleListLocks());
+				break;
+			case "clearAllLocks":
+				LockService.clearAllLocks();
+				break;
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			log.error("Execution error on argument " + argument, e);
 		}
-		switch (argument) {
-		case "connectionStatus":
-			IStatus dbi = ElexisDBConnection.getDatabaseInformation();
-			StatusUtil.printStatus(System.out, dbi);
-			break;
-		case "listLocks":
-			System.out.println(LockService.consoleListLocks());
-			break;
-		case "clearAllLocks":
-			LockService.clearAllLocks();
-			break;
-		default:
-			break;
-		}
+
 	}
 
 	@Override

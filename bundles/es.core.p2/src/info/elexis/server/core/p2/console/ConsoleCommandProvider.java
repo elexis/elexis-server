@@ -3,6 +3,8 @@ package info.elexis.server.core.p2.console;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.p2.internal.HTTPServiceHelper;
 import info.elexis.server.core.p2.internal.ProvisioningHelper;
@@ -13,23 +15,29 @@ public class ConsoleCommandProvider implements CommandProvider {
 	public static final String MAIN_CMD = "es_p2";
 	public static final String HELP_PREPEND = "Usage: " + MAIN_CMD + " ";
 
-	public void _es_p2(CommandInterpreter ci) throws Exception {
-		final String argument = ci.nextArgument();
-		if (argument == null) {
-			System.out.println(getHelp());
-			return;
-		}
+	private Logger log = LoggerFactory.getLogger(ConsoleCommandProvider.class);
 
-		switch (argument.toLowerCase()) {
-		case "repositories":
-			System.out.println(repositories(ci));
-			return;
-		case "system":
-			System.out.println(system(ci.nextArgument()));
-			return;
-		default:
-			System.out.println(getHelp());
-			return;
+	public void _es_p2(CommandInterpreter ci) {
+		final String argument = ci.nextArgument();
+		try {
+			if (argument == null) {
+				System.out.println(getHelp());
+				return;
+			}
+
+			switch (argument.toLowerCase()) {
+			case "repositories":
+				System.out.println(repositories(ci));
+				return;
+			case "system":
+				System.out.println(system(ci.nextArgument()));
+				return;
+			default:
+				System.out.println(getHelp());
+				return;
+			}
+		} catch (Exception e) {
+			log.error("Execution error on argument " + argument, e);
 		}
 	}
 
