@@ -1,9 +1,13 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -19,8 +23,8 @@ public class KontaktServiceTest {
 		Kontakt findById = KontaktService.INSTANCE.findById(val.getId()).get();
 		assertEquals(val.getId(), findById.getId());
 		KontaktService.INSTANCE.remove(val);	
-		Kontakt found = KontaktService.INSTANCE.findById(val.getId()).get();
-		assertNull(found);
+		Optional<Kontakt> found = KontaktService.INSTANCE.findById(val.getId());
+		assertFalse(found.isPresent());
 	}
 	
 	@Test

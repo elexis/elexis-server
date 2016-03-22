@@ -52,6 +52,24 @@ public class LockServiceTest  {
 	}
 	
 	@Test
+	public void testAcquireLocked() {
+		LockService service = new LockService();
+		LockInfo lockInfo1 = new LockInfo("objStoreToString::1", "objUser", "testUuid1");
+		LockInfo lockInfo2 = new LockInfo("objStoreToString::1", "objUser", "testUuid2");
+
+		LockResponse lockResponse = service.acquireLock(lockInfo1);
+		assertTrue(lockResponse.isOk());
+		assertTrue(service.isLocked("objStoreToString::1"));
+
+		lockResponse = service.acquireLock(lockInfo2);
+		assertNotNull(lockResponse);
+		assertFalse(lockResponse.isOk());
+		assertTrue(service.isLocked("objStoreToString::1"));
+
+		lockResponse = service.releaseLock(lockInfo1);
+	}
+
+	@Test
 	public void testDoubleRelease() {
 		LockService service = new LockService();
 		LockInfo lockInfo = new LockInfo("objStoreToString::1", "objUser", "testUuid");
