@@ -99,7 +99,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	@Override
 	public String getHelp() {
-		return HELP_PREPEND + "(system | repo)";
+		return HELP_PREPEND + "(repo | features | executeUpdate)";
 	}
 
 }
