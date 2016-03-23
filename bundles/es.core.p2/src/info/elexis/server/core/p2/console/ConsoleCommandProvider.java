@@ -31,6 +31,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 				return;
 			case "features":
 				System.out.println(features(ci));
+				return;
 			case "executeUpdate":
 				System.out.println(ProvisioningHelper.updateAllFeatures().getMessage());
 				return;
