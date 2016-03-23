@@ -25,7 +25,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 				return;
 			}
 
-			switch (argument.toLowerCase()) {
+			switch (argument) {
 			case "repo":
 				System.out.println(repo(ci));
 				return;
