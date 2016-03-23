@@ -29,8 +29,10 @@ public class ConsoleCommandProvider implements CommandProvider {
 			case "repo":
 				System.out.println(repo(ci));
 				return;
-			case "system":
-				System.out.println(system(ci.nextArgument()));
+			case "features":
+				System.out.println(features(ci));
+			case "executeUpdate":
+				System.out.println(ProvisioningHelper.updateAllFeatures().getMessage());
 				return;
 			default:
 				System.out.println(getHelp());
@@ -41,17 +43,22 @@ public class ConsoleCommandProvider implements CommandProvider {
 		}
 	}
 
-	private String system(String argument) {
+	private String features(final CommandInterpreter ci) {
+		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return HELP_PREPEND + "system (executeUpdate | listFeatures)";
+			return HELP_PREPEND + "features (listLocal | install | uninstall)";
 		}
 
+		final String featureName = ci.nextArgument();
+
 		switch (argument) {
-		case "executeUpdate":
-			return ProvisioningHelper.updateAllFeatures().getMessage();
-		case "listFeatures":
+		case "listLocal":
 			return ProvisioningHelper.getAllInstalledFeatures().stream()
 					.map(i -> i.getId() + " (" + i.getVersion() + ")").reduce((u, t) -> u + "\n" + t).get();
+		case "install":
+			return ProvisioningHelper.installFeature(featureName);
+		case "uninstall":
+			return ProvisioningHelper.uninstallFeature(featureName);
 		}
 
 		return getHelp();
@@ -82,7 +89,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 		}
 		final String username = ci.nextArgument();
 		final String password = ci.nextArgument();
-		
+
 		if (b) {
 			return HTTPServiceHelper.doRepositoryAdd(argument, username, password).getStatusInfo().toString();
 		} else {

@@ -1,10 +1,15 @@
 package info.elexis.server.core.p2.internal;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -13,6 +18,7 @@ import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.operations.InstallOperation;
 import org.eclipse.equinox.p2.operations.ProfileChangeOperation;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
@@ -94,7 +100,7 @@ public class ProvisioningHelper {
 			metadataRepoMgr.addRepository(location);
 			log.debug("Added artifact repository " + location);
 		}
-		
+
 		registerHttpAuthentication(location, username, password);
 	}
 
@@ -157,7 +163,7 @@ public class ProvisioningHelper {
 	 * @param location
 	 */
 	private static void registerHttpAuthentication(URI location, String username, String password) {
-		if(username==null || password == null) {
+		if (username == null || password == null) {
 			return;
 		}
 		try {
@@ -168,5 +174,64 @@ public class ProvisioningHelper {
 		} catch (StorageException e) {
 			log.error("Error initializing secure preferences", e);
 		}
+	}
+
+	public static Collection<IInstallableUnit> getAllAvailableFeatures() {
+		IMetadataRepositoryManager metadataRepositoryManager = Provisioner.getInstance().getMetadataRepositoryManager();
+
+		IQueryResult<IInstallableUnit> result = metadataRepositoryManager.query(QueryUtil.createIUGroupQuery(),
+				new NullProgressMonitor());
+		return result.toSet();
+	}
+
+	private static IInstallableUnit findFeature(String feature) {
+		List<IInstallableUnit> features = new ArrayList<IInstallableUnit>(getAllAvailableFeatures());
+		// sort in order to have the newest feature on top
+		Collections.sort(features, Collections.reverseOrder());
+
+		for (Iterator<IInstallableUnit> i = features.iterator(); i.hasNext();) {
+			IInstallableUnit unit = (IInstallableUnit) i.next();
+			if (unit.getId().equals(feature))
+				return unit;
+		}
+		return null;
+	}
+
+	public static String installFeature(String featureName) {
+		IInstallableUnit unit = findFeature(featureName);
+		if (unit == null) {
+			log.error("[INSTALL] Cannot find feature : " + featureName);
+			return "[ERROR]";
+		}
+		return StatusUtil.printStatus(install(unit, new NullProgressMonitor()));
+	}
+
+	public static IStatus install(IInstallableUnit unit, IProgressMonitor monitor) {
+		IProvisioningAgent agent = Provisioner.getInstance().getProvisioningAgent();
+		ProvisioningSession session = new ProvisioningSession(agent);
+
+		InstallOperation operation = new InstallOperation(session, Arrays.asList(unit));
+		IStatus result = operation.resolveModal(monitor);
+
+		log.debug("[INSTALL] unit " + unit + " | result " + result.getMessage() + " | severity " + result.getSeverity()
+				+ " | code " + result.getCode());
+
+		if (result.isOK()) {
+			ProvisioningJob job = operation.getProvisioningJob(monitor);
+			job.schedule();
+			try {
+				job.join();
+				result = job.getResult();
+			} catch (InterruptedException e) {
+				// ignore
+			}
+		}
+
+		return result;
+	}
+
+	public static String uninstallFeature(String featureName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
