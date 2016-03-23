@@ -87,7 +87,6 @@ public class ProvisioningHelper {
 		IArtifactRepositoryManager artifactRepoMgr = Provisioner.getInstance().getArtifactRepositoryManager();
 		if (!artifactRepoMgr.contains(location)) {
 			artifactRepoMgr.addRepository(location);
-			registerHttpAuthentication(location, username, password);
 		}
 
 		IMetadataRepositoryManager metadataRepoMgr = Provisioner.getInstance().getMetadataRepositoryManager();
@@ -95,6 +94,8 @@ public class ProvisioningHelper {
 			metadataRepoMgr.addRepository(location);
 			log.debug("Added artifact repository " + location);
 		}
+		
+		registerHttpAuthentication(location, username, password);
 	}
 
 	public static IStatus updateAllFeatures() {
@@ -156,6 +157,9 @@ public class ProvisioningHelper {
 	 * @param location
 	 */
 	private static void registerHttpAuthentication(URI location, String username, String password) {
+		if(username==null || password == null) {
+			return;
+		}
 		try {
 			ISecurePreferences secPref = SecurePreferencesFactory.getDefault()
 					.node("org.eclipse.equinox.p2.repository/" + location.getHost());

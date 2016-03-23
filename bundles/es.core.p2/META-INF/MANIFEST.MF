@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Core Elexis-Server p2 management
-Bundle-SymbolicName: info.elexis.server.core.p2
+Bundle-SymbolicName: info.elexis.server.core.p2;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: elexis.info
 Require-Bundle: org.eclipse.core.runtime,
