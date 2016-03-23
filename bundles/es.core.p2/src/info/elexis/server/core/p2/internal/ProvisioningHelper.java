@@ -20,8 +20,12 @@ import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.IQueryResult;
 import org.eclipse.equinox.p2.query.QueryUtil;
+import org.eclipse.equinox.p2.repository.IRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +83,11 @@ public class ProvisioningHelper {
 		return result;
 	}
 
-	public static void addRepository(URI location) {
+	public static void addRepository(URI location, String username, String password) {
 		IArtifactRepositoryManager artifactRepoMgr = Provisioner.getInstance().getArtifactRepositoryManager();
 		if (!artifactRepoMgr.contains(location)) {
 			artifactRepoMgr.addRepository(location);
-			log.debug("Added artifact repository " + location);
+			registerHttpAuthentication(location, username, password);
 		}
 
 		IMetadataRepositoryManager metadataRepoMgr = Provisioner.getInstance().getMetadataRepositoryManager();
@@ -119,14 +123,14 @@ public class ProvisioningHelper {
 			log.info("UPDATED {} / {}", stat.getCode(), stat.getMessage());
 			// TODO Show single updates
 			// TODO perform restart
-			if(stat.isMultiStatus()) {
+			if (stat.isMultiStatus()) {
 				StatusUtil.printStatus(log, stat);
 			}
 		} else {
 			log.warn("UPDATE FAILED {} / {}", status.getCode(), status.getMessage());
 			if (status.isMultiStatus()) {
 				StatusUtil.printStatus(log, status);
-			} 
+			}
 		}
 
 		return status;
@@ -138,9 +142,27 @@ public class ProvisioningHelper {
 		if (profile == null) {
 			return Collections.emptyList();
 		}
-		IQueryResult<IInstallableUnit> result =
-			profile.query(QueryUtil.createIUGroupQuery(), new NullProgressMonitor());
+		IQueryResult<IInstallableUnit> result = profile.query(QueryUtil.createIUGroupQuery(),
+				new NullProgressMonitor());
 		return result.toUnmodifiableSet();
-		
+
+	}
+
+	/**
+	 * Register the HTTP authentication against a given location
+	 * 
+	 * @param password
+	 * @param username
+	 * @param location
+	 */
+	private static void registerHttpAuthentication(URI location, String username, String password) {
+		try {
+			ISecurePreferences secPref = SecurePreferencesFactory.getDefault()
+					.node("org.eclipse.equinox.p2.repository/" + location.getHost());
+			secPref.put(IRepository.PROP_USERNAME, username, false);
+			secPref.put(IRepository.PROP_PASSWORD, password, true);
+		} catch (StorageException e) {
+			log.error("Error initializing secure preferences", e);
+		}
 	}
 }

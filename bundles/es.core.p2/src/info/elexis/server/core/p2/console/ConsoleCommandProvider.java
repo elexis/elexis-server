@@ -26,8 +26,8 @@ public class ConsoleCommandProvider implements CommandProvider {
 			}
 
 			switch (argument.toLowerCase()) {
-			case "repositories":
-				System.out.println(repositories(ci));
+			case "repo":
+				System.out.println(repo(ci));
 				return;
 			case "system":
 				System.out.println(system(ci.nextArgument()));
@@ -57,10 +57,10 @@ public class ConsoleCommandProvider implements CommandProvider {
 		return getHelp();
 	}
 
-	private String repositories(final CommandInterpreter ci) {
+	private String repo(final CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return HELP_PREPEND + "repositories (list | add | remove )";
+			return HELP_PREPEND + "repo (list | add | remove )";
 		}
 		switch (argument) {
 		case "list":
@@ -78,10 +78,13 @@ public class ConsoleCommandProvider implements CommandProvider {
 	private String repoManage(boolean b, CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return HELP_PREPEND + "repositories (list | add ) repo_url";
+			return HELP_PREPEND + "repo (list | add ) repo_url [username] [password]";
 		}
+		final String username = ci.nextArgument();
+		final String password = ci.nextArgument();
+		
 		if (b) {
-			return HTTPServiceHelper.doRepositoryAdd(argument).getStatusInfo().toString();
+			return HTTPServiceHelper.doRepositoryAdd(argument, username, password).getStatusInfo().toString();
 		} else {
 			return HTTPServiceHelper.doRepositoryRemove(argument).getStatusInfo().toString();
 		}
@@ -89,7 +92,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	@Override
 	public String getHelp() {
-		return HELP_PREPEND + "(system | repositories)";
+		return HELP_PREPEND + "(system | repo)";
 	}
 
 }

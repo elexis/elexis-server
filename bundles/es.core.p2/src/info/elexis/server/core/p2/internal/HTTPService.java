@@ -25,15 +25,15 @@ public class HTTPService {
 		return HTTPServiceHelper.doRepositoryList(filter);
 	}
 
-	@GET
-	@Path("/repositories/add")
-	public Response addRepository(@QueryParam("location") String location) {
-		Optional<String> locStr = Optional.ofNullable(location);
-		if (locStr.isPresent()) {
-			return HTTPServiceHelper.doRepositoryAdd(locStr.get());
-		}
-		return Response.status(Response.Status.BAD_REQUEST).build();
-	}
+//	@GET
+//	@Path("/repositories/add")
+//	public Response addRepository(@QueryParam("location") String location) {
+//		Optional<String> locStr = Optional.ofNullable(location);
+//		if (locStr.isPresent()) {
+//			return HTTPServiceHelper.doRepositoryAdd(locStr.get());
+//		}
+//		return Response.status(Response.Status.BAD_REQUEST).build();
+//	}
 
 	@GET
 	@Path("/repositories/remove")

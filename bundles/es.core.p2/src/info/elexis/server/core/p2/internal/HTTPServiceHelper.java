@@ -79,7 +79,7 @@ public class HTTPServiceHelper {
 		}
 	}
 
-	public static Response doRepositoryAdd(String locStr) {
+	public static Response doRepositoryAdd(String locStr, String username, String password) {
 		URI location = null;
 		try {
 			locStr = URLDecoder.decode(locStr, "ASCII");
@@ -90,7 +90,7 @@ public class HTTPServiceHelper {
 		}
 
 		if (location.isAbsolute()) {
-			ProvisioningHelper.addRepository(location);
+			ProvisioningHelper.addRepository(location, username, password);
 			return Response.ok().build();
 		}
 
