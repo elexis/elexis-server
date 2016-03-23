@@ -12,9 +12,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
 
-import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
 import at.medevit.ch.artikelstamm.ArtikelstammHelper;
 import ch.elexis.core.constants.StringConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
@@ -65,21 +63,19 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	 * 
 	 * @param importStammType
 	 */
-	public int resetAllBlackboxMarks(TYPE importStammType) {
+	public int resetAllBlackboxMarks() {
 		EntityManager em = createEntityManager();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaUpdate<ArtikelstammItem> update = cb.createCriteriaUpdate(ArtikelstammItem.class);
-			Root<ArtikelstammItem> e = update.from(ArtikelstammItem.class);
 			update.set(ArtikelstammItem_.bb, StringConstants.ZERO);
-			update.where(cb.equal(e.get(ArtikelstammItem_.type), importStammType.name()));
 			return em.createQuery(update).executeUpdate();
 		} finally {
 			em.close();
 		}
 	}
 
-	public ArtikelstammItem create(int cummulatedVersion, String gtin, BigInteger phar, String dscr, String addscr) {
+	public ArtikelstammItem create(int cummulatedVersion, String gtin, BigInteger phar, String dscr) {
 		em.getTransaction().begin();
 		String id = ArtikelstammHelper.createUUID(cummulatedVersion, gtin, phar, true);
 		String pharmacode = (phar != null) ? String.format("%07d", phar) : "0000000";
@@ -89,7 +85,6 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		ai.setGtin(gtin);
 		ai.setPhar(pharmacode);
 		ai.setDscr(dscr);
-		ai.setAdddscr(addscr);
 		ai.setBb(StringConstants.ZERO);
 		em.getTransaction().commit();
 		return ai;

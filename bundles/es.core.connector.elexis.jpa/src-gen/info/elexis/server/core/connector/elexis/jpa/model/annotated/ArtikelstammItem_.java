@@ -5,11 +5,12 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-03-21T11:26:27")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-03-23T07:18:35")
 @StaticMetamodel(ArtikelstammItem.class)
 public class ArtikelstammItem_ { 
 
     public static volatile SingularAttribute<ArtikelstammItem, String> bb;
+    public static volatile SingularAttribute<ArtikelstammItem, Boolean> limitation;
     public static volatile SingularAttribute<ArtikelstammItem, String> prodno;
     public static volatile SingularAttribute<ArtikelstammItem, Integer> istbestand;
     public static volatile SingularAttribute<ArtikelstammItem, String> comp_gln;
@@ -17,6 +18,7 @@ public class ArtikelstammItem_ {
     public static volatile SingularAttribute<ArtikelstammItem, String> verkaufseinheit;
     public static volatile SingularAttribute<ArtikelstammItem, String> type;
     public static volatile SingularAttribute<ArtikelstammItem, String> adddscr;
+    public static volatile SingularAttribute<ArtikelstammItem, Boolean> narcotic;
     public static volatile SingularAttribute<ArtikelstammItem, String> dscr;
     public static volatile SingularAttribute<ArtikelstammItem, String> atc;
     public static volatile SingularAttribute<ArtikelstammItem, String> narcotic_cas;
@@ -30,10 +32,13 @@ public class ArtikelstammItem_ {
     public static volatile SingularAttribute<ArtikelstammItem, String> gtin;
     public static volatile SingularAttribute<ArtikelstammItem, String> ikscat;
     public static volatile SingularAttribute<ArtikelstammItem, String> pkg_size;
+    public static volatile SingularAttribute<ArtikelstammItem, Boolean> sl_entry;
+    public static volatile SingularAttribute<ArtikelstammItem, Boolean> has_generic;
     public static volatile SingularAttribute<ArtikelstammItem, String> anbruch;
     public static volatile SingularAttribute<ArtikelstammItem, String> vaccine;
     public static volatile SingularAttribute<ArtikelstammItem, String> generic_type;
     public static volatile SingularAttribute<ArtikelstammItem, String> deductible;
+    public static volatile SingularAttribute<ArtikelstammItem, Boolean> lppv;
     public static volatile SingularAttribute<ArtikelstammItem, String> ppub;
     public static volatile SingularAttribute<ArtikelstammItem, Integer> minbestand;
 

@@ -14,12 +14,12 @@ public class IntegerStringConverter implements Converter {
 	private Logger log = LoggerFactory.getLogger(IntegerStringConverter.class);
 	
 	@Override
-	public Object convertObjectValueToDataValue(Object objectValue, Session session) {
+	public String convertObjectValueToDataValue(Object objectValue, Session session) {
 		return Integer.toString((int) objectValue);
 	}
 
 	@Override
-	public Object convertDataValueToObjectValue(Object dataValue, Session session) {
+	public Integer convertDataValueToObjectValue(Object dataValue, Session session) {
 		if (StringTool.isNothing(dataValue)) {
 			return 0;
 		}

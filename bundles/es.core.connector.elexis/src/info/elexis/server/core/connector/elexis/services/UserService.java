@@ -31,6 +31,9 @@ public class UserService extends AbstractService<User> {
 	}
 
 	public Optional<User> findByKontakt(Kontakt kontakt) {
+		if(kontakt==null) {
+			return Optional.empty();
+		}
 		JPAQuery<User> qre = new JPAQuery<User>(User.class);
 		qre.add(User_.kontakt, JPAQuery.QUERY.EQUALS, kontakt);
 		List<User> result = qre.execute();

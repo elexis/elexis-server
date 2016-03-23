@@ -50,14 +50,14 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 6)
 	private String pkg_size;
 
-	// @Convert(value = "booleanStringConverter")
-	// private boolean sl_entry;
+	@Convert(value = "booleanStringConverter")
+	private boolean sl_entry;
 
 	@Column(length = 1)
 	private String ikscat;
 
-	// @Convert(value = "booleanStringConverter")
-	// private boolean limitation;
+	@Convert(value = "booleanStringConverter")
+	private boolean limitation = false;
 
 	// spell error in creating table :(
 	@Column(length = 4, name = "limitiation_pts")
@@ -70,17 +70,17 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 1)
 	private String generic_type;
 
-	// @Convert(value = "booleanStringConverter")
-	// private boolean has_generic;
+	 @Convert(value = "booleanStringConverter")
+	 private boolean has_generic;
 
-	// @Convert(value = "booleanStringConverter")
-	// private boolean lppv;
+	@Convert(value = "booleanStringConverter")
+	private boolean lppv;
 
 	@Column(length = 6)
 	private String deductible;
 
-	// @Convert(value = "booleanStringConverter")
-	// private boolean narcotic;
+	@Convert(value = "booleanStringConverter")
+	private boolean narcotic;
 
 	@Column(length = 20)
 	private String narcotic_cas;
@@ -216,6 +216,22 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	public String getIkscat() {
 		return ikscat;
 	}
+	
+	public boolean isLimitation() {
+		return limitation;
+	}
+	
+	public void setLimitation(boolean limitation) {
+		this.limitation = limitation;
+	}
+	
+	public boolean isLppv() {
+		return lppv;
+	}
+	
+	public void setLppv(boolean lppv) {
+		this.lppv = lppv;
+	}
 
 	public void setIkscat(String ikscat) {
 		this.ikscat = ikscat;
@@ -325,6 +341,7 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.prodno = prodno;
 	}
 
+	
 	@Override
 	public String getLabel() {
 		return (getAdddscr().length() > 0) ? getDscr() + " (" + getAdddscr() + ")" : getDscr();
