@@ -3,6 +3,7 @@
 
 <product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -19,12 +20,14 @@
 
    <windowImages/>
 
+
    <launcher name="elexis-server">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
@@ -37,7 +40,7 @@
       <feature id="info.elexis.server.core.platform.feature" installMode="root"/>
       <feature id="info.elexis.server.rootfiles.feature" installMode="root"/>
       <feature id="info.elexis.server.core.p2.feature" installMode="root"/>
-      <feature id="info.elexis.server.core.connector.elexis.feature" version="1.0.0.qualifier"/>
+      <feature id="info.elexis.server.core.connector.elexis.feature" installMode="root"/>
    </features>
 
    <configurations>
