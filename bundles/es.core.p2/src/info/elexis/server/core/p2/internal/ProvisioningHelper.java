@@ -22,6 +22,7 @@ import org.eclipse.equinox.p2.operations.InstallOperation;
 import org.eclipse.equinox.p2.operations.ProfileChangeOperation;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
+import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.query.IQuery;
 import org.eclipse.equinox.p2.query.IQueryResult;
@@ -118,17 +119,21 @@ public class ProvisioningHelper {
 
 		UpdateOperation operation = new UpdateOperation(session, units.toUnmodifiableSet());
 		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(15000));
-		log.debug("CHECK_FOR_UPDATE {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
+		log.debug("[UPDATE] Check for updates {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
 				status.getCode());
 		if ((!status.isOK() && status.getCode() == 10000 && status.getSeverity() == 1)) {
 			// no updates available
 			return status;
+		} else {
+			Update[] possibleUpdates = operation.getPossibleUpdates();
+			for (Update update : possibleUpdates) {
+				log.debug("[UPDATE] Found update " + update.replacement);
+			}
 		}
 
 		if (status.getSeverity() != IStatus.ERROR) {
 			IStatus stat = ProvisioningHelper.performOperation(operation);
-			log.info("UPDATED {} / {}", stat.getCode(), stat.getMessage());
-			// TODO Show single updates
+			log.info("[UPDATE] Finished {} / {}", stat.getCode(), stat.getMessage());
 			// TODO perform restart
 			if (stat.isMultiStatus()) {
 				StatusUtil.printStatus(log, stat);
