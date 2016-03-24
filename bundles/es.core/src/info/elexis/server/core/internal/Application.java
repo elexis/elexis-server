@@ -78,7 +78,7 @@ public class Application implements IApplication {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
 
 
-		return "Uptime: " + String.format("%d days, % hours, %d min, %d sec", days,
+		return "Uptime: " + String.format("%d days, %d hours, %d min, %d sec", days,
 				hours, minutes, seconds);
 	}
 }
