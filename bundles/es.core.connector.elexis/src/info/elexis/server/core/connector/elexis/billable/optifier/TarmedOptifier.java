@@ -11,9 +11,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import ch.elexis.core.constants.Preferences;
+import ch.elexis.core.status.ObjectStatus;
 import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
-import info.elexis.server.core.common.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;

@@ -26,7 +26,8 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
-Import-Package: javax.servlet;version="3.1.0",
+Import-Package: ch.elexis.core.status,
+ javax.servlet;version="3.1.0",
  javax.servlet.http;version="2.4.0",
  javax.ws.rs;version="1.1.1",
  javax.ws.rs.core;version="2.0.1",

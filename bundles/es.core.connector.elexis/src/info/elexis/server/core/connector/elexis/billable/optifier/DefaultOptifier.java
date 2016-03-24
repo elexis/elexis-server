@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.common.status.ObjectStatus;
+import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;

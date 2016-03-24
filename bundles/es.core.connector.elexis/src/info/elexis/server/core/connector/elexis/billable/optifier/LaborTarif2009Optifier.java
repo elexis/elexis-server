@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.Preferences;
-import info.elexis.server.core.common.status.ObjectStatus;
+import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;

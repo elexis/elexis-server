@@ -7,7 +7,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.common.status.StatusUtil;
+import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.services.LockService;
 

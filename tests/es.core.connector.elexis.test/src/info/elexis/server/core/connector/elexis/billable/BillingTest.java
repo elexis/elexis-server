@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.model.FallConstants;
+import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.common.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;

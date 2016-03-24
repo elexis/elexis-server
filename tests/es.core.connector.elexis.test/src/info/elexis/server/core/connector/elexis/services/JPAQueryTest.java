@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -11,8 +10,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
-import info.elexis.server.core.connector.elexis.services.JPACountQuery;
-import info.elexis.server.core.connector.elexis.services.JPAQuery;
 
 public class JPAQueryTest {
 
