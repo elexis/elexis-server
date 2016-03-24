@@ -1,4 +1,2 @@
-instructions.install = \
-  	chmod(targetDir:@artifact,targetFile:*.sh,permissions:755);
-instructions.install.import= \
-	org.eclipse.equinox.p2.touchpoint.natives.chmod
+instructions.install=chmod(targetDir:@artifact,targetFile:linux-start.sh,permissions:755);
+instructions.install.import=org.eclipse.equinox.p2.touchpoint.eclipse.chmod
