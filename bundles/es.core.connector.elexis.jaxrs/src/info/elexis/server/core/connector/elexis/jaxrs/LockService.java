@@ -15,8 +15,8 @@ import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 public class LockService implements ILockService {
 	
 	@Override
-	public boolean isLocked(String objectId) {
-		return LockServiceInstance.INSTANCE.isLocked(objectId);
+	public boolean isLocked(LockRequest request) {
+		return LockServiceInstance.INSTANCE.isLocked(request.getLockInfo());
 	}
 
 	@Override
@@ -32,6 +32,8 @@ public class LockService implements ILockService {
 			return LockServiceInstance.INSTANCE.acquireLock(request.getLockInfo());
 		case RELEASE:
 			return LockServiceInstance.INSTANCE.releaseLock(request.getLockInfo());
+		default:
+			break;
 		}
 		return new LockResponse(Status.ERROR, null);
 	}

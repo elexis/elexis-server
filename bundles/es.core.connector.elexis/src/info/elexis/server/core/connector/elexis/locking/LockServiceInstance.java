@@ -13,8 +13,8 @@ public enum LockServiceInstance implements ILockService{
 	private LockService ls = new LockService();
 
 	@Override
-	public boolean isLocked(String objectId) {
-		return ls.isLocked(objectId);
+	public boolean isLocked(LockInfo lockInfo) {
+		return ls.isLocked(lockInfo);
 	}
 
 	@Override

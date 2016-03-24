@@ -127,9 +127,15 @@ public class LockService implements ILockService {
 				}
 			}
 
-			locks.remove(lockInfo.getElementId());
+			LockInfo lie = locks.get(lockInfo.getElementId());
+			if (lie != null) {
+				if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+					locks.remove(lockInfo.getElementId());
+					return LockResponse.OK;
+				}
+			}
 
-			return LockResponse.OK;
+			return LockResponse.DENIED(lockInfo);
 		}
 	}
 
@@ -139,9 +145,14 @@ public class LockService implements ILockService {
 	}
 
 	@Override
-	public boolean isLocked(String storeToString) {
-		String elementId = LockInfo.getElementId(storeToString);
-		return locks.get(elementId) != null;
+	public boolean isLocked(LockInfo lockInfo) {
+		LockInfo lie = locks.get(lockInfo.getElementId());
+		if (lie != null) {
+			if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

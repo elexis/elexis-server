@@ -31,7 +31,7 @@ public class LockServiceTest  {
 		lockResponse = service.releaseLock(lockInfo);
 		assertNotNull(lockResponse);
 		assertTrue(lockResponse.isOk());
-		assertFalse(service.isLocked("objStoreToString::1"));
+		assertFalse(service.isLocked(lockInfo));
 	}
 	
 	@Test
@@ -41,12 +41,12 @@ public class LockServiceTest  {
 
 		LockResponse lockResponse = service.acquireLock(lockInfo);
 		assertTrue(lockResponse.isOk());
-		assertTrue(service.isLocked("objStoreToString::1"));
+		assertTrue(service.isLocked(lockInfo));
 
 		lockResponse = service.acquireLock(lockInfo);
 		assertNotNull(lockResponse);
 		assertTrue(lockResponse.isOk());
-		assertTrue(service.isLocked("objStoreToString::1"));
+		assertTrue(service.isLocked(lockInfo));
 
 		lockResponse = service.releaseLock(lockInfo);
 	}
@@ -59,12 +59,12 @@ public class LockServiceTest  {
 
 		LockResponse lockResponse = service.acquireLock(lockInfo1);
 		assertTrue(lockResponse.isOk());
-		assertTrue(service.isLocked("objStoreToString::1"));
+		assertTrue(service.isLocked(lockInfo1));
 
 		lockResponse = service.acquireLock(lockInfo2);
 		assertNotNull(lockResponse);
 		assertFalse(lockResponse.isOk());
-		assertTrue(service.isLocked("objStoreToString::1"));
+		assertFalse(service.isLocked(lockInfo2));
 
 		lockResponse = service.releaseLock(lockInfo1);
 	}
@@ -78,11 +78,11 @@ public class LockServiceTest  {
 		lockResponse = service.releaseLock(lockInfo);
 		assertNotNull(lockResponse);
 		assertTrue(lockResponse.isOk());
-		assertFalse(service.isLocked("objStoreToString::1"));
+		assertFalse(service.isLocked(lockInfo));
 
 		lockResponse = service.releaseLock(lockInfo);
 		assertNotNull(lockResponse);
-		assertTrue(lockResponse.isOk());
-		assertFalse(service.isLocked("objStoreToString::1"));
+		assertFalse(lockResponse.isOk());
+		assertFalse(service.isLocked(lockInfo));
 	}
 }

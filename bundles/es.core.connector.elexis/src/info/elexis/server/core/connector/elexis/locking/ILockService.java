@@ -38,7 +38,7 @@ public interface ILockService {
 	public LockResponse releaseLock(LockInfo lockInfos,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass);
 
-	public boolean isLocked(String storeToString);
+	public boolean isLocked(LockInfo lockInfo);
 
 	public Optional<LockInfo> getLockInfo(String storeToString);
 }
