@@ -16,6 +16,7 @@
 	</parent>
 
 	<modules>
+		<module>org.eclipse.persistence.jpa.logging.slf4j</module>
 		<module>es.core.common</module>
               	<module>es.core</module>
                	<module>es.core.logging</module>

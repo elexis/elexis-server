@@ -33,6 +33,8 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<shared-cache-mode>NONE</shared-cache-mode>
 		<properties>
+			<property name="eclipselink.logging.logger"
+				value="org.eclipse.persistence.jpa.logging.slf4j.Slf4jSessionLogger" />
 			<property name="eclipselink.logging.level" value="FINE" />
 			<property name="eclipselink.logging.thread" value="false" />
 			<property name="eclipselink.session.customizer"

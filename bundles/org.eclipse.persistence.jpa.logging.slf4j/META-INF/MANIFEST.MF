@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Extension to use Eclipse Persistence with SLF4J.
+Bundle-SymbolicName: org.eclipse.persistence.jpa.logging.slf4j
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: github.com/PE-INTERNATIONAL
+Fragment-Host: org.eclipse.persistence.jpa;bundle-version="2.6.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.slf4j.api;bundle-version="1.7.2"
