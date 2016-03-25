@@ -54,6 +54,9 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 	@Transient
 	public int getAL() {
 		Object object = extension.getLimits().get("TP_AL");
+		if(object==null) {
+			return 0;
+		}
 		double val;
 		try {
 			val = Double.parseDouble((String) object);
@@ -66,6 +69,9 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 	@Transient
 	public int getTL() {
 		Object object = extension.getLimits().get("TP_TL");
+		if(object==null) {
+			return 0;
+		}
 		double val;
 		try {
 			val = Double.parseDouble((String) object);
