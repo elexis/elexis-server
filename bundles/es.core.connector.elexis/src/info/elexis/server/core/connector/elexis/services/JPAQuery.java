@@ -17,6 +17,7 @@ import org.eclipse.persistence.jpa.JpaQuery;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 
 /**
@@ -38,8 +39,10 @@ public class JPAQuery<T extends AbstractDBObject> {
 	private TypedQuery<T> query;
 
 	private Predicate predicate;
-
 	private boolean includeDeleted;
+	
+	private final Class<T> clazz;
+	
 
 	public JPAQuery(Class<T> clazz) {
 		this(clazz, false);
@@ -49,6 +52,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		cb = ElexisEntityManager.getCriteriaBuilder();
 		cq = cb.createQuery(clazz);
 		root = cq.from(clazz);
+		this.clazz = clazz;
 		this.includeDeleted = includeDeleted;
 	}
 
@@ -116,7 +120,9 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	public List<T> execute() {
 		if (!includeDeleted) {
-			add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+			if(AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+			}
 		}
 		cq = cq.where(predicate);
 		query = createEntityManager().createQuery(cq);
@@ -137,7 +143,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	 */
 	public Optional<T> executeGetSingleResult() {
 		List<T> result = execute();
-		if (result.size() == 1) {
+		if (result !=  null && result.size() == 1) {
 			return Optional.of(result.get(0));
 		}
 		return Optional.empty();
