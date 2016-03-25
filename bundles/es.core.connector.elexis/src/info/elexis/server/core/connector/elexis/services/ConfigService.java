@@ -43,6 +43,7 @@ public class ConfigService {
 	}
 
 	public String get(String key, String defValue) {
+		flush();
 		Config val = findById(key);
 		if (val != null) {
 			return val.getWert();
