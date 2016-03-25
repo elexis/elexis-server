@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,6 +104,10 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @return
 	 */
 	public Optional<T> findById(Object id) {
+		if(id==null) {
+			log.warn("null provided as argument to findById(Object id)");
+			return Optional.empty();
+		}
 		return Optional.ofNullable((T) em.find(clazz, id));
 	}
 
@@ -115,6 +120,11 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @return
 	 */
 	public List<T> findByIdStartingWith(String string) {
+		if(string==null) {
+			log.warn("null provided as argument to findByIdStartingWith(String string)");
+			return Collections.emptyList();
+		}
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> c = cb.createQuery(clazz);
 		Root<T> r = c.from(clazz);
