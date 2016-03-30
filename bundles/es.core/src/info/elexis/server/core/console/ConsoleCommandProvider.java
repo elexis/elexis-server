@@ -43,7 +43,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	private String system(String argument) {
 		if (argument == null) {
-			return "Usage: es system (halt | restart)";
+			return "Usage: es system (halt | restart | testErrorMail)";
 		}
 
 		switch (argument) {
@@ -53,6 +53,9 @@ public class ConsoleCommandProvider implements CommandProvider {
 		case "restart":
 			Application.getInstance().restart();
 			return "OK";
+		case "testErrorMail":
+			log.error("Error Test mail");
+			return "SENT";
 		}
 
 		return getHelp();
