@@ -3,7 +3,9 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.osgi.service.component.annotations.Component;
@@ -16,14 +18,21 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
+import info.elexis.server.core.common.LocalProperties;
+import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 
 @Component(service = {})
 public class LockService implements ILockService {
 
+	public static final String PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS = BundleConstants.BUNDLE_ID
+			+ ".requiredLockContributors";
+
 	private static HashMap<String, LockInfo> locks = new HashMap<String, LockInfo>();
-	private static List<ILockServiceContributor> contributors = new ArrayList<ILockServiceContributor>();
+	private static Map<String, ILockServiceContributor> contributors = new HashMap<String, ILockServiceContributor>();
+	private static Set<String> requiredContributors = LocalProperties
+			.getPropertyAsSet(PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS);
 
 	private static Logger log = LoggerFactory.getLogger(LockService.class);
 
@@ -31,29 +40,19 @@ public class LockService implements ILockService {
 	 * A unique id for this instance of Elexis. Changes on every restart
 	 */
 	public static final UUID systemUuid = UUID.randomUUID();
-	
-	/**
-	 * If true, a missing lock service contributor is a severe error which
-	 * disable acquiring locks!
-	 */
-	private static final boolean failOnMissingLockServiceContributor;
-
-	static {
-		failOnMissingLockServiceContributor = (System.getProperty("acceptMissingLockServiceContributor") == null);
-	}
 
 	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
 			log.info("Binding lock service contributor " + isc.getClass());
-			contributors.add(isc);
+			contributors.put(isc.getClass().getName(), isc);
 		}
 	}
 
 	protected void unsetLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
 			log.info("Unbinding lock service contributor " + isc.getClass());
-			contributors.remove(isc);
+			contributors.remove(isc.getClass().getName());
 		}
 	}
 
@@ -78,12 +77,12 @@ public class LockService implements ILockService {
 		synchronized (locks) {
 			// is there an entry for any requested element
 			synchronized (contributors) {
-				if (contributors.size() == 0 && failOnMissingLockServiceContributor) {
-					log.error("System defined to require a lock service contributor. None available, denying locks!");
+				if (!contributors.keySet().containsAll(requiredContributors)) {
+					log.warn("System defined to require a lock service contributor. None available, denying locks!");
 					return new LockResponse(Status.ERROR, null);
 				}
 
-				for (ILockServiceContributor iLockServiceContributor : contributors) {
+				for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
 					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
 						continue;
 					}
@@ -115,7 +114,7 @@ public class LockService implements ILockService {
 
 		synchronized (locks) {
 			synchronized (contributors) {
-				for (ILockServiceContributor iLockServiceContributor : contributors) {
+				for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
 					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
 						continue;
 					}
