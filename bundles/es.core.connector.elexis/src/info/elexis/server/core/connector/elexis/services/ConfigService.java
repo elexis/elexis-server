@@ -46,6 +46,7 @@ public class ConfigService {
 		flush();
 		Config val = findById(key);
 		if (val != null) {
+			em.refresh(val);
 			return val.getWert();
 		} else {
 			return defValue;
@@ -61,10 +62,15 @@ public class ConfigService {
 	 */
 	public boolean set(String key, String value) {
 		EntityManager em = ElexisEntityManager.createEntityManager();
-		em.getTransaction().begin();
 		Config val = em.find(Config.class, key);
+		if(val!=null && val.getWert().equalsIgnoreCase(value)) {
+			return true;
+		}
+		
+		em.getTransaction().begin();
 		if (val == null) {
-			val = create(key, true);
+			val = new Config();
+			val.setParam(key);
 			em.persist(val);
 		}
 		val.setWert(value);
@@ -81,14 +87,17 @@ public class ConfigService {
 	 */
 	public Config create(String param, final boolean performCommit) {
 		Config obj = new Config();
-		if (performCommit)
+		if (performCommit) {
 			em.getTransaction().begin();
+		}
 		if (param != null) {
 			obj.setParam(param);
 		}
 		em.persist(obj);
-		if (performCommit)
+		if (performCommit) {
 			em.getTransaction().commit();
+		}
+
 		return obj;
 	}
 

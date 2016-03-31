@@ -33,6 +33,12 @@ public class KontaktServiceTest {
 	}
 	
 	@Test
+	public void testFindAllPatients() {
+		List<Kontakt> findAllPatients = KontaktService.findAllPatients();
+		assertTrue(findAllPatients.size()>0);
+	}
+	
+	@Test
 	public void testCreateAndDeletePatient() {
 		Kontakt patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
 		patient.getExtInfo().put(PatientConstants.FLD_EXTINFO_BIRTHNAME, "Birthname");

@@ -111,6 +111,9 @@ public class ElexisExtInfoMapConverter implements Converter {
 	@SuppressWarnings("unchecked")
 	private static Hashtable<Object, Object> fold(final byte[] flat){
 		Hashtable<Object, Object> res = null;
+		if(flat.length==0) {
+			return res;
+		}
 			try {
 				ByteArrayInputStream bais = new ByteArrayInputStream(flat);
 				ZipInputStream zis = new ZipInputStream(bais);

@@ -18,9 +18,10 @@ public class UserconfigServiceTest {
 		assertNotNull(kontakt);
 		
 		UserconfigService.INSTANCE.get(kontakt, Preferences.LEISTUNGSCODES_OPTIFY, true);
-		
 		boolean b = UserconfigService.INSTANCE.get(kontakt, "NonExistingPrefDefaults", false);
 		assertFalse(b);
 	}
+	
+	
 
 }

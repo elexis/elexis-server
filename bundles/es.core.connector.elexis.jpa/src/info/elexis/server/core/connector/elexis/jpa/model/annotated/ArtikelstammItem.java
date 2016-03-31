@@ -70,8 +70,8 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 1)
 	private String generic_type;
 
-	 @Convert(value = "booleanStringConverter")
-	 private boolean has_generic;
+	@Convert(value = "booleanStringConverter")
+	private boolean has_generic;
 
 	@Convert(value = "booleanStringConverter")
 	private boolean lppv;
@@ -341,9 +341,8 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.prodno = prodno;
 	}
 
-	
 	@Override
 	public String getLabel() {
-		return (getAdddscr().length() > 0) ? getDscr() + " (" + getAdddscr() + ")" : getDscr();
+		return (getAdddscr() != null && getAdddscr().length() > 0) ? getDscr() + " (" + getAdddscr() + ")" : getDscr();
 	}
 }
