@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import org.osgi.service.component.annotations.Component;
@@ -54,6 +56,13 @@ public class LockService implements ILockService {
 			log.info("Unbinding lock service contributor " + isc.getClass());
 			contributors.remove(isc.getClass().getName());
 		}
+	}
+
+	private Timer timer;
+
+	public LockService() {
+		timer = new Timer();
+		timer.schedule(new LockEvictionTask(), LockInfo.EVICTION_TIMEOUT, LockInfo.EVICTION_TIMEOUT);
 	}
 
 	@Override
@@ -148,6 +157,7 @@ public class LockService implements ILockService {
 		LockInfo lie = locks.get(lockInfo.getElementId());
 		if (lie != null) {
 			if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+				lie.refresh();
 				return true;
 			}
 		}
@@ -181,4 +191,30 @@ public class LockService implements ILockService {
 		return systemUuid.toString();
 	}
 
+	private class LockEvictionTask extends TimerTask {
+
+		private final Logger logger = LoggerFactory.getLogger(LockEvictionTask.class);
+
+		@Override
+		public void run() {
+			List<LockInfo> eviction = new ArrayList<>();
+			// collect LockInfos ready for eviction
+			synchronized (locks) {
+				long currentMillis = System.currentTimeMillis();
+				Set<String> keys = locks.keySet();
+				for (String key : keys) {
+					LockInfo lockInfo = locks.get(key);
+					if (lockInfo.evict(currentMillis)) {
+						eviction.add(lockInfo);
+					}
+				}
+			}
+			// release the collected locks
+			for (LockInfo lockInfo : eviction) {
+				logger.debug("Eviction releasing lock [" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
+						+ lockInfo.getElementId() + "@" + lockInfo.getSystemUuid() + "]");
+				releaseLock(lockInfo);
+			}
+		}
+	}
 }
