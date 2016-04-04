@@ -16,21 +16,17 @@ public class ConsoleCommandProvider implements CommandProvider {
 
 	public void _es(CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
+		if (argument == null) {
+			System.out.println(getHelp());
+			return;
+		}
 		try {
-			if (argument == null) {
-				System.out.println(getHelp());
-				return;
-			}
-
 			switch (argument.toLowerCase()) {
-			case "status":
-				System.out.println(showStatus(ci.nextArgument()));
-				return;
-			case "launch":
-				System.out.println(launch(ci.nextArgument()));
-				return;
 			case "system":
-				System.out.println(system(ci.nextArgument()));
+				System.out.println(system(ci));
+				return;
+			case "scheduler":
+				System.out.println(scheduler(ci));
 				return;
 			default:
 				System.out.println(getHelp());
@@ -41,11 +37,11 @@ public class ConsoleCommandProvider implements CommandProvider {
 		}
 	}
 
-	private String system(String argument) {
+	private String system(CommandInterpreter ci) {
+		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return "Usage: es system (halt | restart | testErrorMail)";
+			return "Usage: es system (halt | restart | status | logTestError)";
 		}
-
 		switch (argument) {
 		case "halt":
 			Application.getInstance().shutdown();
@@ -53,40 +49,46 @@ public class ConsoleCommandProvider implements CommandProvider {
 		case "restart":
 			Application.getInstance().restart();
 			return "OK";
-		case "testErrorMail":
-			log.error("Error Test mail");
+		case "status":
+			return Application.getStatus();
+		case "logTestError":
+			log.error("TEST ERROR");
 			return "SENT";
 		}
 
 		return getHelp();
 	}
 
-	private String launch(String argument) {
+	private String scheduler(CommandInterpreter ci) {
+		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return "Usage: es launch taskId";
+			return "Usage: es scheduler (launch taskId | deschedule taskId | status )";
 		}
-		boolean launched = SchedulerService.launchTask(argument);
-		return (launched) ? "Launched " + argument : "Failed";
-	}
+		final String taskIdArg = ci.nextArgument();
 
-	private String showStatus(final String argument) {
-		if (argument == null) {
-			return "Usage: es status (system | scheduler )";
-		}
 		switch (argument) {
-		case "system":
-			return Application.getStatus();
-		case "scheduler":
+		case "launch":
+			if (taskIdArg == null) {
+				return "ERR missing taskId";
+			}
+			boolean launched = SchedulerService.launchTask(taskIdArg);
+			return (launched) ? "Launched " + argument : "Failed";
+		case "deschedule":
+			if (taskIdArg == null) {
+				return "ERR missing taskId";
+			}
+			return Boolean.toString(SchedulerService.descheduleTask(taskIdArg));
+		case "status":
 			return SchedulerService.getSchedulerStatus().toString();
 		default:
 			break;
 		}
-		return getHelp();
+		return "OK";
 	}
 
 	@Override
 	public String getHelp() {
-		return "Usage: es (status | launch | system)";
+		return "Usage: es (system | scheduler)";
 	}
 
 }
