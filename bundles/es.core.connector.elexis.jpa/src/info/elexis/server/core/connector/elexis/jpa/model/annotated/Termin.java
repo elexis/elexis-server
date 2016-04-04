@@ -6,9 +6,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
@@ -20,65 +18,64 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.El
 @Table(name = "AGNTERMINE")
 public class Termin extends AbstractDBObjectIdDeleted {
 
-	@OneToOne
-	@JoinColumn(name = "PatID")
-	private Kontakt patient;
-	
+	@Column(length = 80)
+	private String patId;
+
 	@Column(length = 25)
 	private String bereich;
 
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	private LocalDate tag;
-	
-	@Column(length=4)
+
+	@Column(length = 4)
 	private String beginn;
-	
-	@Column(length=4)
+
+	@Column(length = 4)
 	private String dauer;
-	
+
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	private String grund;
-	
-	@Column(length=50)
+
+	@Column(length = 50)
 	private String terminTyp;
-	
-	@Column(length=50)
+
+	@Column(length = 50)
 	private String terminStatus;
-	
-	@Column(length=25)
+
+	@Column(length = 25)
 	private String erstelltVon;
-	
-	@Column(length=10)
+
+	@Column(length = 10)
 	private String angelegt;
-	
-	@Column(length=10)
+
+	@Column(length = 10)
 	private String lastedit;
-	
+
 	@Column
 	private int palmId;
-	
-	@Column(length=10)
+
+	@Column(length = 10)
 	private String flags;
-	
+
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	private String extension;
-	
-	@Column(length=50)
+
+	@Column(length = 50)
 	private String linkgroup;
-	
+
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	private String statusHistory;
 
-	public Kontakt getPatient() {
-		return patient;
+	public String getPatId() {
+		return patId;
 	}
 
-	public void setPatient(Kontakt patient) {
-		this.patient = patient;
+	public void setPatId(String patId) {
+		this.patId = patId;
 	}
 
 	public String getBereich() {
@@ -200,5 +197,5 @@ public class Termin extends AbstractDBObjectIdDeleted {
 	public void setStatusHistory(String statusHistory) {
 		this.statusHistory = statusHistory;
 	}
-	
+
 }
