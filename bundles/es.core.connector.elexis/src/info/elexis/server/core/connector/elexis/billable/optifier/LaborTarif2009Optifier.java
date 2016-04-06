@@ -87,7 +87,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 				return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Code not yet valid");
 			}
 
-			LocalDate deadline = ConfigService.INSTANCE.getDate("abrechnung/labor2009/optify/addition/deadline");
+			LocalDate deadline = ConfigService.INSTANCE.getAsDate("abrechnung/labor2009/optify/addition/deadline");
 
 			if (deadline == null) {
 				deadline = LocalDate.of(2013, 6, 30);
