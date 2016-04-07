@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaUpdate;
 
 import at.medevit.ch.artikelstamm.ArtikelstammHelper;
 import ch.elexis.core.constants.StringConstants;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
@@ -123,7 +124,7 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 
 	public static Optional<ArtikelstammItem> findByProductNumber(String code) {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.add(ArtikelstammItem_.prodno, QUERY.LIKE, code);
+		qbe.add(AbstractDBObjectIdDeleted_.id, QUERY.EQUALS, code);
 		return qbe.executeGetSingleResult();
 	}
 }
