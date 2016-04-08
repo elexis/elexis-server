@@ -13,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +154,7 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 
 		TypedQuery<T> q = em.createQuery(c);
 		q.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+		q.setHint(QueryHints.REFRESH, HintValues.TRUE);
 		return q.getResultList();
 	};
 
