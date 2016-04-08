@@ -40,6 +40,9 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 255)
 	private String dosis;
+	
+	@Column(length = 2, name = "prescType")
+	private String prescriptionType;
 
 	@OneToOne
 	@JoinColumn(name = "patientID")
@@ -86,6 +89,14 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setDateUntil(LocalDate dateUntil) {
 		this.dateUntil = dateUntil;
+	}
+	
+	public String getPrescriptionType() {
+		return prescriptionType;
+	}
+	
+	public void setPrescriptionType(String prescriptionType) {
+		this.prescriptionType = prescriptionType;
 	}
 
 	public String getDosis() {
