@@ -73,17 +73,18 @@ public class LockService implements ILockService {
 		}
 
 		// TODO what if user and system id are ident?
-		LockInfo lie = locks.get(lockInfo.getElementId());
-		if (lie != null) {
-			if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
-				// its the requesters lock (username and systemUuid match)
-				return LockResponse.OK;
-			} else {
-				return LockResponse.DENIED(lie);
-			}
-		}
 
 		synchronized (locks) {
+			LockInfo lie = locks.get(lockInfo.getElementId());
+			if (lie != null) {
+				if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+					// its the requesters lock (username and systemUuid match)
+					return LockResponse.OK;
+				} else {
+					return LockResponse.DENIED(lie);
+				}
+			}
+			
 			// is there an entry for any requested element
 			synchronized (contributors) {
 				if (!contributors.keySet().containsAll(requiredContributors)) {
