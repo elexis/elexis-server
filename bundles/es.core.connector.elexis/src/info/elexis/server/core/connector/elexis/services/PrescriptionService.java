@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
@@ -29,7 +29,7 @@ public class PrescriptionService extends AbstractService<Prescription> {
 		em.merge(patient);
 		pres.setPatient(patient);
 		pres.setDosis(dosage);
-		pres.setDateFrom(LocalDate.now());
+		pres.setDateFrom(LocalDateTime.now());
 		
 		em.getTransaction().commit();
 		

@@ -48,7 +48,7 @@ public class ElexisDBStringDateTimeTransformer implements AttributeTransformer, 
 		try {
 			return LocalDateTime.parse(dateString, yyyyMMddHHmmss);
 		} catch (DateTimeParseException e) {
-			log.warn("Error parsing {} in {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(), e);
+			log.warn("Error parsing {} in {}: {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(), e.getMessage());
 		}
 		return null;
 	}

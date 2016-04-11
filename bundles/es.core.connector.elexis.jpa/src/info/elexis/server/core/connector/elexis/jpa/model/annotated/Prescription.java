@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,9 +11,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
+import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.WriteTransformer;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
 @Table(name = "patient_artikel_joint")
@@ -30,13 +31,13 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 255)
 	private String bemerkung;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
-	private LocalDate dateFrom;
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	private LocalDateTime dateFrom;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
-	private LocalDate dateUntil;
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	private LocalDateTime dateUntil;
 
 	@Column(length = 255)
 	private String dosis;
@@ -75,19 +76,19 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 		this.bemerkung = bemerkung;
 	}
 
-	public LocalDate getDateFrom() {
+	public LocalDateTime getDateFrom() {
 		return dateFrom;
 	}
 
-	public void setDateFrom(LocalDate dateFrom) {
+	public void setDateFrom(LocalDateTime dateFrom) {
 		this.dateFrom = dateFrom;
 	}
 
-	public LocalDate getDateUntil() {
+	public LocalDateTime getDateUntil() {
 		return dateUntil;
 	}
 
-	public void setDateUntil(LocalDate dateUntil) {
+	public void setDateUntil(LocalDateTime dateUntil) {
 		this.dateUntil = dateUntil;
 	}
 	
