@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1459853793">
+<target name="Elexis-Server" sequenceNumber="1460403094">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -55,7 +55,7 @@
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20160316-1430"/>
       <unit id="org.apache.poi" version="3.0.2.FINAL"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.a20160316-1430"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.a20160303-1116"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.a20160410-2030"/>
       <unit id="org.eclipse.e4.ui.workbench.addons.swt" version="1.1.0.201506120605"/>
       <unit id="org.eclipse.e4.ui.workbench.renderers.swt" version="0.12.0.201506120605"/>
       <unit id="org.eclipse.e4.ui.workbench.swt" version="0.12.100.201506120605"/>
