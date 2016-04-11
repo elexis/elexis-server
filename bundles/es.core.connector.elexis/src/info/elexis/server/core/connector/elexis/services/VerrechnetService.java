@@ -87,7 +87,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		v.setVk_preis((int) preis);
 		v.setScale(100);
 		v.setScale2(100);
-		
+
 		em.getTransaction().commit();
 
 		return v;
@@ -138,9 +138,18 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return 1.0;
 	}
 
-	public void changeCount(Verrechnet foundVerrechnet, int i) {
-		throw new UnsupportedOperationException();
-		// TODO Auto-generated method stub
+	public void changeCount(Verrechnet foundVerrechnet, int newCount) {
+		int previous = foundVerrechnet.getZahl();
+		foundVerrechnet.setZahl(newCount);
+		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(foundVerrechnet);
+		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
+			// Artikel art = (Artikel) vv;
+			// TODO important
+			// art.einzelRuecknahme(vorher);
+			// art.einzelAbgabe(neuAnzahl);
+			log.error("Check stock management #changeCount()");
+			// see Verrechnet#changeAnzahl
+		}
 
 	}
 }
