@@ -205,6 +205,10 @@ public class LockService implements ILockService {
 				Set<String> keys = locks.keySet();
 				for (String key : keys) {
 					LockInfo lockInfo = locks.get(key);
+					// do not evict locks set by server system
+					if (lockInfo.getSystemUuid().equals(LockService.systemUuid)) {
+						continue;
+					}
 					if (lockInfo.evict(currentMillis)) {
 						eviction.add(lockInfo);
 					}
