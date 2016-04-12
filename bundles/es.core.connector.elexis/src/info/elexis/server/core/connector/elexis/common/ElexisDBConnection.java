@@ -2,7 +2,6 @@ package info.elexis.server.core.connector.elexis.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -59,11 +58,11 @@ public class ElexisDBConnection {
 	private static void setConnection(DBConnection connection) {
 		ElexisDBConnection.connection = connection;
 
-		try (OutputStream os = Files.newOutputStream(connectionConfigPath, StandardOpenOption.WRITE);) {
-			connection.marshall(os);
-		} catch (IOException | JAXBException e) {
-			log.error("Error marshalling connection", e);
-		}
+//		try (OutputStream os = Files.newOutputStream(connectionConfigPath, StandardOpenOption.WRITE);) {
+//			connection.marshall(os);
+//		} catch (IOException | JAXBException e) {
+//			log.error("Error marshalling connection", e);
+//		}
 
 //		ElexisEntityManager.initializeEntityManager();
 	}
