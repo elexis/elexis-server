@@ -236,7 +236,7 @@ public class ProvisioningHelper {
 	}
 
 	public static String uninstallFeature(String featureName) {
-		// TODO Auto-generated method stub
+		// TODO implement
 		return null;
 	}
 }

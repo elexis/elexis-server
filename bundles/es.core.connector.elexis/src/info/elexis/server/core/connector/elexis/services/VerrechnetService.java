@@ -144,7 +144,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(foundVerrechnet);
 		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
 			// Artikel art = (Artikel) vv;
-			// TODO important
+			// TODO implement
 			// art.einzelRuecknahme(vorher);
 			// art.einzelAbgabe(neuAnzahl);
 			log.error("Check stock management #changeCount()");
