@@ -57,7 +57,6 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 
 	@Override
 	public List<Object> getActions(Object context) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

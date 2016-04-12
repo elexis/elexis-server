@@ -53,7 +53,6 @@ public class VerrechenbarLabor2009Tarif implements IBillable<Labor2009Tarif> {
 
 	@Override
 	public List<Object> getActions(Object context) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

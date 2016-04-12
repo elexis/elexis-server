@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ElexisExtInfoMapConverter implements Converter {
 	
-	private Logger log = LoggerFactory.getLogger(ElexisExtInfoMapConverter.class);
+	private static Logger log = LoggerFactory.getLogger(ElexisExtInfoMapConverter.class);
 	
 	private static final long serialVersionUID = -1939779538183350309L;
 
@@ -95,8 +95,7 @@ public class ElexisExtInfoMapConverter implements Converter {
 			baos.close();
 			return baos.toByteArray();
 		} catch (Exception ex) {
-			// TODO
-			System.out.println("flattenException: "+ex);
+			log.warn("Exception flattening HashTable, returning null: "+ex.getMessage());
 			return null;
 		}
 	}
@@ -109,27 +108,23 @@ public class ElexisExtInfoMapConverter implements Converter {
 	 * @return the original Hashtable or null if no Hashtable could be created from the array
 	 */
 	@SuppressWarnings("unchecked")
-	private static Hashtable<Object, Object> fold(final byte[] flat){
+	private static Hashtable<Object, Object> fold(final byte[] flat) {
 		Hashtable<Object, Object> res = null;
-		if(flat.length==0) {
+		if (flat.length == 0) {
 			return res;
 		}
-			try {
-				ByteArrayInputStream bais = new ByteArrayInputStream(flat);
-				ZipInputStream zis = new ZipInputStream(bais);
-				zis.getNextEntry();
-				ObjectInputStream ois = new ObjectInputStream(zis);
-				res = (Hashtable<Object, Object>) ois.readObject();
-				ois.close();
-				bais.close();
-			} catch (IOException e) {
-				// TODO
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO
-				e.printStackTrace();
-			}
-			return res;
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(flat);
+			ZipInputStream zis = new ZipInputStream(bais);
+			zis.getNextEntry();
+			ObjectInputStream ois = new ObjectInputStream(zis);
+			res = (Hashtable<Object, Object>) ois.readObject();
+			ois.close();
+			bais.close();
+		} catch (IOException | ClassNotFoundException e) {
+			log.warn("Exception folding byte array: " + e.getMessage());
+		}
+		return res;
 	}
 	
 }
