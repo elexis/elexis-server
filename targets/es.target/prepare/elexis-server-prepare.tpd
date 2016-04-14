@@ -66,6 +66,7 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 }
 
 location "http://download.elexis.info/elexis.3.base/snapshot/" {
+	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
 }
 
