@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 import java.time.LocalDate;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,8 +22,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.El
 @Table(name = "BRIEFE")
 public class Brief extends AbstractDBObjectIdDeleted {
 
-	@Column(length = 80)
-	protected String betreff;
+	@Column(length = 80, name = "betreff")
+	protected String subject;
 	
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
@@ -38,19 +39,19 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	
 	@OneToOne
 	@JoinColumn(name = "absenderID")
-	protected Kontakt absender;
+	protected Kontakt sender;
 	
 	@OneToOne
 	@JoinColumn(name = "destID")
-	protected Kontakt empfaenger;
+	protected Kontakt recipient;
 	
 	@OneToOne
 	@JoinColumn(name = "patientID")
 	protected Kontakt patient;
 	
-//	@OneToOne
-//	@JoinColumn(name = "behandlungsID")
-//	protected Object behandlung;
+	@OneToOne
+	@JoinColumn(name = "behandlungsID")
+	protected Behandlung consultation;
 
 	@Column(length = 30)
 	protected String typ;
@@ -58,7 +59,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column(length = 80)
 	protected String mimetype;
 	
-	@OneToOne
+	@OneToOne(cascade=CascadeType.REMOVE)
 	@PrimaryKeyJoinColumn
 	protected Heap content;
 	
@@ -66,12 +67,12 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Lob()
 	protected String path;
 
-	public String getBetreff() {
-		return betreff;
+	public String getSubject() {
+		return subject;
 	}
 
-	public void setBetreff(String betreff) {
-		this.betreff = betreff;
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 
 	public LocalDate getDatum() {
@@ -98,20 +99,28 @@ public class Brief extends AbstractDBObjectIdDeleted {
 		this.gedruckt = gedruckt;
 	}
 
-	public Kontakt getAbsender() {
-		return absender;
+	public Kontakt getSender() {
+		return sender;
 	}
 
-	public void setAbsender(Kontakt absender) {
-		this.absender = absender;
+	public void setSender(Kontakt sender) {
+		this.sender = sender;
 	}
 
-	public Kontakt getEmpfaenger() {
-		return empfaenger;
+	public Kontakt getRecipient() {
+		return recipient;
 	}
 
-	public void setEmpfaenger(Kontakt empfaenger) {
-		this.empfaenger = empfaenger;
+	public Behandlung getConsultation() {
+		return consultation;
+	}
+	
+	public void setConsultation(Behandlung consultation) {
+		this.consultation = consultation;
+	}
+	
+	public void setRecipient(Kontakt recipient) {
+		this.recipient = recipient;
 	}
 
 	public Kontakt getPatient() {
