@@ -57,6 +57,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	ch.elexis.core.importer.div
 	
 	at.medevit.ch.artikelstamm
+	ch.elexis.base.ch.ticode
 	
 	org.eclipse.e4.ui.workbench.addons.swt
 	org.eclipse.e4.ui.workbench.renderers.swt
