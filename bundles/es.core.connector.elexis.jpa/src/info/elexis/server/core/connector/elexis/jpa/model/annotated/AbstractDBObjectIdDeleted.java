@@ -21,7 +21,7 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	
 	@Column
 	@Convert("booleanStringConverter")
-	protected boolean deleted;
+	protected boolean deleted = false;
 	
 	public String getId() {
 		return id;
