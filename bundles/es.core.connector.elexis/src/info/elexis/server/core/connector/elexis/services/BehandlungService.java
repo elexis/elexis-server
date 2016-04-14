@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
@@ -15,6 +16,8 @@ import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ConsultationDiagnosis;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
@@ -87,4 +90,26 @@ public class BehandlungService extends AbstractService<Behandlung> {
 		return collect;
 	}
 
+	/**
+	 * Set a specific diagnosis on a consultation
+	 * @param cons
+	 * @param diag
+	 */
+	public void setDiagnosisOnConsultation(Behandlung cons, Diagnosis diag) {
+		ConsultationDiagnosis cdj = new ConsultationDiagnosis();
+		cdj.setConsultation(cons);
+		cdj.setDiagnosis(diag);
+		
+		Set<ConsultationDiagnosis> diagnoses = cons.getDiagnoses();
+		for (ConsultationDiagnosis cd : diagnoses) {
+			Diagnosis diagnosis = cd.getDiagnosis();
+			if(diagnosis.getCode().equals(diag.getCode()) && diagnosis.getDiagnosisClass().equals(diag.getDiagnosisClass())) {
+				return;
+			}
+		}
+
+		cons.getDiagnoses().add(cdj);
+		BehandlungService.INSTANCE.flush();
+	}
+	
 }

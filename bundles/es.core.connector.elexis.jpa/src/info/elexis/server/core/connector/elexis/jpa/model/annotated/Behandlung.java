@@ -2,8 +2,10 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,8 +40,8 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datum;
 
-	@Column(length = 25, name = "diagnosen")
-	private String diagnosenId;
+	@OneToMany(mappedBy = "consultation", cascade=CascadeType.ALL)
+	private Set<ConsultationDiagnosis> diagnoses;
 
 	@Column(length = 25, name = "leistungen")
 	private String leistungenId;
@@ -87,12 +89,12 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 		this.datum = datum;
 	}
 
-	public String getDiagnosenId() {
-		return diagnosenId;
+	public Set<ConsultationDiagnosis> getDiagnoses() {
+		return diagnoses;
 	}
 
-	public void setDiagnosenId(String diagnosenId) {
-		this.diagnosenId = diagnosenId;
+	public void setDiagnoses(Set<ConsultationDiagnosis> diagnoses) {
+		this.diagnoses = diagnoses;
 	}
 
 	public String getLeistungenId() {
