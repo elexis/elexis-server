@@ -5,7 +5,7 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-04-04T11:58:39")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-04-15T13:06:14")
 @StaticMetamodel(Termin.class)
 public class Termin_ { 
 
@@ -16,10 +16,14 @@ public class Termin_ {
     public static volatile SingularAttribute<Termin, Integer> palmId;
     public static volatile SingularAttribute<Termin, String> patId;
     public static volatile SingularAttribute<Termin, String> flags;
+    public static volatile SingularAttribute<Termin, Integer> treatmentReason;
     public static volatile SingularAttribute<Termin, String> bereich;
     public static volatile SingularAttribute<Termin, String> dauer;
     public static volatile SingularAttribute<Termin, String> lastedit;
+    public static volatile SingularAttribute<Termin, Integer> insuranceType;
+    public static volatile SingularAttribute<Termin, Integer> priority;
     public static volatile SingularAttribute<Termin, String> terminStatus;
+    public static volatile SingularAttribute<Termin, Integer> caseType;
     public static volatile SingularAttribute<Termin, String> statusHistory;
     public static volatile SingularAttribute<Termin, String> angelegt;
     public static volatile SingularAttribute<Termin, String> linkgroup;

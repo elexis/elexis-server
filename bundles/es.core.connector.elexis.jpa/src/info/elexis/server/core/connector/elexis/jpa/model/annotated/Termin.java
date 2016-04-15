@@ -70,6 +70,18 @@ public class Termin extends AbstractDBObjectIdDeleted {
 	@Lob()
 	private String statusHistory;
 
+	@Convert(value = "IntegerStringConverter")
+	private int priority = 0;
+
+	@Convert(value = "IntegerStringConverter")
+	private int caseType = 0;
+
+	@Convert(value = "IntegerStringConverter")
+	private int insuranceType = 0;
+
+	@Convert(value = "IntegerStringConverter")
+	private int treatmentReason = 0;
+
 	public String getPatId() {
 		return patId;
 	}
@@ -198,4 +210,35 @@ public class Termin extends AbstractDBObjectIdDeleted {
 		this.statusHistory = statusHistory;
 	}
 
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public int getTreatmentReason() {
+		return treatmentReason;
+	}
+
+	public void setTreatmentReason(int treatmentReason) {
+		this.treatmentReason = treatmentReason;
+	}
+
+	public int getInsuranceType() {
+		return insuranceType;
+	}
+
+	public void setInsuranceType(int insuranceType) {
+		this.insuranceType = insuranceType;
+	}
+
+	public int getCaseType() {
+		return caseType;
+	}
+
+	public void setCaseType(int caseType) {
+		this.caseType = caseType;
+	}
 }
