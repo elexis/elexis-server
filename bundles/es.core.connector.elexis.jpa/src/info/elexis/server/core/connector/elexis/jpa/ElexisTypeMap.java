@@ -35,6 +35,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
 	public static final String TYPE_LABOR2009TARIF = "ch.elexis.labortarif2009.data.Labor2009Tarif";
 	public static final String TYPE_LABRESULT = "ch.elexis.data.LabResult";
+	public static final String TYPE_TESSINER_CODE = "ch.elexis.data.TICode";
 	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
