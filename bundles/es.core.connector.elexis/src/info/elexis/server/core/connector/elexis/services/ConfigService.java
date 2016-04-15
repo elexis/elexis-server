@@ -60,6 +60,11 @@ public class ConfigService {
 		}
 	}
 
+	public boolean get(String key, boolean b) {
+		String string = get(key, Boolean.toString(b));
+		return Boolean.valueOf(string);
+	}
+
 	/**
 	 * synchronous set
 	 * 
