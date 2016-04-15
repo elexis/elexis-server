@@ -8,6 +8,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Config</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ConsultationDiagnosis</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall</class>
