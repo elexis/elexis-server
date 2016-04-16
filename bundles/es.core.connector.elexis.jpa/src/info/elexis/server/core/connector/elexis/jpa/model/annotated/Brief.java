@@ -3,7 +3,6 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 import java.time.LocalDate;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -59,7 +58,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column(length = 80)
 	protected String mimetype;
 	
-	@OneToOne(cascade=CascadeType.REMOVE)
+	@OneToOne
 	@PrimaryKeyJoinColumn
 	protected Heap content;
 	
@@ -157,5 +156,9 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	
 	public Heap getContent() {
 		return content;
+	}
+	
+	public void setContent(Heap content) {
+		this.content = content;
 	}
 }

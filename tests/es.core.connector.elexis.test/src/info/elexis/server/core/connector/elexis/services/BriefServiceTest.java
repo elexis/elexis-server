@@ -37,6 +37,9 @@ public class BriefServiceTest {
 		Brief document = BriefService.INSTANCE.create();
 		document.setPatient(patient);
 		document.setSubject("TestSubject");
+		
+		Heap content = document.getContent();
+		assertNotNull(content);
 		BriefService.INSTANCE.flush();
 
 		EntityManager em = ElexisEntityManager.createEntityManager();
@@ -47,6 +50,7 @@ public class BriefServiceTest {
 		assertTrue(findById.isPresent());
 		em.close();
 		
+		HeapService.INSTANCE.remove(document.getContent());
 		BriefService.INSTANCE.remove(document);
 		HeapService.INSTANCE.flush();
 		
