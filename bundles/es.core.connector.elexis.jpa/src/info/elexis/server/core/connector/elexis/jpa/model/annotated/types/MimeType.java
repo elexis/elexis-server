@@ -494,6 +494,22 @@ public enum MimeType {
 
 		this.contentType = contentType;
 	}
+	
+	public static MimeType getByContentType(String contentType) {
+		
+		MimeType mimeType = undefined;
+		if (contentType != null && contentType.length() > 2) {
+			for (MimeType mt : MimeType.values()) {
+
+				if (contentType.equalsIgnoreCase(mt.getContentType())) {
+					mimeType = mt;
+					break;
+				}
+			}
+		}
+
+		return mimeType;
+	}
 
 	public static MimeType getByExtension(String extension) {
 
