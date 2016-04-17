@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
 public class BriefService extends AbstractService<Brief> {
 
@@ -20,6 +21,17 @@ public class BriefService extends AbstractService<Brief> {
 		Brief document = super.create();
 		Heap heap = HeapService.INSTANCE.create(document.getId(), true);
 		document.setContent(heap);
+		flush();
+		return document;
+	}
+	
+	public Brief create(Kontakt patient) {
+		em.merge(patient);
+		Brief document = super.create();
+		document.setPatient(patient);
+		Heap heap = HeapService.INSTANCE.create(document.getId(), true);
+		document.setContent(heap);
+		flush();
 		return document;
 	}
 
