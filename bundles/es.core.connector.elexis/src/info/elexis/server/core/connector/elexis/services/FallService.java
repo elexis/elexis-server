@@ -40,20 +40,20 @@ public class FallService extends AbstractService<Fall> {
 		fall.setBezeichnung(label);
 		fall.setGrund(reason);
 		fall.setDatumVon(LocalDate.now());
-		fall.getExtInfo().put(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
+		fall.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
 		em.getTransaction().commit();
 		return fall;
 	}
 
 	public static String getAbrechnungsSystem(Fall fall) {
-		String ret = (String) fall.getExtInfo().get(FallConstants.FLD_EXTINFO_BILLING);
+		String ret = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
 		if (StringTool.isNothing(ret)) {
 			String[] systeme = getAbrechnungsSysteme();
 			String altGesetz = fall.getGesetz();
-			if(altGesetz==null) {
-				altGesetz = (String) fall.getExtInfo().get("xGesetz");
+			if (altGesetz == null) {
+				altGesetz = fall.getExtInfoAsString("xGesetz");
 			}
-			if(altGesetz==null) {
+			if (altGesetz == null) {
 				altGesetz = "";
 			}
 			int idx = StringTool.getIndex(systeme, altGesetz);
@@ -62,7 +62,7 @@ public class FallService extends AbstractService<Fall> {
 			} else {
 				ret = systeme[idx];
 			}
-			fall.getExtInfo().put(FallConstants.FLD_EXTINFO_BILLING, ret);
+			fall.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, ret);
 		}
 		return ret;
 	}
@@ -88,7 +88,7 @@ public class FallService extends AbstractService<Fall> {
 	 * @return a string that might be empty but will never be null.
 	 */
 	public static String getRequiredString(Fall fall, String name) {
-		String kid = (String) fall.getExtInfo().get(name);
+		String kid = fall.getExtInfoAsString(name);
 		if (StringTool.isNothing(kid)) {
 			kid = getBillingSystemConstant(getAbrechnungsSystem(fall), name);
 		}

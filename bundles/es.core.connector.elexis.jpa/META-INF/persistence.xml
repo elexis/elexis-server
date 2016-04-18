@@ -11,6 +11,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ConsultationDiagnosis</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt</class>

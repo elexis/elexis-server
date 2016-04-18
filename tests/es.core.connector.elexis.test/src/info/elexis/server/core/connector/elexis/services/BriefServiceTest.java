@@ -51,14 +51,16 @@ public class BriefServiceTest {
 	@Test
 	public void testLoadAndModifyDocument() {
 		Brief document = BriefService.INSTANCE.create(patient);
+		
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		Brief storedDocument = em.find(Brief.class, document.getId());
+		em.close();
 		assertEquals(patient.getId(), storedDocument.getPatient().getId());
 		assertNotNull(storedDocument.getContent());
 		assertEquals(document.getId(), storedDocument.getContent().getId());
 		Optional<Heap> findById = HeapService.INSTANCE.findById(document.getId());
 		assertTrue(findById.isPresent());
-		em.close();
+		assertEquals(findById.get().getId(), storedDocument.getContent().getId());
 
 		HeapService.INSTANCE.remove(document.getContent());
 		BriefService.INSTANCE.remove(document);

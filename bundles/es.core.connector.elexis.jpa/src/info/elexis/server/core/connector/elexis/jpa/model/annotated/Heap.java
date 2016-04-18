@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -19,17 +19,17 @@ public class Heap extends AbstractDBObjectIdDeleted {
 
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
-	protected Date datum;
+	protected LocalDate datum;
 	
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected byte[] inhalt;
 	
-	public Date getDatum() {
+	public LocalDate getDatum() {
 		return datum;
 	}
 	
-	public void setDatum(Date datum) {
+	public void setDatum(LocalDate datum) {
 		this.datum = datum;
 	}
 	

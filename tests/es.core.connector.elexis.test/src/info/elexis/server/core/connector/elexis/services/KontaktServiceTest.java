@@ -19,39 +19,39 @@ public class KontaktServiceTest {
 		Kontakt val = KontaktService.INSTANCE.create();
 		Kontakt findById = KontaktService.INSTANCE.findById(val.getId()).get();
 		assertEquals(val.getId(), findById.getId());
-		KontaktService.INSTANCE.remove(val);	
+		KontaktService.INSTANCE.remove(val);
 		Optional<Kontakt> found = KontaktService.INSTANCE.findById(val.getId());
 		assertFalse(found.isPresent());
 	}
-	
+
 	@Test
-	public void testFindByIdStartingWith()  {
+	public void testFindByIdStartingWith() {
 		Kontakt val = KontaktService.INSTANCE.create();
 		List<Kontakt> result = KontaktService.INSTANCE.findByIdStartingWith(val.getId().substring(0, 1));
 		assertEquals(1, result.size());
 		KontaktService.INSTANCE.remove(val);
 	}
-	
+
 	@Test
 	public void testFindAllPatients() {
 		List<Kontakt> findAllPatients = KontaktService.findAllPatients();
-		assertTrue(findAllPatients.size()>0);
+		assertTrue(findAllPatients.size() > 0);
 	}
-	
+
 	@Test
 	public void testCreateAndDeletePatient() {
 		Kontakt patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
-		patient.getExtInfo().put(PatientConstants.FLD_EXTINFO_BIRTHNAME, "Birthname");
+		patient.setExtInfoValue(PatientConstants.FLD_EXTINFO_BIRTHNAME, "Birthname");
 		String id = patient.getId();
-		
+
 		assertNotNull(id);
 		assertNotNull(patient.getCode());
 		Kontakt findById = KontaktService.INSTANCE.findById(id).get();
 		assertNotNull(findById);
 		assertTrue(findById == patient);
 
-		assertEquals("Birthname", patient.getExtInfo().get(PatientConstants.FLD_EXTINFO_BIRTHNAME));
-		
+		assertEquals("Birthname", patient.getExtInfoAsString(PatientConstants.FLD_EXTINFO_BIRTHNAME));
+
 		KontaktService.INSTANCE.remove(patient);
 	}
 }

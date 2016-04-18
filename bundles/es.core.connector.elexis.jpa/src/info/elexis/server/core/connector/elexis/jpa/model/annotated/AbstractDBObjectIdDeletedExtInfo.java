@@ -19,14 +19,23 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 	@Column(columnDefinition = "BLOB")
 	protected Map<Object, Object> extInfo = new Hashtable<Object, Object>();
 
-	public Map<Object, Object> getExtInfo() {
+	protected Map<Object, Object> getExtInfo() {
 		return extInfo;
 	}
 
-	public void setExtInfo(Map<Object, Object> extInfo) {
+	private void setExtInfo(Map<Object, Object> extInfo) {
 		this.extInfo = extInfo;
 	}
 
+	@Transient
+	public void setExtInfoValue(Object key, Object value) {
+		// we have to create a new object on change
+		// otherwise JPA won't pick-up the change
+		Hashtable<Object, Object> ht = new Hashtable<Object, Object>(getExtInfo());
+		ht.put(key, value);
+		setExtInfo(ht);
+	}
+	
 	@Transient
 	public String getExtInfoAsString(Object key) {
 		return (String) getExtInfo().get(key);

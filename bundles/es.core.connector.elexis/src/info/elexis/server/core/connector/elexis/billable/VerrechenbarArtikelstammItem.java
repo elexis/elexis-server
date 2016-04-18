@@ -70,12 +70,12 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		}
 
 		try {
-			vpe = Double.parseDouble((String) artikelstammItem.getExtInfo().get("Verpackungseinheit"));
+			vpe = Double.parseDouble(artikelstammItem.getExtInfoAsString("Verpackungseinheit"));
 		} catch (Exception e) {
 		}
 
 		try {
-			vke = Double.parseDouble((String) artikelstammItem.getExtInfo().get("Verkaufseinheit"));
+			vke = Double.parseDouble(artikelstammItem.getExtInfoAsString("Verkaufseinheit"));
 		} catch (Exception e) {
 		}
 

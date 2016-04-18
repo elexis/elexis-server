@@ -21,7 +21,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.El
 @Table(name = "BRIEFE")
 public class Brief extends AbstractDBObjectIdDeleted {
 
-	@Column(length = 80, name = "betreff")
+	@Column(length = 255, name = "betreff")
 	protected String subject;
 	
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)

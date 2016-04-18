@@ -27,7 +27,7 @@ public class FallServiceTest {
 	public void initialize() {
 		patient = KontaktService.INSTANCE.createPatient("FirstName", "LastName", LocalDate.now(), Gender.MALE);
 	}
-	
+
 	@After
 	public void cleanup() {
 		FallService.INSTANCE.remove(fall);
@@ -43,7 +43,26 @@ public class FallServiceTest {
 		assertEquals(fall.getPatientKontakt().getId(), storedFall.getPatientKontakt().getId());
 		assertEquals(fall.getBezeichnung(), storedFall.getBezeichnung());
 		assertEquals(fall.getGesetz(), storedFall.getGesetz());
-		assertEquals("UVG", storedFall.getExtInfo().get(FallConstants.FLD_EXTINFO_BILLING));
+		assertEquals("UVG", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
 		em.close();
+	}
+
+	@Test
+	public void testSetBillingAfterCreation() {
+		fall = FallService.INSTANCE.create();
+		fall.setBezeichnung("description");
+		fall.setPatientKontakt(patient);
+		fall.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, "insuranceType");
+		fall.setGrund("reason");
+
+		FallService.INSTANCE.flush();
+
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		Fall storedFall = em.find(Fall.class, fall.getId());
+		assertEquals(patient.getId(), storedFall.getPatientKontakt().getId());
+		assertEquals("description", storedFall.getBezeichnung());
+		assertEquals("insuranceType", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
+		em.close();
+
 	}
 }
