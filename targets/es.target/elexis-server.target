@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1460963329">
+<target name="Elexis-Server" sequenceNumber="1460983144">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -92,6 +92,7 @@
       <unit id="com.mysql.jdbc" version="5.1.38"/>
       <unit id="org.apache.commons.lang3" version="3.3.2"/>
       <unit id="org.apache.commons.configuration" version="2.0.0"/>
+      <unit id="org.joda.money" version="0.11.0"/>
       <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
       <repository id="elexis-server" location="http://download.elexis.info/elexis-server/p2/target/"/>
     </location>

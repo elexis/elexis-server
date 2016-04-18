@@ -98,6 +98,7 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	com.mysql.jdbc
 	org.apache.commons.lang3
 	org.apache.commons.configuration
+	org.joda.money
 	
 	com.eclipsesource.restfuse
 }
