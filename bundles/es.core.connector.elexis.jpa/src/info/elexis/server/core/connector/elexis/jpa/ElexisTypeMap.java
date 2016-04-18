@@ -6,6 +6,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -30,6 +31,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
 	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
 	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
+	public static final String TYPE_BRIEF = "ch.elexis.data.Brief";
 	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
 	public static final String TYPE_KONSULTATION = "ch.elexis.data.Konsultation";
 	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
@@ -52,6 +54,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(Termin.class, TYPE_TERMIN);
 		stsToClassMap.put(TYPE_DOCHANDLE, DocHandle.class);
 		classToStsMap.put(DocHandle.class, TYPE_DOCHANDLE);
+		stsToClassMap.put(TYPE_BRIEF, Brief.class);
+		classToStsMap.put(Brief.class, TYPE_BRIEF);
 		stsToClassMap.put(TYPE_PRESCRIPTION, Prescription.class);
 		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
 		stsToClassMap.put(TYPE_KONSULTATION, Behandlung.class);

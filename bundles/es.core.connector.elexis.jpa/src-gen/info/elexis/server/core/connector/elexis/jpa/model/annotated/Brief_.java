@@ -8,21 +8,22 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-04-16T20:49:12")
+@Generated(value="EclipseLink-2.6.2.v20151217-rNA", date="2016-04-18T08:01:09")
 @StaticMetamodel(Brief.class)
 public class Brief_ { 
 
     public static volatile SingularAttribute<Brief, LocalDate> datum;
+    public static volatile SingularAttribute<Brief, String> subject;
+    public static volatile SingularAttribute<Brief, String> typ;
+    public static volatile SingularAttribute<Brief, Heap> content;
+    public static volatile SingularAttribute<Brief, Boolean> geloescht;
     public static volatile SingularAttribute<Brief, LocalDate> modifiziert;
     public static volatile SingularAttribute<Brief, String> path;
     public static volatile SingularAttribute<Brief, LocalDate> gedruckt;
     public static volatile SingularAttribute<Brief, Kontakt> sender;
-    public static volatile SingularAttribute<Brief, String> subject;
     public static volatile SingularAttribute<Brief, Kontakt> patient;
     public static volatile SingularAttribute<Brief, Kontakt> recipient;
-    public static volatile SingularAttribute<Brief, String> typ;
     public static volatile SingularAttribute<Brief, String> mimetype;
     public static volatile SingularAttribute<Brief, Behandlung> consultation;
-    public static volatile SingularAttribute<Brief, Heap> content;
 
 }

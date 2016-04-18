@@ -65,6 +65,10 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected String path;
+	
+	@Column
+	@Convert("booleanStringConverter")
+	protected boolean geloescht = false;
 
 	public String getSubject() {
 		return subject;
@@ -160,5 +164,13 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	
 	public void setContent(Heap content) {
 		this.content = content;
+	}
+	
+	public boolean isGeloescht() {
+		return geloescht;
+	}
+	
+	public void setGeloescht(boolean geloescht) {
+		this.geloescht = geloescht;
 	}
 }

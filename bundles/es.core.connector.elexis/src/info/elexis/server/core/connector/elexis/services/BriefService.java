@@ -21,6 +21,7 @@ public class BriefService extends AbstractService<Brief> {
 		Brief document = super.create();
 		Heap heap = HeapService.INSTANCE.create(document.getId(), true);
 		document.setContent(heap);
+		document.setGeloescht(false);
 		flush();
 		return document;
 	}
@@ -31,6 +32,7 @@ public class BriefService extends AbstractService<Brief> {
 		document.setPatient(patient);
 		Heap heap = HeapService.INSTANCE.create(document.getId(), true);
 		document.setContent(heap);
+		document.setGeloescht(false);
 		flush();
 		return document;
 	}
