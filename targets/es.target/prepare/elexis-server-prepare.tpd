@@ -122,6 +122,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	com.mysql.jdbc
 	org.apache.commons.lang3
 	org.apache.commons.configuration
+	org.joda.money
 }
 
 // RestFuse
