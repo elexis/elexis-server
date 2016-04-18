@@ -90,12 +90,15 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 
 		em.getTransaction().commit();
 
+		if (iv instanceof VerrechenbarArtikelstammItem) {
+			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) iv;
+			vat.singleDisposal(1);
+		}
+
 		return v;
 
-		// if (iv instanceof Artikel) {
-		// ((Artikel) iv).einzelAbgabe(1);
-		// }
 		// // call the adjusters
+		// TODO do we have to port them?
 		// for (IVerrechnetAdjuster adjuster : adjusters) {
 		// adjuster.adjust(this);
 		// }
@@ -143,13 +146,9 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		foundVerrechnet.setZahl(newCount);
 		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(foundVerrechnet);
 		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
-			// Artikel art = (Artikel) vv;
-			// TODO implement
-			// art.einzelRuecknahme(vorher);
-			// art.einzelAbgabe(neuAnzahl);
-			log.error("Check stock management #changeCount()");
-			// see Verrechnet#changeAnzahl
+			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) verrechenbar.get();
+			vat.singleReturn(previous);
+			vat.singleDisposal(newCount);
 		}
-
 	}
 }

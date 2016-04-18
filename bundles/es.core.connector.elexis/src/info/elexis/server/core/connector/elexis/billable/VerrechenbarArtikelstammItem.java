@@ -3,15 +3,21 @@ package info.elexis.server.core.connector.elexis.billable;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.DefaultOptifier;
+import info.elexis.server.core.connector.elexis.common.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
 public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem> {
+
+	protected Logger log = LoggerFactory.getLogger(VerrechenbarArtikelstammItem.class);
 
 	private final ArtikelstammItem artikelstammItem;
 
@@ -60,29 +66,32 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 
 	@Override
 	public int getTP(TimeTool date, Fall fall) {
-		double vkt = 0.0;
+		int vkt = 0;
 		double vpe = 0.0;
 		double vke = 0.0;
 
 		try {
-			vkt = Double.parseDouble(artikelstammItem.getPexf());
+			vkt = new Money(artikelstammItem.getPpub()).getCents();
 		} catch (Exception e) {
+			log.warn("Error parsing public price: " + e.getMessage());
 		}
 
 		try {
-			vpe = Double.parseDouble(artikelstammItem.getExtInfoAsString("Verpackungseinheit"));
+			vpe = Double.parseDouble(artikelstammItem.getPkg_size());
 		} catch (Exception e) {
+			log.warn("Error parsing package size: " + e.getMessage());
 		}
 
 		try {
-			vke = Double.parseDouble(artikelstammItem.getExtInfoAsString("Verkaufseinheit"));
+			vke = Double.parseDouble(artikelstammItem.getVerkaufseinheit());
 		} catch (Exception e) {
+			log.warn("Error parsing sell unit: " + e.getMessage());
 		}
 
 		if ((vpe > 0.0) && (vke > 0.0) && (vpe != vke)) {
 			return (int) Math.round(vke * (vkt / vpe));
 		} else {
-			return (int) Math.round(vkt);
+			return vkt;
 		}
 	}
 
@@ -98,6 +107,51 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		// return noObligationOptifier;
 		// return defaultOptifier;
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
+	}
+
+	public void singleReturn(int n) {
+		int anbruch = POHelper.checkZero(artikelstammItem.getAnbruch());
+		int ve = POHelper.checkZero(artikelstammItem.getVerkaufseinheit());
+		int vk = POHelper.checkZero(artikelstammItem.getPkg_size());
+		int num = n * ve;
+		if (vk == ve) {
+			artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() + n);
+		} else {
+			int rest = anbruch + num;
+			while (rest > vk) {
+				rest = rest - vk;
+				artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() + 1);
+			}
+			artikelstammItem.setAnbruch(Integer.toString(rest));
+		}
+	}
+
+	public void singleDisposal(int n) {
+		int anbruch = POHelper.checkZero(artikelstammItem.getAnbruch());
+		int ve = POHelper.checkZero(artikelstammItem.getVerkaufseinheit());
+		int vk = POHelper.checkZero(artikelstammItem.getPkg_size());
+		if (vk == 0) {
+			if (ve != 0) {
+				vk = ve;
+			}
+		}
+		if (ve == 0) {
+			if (vk != 0) {
+				ve = vk;
+				artikelstammItem.setPkg_size(Integer.toString(ve));
+			}
+		}
+		int num = n * ve;
+		if (vk == ve) {
+			artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() - n);
+		} else {
+			int rest = anbruch - num;
+			while (rest < 0) {
+				rest = rest + vk;
+				artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() - 1);
+			}
+			artikelstammItem.setAnbruch(Integer.toString(rest));
+		}
 	}
 
 }
