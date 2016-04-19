@@ -6,6 +6,10 @@
    <configIni use="default">
    </configIni>
 
+<configurations>
+	   <property name="osgi.bundles.defaultStartLevel" value="5" />    
+	</configurations>
+
    <launcherArgs>
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
 -Dorg.osgi.service.http.port=8380 
@@ -25,9 +29,6 @@
          <bmp/>
       </win>
    </launcher>
-
-   <vm>
-   </vm>
 
    <plugins>
    </plugins>
@@ -58,7 +59,6 @@
       <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
       <plugin id="org.h2" autoStart="true" startLevel="1" />
       <plugin id="osgi.enterprise" autoStart="true" startLevel="1" />
-      <property name="osgi.bundles.defaultStartLevel" value="5" />
    </configurations>
 
    <repositories>
