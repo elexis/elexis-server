@@ -8,8 +8,11 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/*.xml
 Require-Bundle: org.eclipse.equinox.ds,
  org.eclipse.osgi.services,
- info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
  org.eclipse.core.runtime
-Import-Package: javax.ws.rs;version="2.0.1",
+Import-Package: ch.elexis.core.lock.types,
+ ch.elexis.core.server,
+ info.elexis.server.core.connector.elexis.common,
+ info.elexis.server.core.connector.elexis.locking,
+ javax.ws.rs;version="2.0.1",
  javax.ws.rs.core;version="2.0.1"
 Bundle-ActivationPolicy: lazy
