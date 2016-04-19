@@ -29,7 +29,7 @@ public class HTTPServiceHelper {
 				filter = Integer.parseInt(filterStr);
 			}
 		} catch (NumberFormatException localException) {
-			log.error("NaN " + filterStr, localException);
+			log.warn("NaN " + filterStr, localException);
 			throw new IllegalArgumentException("NaN " + filterStr);
 		}
 
@@ -45,7 +45,7 @@ public class HTTPServiceHelper {
 				log.warn("timeout", localOperationCanceledException);
 				repoName = "timeout";
 			} catch (ProvisionException localProvisionException) {
-				log.error("FAIL", localProvisionException);
+				log.warn("FAIL", localProvisionException);
 				repoName = "FAILED: " + localProvisionException.getLocalizedMessage();
 			}
 			info.addMetadataRepoElement(repoName, repoLoc);
@@ -62,7 +62,7 @@ public class HTTPServiceHelper {
 				log.warn("timeout", localOperationCanceledException);
 				repoName = "timeout";
 			} catch (ProvisionException localProvisionException) {
-				log.error("FAIL", localProvisionException);
+				log.warn("FAIL", localProvisionException);
 				repoName = "FAILED: " + localProvisionException.getLocalizedMessage();
 			}
 			info.addArtifactRepoElement(repoName, repoLoc);
@@ -85,7 +85,7 @@ public class HTTPServiceHelper {
 			locStr = URLDecoder.decode(locStr, "ASCII");
 			location = new URI(locStr);
 		} catch (URISyntaxException | UnsupportedEncodingException e) {
-			log.error("Exception parsing URI " + locStr, e);
+			log.warn("Exception parsing URI " + locStr, e);
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		}
 
@@ -104,7 +104,7 @@ public class HTTPServiceHelper {
 			locStr = URLDecoder.decode(locStr, "ASCII");
 			location = new URI(locStr);
 		} catch (URISyntaxException | UnsupportedEncodingException e) {
-			log.error("Exception parsing URI " + locStr, e);
+			log.warn("Exception parsing URI " + locStr, e);
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		}
 
@@ -125,7 +125,7 @@ public class HTTPServiceHelper {
 		if (stat.isOK()) {
 			return Response.ok().build();
 		}
-		log.error("Error performing operation [{}] : Code {} / {}", op, stat.getCode(), stat.getMessage());
+		log.warn("Error performing operation [{}] : Code {} / {}", op, stat.getCode(), stat.getMessage());
 		return Response.serverError().build();
 	}
 
