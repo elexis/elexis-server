@@ -31,8 +31,9 @@ public class ElexisDBStringDateTimeTransformer implements AttributeTransformer, 
 	private Logger log = LoggerFactory.getLogger(ElexisDBStringDateTimeTransformer.class);
 
 	private AbstractTransformationMapping mapping;
-	
+
 	private final DateTimeFormatter yyyyMMddHHmmss = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	private final DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 	@Override
 	public void initialize(AbstractTransformationMapping mapping) {
@@ -45,10 +46,17 @@ public class ElexisDBStringDateTimeTransformer implements AttributeTransformer, 
 		// TODO unset has to be represented with null, that is ""
 		if (dateString == null || dateString.length() == 0)
 			return null;
+		
+		DateTimeFormatter parser = yyyyMMddHHmmss;
+		if (dateString.length() == 8) {
+			parser = yyyyMMdd;
+		}
+
 		try {
-			return LocalDateTime.parse(dateString, yyyyMMddHHmmss);
+			return LocalDateTime.parse(dateString, parser);
 		} catch (DateTimeParseException e) {
-			log.warn("Error parsing {} in {}: {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(), e.getMessage());
+			log.warn("Error parsing {} in {}: {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(),
+					e.getMessage());
 		}
 		return null;
 	}

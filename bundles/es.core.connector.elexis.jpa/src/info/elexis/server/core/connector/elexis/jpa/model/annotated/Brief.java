@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -14,8 +15,11 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
+import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.WriteTransformer;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
 @Table(name = "BRIEFE")
@@ -23,49 +27,52 @@ public class Brief extends AbstractDBObjectIdDeleted {
 
 	@Column(length = 255, name = "betreff")
 	protected String subject;
-	
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
-	protected LocalDate datum;
-	
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
-	protected LocalDate modifiziert;
-	
+
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	protected LocalDateTime creationDate;
+
+	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	protected LocalDateTime modifiedDate;
+
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate gedruckt;
-	
+
 	@OneToOne
 	@JoinColumn(name = "absenderID")
 	protected Kontakt sender;
-	
+
 	@OneToOne
 	@JoinColumn(name = "destID")
 	protected Kontakt recipient;
-	
+
 	@OneToOne
 	@JoinColumn(name = "patientID")
 	protected Kontakt patient;
-	
+
 	@OneToOne
 	@JoinColumn(name = "behandlungsID")
 	protected Behandlung consultation;
 
 	@Column(length = 30)
 	protected String typ;
-	
+
 	@Column(length = 80)
 	protected String mimetype;
-	
+
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	protected Heap content;
-	
+
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected String path;
-	
+
+	@Column(length = 255)
+	protected String note;
+
 	@Column
 	@Convert("booleanStringConverter")
 	protected boolean geloescht = false;
@@ -78,20 +85,20 @@ public class Brief extends AbstractDBObjectIdDeleted {
 		this.subject = subject;
 	}
 
-	public LocalDate getDatum() {
-		return datum;
+	public LocalDateTime getCreationDate() {
+		return creationDate;
+	}
+	
+	public void setCreationDate(LocalDateTime creationDate) {
+		this.creationDate = creationDate;
 	}
 
-	public void setDatum(LocalDate datum) {
-		this.datum = datum;
+	public LocalDateTime getModifiedDate() {
+		return modifiedDate;
 	}
-
-	public LocalDate getModifiziert() {
-		return modifiziert;
-	}
-
-	public void setModifiziert(LocalDate modifiziert) {
-		this.modifiziert = modifiziert;
+	
+	public void setModifiedDate(LocalDateTime modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
 	public LocalDate getGedruckt() {
@@ -117,11 +124,11 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	public Behandlung getConsultation() {
 		return consultation;
 	}
-	
+
 	public void setConsultation(Behandlung consultation) {
 		this.consultation = consultation;
 	}
-	
+
 	public void setRecipient(Kontakt recipient) {
 		this.recipient = recipient;
 	}
@@ -157,20 +164,28 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	public void setPath(String path) {
 		this.path = path;
 	}
-	
+
 	public Heap getContent() {
 		return content;
 	}
-	
+
 	public void setContent(Heap content) {
 		this.content = content;
 	}
-	
+
 	public boolean isGeloescht() {
 		return geloescht;
 	}
-	
+
 	public void setGeloescht(boolean geloescht) {
 		this.geloescht = geloescht;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 }
