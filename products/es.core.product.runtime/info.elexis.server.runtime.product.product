@@ -3,7 +3,6 @@
 
 <product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -20,14 +19,12 @@
 
    <windowImages/>
 
-
    <launcher name="elexis-server">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
@@ -46,6 +43,9 @@
    <configurations>
       <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="2" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="2" />
+      <plugin id="com.mysql.jdbc" autoStart="true" startLevel="1" />
+      <plugin id="info.elexis.server.core.connector.elexis.jpa" autoStart="true" startLevel="3" />
+      <plugin id="javax.persistence" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
@@ -56,6 +56,8 @@
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
+      <plugin id="org.h2" autoStart="true" startLevel="1" />
+      <plugin id="osgi.enterprise" autoStart="true" startLevel="1" />
    </configurations>
 
    <repositories>
