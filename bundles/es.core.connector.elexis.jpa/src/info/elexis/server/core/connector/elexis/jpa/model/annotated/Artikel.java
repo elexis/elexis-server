@@ -11,11 +11,17 @@ import javax.persistence.Table;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 
+import ch.rgw.tools.StringTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "artikel")
 public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
+
+	public static final String TYP_EIGENARTIKEL = "Eigenartikel";
+	public static final String TYP_MIGEL = "MiGeL";
+	public static final String TYP_MEDICAL = "Medical";
+	public static final String TYP_MEDIKAMENT = "Medikament";
 
 	@Column(length = 15)
 	private String ean;
@@ -76,7 +82,11 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Override
 	public String getLabel() {
-		return getName();
+		String ret = getNameIntern();
+		if (StringTool.isNothing(ret)) {
+			ret = getName();
+		}
+		return ret;
 	}
 
 	public String getEan() {

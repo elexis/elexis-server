@@ -22,21 +22,26 @@ public class ElexisTypeMap {
 	private static final HashMap<String, Class<? extends AbstractDBObjectIdDeleted>> stsToClassMap;
 	private static final HashMap<Class<? extends AbstractDBObjectIdDeleted>, String> classToStsMap;
 
+	public static final String TYPE_ARTIKEL = "ch.elexis.data.Artikel";
 	public static final String TYPE_ARTIKELSTAMM = "ch.artikelstamm.elexis.common.ArtikelstammItem";
-	public static final String TYPE_TARMEDLEISTUNG = "ch.elexis.data.TarmedLeistung";
-	public static final String TYPE_FALL = "ch.elexis.data.Fall";
-	public static final String TYPE_PATIENT = "ch.elexis.data.Patient";
-	public static final String TYPE_PERSON = "ch.elexis.data.Person";
-	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
-	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
-	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
-	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
 	public static final String TYPE_BRIEF = "ch.elexis.data.Brief";
-	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
+	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
+	public static final String TYPE_EIGENARTIKEL = "ch.elexis.eigenartikel.Eigenartikel";
+	public static final String TYPE_MEDIKAMENT = "ch.elexis.artikel_ch.data.Medikament";
+	public static final String TYPE_MEDICAL = "ch.elexis.artikel_ch.data.Medical";
+	public static final String TYPE_MIGEL = "ch.elexis.artikel_ch.data.MiGelArtikel";
+	public static final String TYPE_FALL = "ch.elexis.data.Fall";
 	public static final String TYPE_KONSULTATION = "ch.elexis.data.Konsultation";
-	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
+	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
 	public static final String TYPE_LABOR2009TARIF = "ch.elexis.labortarif2009.data.Labor2009Tarif";
 	public static final String TYPE_LABRESULT = "ch.elexis.data.LabResult";
+	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
+	public static final String TYPE_PATIENT = "ch.elexis.data.Patient";
+	public static final String TYPE_PERSON = "ch.elexis.data.Person";
+	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
+	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
+	public static final String TYPE_TARMEDLEISTUNG = "ch.elexis.data.TarmedLeistung";
+	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
 	public static final String TYPE_TESSINER_CODE = "ch.elexis.data.TICode";
 	
 	static {
@@ -68,10 +73,10 @@ public class ElexisTypeMap {
 		classToStsMap.put(LabResult.class, TYPE_LABRESULT);
 		
 		// uni-directional mappable
-		stsToClassMap.put("ch.elexis.artikel_ch.data.Medikament", Artikel.class);
-		stsToClassMap.put("ch.elexis.eigenartikel.Eigenartikel", Artikel.class);
-		stsToClassMap.put("ch.elexis.artikel_ch.data.Medical", Artikel.class);
-		stsToClassMap.put("ch.elexis.artikel_ch.data.MiGelArtikel", Artikel.class);
+		stsToClassMap.put(TYPE_MEDIKAMENT, Artikel.class);
+		stsToClassMap.put(TYPE_EIGENARTIKEL, Artikel.class);
+		stsToClassMap.put(TYPE_MEDICAL, Artikel.class);
+		stsToClassMap.put(TYPE_MIGEL, Artikel.class);
 		stsToClassMap.put(TYPE_KONTAKT, Kontakt.class);
 		stsToClassMap.put(TYPE_ORGANISATION, Kontakt.class);
 		stsToClassMap.put(TYPE_PATIENT, Kontakt.class);	
@@ -96,9 +101,22 @@ public class ElexisTypeMap {
 
 			return TYPE_KONTAKT;
 		} else if (obj instanceof Artikel) {
-			// TODO
+			Artikel art = (Artikel) obj;
+			String typ = art.getTyp().trim();
+			switch (typ) {
+			case Artikel.TYP_EIGENARTIKEL:
+				return TYPE_EIGENARTIKEL;
+			case Artikel.TYP_MEDIKAMENT:
+				return TYPE_MEDIKAMENT;
+			case Artikel.TYP_MEDICAL:
+				return TYPE_MEDICAL;
+			case Artikel.TYP_MIGEL:
+				return TYPE_MIGEL;
+			default:
+				return TYPE_ARTIKEL;
+			}
 		}
-		
+
 		return classToStsMap.get(obj.getClass());
 	}
 
