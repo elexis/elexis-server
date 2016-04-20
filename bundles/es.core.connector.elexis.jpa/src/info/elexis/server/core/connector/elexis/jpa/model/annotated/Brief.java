@@ -30,10 +30,12 @@ public class Brief extends AbstractDBObjectIdDeleted {
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(name = "Datum")
 	protected LocalDateTime creationDate;
 
 	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
 	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(name = "modifiziert")
 	protected LocalDateTime modifiedDate;
 
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
