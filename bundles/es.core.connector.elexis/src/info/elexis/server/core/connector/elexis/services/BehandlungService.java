@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarEigenleistung;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarPhysioLeistung;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
@@ -18,6 +19,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ConsultationDiagnosis;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
@@ -69,6 +71,9 @@ public class BehandlungService extends AbstractService<Behandlung> {
 					mandatorContact);
 		} else if (billableObject instanceof ArtikelstammItem) {
 			return new VerrechenbarArtikelstammItem((ArtikelstammItem) billableObject).add(kons, userContact,
+					mandatorContact);
+		} else if (billableObject instanceof Eigenleistung) {
+			return new VerrechenbarEigenleistung((Eigenleistung) billableObject).add(kons, userContact,
 					mandatorContact);
 		}
 
