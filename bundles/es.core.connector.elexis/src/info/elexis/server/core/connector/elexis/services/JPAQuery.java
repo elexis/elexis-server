@@ -5,6 +5,7 @@ import static info.elexis.server.core.connector.elexis.internal.ElexisEntityMana
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -120,13 +121,18 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	public List<T> execute() {
 		if (!includeDeleted) {
-			if(AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
 				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
 			}
 		}
 		cq = cq.where(predicate);
-		query = createEntityManager().createQuery(cq);
-		return query.getResultList();
+		EntityManager entityManager = createEntityManager();
+		query = entityManager.createQuery(cq);
+		try {
+			return query.getResultList();
+		} finally {
+			entityManager.close();
+		}
 	}
 
 	@Override
