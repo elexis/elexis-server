@@ -11,16 +11,16 @@ public class Eigenleistung extends AbstractDBObjectIdDeleted {
 	@Column(length = 20)
 	private String code;
 
-	@Column(length = 80)
+	@Column(length = 80, name = "BEZEICHNUNG")
 	private String description;
 
-	@Column(length = 6)
+	@Column(length = 6, name = "EK_PREIS")
 	private String basePrice;
 
-	@Column(length = 6)
+	@Column(length = 6, name = "VK_PREIS")
 	private String salePrice;
 
-	@Column(length = 4)
+	@Column(length = 4, name = "ZEIT")
 	private String time;
 
 	public String getCode() {

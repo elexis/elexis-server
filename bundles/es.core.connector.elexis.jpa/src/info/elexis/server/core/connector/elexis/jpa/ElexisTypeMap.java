@@ -8,6 +8,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
@@ -27,6 +28,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_BRIEF = "ch.elexis.data.Brief";
 	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
 	public static final String TYPE_EIGENARTIKEL = "ch.elexis.eigenartikel.Eigenartikel";
+	public static final String TYPE_EIGENLEISTUNG = "ch.elexis.data.Eigenleistung";
 	public static final String TYPE_MEDIKAMENT = "ch.elexis.artikel_ch.data.Medikament";
 	public static final String TYPE_MEDICAL = "ch.elexis.artikel_ch.data.Medical";
 	public static final String TYPE_MIGEL = "ch.elexis.artikel_ch.data.MiGelArtikel";
@@ -71,6 +73,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(Labor2009Tarif.class, TYPE_LABOR2009TARIF);
 		stsToClassMap.put(TYPE_LABRESULT, LabResult.class);
 		classToStsMap.put(LabResult.class, TYPE_LABRESULT);
+		stsToClassMap.put(TYPE_EIGENLEISTUNG, Eigenleistung.class);
+		classToStsMap.put(Eigenleistung.class, TYPE_EIGENLEISTUNG);
 		
 		// uni-directional mappable
 		stsToClassMap.put(TYPE_MEDIKAMENT, Artikel.class);
