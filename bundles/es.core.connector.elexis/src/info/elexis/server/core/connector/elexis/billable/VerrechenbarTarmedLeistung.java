@@ -88,5 +88,10 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 		String billingSystem = FallService.getAbrechnungsSystem(fall);
 		return VerrechnetService.INSTANCE.getVKMultiplikator(date, billingSystem);
 	}
+	
+	@Override
+	public VatInfo getVatInfo() {
+		return VatInfo.VAT_CH_ISTREATMENT;
+	}
 
 }

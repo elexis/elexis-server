@@ -72,4 +72,8 @@ public class VerrechenbarPhysioLeistung implements IBillable<PhysioLeistung> {
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
 	}
 
+	@Override
+	public VatInfo getVatInfo() {
+		return VatInfo.VAT_DEFAULT;
+	}
 }

@@ -20,6 +20,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ObjVatInfo</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>

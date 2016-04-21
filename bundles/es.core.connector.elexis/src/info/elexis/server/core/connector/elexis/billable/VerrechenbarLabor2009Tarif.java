@@ -75,5 +75,10 @@ public class VerrechenbarLabor2009Tarif implements IBillable<Labor2009Tarif> {
 	public double getFactor(TimeTool date, Fall fall) {
 		return VerrechnetService.INSTANCE.getVKMultiplikator(date, "EAL2009");
 	}
+	
+	@Override
+	public VatInfo getVatInfo() {
+		return VatInfo.VAT_NONE;
+	}
 
 }

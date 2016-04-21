@@ -81,4 +81,9 @@ public class VerrechenbarEigenleistung implements IBillable<Eigenleistung> {
 		return 1.0;
 	}
 
+	@Override
+	public VatInfo getVatInfo() {
+		return VatInfo.VAT_DEFAULT;
+	}
+
 }

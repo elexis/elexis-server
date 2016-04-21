@@ -11,13 +11,16 @@ import ch.elexis.core.constants.StringConstants;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarEigenleistung;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
+import info.elexis.server.core.connector.elexis.billable.adjuster.VatVerrechnetAdjuster;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
@@ -49,13 +52,16 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return v;
 	}
 
-	private IBillable createVerrechenbarForObject(AbstractDBObjectIdDeleted object) {
+	private IBillable<? extends AbstractDBObjectIdDeleted> createVerrechenbarForObject(
+			AbstractDBObjectIdDeleted object) {
 		if (object instanceof TarmedLeistung) {
 			return new VerrechenbarTarmedLeistung((TarmedLeistung) object);
 		} else if (object instanceof Labor2009Tarif) {
 			return new VerrechenbarLabor2009Tarif((Labor2009Tarif) object);
 		} else if (object instanceof ArtikelstammItem) {
 			return new VerrechenbarArtikelstammItem((ArtikelstammItem) object);
+		} else if (object instanceof Eigenleistung) {
+			return new VerrechenbarEigenleistung((Eigenleistung) object);
 		}
 
 		log.warn("Unsupported object for create verrechenbar {}", object.getClass().getName());
@@ -95,13 +101,10 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 			vat.singleDisposal(1);
 		}
 
-		return v;
+		// call the adjusters
+		new VatVerrechnetAdjuster().adjust(v);
 
-		// // call the adjusters
-		// TODO do we have to port them?
-		// for (IVerrechnetAdjuster adjuster : adjusters) {
-		// adjuster.adjust(this);
-		// }
+		return v;
 	}
 
 	public Optional<IBillable> getVerrechenbar(Verrechnet vr) {

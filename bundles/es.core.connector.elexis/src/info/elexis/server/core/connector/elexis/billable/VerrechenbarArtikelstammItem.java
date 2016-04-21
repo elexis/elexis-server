@@ -154,4 +154,20 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		}
 	}
 
+	@Override
+	public VatInfo getVatInfo() {
+		String overridenVat = (String) artikelstammItem.getExtInfoAsString("VAT_OVERRIDE");
+		if (overridenVat != null) {
+			return VatInfo.valueOf(overridenVat);
+		}
+
+		switch (artikelstammItem.getType().trim()) {
+		case "P":
+			return VatInfo.VAT_CH_ISMEDICAMENT;
+		case "N":
+			return VatInfo.VAT_CH_NOTMEDICAMENT;
+		}
+		return VatInfo.VAT_NONE;
+	}
+
 }
