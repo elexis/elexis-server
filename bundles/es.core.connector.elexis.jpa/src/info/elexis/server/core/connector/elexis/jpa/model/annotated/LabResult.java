@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
@@ -75,6 +76,11 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 25)
 	private String originId;
 
+	@Transient
+	public boolean isFlagged(final int flag){
+		return (getFlags() & flag) != 0;
+	}
+	
 	public Kontakt getPatient() {
 		return patient;
 	}
