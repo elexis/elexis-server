@@ -51,10 +51,14 @@ public class DefaultOptifier implements IOptifier {
 
 		if (foundVerrechnet != null) {
 			VerrechnetService.INSTANCE.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
+			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
+					foundVerrechnet.getZahl() + 1);
+			return ObjectStatus.OK_STATUS(foundVerrechnet);
 		} else {
 			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
+			log.trace("Created new Verrechnet entry ({})", newVerrechnet.getId());
+			return ObjectStatus.OK_STATUS(newVerrechnet);
 		}
-		return ObjectStatus.OK_STATUS(newVerrechnet);
 	}
 
 	public IStatus remove(final Verrechnet v, final Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
