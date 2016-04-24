@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Logback Push Notifications Appender (Prowl and NMA)
+Bundle-SymbolicName: at.medevit.logback.pushnotification
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: medevit.at
+Fragment-Host: ch.qos.logback.classic;bundle-version="1.0.7"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: at.medevit.logback.pushnotification
+Bundle-ClassPath: lib/jProwlAPI-0.5.jar,
+ .
