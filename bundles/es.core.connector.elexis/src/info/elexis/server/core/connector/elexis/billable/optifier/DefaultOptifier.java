@@ -51,8 +51,8 @@ public class DefaultOptifier implements IOptifier {
 
 		if (foundVerrechnet != null) {
 			VerrechnetService.INSTANCE.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
-			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
-					foundVerrechnet.getZahl() + 1);
+//			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
+//					foundVerrechnet.getZahl() + 1);
 			return ObjectStatus.OK_STATUS(foundVerrechnet);
 		} else {
 			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1); 
