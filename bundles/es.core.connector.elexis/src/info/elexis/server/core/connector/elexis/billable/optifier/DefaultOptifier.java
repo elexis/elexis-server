@@ -17,7 +17,7 @@ import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 public class DefaultOptifier implements IOptifier {
 
 	private Verrechnet newVerrechnet;
-	private Logger log;
+	private Logger log = LoggerFactory.getLogger(DefaultOptifier.class);
 
 	public IStatus optify(final Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		return Status.OK_STATUS;
@@ -32,10 +32,6 @@ public class DefaultOptifier implements IOptifier {
 				// #2454 This should not happen, may however if we have to
 				// consider
 				// elements where the responsible plugin is not available
-				if (log == null) {
-					log = LoggerFactory.getLogger(DefaultOptifier.class);
-				}
-
 				log.error("IVerrechenbar is not resolvable in " + verrechnet.getId() + " is " + verrechnet.getKlasse()
 						+ " available?");
 				continue;
@@ -51,13 +47,12 @@ public class DefaultOptifier implements IOptifier {
 
 		if (foundVerrechnet != null) {
 			VerrechnetService.INSTANCE.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
-//			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
-//					foundVerrechnet.getZahl() + 1);
+			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
+					foundVerrechnet.getZahl() + 1);
 			return ObjectStatus.OK_STATUS(foundVerrechnet);
 		} else {
-			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1); 
-			// TODO NPE
-//			log.trace("Created new Verrechnet entry ({})", newVerrechnet!=null)newVerrechnet.getId());
+			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
+			log.trace("Created new Verrechnet entry ({})", newVerrechnet.getId());
 			return ObjectStatus.OK_STATUS(newVerrechnet);
 		}
 	}
