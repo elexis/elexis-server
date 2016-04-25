@@ -40,13 +40,15 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 
 	public AbstractService(Class<T> clazz) {
 		this.clazz = clazz;
-		
+
 		em = ElexisEntityManager.createEntityManager();
 		cb = em.getCriteriaBuilder();
 	}
 
 	/**
-	 * Sychronous operation. Element is directly persisted, leading to id creation.
+	 * Sychronous operation. Element is directly persisted, leading to id
+	 * creation.
+	 * 
 	 * @return
 	 */
 	public T create() {
@@ -105,8 +107,8 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @return
 	 */
 	public Optional<T> findById(Object id) {
-		if(id==null) {
-			log.warn("null provided as argument to findById(Object id)");
+		if (id == null) {
+			log.warn("null provided as argument to findById(Object id)", new Throwable());
 			return Optional.empty();
 		}
 		return Optional.ofNullable((T) em.find(clazz, id));
@@ -121,11 +123,11 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @return
 	 */
 	public List<T> findByIdStartingWith(String string) {
-		if(string==null) {
+		if (string == null) {
 			log.warn("null provided as argument to findByIdStartingWith(String string)");
 			return Collections.emptyList();
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> c = cb.createQuery(clazz);
 		Root<T> r = c.from(clazz);
@@ -183,8 +185,9 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	}
 
 	/**
-	 * Set or create an {@link Xid} for the provided values. If an existing entry is found,
-	 * the domainId value will be overwritten.
+	 * Set or create an {@link Xid} for the provided values. If an existing
+	 * entry is found, the domainId value will be overwritten.
+	 * 
 	 * @param obj
 	 * @param domain
 	 * @param domainId
