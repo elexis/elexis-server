@@ -123,6 +123,12 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.commons.lang3
 	org.apache.commons.configuration
 	org.joda.money
+	com.github.pukkaone.logback-gelf
+	com.googlecode.json-simple
+	com.rabbitmq.client
+	com.fasterxml.jackson.core.jackson-core
+	com.fasterxml.jackson.core.jackson-databind
+	com.fasterxml.jackson.core.jackson-annotations
 }
 
 // RestFuse
