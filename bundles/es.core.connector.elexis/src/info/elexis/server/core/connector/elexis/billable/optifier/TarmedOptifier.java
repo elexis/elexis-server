@@ -316,10 +316,16 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 
 		// check if it's an X-RAY service and add default tax if so
 		// default xray tax will only be added once (see above)
-		if (tc.getParent().startsWith(CHAPTER_XRAY)) {
+		if (!tc.getCode().equals(DEFAULT_TAX_XRAY_ROOM) && !tc.getCode().matches("39.002[01]")
+				&& tc.getParent().startsWith(CHAPTER_XRAY)) {
 			Optional<IBillable> tl = TarmedLeistungService.INSTANCE.getVerrechenbarFromCode(DEFAULT_TAX_XRAY_ROOM);
 			if (tl.isPresent()) {
 				add(tl.get(), kons, userContact, mandatorContact);
+			}
+			// add 39.0020, will be changed according to case (see above)
+			Optional<IBillable> tla = TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0020");
+			if(tla.isPresent()) {
+				add(tla.get(), kons, userContact, mandatorContact);
 			}
 		}
 
