@@ -35,6 +35,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_FALL = "ch.elexis.data.Fall";
 	public static final String TYPE_KONSULTATION = "ch.elexis.data.Konsultation";
 	public static final String TYPE_KONTAKT = "ch.elexis.data.Kontakt";
+	public static final String TYPE_LABORATORY = "ch.elexis.data.Labor";
 	public static final String TYPE_LABOR2009TARIF = "ch.elexis.labortarif2009.data.Labor2009Tarif";
 	public static final String TYPE_LABRESULT = "ch.elexis.data.LabResult";
 	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
@@ -85,6 +86,7 @@ public class ElexisTypeMap {
 		stsToClassMap.put(TYPE_ORGANISATION, Kontakt.class);
 		stsToClassMap.put(TYPE_PATIENT, Kontakt.class);	
 		stsToClassMap.put(TYPE_PERSON, Kontakt.class);
+		stsToClassMap.put(TYPE_LABORATORY, Kontakt.class);
 		
 		// TODO add other values
 	}
@@ -100,6 +102,9 @@ public class ElexisTypeMap {
 				}
 				return TYPE_PERSON;
 			} else if (k.isOrganisation()) {
+				if(k.isLaboratory()) {
+					return TYPE_LABORATORY;
+				}
 				return TYPE_ORGANISATION;
 			}
 
