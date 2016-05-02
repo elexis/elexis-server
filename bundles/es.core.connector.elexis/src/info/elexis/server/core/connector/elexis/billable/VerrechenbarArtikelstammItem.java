@@ -73,19 +73,19 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		try {
 			vkt = new Money(artikelstammItem.getPpub()).getCents();
 		} catch (Exception e) {
-			log.warn("Error parsing public price: " + e.getMessage());
+			log.warn("Error parsing public price: " + e.getMessage() + " @ " + artikelstammItem.getId());
 		}
 
 		try {
 			vpe = Double.parseDouble(artikelstammItem.getPkg_size());
 		} catch (Exception e) {
-			log.warn("Error parsing package size: " + e.getMessage());
+			log.warn("Error parsing package size: " + e.getMessage() + "@ " + artikelstammItem.getId());
 		}
 
 		try {
 			vke = Double.parseDouble(artikelstammItem.getVerkaufseinheit());
 		} catch (Exception e) {
-			log.warn("Error parsing sell unit: " + e.getMessage());
+			log.warn("Error parsing sell unit: " + e.getMessage() + " @ " + artikelstammItem.getId());
 		}
 
 		if ((vpe > 0.0) && (vke > 0.0) && (vpe != vke)) {
