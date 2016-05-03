@@ -2,18 +2,18 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
+import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarEigenleistung;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarPhysioLeistung;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
-import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -58,27 +58,25 @@ public class BehandlungService extends AbstractService<Behandlung> {
 		return cons;
 	}
 
-	public static IStatus chargeBillableOnBehandlung(Behandlung kons, AbstractDBObjectIdDeleted billableObject,
-			Kontakt userContact, Kontakt mandatorContact) {
+	public static Optional<IBillable<?>> findBillableByAbstractDBObjectIdDeleted(
+			AbstractDBObjectIdDeleted billableObject) {
 		if (billableObject instanceof TarmedLeistung) {
-			return new VerrechenbarTarmedLeistung((TarmedLeistung) billableObject).add(kons, userContact,
-					mandatorContact);
+			return Optional.of(new VerrechenbarTarmedLeistung((TarmedLeistung) billableObject));
 		} else if (billableObject instanceof Labor2009Tarif) {
-			return new VerrechenbarLabor2009Tarif((Labor2009Tarif) billableObject).add(kons, userContact,
-					mandatorContact);
+			return Optional.of(new VerrechenbarLabor2009Tarif((Labor2009Tarif) billableObject));
 		} else if (billableObject instanceof PhysioLeistung) {
-			return new VerrechenbarPhysioLeistung((PhysioLeistung) billableObject).add(kons, userContact,
-					mandatorContact);
+			return Optional.of(new VerrechenbarPhysioLeistung((PhysioLeistung) billableObject));
 		} else if (billableObject instanceof ArtikelstammItem) {
-			return new VerrechenbarArtikelstammItem((ArtikelstammItem) billableObject).add(kons, userContact,
-					mandatorContact);
+			return Optional.of(new VerrechenbarArtikelstammItem((ArtikelstammItem) billableObject));
 		} else if (billableObject instanceof Eigenleistung) {
-			return new VerrechenbarEigenleistung((Eigenleistung) billableObject).add(kons, userContact,
-					mandatorContact);
+			return Optional.of(new VerrechenbarEigenleistung((Eigenleistung) billableObject));
 		}
+		return Optional.empty();
+	}
 
-		return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-				"No Verrechenbar wrapper found for " + billableObject.getLabel());
+	public static IStatus chargeBillableOnBehandlung(Behandlung kons, IBillable<?> billableObject, Kontakt userContact,
+			Kontakt mandatorContact) {
+		return billableObject.add(kons, userContact, mandatorContact);
 	}
 
 	/**

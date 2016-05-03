@@ -145,13 +145,29 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 	}
 
 	public void changeCount(Verrechnet foundVerrechnet, int newCount) {
-		int previous = foundVerrechnet.getZahl();
-		foundVerrechnet.setZahl(newCount);
-		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(foundVerrechnet);
+		changeCount(foundVerrechnet, 1.0 * newCount);
+	}
+
+	public static void changeCount(Verrechnet vr, double newCount) {
+		int previous = vr.getZahl();
+		int count = 1;
+
+		if (newCount == Math.rint(newCount)) {
+			// integer
+			count = new Double(newCount).intValue();
+			vr.setZahl(count);
+			vr.setSecondaryScaleFactor(1.0);
+		} else {
+			vr.setZahl(count);
+			vr.setSecondaryScaleFactor(newCount);
+			vr.setLeistungenText(vr.getLeistungenText() + " (" + Double.toString(newCount) + ")");
+		}
+
+		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
 		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
 			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) verrechenbar.get();
 			vat.singleReturn(previous);
-			vat.singleDisposal(newCount);
+			vat.singleDisposal(count);
 		}
 	}
 }

@@ -70,6 +70,12 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 		int sca = (int) Math.round(scale * 100);
 		setScale(sca);
 	}
+	
+	@Transient
+	public void setSecondaryScaleFactor(double scale) {
+		int sca = (int) Math.round(scale * 100);
+		setScale2(sca);
+	}
 
 	@Transient
 	public String getText() {
