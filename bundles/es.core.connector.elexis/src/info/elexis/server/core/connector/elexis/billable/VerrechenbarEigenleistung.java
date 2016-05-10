@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -68,12 +67,9 @@ public class VerrechenbarEigenleistung implements IBillable<Eigenleistung> {
 	@Override
 	public int getTP(TimeTool date, Fall fall) {
 		String salePrice = eigenleistung.getSalePrice();
-		try {
-			return new Money(salePrice).getCents();
-		} catch (ParseException e) {
-			log.warn("Error parsing salePrice, returning 0: " + e.getMessage());
-		}
-		return 0;
+		Money m = new Money();
+		m.addCent(salePrice);
+		return m.getCents();
 	}
 
 	@Override
