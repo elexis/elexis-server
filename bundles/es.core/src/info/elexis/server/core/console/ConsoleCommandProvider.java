@@ -3,7 +3,6 @@ package info.elexis.server.core.console;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.internal.Application;
@@ -11,8 +10,6 @@ import info.elexis.server.core.scheduler.SchedulerService;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider implements CommandProvider {
-
-	private Logger log = LoggerFactory.getLogger(ConsoleCommandProvider.class);
 
 	public void _es(CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
@@ -33,7 +30,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 				return;
 			}
 		} catch (Exception e) {
-			log.error("Execution error on argument " + argument, e);
+			LoggerFactory.getLogger(ConsoleCommandProvider.class).error("Execution error on argument " + argument, e);
 		}
 	}
 
@@ -52,7 +49,7 @@ public class ConsoleCommandProvider implements CommandProvider {
 		case "status":
 			return Application.getStatus();
 		case "logTestError":
-			log.error("TEST ERROR");
+			LoggerFactory.getLogger(ConsoleCommandProvider.class).error("TEST ERROR");
 			return "SENT";
 		}
 

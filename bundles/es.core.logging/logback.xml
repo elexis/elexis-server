@@ -17,7 +17,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${user.home}/elexis-server/logs/elexis-server.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<maxHistory>5</maxHistory>
+			<maxHistory>28</maxHistory>
 			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.log.zip
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
