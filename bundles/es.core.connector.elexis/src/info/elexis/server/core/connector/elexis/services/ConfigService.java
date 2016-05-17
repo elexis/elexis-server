@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,88 +23,54 @@ public class ConfigService {
 
 	public static final String LIST_SEPARATOR = ",";
 
-	private static Logger log = LoggerFactory.getLogger(ConfigService.class);
+	private Logger log = LoggerFactory.getLogger(ConfigService.class);
 
 	public static ConfigService INSTANCE = InstanceHolder.INSTANCE;
-
-	protected EntityManager em;
 
 	private static final class InstanceHolder {
 		static final ConfigService INSTANCE = new ConfigService();
 	}
 
 	private ConfigService() {
-		new Config(); // TODO refactor make sure the jpa bundle is loaded before
-						// continuing
-		em = ElexisEntityManager.createEntityManager();
+		new Config(); // TODO refactor make sure jpa bundle is loaded before
 	}
 
 	/**
-	 * Find an object by its primary id.
+	 * Get a stored value for a given key, or return the value provided as
+	 * default
 	 * 
-	 * @param id
-	 * @param entityClass
+	 * @param key
+	 * @param defValue
+	 *            default value if not set
 	 * @return
 	 */
-	public Config findById(Object id) {
-		return em.find(Config.class, id);
-	}
-
 	public String get(String key, String defValue) {
-		flush();
-		Config val = findById(key);
-		if (val != null) {
-			em.refresh(val);
-			return val.getWert();
-		} else {
-			return defValue;
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			Config val = em.find(Config.class, key);
+			if (val != null) {
+				return val.getWert();
+			} else {
+				return defValue;
+			}
+		} finally {
+			em.close();
 		}
 	}
 
-	public boolean get(String key, boolean b) {
-		String string = get(key, Boolean.toString(b));
+	/**
+	 * Get a stored value for a given key as boolean, or return the value
+	 * provided as default
+	 * 
+	 * @param key
+	 * @param b
+	 * @return
+	 */
+	public boolean get(String key, boolean defValue) {
+		String string = get(key, Boolean.toString(defValue));
 		return Boolean.valueOf(string);
 	}
 
-	/**
-	 * synchronous set
-	 * 
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	public boolean set(String key, String value) {
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		Config val = em.find(Config.class, key);
-		if (val != null && val.getWert().equalsIgnoreCase(value)) {
-			return true;
-		}
-
-		em.getTransaction().begin();
-		if (val == null) {
-			val = new Config();
-			val.setParam(key);
-			em.persist(val);
-		}
-		val.setWert(value);
-		em.getTransaction().commit();
-		em.close();
-		return true;
-	}
-
-	public void remove(String key) {
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		Config val = em.find(Config.class, key);
-		if(val==null) {
-			return;
-		}
-		
-		em.getTransaction().begin();
-		em.remove(val);
-		em.getTransaction().commit();
-		em.close();
-	}
-	
 	/**
 	 * Retrieve a value as a set.
 	 * 
@@ -111,97 +78,24 @@ public class ConfigService {
 	 * @return
 	 */
 	public Set<String> getAsSet(String key) {
-		flush();
-		Config val = findById(key);
+		String val = get(key, null);
 		if (val == null) {
 			return Collections.emptySet();
 		}
-		em.refresh(val);
-		String[] split = val.getWert().split(LIST_SEPARATOR);
+		String[] split = val.split(LIST_SEPARATOR);
 		return Arrays.asList(split).stream().collect(Collectors.toSet());
 	}
 
 	/**
-	 * Store a set of values to a configuration key
+	 * Returns a stored value as {@link LocalDate}
 	 * 
 	 * @param key
-	 * @param values
-	 * @return
-	 */
-	public boolean setAsSet(String key, Set<String> values) {
-		String flattenedValue = values.stream().map(o -> o.toString()).reduce((u, t) -> u + LIST_SEPARATOR + t).get();
-
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		Config val = em.find(Config.class, key);
-		if (val != null && val.getWert().equalsIgnoreCase(flattenedValue)) {
-			return true;
-		}
-
-		em.getTransaction().begin();
-		if (val == null) {
-			val = new Config();
-			val.setParam(key);
-			em.persist(val);
-		}
-		val.setWert(flattenedValue);
-		em.getTransaction().commit();
-		em.close();
-		return true;
-	}
-
-	/**
-	 * Assert that a specific value is part of the set defined in key
-	 * 
-	 * @param key
-	 * @param value
-	 */
-	public void assertPropertyInSet(String key, String value) {
-		Set<String> propertySet = getAsSet(key);
-		Set<String> valueSet = new HashSet<String>(propertySet);
-		valueSet.add(value);
-		setAsSet(key, valueSet);
-	}
-
-	/**
-	 * 
-	 * @param param
-	 * @param performCommit
-	 * @return
-	 */
-	public Config create(String param, final boolean performCommit) {
-		Config obj = new Config();
-		if (performCommit) {
-			em.getTransaction().begin();
-		}
-		if (param != null) {
-			obj.setParam(param);
-		}
-		em.persist(obj);
-		if (performCommit) {
-			em.getTransaction().commit();
-		}
-
-		return obj;
-	}
-
-	/**
-	 * Create a transaction and flush all open changes onto the database
-	 */
-	public void flush() {
-		em.getTransaction().begin();
-		em.flush();
-		em.getTransaction().commit();
-	}
-
-	/**
-	 * Returns a stored value as a date
-	 * @param key 
 	 * @return the {@link LocalDate} or <code>null</code>
 	 */
 	public LocalDate getAsDate(String key) {
-		Config value = findById(key);
+		String value = get(key, null);
 		if (value != null) {
-			TimeTool tt = new TimeTool(value.getWert());
+			TimeTool tt = new TimeTool(value);
 			return tt.toZonedDateTime().toLocalDate();
 		}
 		return null;
@@ -218,4 +112,79 @@ public class ConfigService {
 		query.add(Config_.param, JPAQuery.QUERY.LIKE, nodePrefix + "%");
 		return query.execute();
 	}
+
+	/**
+	 * Set a value for a given key
+	 * 
+	 * @param key
+	 * @param value
+	 * @return <code>true</code> if the value was successfully set
+	 */
+	public boolean set(String key, String value) {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			Config val = em.find(Config.class, key);
+			if (val != null && val.getWert() != null && val.getWert().equalsIgnoreCase(value)) {
+				return true;
+			}
+			em.getTransaction().begin();
+			if (val == null) {
+				val = new Config();
+				val.setParam(key);
+				em.persist(val);
+			}
+			em.lock(val, LockModeType.PESSIMISTIC_WRITE);
+			val.setWert(value);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Error on setting config ", e);
+			return false;
+		} finally {
+			em.close();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Store a set of values to a configuration key
+	 * 
+	 * @param key
+	 * @param values
+	 * @return <code>true</code> if the values were successfully set
+	 */
+	public boolean setAsSet(String key, Set<String> values) {
+		String flattenedValue = values.stream().map(o -> o.toString()).reduce((u, t) -> u + LIST_SEPARATOR + t).get();
+		return set(key, flattenedValue);
+	}
+
+	public void remove(String key) {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			Config val = em.find(Config.class, key);
+			if (val == null) {
+				return;
+			}
+
+			em.getTransaction().begin();
+			em.remove(val);
+			em.getTransaction().commit();
+		} finally {
+			em.close();
+		}
+	}
+
+	/**
+	 * Assert that a specific value is part of the set stored in key
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void assertPropertyInSet(String key, String value) {
+		Set<String> propertySet = getAsSet(key);
+		Set<String> valueSet = new HashSet<String>(propertySet);
+		valueSet.add(value);
+		setAsSet(key, valueSet);
+	}
+
 }
