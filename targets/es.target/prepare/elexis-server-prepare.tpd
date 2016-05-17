@@ -49,7 +49,7 @@ location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/" {
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group
 }
 
-location "http://download.elexis.info/elexis.3.core/snapshot/" {
+location "http://download.elexis.info/elexis.3.core/beta/" {
 	ch.rgw.utility [3.2.0,3.3.0)
 	ch.elexis.core [3.2.0,3.3.0)
 	org.postgresql
@@ -65,7 +65,7 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	ch.elexis.core.importer.div [3.2.0,3.3.0)
 }
 
-location "http://download.elexis.info/elexis.3.base/snapshot/" {
+location "http://download.elexis.info/elexis.3.base/beta/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
 }
