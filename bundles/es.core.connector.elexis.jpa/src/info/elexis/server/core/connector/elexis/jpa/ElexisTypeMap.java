@@ -17,6 +17,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistu
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 
 public class ElexisTypeMap {
 	
@@ -46,6 +47,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_TARMEDLEISTUNG = "ch.elexis.data.TarmedLeistung";
 	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
 	public static final String TYPE_TESSINER_CODE = "ch.elexis.data.TICode";
+	public static final String TYPE_USER = "ch.elexis.data.User";
 	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
@@ -54,29 +56,31 @@ public class ElexisTypeMap {
 		// bi-directional mappable
 		stsToClassMap.put(TYPE_ARTIKELSTAMM, ArtikelstammItem.class);
 		classToStsMap.put(ArtikelstammItem.class, TYPE_ARTIKELSTAMM);
-		stsToClassMap.put(TYPE_TARMEDLEISTUNG, TarmedLeistung.class);
-		classToStsMap.put(TarmedLeistung.class, TYPE_TARMEDLEISTUNG);
-		stsToClassMap.put(TYPE_FALL, Fall.class);
-		classToStsMap.put(Fall.class, TYPE_FALL);
-		stsToClassMap.put(TYPE_TERMIN, Termin.class);
-		classToStsMap.put(Termin.class, TYPE_TERMIN);
-		stsToClassMap.put(TYPE_DOCHANDLE, DocHandle.class);
-		classToStsMap.put(DocHandle.class, TYPE_DOCHANDLE);
 		stsToClassMap.put(TYPE_BRIEF, Brief.class);
 		classToStsMap.put(Brief.class, TYPE_BRIEF);
-		stsToClassMap.put(TYPE_PRESCRIPTION, Prescription.class);
-		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
-		stsToClassMap.put(TYPE_KONSULTATION, Behandlung.class);
-		classToStsMap.put(Behandlung.class, TYPE_KONSULTATION);
-		stsToClassMap.put(TYPE_PHYSIOLEISTUNG, PhysioLeistung.class);
-		classToStsMap.put(PhysioLeistung.class, TYPE_PHYSIOLEISTUNG);
+		stsToClassMap.put(TYPE_DOCHANDLE, DocHandle.class);
+		classToStsMap.put(DocHandle.class, TYPE_DOCHANDLE);
+		stsToClassMap.put(TYPE_EIGENLEISTUNG, Eigenleistung.class);
+		classToStsMap.put(Eigenleistung.class, TYPE_EIGENLEISTUNG);
+		stsToClassMap.put(TYPE_FALL, Fall.class);
+		classToStsMap.put(Fall.class, TYPE_FALL);
 		stsToClassMap.put(TYPE_LABOR2009TARIF, Labor2009Tarif.class);
 		classToStsMap.put(Labor2009Tarif.class, TYPE_LABOR2009TARIF);
 		stsToClassMap.put(TYPE_LABRESULT, LabResult.class);
 		classToStsMap.put(LabResult.class, TYPE_LABRESULT);
-		stsToClassMap.put(TYPE_EIGENLEISTUNG, Eigenleistung.class);
-		classToStsMap.put(Eigenleistung.class, TYPE_EIGENLEISTUNG);
-		
+		stsToClassMap.put(TYPE_KONSULTATION, Behandlung.class);
+		classToStsMap.put(Behandlung.class, TYPE_KONSULTATION);
+		stsToClassMap.put(TYPE_PHYSIOLEISTUNG, PhysioLeistung.class);
+		classToStsMap.put(PhysioLeistung.class, TYPE_PHYSIOLEISTUNG);
+		stsToClassMap.put(TYPE_PRESCRIPTION, Prescription.class);
+		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
+		stsToClassMap.put(TYPE_TARMEDLEISTUNG, TarmedLeistung.class);
+		classToStsMap.put(TarmedLeistung.class, TYPE_TARMEDLEISTUNG);
+		stsToClassMap.put(TYPE_TERMIN, Termin.class);
+		classToStsMap.put(Termin.class, TYPE_TERMIN);
+		stsToClassMap.put(TYPE_USER, User.class);
+		classToStsMap.put(User.class, TYPE_USER);
+
 		// uni-directional mappable
 		stsToClassMap.put(TYPE_MEDIKAMENT, Artikel.class);
 		stsToClassMap.put(TYPE_EIGENARTIKEL, Artikel.class);
