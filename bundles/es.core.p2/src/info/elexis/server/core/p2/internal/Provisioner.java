@@ -34,7 +34,7 @@ public class Provisioner {
 
 	@Activate
 	public void activate(ComponentContext context) throws Exception {
-		instance = this;
+		Provisioner.instance = this;
 		agent = agentProvider.createAgent(null);
 	}
 

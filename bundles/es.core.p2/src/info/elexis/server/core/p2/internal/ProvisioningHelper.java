@@ -48,7 +48,7 @@ public class ProvisioningHelper {
 			try {
 				metadataRepoMgr.refreshRepository(repo, new NullProgressMonitor());
 			} catch (ProvisionException | OperationCanceledException e) {
-				log.error("Exception refreshing repo " + repo, e);
+				log.warn("Exception refreshing repo " + repo, e);
 			}
 		}
 
@@ -57,7 +57,7 @@ public class ProvisioningHelper {
 			try {
 				artifactRepoMgr.refreshRepository(repo, new NullProgressMonitor());
 			} catch (ProvisionException | OperationCanceledException e) {
-				log.error("Exception refreshing repo " + repo, e);
+				log.warn("Exception refreshing repo " + repo, e);
 			}
 	}
 
