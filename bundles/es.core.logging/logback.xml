@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="true">
 	<contextName>ES</contextName>
 	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
