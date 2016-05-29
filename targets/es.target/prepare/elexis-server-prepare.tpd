@@ -109,8 +109,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
-	org.apache.httpcomponents.httpclient
-	org.apache.httpcomponents.httpcore
+	org.apache.httpcomponents.httpclient [4.3.6,4.3.7)
+	org.apache.httpcomponents.httpcore [4.3.3,4.3.4)
 	org.apache.httpcomponents.httpmime
 	org.apache.httpcomponents.httpcore-nio
 	org.json
@@ -120,7 +120,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	com.google.guava
 	se.ugli.bigqueue
 	com.mysql.jdbc
-	org.apache.commons.lang3
+	org.apache.commons.lang3 [3.3.2,3.3.2]
 	org.apache.commons.configuration
 	org.joda.money
 	com.github.pukkaone.logback-gelf
