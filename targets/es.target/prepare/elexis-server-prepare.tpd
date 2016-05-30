@@ -52,6 +52,8 @@ location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/" {
 location "http://download.elexis.info/elexis.3.core/beta/" {
 	ch.rgw.utility [3.2.0,3.3.0)
 	ch.elexis.core [3.2.0,3.3.0)
+	ch.elexis.core.importer.div [3.2.0,3.3.0)
+	ch.elexis.core.hl7.v2x [3.2.0,3.3.0)
 	org.postgresql
 	org.h2
 	org.jdom
@@ -60,9 +62,8 @@ location "http://download.elexis.info/elexis.3.core/beta/" {
 	bouncycastle.bcprov-jdk14
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
-	ch.elexis.core.hl7.v2x [3.2.0,3.3.0)
 	org.apache.poi
-	ch.elexis.core.importer.div [3.2.0,3.3.0)
+	org.beanshell.bsh
 }
 
 location "http://download.elexis.info/elexis.3.base/beta/" {
