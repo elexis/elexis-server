@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  ch.elexis.core;bundle-version="3.1.0";visibility:=reexport,
  info.elexis.server.core.common;bundle-version="1.0.0",
  org.joda.money;bundle-version="0.11.0",
- org.h2
+ org.h2,
+ org.beanshell.bsh;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy

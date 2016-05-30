@@ -11,6 +11,7 @@ import org.eclipse.persistence.annotations.Convert;
 
 import ch.elexis.core.model.ILabItem;
 import ch.elexis.core.types.LabItemTyp;
+import ch.rgw.tools.StringTool;
 
 @Entity
 @Table(name = "laboritems")
@@ -61,6 +62,23 @@ public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 
 	@Column(length = 255)
 	private String formula;
+
+	/**
+	 * @return the variable name of this LabItem as used in LabItems of type
+	 *         formula for cross-reference
+	 */
+	@Transient
+	public String getVariableName() {
+		String group = getGroup();
+		if (group != null && group.contains(StringTool.space)) {
+			String[] g = group.split(StringTool.space, 2);
+			String prio = getPriority();
+			String num = (prio != null) ? prio.trim() : "9999";
+			return g[0] + "_" + num;
+		}
+
+		return "ERROR";
+	}
 
 	public String getCode() {
 		return code;

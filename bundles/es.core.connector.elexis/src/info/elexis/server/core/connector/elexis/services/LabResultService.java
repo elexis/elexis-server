@@ -1,5 +1,12 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import ch.elexis.core.types.LabItemTyp;
+import ch.rgw.tools.TimeTool;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 
 public class LabResultService extends AbstractService<LabResult> {
@@ -13,16 +20,32 @@ public class LabResultService extends AbstractService<LabResult> {
 		super(LabResult.class);
 	}
 
-//	public LabResult create(Kontakt patContact, TimeTool date, LabItem labItm, String result, String comment,
-//			Kontakt labContact) {
-//		em.getTransaction().begin();
-//		LabResult labResult = create(false);
-//		labResult.setPatient(patContact);
-//		labResult.setItem(labItm);
-//		labResult.setResult(result);
-//		labResult.setComment(comment);
-//		labResult.setFlags(0);
-//		em.getTransaction().commit();
-//		return labResult;
-//	}
+	/**
+	 * Determine the result for a LabResult - the result may
+	 * not yet have been calculated. For formulas, this method handles
+	 * calculation (if executable), for others it just passes through to the to
+	 * {@link LabResult#getResult()}
+	 */
+	public String getInterpretedLabResult(LabResult lr) {
+		if (lr.getItem() != null && LabItemTyp.FORMULA == lr.getItem().getTyp()) {
+			String value = null;
+
+			Optional<LabOrder> order = LabOrderService.findLabOrderByLabResult(lr);
+			if (order.isPresent()) {
+				List<LabResult> labresults = LabOrderService.findAllLabResultsForLabOrder(order.get());
+				value = LabItemService.evaluate(order.get().getItem(), lr.getPatient(), labresults);
+			}
+			if (value == null || value.equals("?formel?")) { //$NON-NLS-1$
+				LocalDateTime time = lr.getTransmissiontime();
+				if (time == null) {
+					time = lr.getObservationtime();
+				}
+				return LabItemService.evaluate(lr.getItem(), lr.getPatient(), new TimeTool(time));
+			}
+			return value;
+		}
+
+		return lr.getResult();
+	}
+
 }

@@ -44,6 +44,8 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	
 	ch.rgw.utility
 	ch.elexis.core
+	ch.elexis.core.importer.div
+	ch.elexis.core.hl7.v2x
 	org.postgresql
 	org.h2
 	org.jdom
@@ -52,9 +54,8 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	bouncycastle.bcprov-jdk14
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
-	ch.elexis.core.hl7.v2x
 	org.apache.poi
-	ch.elexis.core.importer.div
+	org.beanshell.bsh
 	
 	at.medevit.ch.artikelstamm
 	ch.elexis.base.ch.ticode
