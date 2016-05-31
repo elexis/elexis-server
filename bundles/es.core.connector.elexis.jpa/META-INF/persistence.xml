@@ -39,12 +39,12 @@
 		<properties>
 			<property name="eclipselink.logging.logger"
 				value="org.eclipse.persistence.jpa.logging.slf4j.Slf4jSessionLogger" />
+			<property name="eclipselink.exception-handler"
+				value="org.eclipse.persistence.jpa.logging.slf4j.PersistenceExceptionHandler" />
 			<property name="eclipselink.logging.level" value="FINE" />
-			<property name="eclipselink.logging.thread" value="false" />
+			<property name="eclipselink.logging.thread" value="true" />
 			<property name="eclipselink.session.customizer"
 				value="info.elexis.server.core.connector.elexis.jpa.model.annotated.id.UUIDSequence" />
-			<property name="eclipselink.exception-handler"
-				value="info.elexis.server.core.connector.elexis.jpa.model.annotated.handler.PersistenceExceptionHandler" />
 		</properties>
 	</persistence-unit>
 </persistence>

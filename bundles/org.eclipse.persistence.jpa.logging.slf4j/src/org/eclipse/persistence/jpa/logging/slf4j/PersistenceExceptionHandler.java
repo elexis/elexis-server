@@ -8,7 +8,7 @@
  * Contributors:
  *     MEDEVIT <office@medevit.at> - initial API and implementation
  ******************************************************************************/
-package info.elexis.server.core.connector.elexis.jpa.model.annotated.handler;
+package org.eclipse.persistence.jpa.logging.slf4j;
 
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.slf4j.Logger;
