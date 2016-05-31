@@ -21,8 +21,9 @@ public class PersistenceExceptionHandler implements ExceptionHandler {
 	@Override
 	public Object handleException(RuntimeException exception) {
 		log.error("PersistenceException: ", exception);
-		exception.printStackTrace();
-		return null;
+		// we have to throw the exception further, as EclipseLink
+		// might be capable of handling it, e.g. by creating the required tables
+		throw exception;
 	}
 
 }
