@@ -18,6 +18,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
@@ -200,27 +201,32 @@ public class LockService implements ILockService {
 
 		@Override
 		public void run() {
-			List<LockInfo> eviction = new ArrayList<>();
-			// collect LockInfos ready for eviction
-			synchronized (locks) {
-				long currentMillis = System.currentTimeMillis();
-				Set<String> keys = locks.keySet();
-				for (String key : keys) {
-					LockInfo lockInfo = locks.get(key);
-					// do not evict locks set by server system
-					if (lockInfo.getSystemUuid().equals(LockService.systemUuid)) {
-						continue;
-					}
-					if (lockInfo.evict(currentMillis)) {
-						eviction.add(lockInfo);
+			try {
+				List<LockInfo> eviction = new ArrayList<>();
+				// collect LockInfos ready for eviction
+				synchronized (locks) {
+					long currentMillis = System.currentTimeMillis();
+					Set<String> keys = locks.keySet();
+					for (String key : keys) {
+						LockInfo lockInfo = locks.get(key);
+						// do not evict locks set by server system
+						if (lockInfo.getSystemUuid().equals(LockService.systemUuid)) {
+							continue;
+						}
+						if (lockInfo.evict(currentMillis)) {
+							eviction.add(lockInfo);
+						}
 					}
 				}
-			}
-			// release the collected locks
-			for (LockInfo lockInfo : eviction) {
-				logger.debug("Eviction releasing lock [" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
-						+ lockInfo.getElementId() + "@" + lockInfo.getSystemUuid() + "]");
-				releaseLock(lockInfo);
+				// release the collected locks
+				for (LockInfo lockInfo : eviction) {
+					logger.debug("Eviction releasing lock [" + lockInfo.getUser() + "@" + lockInfo.getElementType()
+							+ StringConstants.DOUBLECOLON + lockInfo.getElementId() + "@" + lockInfo.getSystemUuid()
+							+ "]");
+					releaseLock(lockInfo);
+				}
+			} catch (Exception e) {
+				logger.error("Error evicting lock", e);
 			}
 		}
 	}
