@@ -10,6 +10,7 @@
  ******************************************************************************/
 package info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -47,13 +48,12 @@ public class ElexisDBStringDateTimeTransformer implements AttributeTransformer, 
 		if (dateString == null || dateString.length() == 0)
 			return null;
 		
-		DateTimeFormatter parser = yyyyMMddHHmmss;
-		if (dateString.length() == 8) {
-			parser = yyyyMMdd;
-		}
-
 		try {
-			return LocalDateTime.parse(dateString, parser);
+			if (dateString.length() == 8) {
+				return LocalDate.parse(dateString, yyyyMMdd).atStartOfDay();
+			} else {
+				return LocalDateTime.parse(dateString, yyyyMMddHHmmss);
+			}
 		} catch (DateTimeParseException e) {
 			log.warn("Error parsing {} in {}: {}", dateString, ((AbstractDBObjectIdDeleted) object).getId(),
 					e.getMessage());
