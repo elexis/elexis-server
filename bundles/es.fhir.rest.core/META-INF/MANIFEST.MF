@@ -14,7 +14,9 @@ Service-Component: OSGI-INF/es.fhir.rest.core.servlets.CoreFhirRestServlet.xml,
  OSGI-INF/es.fhir.rest.core.resources.PatientResourceProvider.xml,
  OSGI-INF/es.fhir.rest.core.resources.FhirResourceProviderRegistry.xml,
  OSGI-INF/es.fhir.rest.core.transformer.PatientKontaktTransformer.xml,
- OSGI-INF/es.fhir.rest.core.transformer.FhirTransformerRegistry.xml
+ OSGI-INF/es.fhir.rest.core.transformer.FhirTransformerRegistry.xml,
+ OSGI-INF/es.fhir.rest.core.resources.MedicationOrderResourceProvider.xml,
+ OSGI-INF/es.fhir.rest.core.transformer.MedicationOrderPrescriptionTransformer.xml
 Require-Bundle: hapi-fhir-osgi-core;bundle-version="1.5.0",
  info.elexis.server.core.connector.elexis;bundle-version="1.0.0"
 Export-Package: es.fhir.rest.core

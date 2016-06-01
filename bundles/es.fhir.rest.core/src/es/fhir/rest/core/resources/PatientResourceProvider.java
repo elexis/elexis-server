@@ -1,5 +1,7 @@
 package es.fhir.rest.core.resources;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -9,6 +11,8 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.Search;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -32,26 +36,29 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 				Kontakt.class);
 	}
 
-	/**
-	 * The "@Read" annotation indicates that this method supports the read
-	 * operation. Read operations should return a single resource instance.
-	 *
-	 * @param theId
-	 *            The read operation takes one parameter, which must be of type
-	 *            IdDt and must be annotated with the "@Read.IdParam"
-	 *            annotation.
-	 * @return Returns a resource matching this identifier, or null if none
-	 *         exists.
-	 */
 	@Read
 	public Patient getResourceById(@IdParam IdDt theId) {
-		Long idPart = theId.getIdPartAsLong();
+		String idPart = theId.getIdPart();
 		if(idPart != null) {
-			Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(idPart.intValue());
+			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(idPart);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					Patient fhirPatient = patientMapper.getFhirObject(patient.get());
 					return fhirPatient;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Search()
+	public List<Patient> findPatientByPatientNumber(@RequiredParam(name = "patientNumber") String patientNumber) {
+		if (patientNumber != null) {
+			Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(Integer.valueOf(patientNumber));
+			if (patient.isPresent()) {
+				if (patient.get().isPatient()) {
+					Patient fhirPatient = patientMapper.getFhirObject(patient.get());
+					return Collections.singletonList(fhirPatient);
 				}
 			}
 		}
