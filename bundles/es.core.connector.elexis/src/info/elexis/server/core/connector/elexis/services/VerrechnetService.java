@@ -99,6 +99,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		if (iv instanceof VerrechenbarArtikelstammItem) {
 			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) iv;
 			vat.singleDisposal(1);
+			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
 		}
 
 		// call the adjusters
@@ -168,6 +169,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) verrechenbar.get();
 			vat.singleReturn(previous);
 			vat.singleDisposal(count);
+			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
 		}
 	}
 }

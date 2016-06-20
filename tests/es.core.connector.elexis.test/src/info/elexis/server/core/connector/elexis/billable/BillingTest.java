@@ -1,8 +1,12 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
@@ -14,6 +18,7 @@ import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -21,6 +26,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tar
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
@@ -225,4 +231,33 @@ public class BillingTest {
 		assertTrue(resCompatible.isOK());
 	}
 
+	@Test
+	public void testAddArtikelstammBilling() {
+		Optional<ArtikelstammItem> artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
+		assertTrue(artikelstammItem.isPresent());
+
+		artikelstammItem.get().setIstbestand(2);
+		artikelstammItem.get().setMinbestand(2);
+		artikelstammItem.get().setMaxbestand(3);
+
+		ArtikelstammItemService.INSTANCE.write(artikelstammItem.get());
+
+		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
+
+		IStatus status = verrechenbar.add(consultation, userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		assertEquals(ElexisTypeMap.TYPE_ARTIKELSTAMM, vr.getKlasse());
+		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(1, vr.getZahl());
+
+		artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
+		assertTrue(artikelstammItem.isPresent());
+		assertEquals(3, artikelstammItem.get().getMaxbestand());
+		assertEquals(2, artikelstammItem.get().getMinbestand());
+		assertEquals(1, artikelstammItem.get().getIstbestand());
+	}
 }

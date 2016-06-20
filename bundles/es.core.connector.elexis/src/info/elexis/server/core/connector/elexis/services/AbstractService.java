@@ -212,6 +212,20 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	}
 
 	/**
+	 * Write detached entity to database. Find methods return detached objects,
+	 * use this method to write changes to these objects.
+	 * 
+	 * @param entity
+	 */
+	public void write(T entity) {
+		if (!em.contains(entity)) {
+			em.getTransaction().begin();
+			em.merge(entity);
+			em.getTransaction().commit();
+		}
+	}
+
+	/**
 	 * Removes an entity from the database. <b>WARNING</b> this call effectively
 	 * removes the entry, to mark it as deleted use {@link #delete(Object)}
 	 */
