@@ -3,6 +3,7 @@ package es.fhir.rest.core.resources;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
@@ -17,6 +18,9 @@ import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
@@ -60,6 +64,24 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 					Patient fhirPatient = patientMapper.getFhirObject(patient.get());
 					return Collections.singletonList(fhirPatient);
 				}
+			}
+		}
+		return null;
+	}
+
+	@Search()
+	public List<Patient> findPatient(@RequiredParam(name = Patient.SP_NAME) String name) {
+		if (name != null) {
+			JPAQuery<Kontakt> query = new JPAQuery<>(Kontakt.class);
+			query.add(Kontakt_.description1, QUERY.LIKE, "%" + name + "%");
+			query.or(Kontakt_.description2, QUERY.LIKE, "%" + name + "%");
+			query.add(Kontakt_.person, QUERY.EQUALS, true);
+			query.add(Kontakt_.patient, QUERY.EQUALS, true);
+			List<Kontakt> patients = query.execute();
+			if (!patients.isEmpty()) {
+				List<Patient> result = patients.stream().map(f -> patientMapper.getFhirObject(f))
+						.collect(Collectors.toList());
+				return result;
 			}
 		}
 		return null;
