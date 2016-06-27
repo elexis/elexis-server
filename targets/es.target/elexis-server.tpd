@@ -101,6 +101,12 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.apache.commons.configuration
 	org.joda.money
 	
+	hapi-fhir-osgi-core
+	org.thymeleaf
+	com.phloc.commons
+	com.phloc.schematron
+	findbugsAnnotations
+	
 	com.eclipsesource.restfuse
 }
 
