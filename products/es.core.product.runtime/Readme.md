@@ -32,8 +32,8 @@ Elexis-server bundles partially provide console commands to be executed:
 * Core `es (status | launch | system)` 
 * P2 `es_p2  (system | repositories | features)` 
 
-Example installing the FHIR rest feature:
+Example installing the FHIR REST feature:
 
-* `es_p2 executeUpdate'` update with the newest versions from the p2 site
+* `es_p2 executeUpdate` update with the newest versions from the p2 site
 * `es_p2 features install info.elexis.server.fhir.rest.core.feature.feature.group` install the feature
 * `es system halt` halt the running elexis server, restart using a start script
