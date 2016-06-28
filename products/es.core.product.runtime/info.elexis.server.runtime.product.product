@@ -26,6 +26,9 @@
       </win>
    </launcher>
 
+   <vm>
+   </vm>
+
    <plugins>
    </plugins>
 
@@ -38,23 +41,17 @@
    </features>
 
    <configurations>
-      <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="2" />
-      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="2" />
-      <plugin id="com.mysql.jdbc" autoStart="true" startLevel="1" />
+      <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="3" />
+      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="3" />
       <plugin id="info.elexis.server.core.connector.elexis.jpa" autoStart="true" startLevel="2" />
       <plugin id="javax.persistence" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
       <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
-      <plugin id="org.h2" autoStart="true" startLevel="1" />
-      <plugin id="osgi.enterprise" autoStart="true" startLevel="1" />
    </configurations>
 
    <repositories>
