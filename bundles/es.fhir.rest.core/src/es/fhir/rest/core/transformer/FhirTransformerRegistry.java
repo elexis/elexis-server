@@ -7,6 +7,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -16,7 +17,7 @@ public class FhirTransformerRegistry implements IFhirTransformerRegistry {
 
 	private List<IFhirTransformer<?, ?>> transformers;
 
-	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
+	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY)
 	public synchronized void bindFhirTransformer(IFhirTransformer<?, ?> transformer) {
 		if (transformers == null) {
 			transformers = new ArrayList<IFhirTransformer<?, ?>>();

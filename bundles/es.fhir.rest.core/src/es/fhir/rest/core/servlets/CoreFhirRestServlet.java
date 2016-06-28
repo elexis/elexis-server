@@ -88,6 +88,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 		// add the resource providers
 		List<IFhirResourceProvider> providers = providerRegistry.getResourceProviders();
 		for (IFhirResourceProvider iFhirResourceProvider : providers) {
+			logger.info("Initializing Resource " + iFhirResourceProvider);
 			iFhirResourceProvider.initTransformer(transformerRegistry);
 		}
 		// make a copy, to satisfy type
