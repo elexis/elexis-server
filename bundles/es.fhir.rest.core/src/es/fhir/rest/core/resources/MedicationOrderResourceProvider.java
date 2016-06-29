@@ -18,6 +18,8 @@ import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
@@ -58,8 +60,10 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
-					List<Prescription> prescriptions = PrescriptionService
-							.findAllNonDeletedPrescriptionsForPatient(patient.get());
+					JPAQuery<Prescription> qbe = new JPAQuery<Prescription>(Prescription.class);
+					qbe.add(Prescription_.patient, JPAQuery.QUERY.EQUALS, patient.get());
+					qbe.add(Prescription_.rezeptID, JPAQuery.QUERY.EQUALS, null);
+					List<Prescription> prescriptions = qbe.execute();
 					if (prescriptions != null && !prescriptions.isEmpty()) {
 						List<MedicationOrder> ret = new ArrayList<MedicationOrder>();
 						for (Prescription prescription : prescriptions) {

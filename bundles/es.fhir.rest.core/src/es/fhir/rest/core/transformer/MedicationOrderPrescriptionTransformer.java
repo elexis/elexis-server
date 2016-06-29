@@ -12,6 +12,7 @@ import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.NarrativeDt;
 import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
 import ca.uhn.fhir.model.dstu2.resource.MedicationOrder.DosageInstruction;
+import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.primitive.UriDt;
@@ -26,7 +27,8 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 	@Override
 	public MedicationOrder getFhirObject(Prescription localObject) {
 		MedicationOrder order = new MedicationOrder();
-
+		MedicationOrderStatusEnum statusEnum = MedicationOrderStatusEnum.ACTIVE;
+		
 		order.setId(new IdDt("MedicationOrder", localObject.getId()));
 		
 		IdentifierDt elexisId = order.addIdentifier();
@@ -81,6 +83,12 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			order.setDateEnded(time);
 		}
 
+		if (dateUntil != null) {
+			if (dateUntil.isBefore(LocalDateTime.now()) || dateUntil.isEqual(dateFrom)) {
+				statusEnum = MedicationOrderStatusEnum.COMPLETED;
+			}
+		}
+
 		String dose = localObject.getDosis();
 		if (dose != null && !dose.isEmpty()) {
 			textBuilder.append(", ").append(dose);
@@ -93,6 +101,8 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			order.setNote(remark);
 		}
 
+		order.setStatus(statusEnum);
+		
 		NarrativeDt narrative = new NarrativeDt();
 		narrative.setDiv(textBuilder.toString());
 		order.setText(narrative);
