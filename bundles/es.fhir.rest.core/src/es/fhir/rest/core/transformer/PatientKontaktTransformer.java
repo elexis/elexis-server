@@ -1,11 +1,16 @@
 package es.fhir.rest.core.transformer;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
+import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.primitive.UriDt;
 import ch.elexis.core.types.Gender;
@@ -45,6 +50,12 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 		} else {
 			patient.setGender(AdministrativeGenderEnum.UNKNOWN);
 		}
+
+		LocalDate dateOfBirth = localObject.getDob();
+		if (dateOfBirth != null) {
+			patient.setBirthDate(new DateDt(Date.from(dateOfBirth.atStartOfDay(ZoneId.systemDefault()).toInstant())));
+		}
+
 		return patient;
 	}
 
