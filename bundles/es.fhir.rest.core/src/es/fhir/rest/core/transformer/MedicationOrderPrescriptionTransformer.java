@@ -16,6 +16,7 @@ import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.primitive.UriDt;
+import ch.elexis.core.model.PrescriptionConstants;
 import es.fhir.rest.core.IFhirTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
@@ -90,10 +91,26 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		}
 
 		String dose = localObject.getDosis();
+		DosageInstruction dosage = null;
 		if (dose != null && !dose.isEmpty()) {
 			textBuilder.append(", ").append(dose);
-			DosageInstruction dosage = order.addDosageInstruction();
+			if (dosage == null) {
+				dosage = order.addDosageInstruction();
+			}
 			dosage.setText(dose);
+		}
+		String disposalComment = localObject.getExtInfoAsString(PrescriptionConstants.FLD_EXT_DISPOSAL_COMMENT);
+		if (disposalComment != null && !disposalComment.isEmpty()) {
+			textBuilder.append(", ").append(disposalComment);
+			if (dosage == null) {
+				dosage = order.addDosageInstruction();
+			}
+			String dosageText = dosage.getText();
+			if (dosageText != null && !dosageText.isEmpty()) {
+				dosage.setText(dosage.getText() + ", " + disposalComment);
+			} else {
+				dosage.setText(disposalComment);
+			}
 		}
 		String remark = localObject.getBemerkung();
 		if (remark != null && !remark.isEmpty()) {
