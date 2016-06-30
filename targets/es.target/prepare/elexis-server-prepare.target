@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1464608272">
+<target name="Elexis-Server" sequenceNumber="1467273569">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -51,7 +51,7 @@
       <repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.2.0.b20160513-0901"/>
+      <unit id="ch.rgw.utility" version="3.2.0.b20160527-0936"/>
       <unit id="ch.elexis.core" version="3.2.0.b20160518-1328"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.b20160316-1430"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.b20160316-1430"/>
