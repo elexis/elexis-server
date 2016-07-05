@@ -111,7 +111,13 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 			log.warn("null provided as argument to findById(Object id)", new Throwable());
 			return Optional.empty();
 		}
-		return Optional.ofNullable((T) em.find(clazz, id));
+
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			return Optional.ofNullable((T) em.find(clazz, id));
+		} finally {
+			em.close();
+		}
 	}
 
 	/**
@@ -128,13 +134,18 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 			return Collections.emptyList();
 		}
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<T> c = cb.createQuery(clazz);
-		Root<T> r = c.from(clazz);
-		Predicate like = cb.like(r.get("id"), string + "%");
-		c = c.where(like);
-		TypedQuery<T> q = em.createQuery(c);
-		return q.getResultList();
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<T> c = cb.createQuery(clazz);
+			Root<T> r = c.from(clazz);
+			Predicate like = cb.like(r.get("id"), string + "%");
+			c = c.where(like);
+			TypedQuery<T> q = em.createQuery(c);
+			return q.getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 	/**
@@ -145,19 +156,24 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @return
 	 */
 	public List<T> findAll(boolean includeElementsMarkedDeleted) {
-		CriteriaBuilder qb = em.getCriteriaBuilder();
-		CriteriaQuery<T> c = qb.createQuery(clazz);
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			CriteriaBuilder qb = em.getCriteriaBuilder();
+			CriteriaQuery<T> c = qb.createQuery(clazz);
 
-		if (!includeElementsMarkedDeleted) {
-			Root<T> r = c.from(clazz);
-			Predicate delPred = qb.equal(r.get(AbstractDBObjectIdDeleted_.deleted), false);
-			c = c.where(delPred);
+			if (!includeElementsMarkedDeleted) {
+				Root<T> r = c.from(clazz);
+				Predicate delPred = qb.equal(r.get(AbstractDBObjectIdDeleted_.deleted), false);
+				c = c.where(delPred);
+			}
+
+			TypedQuery<T> q = em.createQuery(c);
+			q.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+			q.setHint(QueryHints.REFRESH, HintValues.TRUE);
+			return q.getResultList();
+		} finally {
+			em.close();
 		}
-
-		TypedQuery<T> q = em.createQuery(c);
-		q.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-		q.setHint(QueryHints.REFRESH, HintValues.TRUE);
-		return q.getResultList();
 	};
 
 	/**
