@@ -15,16 +15,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
 
 import ch.rgw.tools.VersionedResource;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "behandlungen")
 public class Behandlung extends AbstractDBObjectIdDeleted {
 
-	// TODO
 	@OneToOne
 	@JoinColumn(name = "fallId")
 	private Fall fall;
@@ -33,10 +30,10 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "mandantId")
 	private Kontakt mandant;
 
-	@Column(length = 25)
-	private String rechnungsId;
+	@OneToOne
+	@JoinColumn(name = "RechnungsID")
+	private Invoice invoice;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datum;
 
@@ -70,12 +67,12 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 		this.mandant = mandant;
 	}
 
-	public String getRechnungsId() {
-		return rechnungsId;
+	public Invoice getInvoice() {
+		return invoice;
 	}
-
-	public void setRechnungsId(String rechnungsId) {
-		this.rechnungsId = rechnungsId;
+	
+	public void setInvoice(Invoice invoice) {
+		this.invoice = invoice;
 	}
 
 	/**
