@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 import ch.elexis.core.constants.TextContainerConstants;
@@ -14,8 +21,11 @@ import ch.elexis.core.model.ILabItem;
 import ch.elexis.core.types.LabItemTyp;
 import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult_;
 import info.elexis.server.core.connector.elexis.map.PersistentObjectAttributeMapping;
@@ -33,6 +43,30 @@ public class LabItemService extends AbstractService<LabItem> {
 
 	private LabItemService() {
 		super(LabItem.class);
+	}
+
+	public static List<LabResult> findAllLabResultsForPatientWithType(Kontakt patient, LabItemTyp lit,
+			boolean includeDeleted) {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+			CriteriaQuery<LabResult> criteriaQuery = criteriaBuilder.createQuery(LabResult.class);
+			Root<LabResult> labResult = criteriaQuery.from(LabResult.class);
+			Join<LabResult, LabItem> labResultJoin = labResult.join(LabResult_.item);
+			
+			Predicate predicate = criteriaBuilder.and(criteriaBuilder.equal(labResult.get(LabResult_.patient), patient));
+			predicate = criteriaBuilder.and(predicate,
+					criteriaBuilder.equal(labResultJoin.get(LabItem_.type), Integer.toString(lit.getType())));
+			if (!includeDeleted) {
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.equal(labResult.get(AbstractDBObjectIdDeleted_.deleted), false));
+			}
+			
+			criteriaQuery.where(predicate);
+			return em.createQuery(criteriaQuery).getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 	public ILabItem create(String code, String title, IContact laboratory, String refMale, String refFemale,
