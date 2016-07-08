@@ -115,6 +115,20 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	}
 
 	/**
+	 * Refresh the object from the database
+	 * 
+	 * @param object
+	 */
+	public void refresh(T object) {
+		if (object == null) {
+			return;
+		}
+		if (em.contains(object)) {
+			em.refresh(object);
+		}
+	}
+	
+	/**
 	 * Returns a list of elements according to fuzzy ID starts with matching.
 	 * Useful with deterministic Id strings.
 	 * 
