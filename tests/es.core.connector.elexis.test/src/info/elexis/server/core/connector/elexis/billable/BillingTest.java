@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
@@ -22,6 +23,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
@@ -29,6 +31,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
+import info.elexis.server.core.connector.elexis.services.JPAQuery;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.Labor2009TarifService;
 import info.elexis.server.core.connector.elexis.services.PhysioLeistungService;
@@ -48,8 +52,14 @@ public class BillingTest {
 	public void setupPatientAndBehandlung() {
 		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
 		testFall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
-		mandator = KontaktService.INSTANCE.findById("td741d2ac3354679104").get(); // dz
-		userContact = KontaktService.INSTANCE.findById("td741d2ac3354679104").get(); // dz
+		JPAQuery<Kontakt> mandantQuery = new JPAQuery<Kontakt>(Kontakt.class);
+		mandantQuery.add(Kontakt_.person, QUERY.EQUALS, true);
+		mandantQuery.add(Kontakt_.mandator, QUERY.EQUALS, true);
+		List<Kontakt> mandants = mandantQuery.execute();
+		assertTrue(!mandants.isEmpty());
+		mandator = mandants.get(0);
+		userContact = mandator;
+
 		consultation = BehandlungService.INSTANCE.create(testFall, mandator);
 	}
 
