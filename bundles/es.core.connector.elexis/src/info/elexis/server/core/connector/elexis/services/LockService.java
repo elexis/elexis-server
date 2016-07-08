@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,6 +36,7 @@ public class LockService implements ILockService {
 			+ ".requiredLockContributors";
 
 	private static HashMap<String, LockInfo> locks = new HashMap<String, LockInfo>();
+	private static ReentrantLock locksLock = new ReentrantLock();
 	private static Map<String, ILockServiceContributor> contributors = new HashMap<String, ILockServiceContributor>();
 	private static Set<String> requiredContributors = LocalProperties
 			.getPropertyAsSet(PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS);
@@ -75,40 +78,51 @@ public class LockService implements ILockService {
 		}
 
 		// TODO what if user and system id are ident?
-
-		synchronized (locks) {
-			LockInfo lie = locks.get(lockInfo.getElementId());
-			if (lie != null) {
-				if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
-					// its the requesters lock (username and systemUuid match)
-					return LockResponse.OK;
-				} else {
-					return LockResponse.DENIED(lie);
-				}
-			}
-			
-			// is there an entry for any requested element
-			synchronized (contributors) {
-				if (!contributors.keySet().containsAll(requiredContributors)) {
-					log.warn("System defined to require a lock service contributor. None available, denying locks!");
-					return new LockResponse(Status.ERROR, null);
-				}
-
-				for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
-					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
-						continue;
-					}
-
-					LockResponse lr = iLockServiceContributor.acquireLock(lockInfo);
-					if (!lr.isOk()) {
-						return lr;
+		try {
+			if (locksLock.tryLock()) {
+				LockInfo lie = locks.get(lockInfo.getElementId());
+				if (lie != null) {
+					if (lie.getUser().equals(lockInfo.getUser())
+							&& lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+						// its the requesters lock (username and systemUuid
+						// match)
+						return LockResponse.OK;
+					} else {
+						return LockResponse.DENIED(lie);
 					}
 				}
+
+				// is there an entry for any requested element
+				synchronized (contributors) {
+					if (!contributors.keySet().containsAll(requiredContributors)) {
+						log.warn(
+								"System defined to require a lock service contributor. None available, denying locks!");
+						return new LockResponse(Status.ERROR, null);
+					}
+
+					for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
+						if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
+							continue;
+						}
+
+						LockResponse lr = iLockServiceContributor.acquireLock(lockInfo);
+						if (!lr.isOk()) {
+							return lr;
+						}
+					}
+				}
+
+				locks.put(lockInfo.getElementId(), lockInfo);
+
+				return LockResponse.OK;
+			} else {
+				log.warn("Could not acquire locksLock in acquireLock method on thread {}. ", Thread.currentThread());
+				return LockResponse.DENIED(lockInfo);
 			}
-
-			locks.put(lockInfo.getElementId(), lockInfo);
-
-			return LockResponse.OK;
+		} finally {
+			if (locksLock.isHeldByCurrentThread()) {
+				locksLock.unlock();
+			}
 		}
 	}
 
@@ -124,29 +138,39 @@ public class LockService implements ILockService {
 			return LockResponse.DENIED(lockInfo);
 		}
 
-		synchronized (locks) {
-			synchronized (contributors) {
-				for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
-					if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
-						continue;
-					}
+		try {
+			if (locksLock.tryLock()) {
+				synchronized (contributors) {
+					for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
+						if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
+							continue;
+						}
 
-					LockResponse lr = iLockServiceContributor.releaseLock(lockInfo);
-					if (!lr.isOk()) {
-						return lr;
+						LockResponse lr = iLockServiceContributor.releaseLock(lockInfo);
+						if (!lr.isOk()) {
+							return lr;
+						}
 					}
 				}
-			}
 
-			LockInfo lie = locks.get(lockInfo.getElementId());
-			if (lie != null) {
-				if (lie.getUser().equals(lockInfo.getUser()) && lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
-					locks.remove(lockInfo.getElementId());
-					return LockResponse.OK;
+				LockInfo lie = locks.get(lockInfo.getElementId());
+				if (lie != null) {
+					if (lie.getUser().equals(lockInfo.getUser())
+							&& lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
+						locks.remove(lockInfo.getElementId());
+						return LockResponse.OK;
+					}
 				}
-			}
 
-			return LockResponse.DENIED(lockInfo);
+				return LockResponse.DENIED(lockInfo);
+			} else {
+				log.warn("Could not acquire locksLock in releaseLock method on thread {}. ", Thread.currentThread());
+				return LockResponse.DENIED(lockInfo);
+			}
+		} finally {
+			if (locksLock.isHeldByCurrentThread()) {
+				locksLock.unlock();
+			}
 		}
 	}
 
@@ -183,7 +207,7 @@ public class LockService implements ILockService {
 
 	public static String consoleListLocks() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("======= "+LocalDateTime.now()+" ==== server uuid ["+systemUuid.toString()+"]\n");
+		sb.append("======= " + LocalDateTime.now() + " ==== server uuid [" + systemUuid.toString() + "]\n");
 		for (LockInfo lockInfo : getAllLockInfo()) {
 			sb.append(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
 					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
@@ -204,20 +228,34 @@ public class LockService implements ILockService {
 			try {
 				List<LockInfo> eviction = new ArrayList<>();
 				// collect LockInfos ready for eviction
-				synchronized (locks) {
-					long currentMillis = System.currentTimeMillis();
-					Set<String> keys = locks.keySet();
-					for (String key : keys) {
-						LockInfo lockInfo = locks.get(key);
-						// do not evict locks set by server system
-						if (lockInfo.getSystemUuid().equals(LockService.systemUuid)) {
-							continue;
+
+				try {
+					if (locksLock.tryLock(2, TimeUnit.SECONDS)) {
+						long currentMillis = System.currentTimeMillis();
+						Set<String> keys = locks.keySet();
+						for (String key : keys) {
+							LockInfo lockInfo = locks.get(key);
+							// do not evict locks set by server system
+							if (lockInfo.getSystemUuid().equals(LockService.systemUuid)) {
+								continue;
+							}
+							if (lockInfo.evict(currentMillis)) {
+								eviction.add(lockInfo);
+							}
 						}
-						if (lockInfo.evict(currentMillis)) {
-							eviction.add(lockInfo);
-						}
+					} else {
+						log.warn("Could not acquire locksLock in LockEvictionTask#run method on thread {}. ",
+								Thread.currentThread());
+					}
+				} catch (InterruptedException ie) {
+					log.warn("Interrupted @ acquire locksLock in LockEvictionTask#run method on thread {}. ",
+							Thread.currentThread(), ie);
+				} finally {
+					if (locksLock.isHeldByCurrentThread()) {
+						locksLock.unlock();
 					}
 				}
+
 				// release the collected locks
 				for (LockInfo lockInfo : eviction) {
 					logger.debug("Eviction releasing lock [" + lockInfo.getUser() + "@" + lockInfo.getElementType()
