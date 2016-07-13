@@ -50,7 +50,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 			}
 		}
 
-		newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
+		newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1, userContact);
 		IStatus res = optify(kons, userContact, mandatorContact);
 		if (!res.isOK()) {
 			VerrechnetService.INSTANCE.delete(newVerrechnet);
@@ -151,7 +151,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 				}
 			} else {
 				if (v470710 == null) {
-					v470710 = doCreate(kons, "4707.10"); //$NON-NLS-1$
+					v470710 = doCreate(kons, "4707.10", userContact); //$NON-NLS-1$
 				}
 				v470710.setZahl(z470710);
 			}
@@ -162,7 +162,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 				}
 			} else {
 				if (v470720 == null) {
-					v470720 = doCreate(kons, "4707.20"); //$NON-NLS-1$
+					v470720 = doCreate(kons, "4707.20", userContact); //$NON-NLS-1$
 				}
 				v470720.setZahl(z470720);
 			}
@@ -171,12 +171,12 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 			// configured deadline is still active before 01.01.2015
 			if (date.isBefore(LocalDate.of(2015, 1, 1))) {
 				if (z4707 == 0 && ((z470710 + z470720) > 0) && haveKons == true) {
-					doCreate(kons, "4707.00"); //$NON-NLS-1$
+					doCreate(kons, "4707.00", userContact); //$NON-NLS-1$
 				}
 				if (z4708 > 0 && haveKons == true) {
 					if (v4708 == null) {
 						if (date.isBefore(deadline)) {
-							v4708 = doCreate(kons, "4708.00"); //$NON-NLS-1$
+							v4708 = doCreate(kons, "4708.00", userContact); //$NON-NLS-1$
 						}
 					} else {
 						if (date.isAfter(deadline) || date.isEqual(deadline)) {
@@ -212,7 +212,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 		return false;
 	}
 
-	private Verrechnet doCreate(Behandlung kons, String code) throws Exception {
+	private Verrechnet doCreate(Behandlung kons, String code, Kontakt userContact) throws Exception {
 		JPAQuery<Labor2009Tarif> query = new JPAQuery<Labor2009Tarif>(Labor2009Tarif.class);
 		query.add(Labor2009Tarif_.code, JPAQuery.QUERY.EQUALS, code);
 		List<Labor2009Tarif> list = query.execute();
@@ -226,7 +226,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 
 		if (tarif != null) {
 			VerrechenbarLabor2009Tarif verrechenbarLabor2009Tarif = new VerrechenbarLabor2009Tarif(tarif);
-			newVerrechnet = VerrechnetService.INSTANCE.create(verrechenbarLabor2009Tarif, kons, 1);
+			newVerrechnet = VerrechnetService.INSTANCE.create(verrechenbarLabor2009Tarif, kons, 1, userContact);
 			return newVerrechnet;
 		} else {
 			throw new Exception("Tarif not installed correctly"); //$NON-NLS-1$

@@ -195,7 +195,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 
 		// Ausschliessende Kriterien prüfen ("Nicht zusammen mit")
 		if (newVerrechnet == null) {
-			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1);
+			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1, userContact);
 			// make sure side is initialized
 			if (tc.requiresSide()) {
 				newVerrechnet.setDetail(SIDE, newVerrechnetSide);

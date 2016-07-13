@@ -43,15 +43,6 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		super(Verrechnet.class);
 	}
 
-	@Deprecated
-	public Verrechnet create(Behandlung kons, Kontakt userKontakt) {
-		Verrechnet v = create(false);
-		v.setBehandlung(kons);
-		v.setUser(userKontakt);
-		flush();
-		return v;
-	}
-
 	private IBillable<? extends AbstractDBObjectIdDeleted> createVerrechenbarForObject(
 			AbstractDBObjectIdDeleted object) {
 		if (object instanceof TarmedLeistung) {
@@ -68,7 +59,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return null;
 	}
 
-	public Verrechnet create(IBillable iv, Behandlung kons, int count) {
+	public Verrechnet create(IBillable iv, Behandlung kons, int count, Kontakt userContact) {
 		em.getTransaction().begin();
 
 		Verrechnet v = create(false);
@@ -80,6 +71,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		v.setLeistungenText(iv.getText());
 		v.setBehandlung(kons);
 		v.setZahl(count);
+		v.setUser(userContact);
 
 		TimeTool dat = new TimeTool(kons.getDatum());
 		Fall fall = kons.getFall();
