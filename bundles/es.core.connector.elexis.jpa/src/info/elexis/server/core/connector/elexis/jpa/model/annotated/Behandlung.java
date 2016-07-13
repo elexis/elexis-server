@@ -37,7 +37,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datum;
 
-	@OneToMany(mappedBy = "consultation", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
 	private Set<ConsultationDiagnosis> diagnoses;
 
 	@Column(length = 25, name = "leistungen")
@@ -48,7 +48,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	private VersionedResource eintrag;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "BEHANDLUNG", insertable = false)
+	@JoinColumn(name = "BEHANDLUNG", insertable = false, updatable = false)
 	private List<Verrechnet> verrechnet;
 
 	public Fall getFall() {
@@ -70,7 +70,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	public Invoice getInvoice() {
 		return invoice;
 	}
-	
+
 	public void setInvoice(Invoice invoice) {
 		this.invoice = invoice;
 	}
