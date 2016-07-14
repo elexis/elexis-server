@@ -63,7 +63,7 @@ public class HTTPService {
 	@Path(HALT)
 	@RolesAllowed("admin")
 	public Response haltApplication() {
-		Application.getInstance().shutdown();
+		Application.getInstance().shutdown(false);
 		return Response.ok().build();
 	}
 
@@ -71,7 +71,7 @@ public class HTTPService {
 	@Path(RESTART)
 	@RolesAllowed("admin")
 	public Response restartApplication() {
-		Application.getInstance().restart();
+		Application.getInstance().restart(false);
 		return Response.ok().build();
 	}
 

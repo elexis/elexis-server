@@ -37,14 +37,18 @@ public class ConsoleCommandProvider implements CommandProvider {
 	private String system(CommandInterpreter ci) {
 		final String argument = ci.nextArgument();
 		if (argument == null) {
-			return "Usage: es system (halt | restart | status | logTestError)";
+			return "Usage: es system (halt [force] | restart [force] | status | logTestError)";
 		}
+		
+		final String fv = ci.nextArgument();
+		boolean force = fv!=null && "force".equals(fv);
+		
 		switch (argument) {
 		case "halt":
-			Application.getInstance().shutdown();
+				Application.getInstance().shutdown(force);
 			return "OK";
 		case "restart":
-			Application.getInstance().restart();
+			Application.getInstance().restart(force);
 			return "OK";
 		case "status":
 			return Application.getStatus();
