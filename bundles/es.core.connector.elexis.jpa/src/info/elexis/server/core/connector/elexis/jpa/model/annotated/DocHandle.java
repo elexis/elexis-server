@@ -2,17 +2,16 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "CH_ELEXIS_OMNIVORE_DATA")
@@ -22,7 +21,6 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "PatID")
 	protected Kontakt kontakt;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate datum;
 
@@ -35,13 +33,14 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 	@Column(length = 255)
 	protected String mimetype;
 
-	@Column(length = 255)
+	@Column(length = 512)
 	protected String keywords;
 
 	@Column(length = 255)
 	protected String path;
 
 	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	protected byte[] doc;
 
 	public Kontakt getKontakt() {
