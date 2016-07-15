@@ -65,7 +65,7 @@ public class PushNotificationAppender extends AppenderBase<ILoggingEvent> {
 		int priority = determinePriorityByLogLevel(level);
 
 		StringBuilder msgBuilder = new StringBuilder();
-		msgBuilder.append(eventObject.getMessage());
+		msgBuilder.append(eventObject.getFormattedMessage());
 		IThrowableProxy throwableProxy = eventObject.getThrowableProxy();
 		if (throwableProxy != null) {
 			msgBuilder.append(" " + throwableProxy.getMessage());
