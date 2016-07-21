@@ -102,7 +102,12 @@ location "http://download.elexis.info/elexis-server/p2/target/" elexis-server {
 	org.joda.money
 	
 	hapi-fhir-osgi-core
-	org.thymeleaf
+	org.thymeleaf[2.1.4,3.0.0)
+	javassist
+	woodstox-core-asl
+	javax.xml.stream.stax-api
+	stax2-api
+	net.sf.saxon.Saxon-HE
 	com.phloc.commons
 	com.phloc.schematron
 	findbugsAnnotations
