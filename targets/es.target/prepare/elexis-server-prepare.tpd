@@ -131,7 +131,12 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	com.fasterxml.jackson.core.jackson-databind
 	com.fasterxml.jackson.core.jackson-annotations
 	hapi-fhir-osgi-core
-	org.thymeleaf
+	org.thymeleaf[2.1.4,3.0.0)
+	javassist
+	woodstox-core-asl
+	javax.xml.stream.stax-api
+	stax2-api
+	net.sf.saxon.Saxon-HE
 	com.phloc.commons
 	com.phloc.schematron
 	findbugsAnnotations

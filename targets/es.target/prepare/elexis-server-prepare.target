@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1467973509">
+<target name="Elexis-Server" sequenceNumber="1469090260">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -127,8 +127,13 @@
       <unit id="com.fasterxml.jackson.core.jackson-core" version="2.3.0"/>
       <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.3.0"/>
       <unit id="com.fasterxml.jackson.core.jackson-annotations" version="2.3.0"/>
-      <unit id="hapi-fhir-osgi-core" version="1.5.0"/>
+      <unit id="hapi-fhir-osgi-core" version="1.6.0"/>
       <unit id="org.thymeleaf" version="2.1.4.RELEASE"/>
+      <unit id="javassist" version="3.20.0.GA"/>
+      <unit id="woodstox-core-asl" version="4.4.1"/>
+      <unit id="javax.xml.stream.stax-api" version="1.0.0.2"/>
+      <unit id="stax2-api" version="3.1.4"/>
+      <unit id="net.sf.saxon.Saxon-HE" version="9.6.0.4"/>
       <unit id="com.phloc.commons" version="4.4.4"/>
       <unit id="com.phloc.schematron" version="2.7.1"/>
       <unit id="findbugsAnnotations" version="2.0.3"/>
