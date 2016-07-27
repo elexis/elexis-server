@@ -113,12 +113,8 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			if (dosage == null) {
 				dosage = order.addDosageInstruction();
 			}
-			String dosageText = dosage.getText();
-			if (dosageText != null && !dosageText.isEmpty()) {
-				dosage.setText(dosage.getText() + ", " + disposalComment);
-			} else {
-				dosage.setText(disposalComment);
-			}
+			CodeableConcept additional = dosage.addAdditionalInstructions();
+			additional.setText(disposalComment);
 		}
 		String remark = localObject.getBemerkung();
 		if (remark != null && !remark.isEmpty()) {
