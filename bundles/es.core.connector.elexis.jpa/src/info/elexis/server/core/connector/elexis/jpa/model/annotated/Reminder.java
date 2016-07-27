@@ -1,24 +1,24 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.time.LocalDate;
-import java.util.Collection;
 
+import java.time.LocalDate;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
 
-import ch.elexis.core.model.ReminderConstants.Status;
-import ch.elexis.core.model.ReminderConstants.Typ;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
+import ch.elexis.core.model.issue.Priority;
+import ch.elexis.core.model.issue.ProcessStatus;
+import ch.elexis.core.model.issue.Type;
+import ch.elexis.core.model.issue.Visibility;
 
 @Entity
 @Table(name = "reminders")
@@ -32,39 +32,47 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "OriginID")
 	private Kontakt creator;
 
-	/**
-	 * seems like this field is not used
-	 */
-	@OneToOne
-	@JoinColumn
-	private Kontakt responsibleOld;
+	@OneToMany(mappedBy = "reminder", cascade=CascadeType.ALL)
+	private Set<ReminderResponsible> responsible;
 
-	@OneToMany
-	@JoinTable(name = "reminders_responsible_link", joinColumns = @JoinColumn(name = "ReminderID") , inverseJoinColumns = @JoinColumn(name = "ResponsibleID") )
-	private Collection<Kontakt> responsible;
-
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate dateDue;
 
-	@Enumerated(EnumType.ORDINAL)
-	protected Status status;
+	@Column
+	protected ProcessStatus status;
 
-	@Enumerated(EnumType.ORDINAL)
-	protected Typ typ;
+	@Column(name = "typ")
+	protected Visibility visibility;
 
+	@Column(length = 160)
+	protected String subject;
+	
 	@Lob()
 	protected String params;
 
 	@Lob()
 	protected String message;
+	
+	@Column(length = 1)
+	protected Priority priority;
 
+	@Column(length = 2)
+	protected Type actionType;
+	
 	public Kontakt getKontakt() {
 		return kontakt;
 	}
 
 	public void setKontakt(Kontakt kontakt) {
 		this.kontakt = kontakt;
+	}
+	
+	public Type getActionType() {
+		return actionType;
+	}
+	
+	public void setActionType(Type actionType) {
+		this.actionType = actionType;
 	}
 
 	public Kontakt getCreator() {
@@ -83,20 +91,20 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 		this.dateDue = dateDue;
 	}
 
-	public Status getStatus() {
+	public ProcessStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(ProcessStatus status) {
 		this.status = status;
 	}
 
-	public Typ getTyp() {
-		return typ;
+	public Visibility getVisibility() {
+		return visibility;
 	}
 
-	public void setTyp(Typ typ) {
-		this.typ = typ;
+	public void setVisibility(Visibility visibility) {
+		this.visibility = visibility;
 	}
 
 	public String getParams() {
@@ -114,20 +122,28 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
+	public Priority getPriority() {
+		return priority;
+	}
+	
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
 
-	public Collection<Kontakt> getResponsible() {
+	public Set<ReminderResponsible> getResponsible() {
 		return responsible;
 	}
-
-	public Kontakt getResponsibleOld() {
-		return responsibleOld;
-	}
-
-	public void setResponsible(Collection<Kontakt> responsible) {
+	
+	public void setResponsible(Set<ReminderResponsible> responsible) {
 		this.responsible = responsible;
 	}
-
-	public void setResponsibleOld(Kontakt responsibleOld) {
-		this.responsibleOld = responsibleOld;
+	
+	public String getSubject() {
+		return subject;
+	}
+	
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 }

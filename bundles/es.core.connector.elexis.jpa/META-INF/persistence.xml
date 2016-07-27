@@ -3,6 +3,11 @@
 	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	<persistence-unit name="elexis" transaction-type="RESOURCE_LOCAL">
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.LocalDateConverter</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.PriorityConverter</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ProcessStatusConverter</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.TypeConverter</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.VisibilityConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung</class>
@@ -24,6 +29,8 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ObjVatInfo</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ReminderResponsible</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Reminder</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Role</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension</class>
@@ -43,6 +50,8 @@
 			<property name="eclipselink.exception-handler"
 				value="org.eclipse.persistence.jpa.logging.slf4j.PersistenceExceptionHandler" />
 			<property name="eclipselink.logging.level" value="FINE" />
+			<property name="eclipselink.logging.level.sql" value="FINE" />
+			<property name="eclipselink.logging.parameters" value="true" />
 			<property name="eclipselink.logging.thread" value="true" />
 			<property name="eclipselink.session.customizer"
 				value="info.elexis.server.core.connector.elexis.jpa.model.annotated.id.UUIDSequence" />
