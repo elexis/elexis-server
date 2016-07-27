@@ -43,6 +43,6 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 
 	@Transient
 	public String getLabel() {
-		return getId() + "@" + getClass().getName() + " " + isDeleted();
+		return getId() + "@" + getClass().getName() + " [isDeleted " + isDeleted()+"]";
 	};
 }
