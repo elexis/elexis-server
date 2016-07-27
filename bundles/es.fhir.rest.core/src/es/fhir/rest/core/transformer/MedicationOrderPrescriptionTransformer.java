@@ -2,7 +2,6 @@ package es.fhir.rest.core.transformer;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -83,14 +82,14 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			MedicationOrderEventHistoryComponent event = new MedicationOrderEventHistoryComponent();
 			event.setDateTime(time);
 			event.setStatus(MedicationOrderStatus.STOPPED);
-			order.addEventHistory(event);
 
 			String reasonText = localObject.getExtInfoAsString(Constants.FLD_EXT_STOP_REASON);
 			if (reasonText != null && !reasonText.isEmpty()) {
 				CodeableConcept reason = new CodeableConcept();
 				reason.setText(reasonText);
-				order.setReasonCode(Collections.singletonList(reason));
+				event.setReason(reason);
 			}
+			order.addEventHistory(event);
 		}
 
 		if (dateUntil != null) {
