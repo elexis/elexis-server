@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.MedicationOrder;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.Update;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -41,13 +45,13 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Read
-	public MedicationOrder getResourceById(@IdParam IdDt theId) {
+	public MedicationOrder getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<Prescription> prescription = PrescriptionService.INSTANCE.findById(idPart);
 			if (prescription.isPresent()) {
-				MedicationOrder fhirMedicationOrder = prescriptionMapper.getFhirObject(prescription.get());
-				return fhirMedicationOrder;
+				Optional<MedicationOrder> fhirMedicationOrder = prescriptionMapper.getFhirObject(prescription.get());
+				return fhirMedicationOrder.get();
 			}
 		}
 		return null;
@@ -67,7 +71,9 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 					if (prescriptions != null && !prescriptions.isEmpty()) {
 						List<MedicationOrder> ret = new ArrayList<MedicationOrder>();
 						for (Prescription prescription : prescriptions) {
-							ret.add(prescriptionMapper.getFhirObject(prescription));
+							Optional<MedicationOrder> fhirMedicationOrder = prescriptionMapper
+									.getFhirObject(prescription);
+							fhirMedicationOrder.ifPresent(fmo -> ret.add(fmo));
 						}
 						return ret;
 					}
@@ -75,5 +81,26 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return null;
+	}
+
+	@Update
+	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationOrder updateOrder) {
+		Optional<Prescription> localObject = prescriptionMapper.getLocalObject(updateOrder);
+		MethodOutcome outcome = new MethodOutcome();
+		if (localObject.isPresent()) {
+			try {
+				prescriptionMapper.updateLocalObject(updateOrder, localObject.get());
+
+				outcome.setId(updateOrder.getIdElement());
+				outcome.setResource(updateOrder);
+			} catch (RuntimeException e) {
+				OperationOutcome issueOutcome = new OperationOutcome();
+				issueOutcome.addIssue().setDiagnostics("Update failed. " + e.getMessage());
+			}
+		} else {
+			OperationOutcome issueOutcome = new OperationOutcome();
+			issueOutcome.addIssue().setDiagnostics("No local object found");
+		}
+		return outcome;
 	}
 }

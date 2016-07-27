@@ -2,95 +2,105 @@ package es.fhir.rest.core.transformer;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Annotation;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.MedicationOrder;
+import org.hl7.fhir.dstu3.model.MedicationOrder.MedicationOrderDosageInstructionComponent;
+import org.hl7.fhir.dstu3.model.MedicationOrder.MedicationOrderEventHistoryComponent;
+import org.hl7.fhir.dstu3.model.MedicationOrder.MedicationOrderStatus;
+import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Type;
 import org.osgi.service.component.annotations.Component;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.composite.NarrativeDt;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder.DosageInstruction;
-import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
-import ca.uhn.fhir.model.primitive.UriDt;
+import ch.elexis.core.model.prescription.Constants;
 import es.fhir.rest.core.IFhirTransformer;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
+import info.elexis.server.core.connector.elexis.services.JPAQuery;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
+import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
 @Component
 public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<MedicationOrder, Prescription> {
 
 	@Override
-	public MedicationOrder getFhirObject(Prescription localObject) {
+	public Optional<MedicationOrder> getFhirObject(Prescription localObject) {
 		MedicationOrder order = new MedicationOrder();
-		MedicationOrderStatusEnum statusEnum = MedicationOrderStatusEnum.ACTIVE;
+		MedicationOrderStatus statusEnum = MedicationOrderStatus.ACTIVE;
 		
 		order.setId(new IdDt("MedicationOrder", localObject.getId()));
 		
-		IdentifierDt elexisId = order.addIdentifier();
-		elexisId.setSystem(new UriDt("www.elexis.info/objid"));
+		Identifier elexisId = order.addIdentifier();
+		elexisId.setSystem("www.elexis.info/objid");
 		elexisId.setValue(localObject.getId());
 
 		StringBuilder textBuilder = new StringBuilder();
 
-		CodeableConceptDt medication = new CodeableConceptDt();
-		if (localObject.getArtikel() instanceof ArtikelstammItem) {
-			ArtikelstammItem article = (ArtikelstammItem) localObject.getArtikel();
-			String gtin = article.getGtin();
-			if (gtin != null) {
-				CodingDt coding = medication.addCoding();
-				coding.setSystem("urn:oid:1.3.160‎");
-				coding.setCode(gtin);
-			}
-			String atc = article.getAtc();
-			if (atc != null) {
-				CodingDt coding = medication.addCoding();
-				coding.setSystem("urn:oid:2.16.840.1.113883.6.73‎");
-				coding.setCode(atc);
-			}		
-			medication.setText(article.getLabel());
-			textBuilder.append(article.getLabel());
-		} else if (localObject.getArtikel() instanceof Artikel) {
-			Artikel article = (Artikel) localObject.getArtikel();
-			String gtin = article.getEan();
-			if (gtin != null) {
-				CodingDt coding = medication.addCoding();
-				coding.setSystem("urn:oid:1.3.160‎");
-				coding.setCode(gtin);
-			}
-			medication.setText(article.getLabel());
-			textBuilder.append(article.getLabel());
-		} else {
-			medication.setText("Unknown article");
-			textBuilder.append("Unknown article");
+		CodeableConcept medication = new CodeableConcept();
+		String gtin = getArticleGtin(localObject);
+		String atc = getArticleAtc(localObject);
+		String articelLabel = getArticleLabel(localObject);
+		if (gtin != null) {
+			Coding coding = medication.addCoding();
+			coding.setSystem("urn:oid:1.3.160‎");
+			coding.setCode(gtin);
 		}
+		if (atc != null) {
+			Coding coding = medication.addCoding();
+			coding.setSystem("urn:oid:2.16.840.1.113883.6.73‎");
+			coding.setCode(atc);
+		}
+		medication.setText(articelLabel);
+		textBuilder.append(articelLabel);
 
 		medication.setText(textBuilder.toString());
 		order.setMedication(medication);
 		
 		LocalDateTime dateFrom = localObject.getDateFrom();
 		if (dateFrom != null) {
-			DateTimeDt time = new DateTimeDt(Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant()));
-			order.setDateWritten(time);
+			Date time = Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant());
+			MedicationOrderEventHistoryComponent event = new MedicationOrderEventHistoryComponent();
+			event.setDateTime(time);
+			event.setStatus(MedicationOrderStatus.ACTIVE);
+			order.addEventHistory(event);
 		}
 		LocalDateTime dateUntil = localObject.getDateUntil();
 		if (dateUntil != null) {
-			DateTimeDt time = new DateTimeDt(Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant()));
-			order.setDateEnded(time);
+			Date time = Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant());
+			MedicationOrderEventHistoryComponent event = new MedicationOrderEventHistoryComponent();
+			event.setDateTime(time);
+			event.setStatus(MedicationOrderStatus.STOPPED);
+			order.addEventHistory(event);
+
+			String reasonText = localObject.getExtInfoAsString(Constants.FLD_EXT_STOP_REASON);
+			if (reasonText != null && !reasonText.isEmpty()) {
+				CodeableConcept reason = new CodeableConcept();
+				reason.setText(reasonText);
+				order.setReasonCode(Collections.singletonList(reason));
+			}
 		}
 
 		if (dateUntil != null) {
 			if (dateUntil.isBefore(LocalDateTime.now()) || dateUntil.isEqual(dateFrom)) {
-				statusEnum = MedicationOrderStatusEnum.COMPLETED;
+				statusEnum = MedicationOrderStatus.COMPLETED;
 			}
 		}
 
 		String dose = localObject.getDosis();
-		DosageInstruction dosage = null;
+		MedicationOrderDosageInstructionComponent dosage = null;
 		if (dose != null && !dose.isEmpty()) {
 			textBuilder.append(", ").append(dose);
 			if (dosage == null) {
@@ -98,7 +108,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			}
 			dosage.setText(dose);
 		}
-		String disposalComment = localObject.getExtInfoAsString("disposalComment");
+		String disposalComment = localObject.getExtInfoAsString(Constants.FLD_EXT_DISPOSAL_COMMENT);
 		if (disposalComment != null && !disposalComment.isEmpty()) {
 			textBuilder.append(", ").append(disposalComment);
 			if (dosage == null) {
@@ -114,25 +124,94 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		String remark = localObject.getBemerkung();
 		if (remark != null && !remark.isEmpty()) {
 			textBuilder.append(", ").append(remark);
-			order.setNote(remark);
+			order.addNote(new Annotation(new StringType(remark)));
 		}
 
 		order.setStatus(statusEnum);
 		
-		NarrativeDt narrative = new NarrativeDt();
-		narrative.setDiv(textBuilder.toString());
+		Narrative narrative = new Narrative();
+		narrative.setDivAsString(textBuilder.toString());
 		order.setText(narrative);
-		return order;
+		return Optional.of(order);
 	}
 
 	@Override
-	public Prescription getLocalObject(MedicationOrder fhirObject) {
-		// TODO Auto-generated method stub
-		return null;
+	public Optional<Prescription> getLocalObject(MedicationOrder fhirObject) {
+		String id = fhirObject.getId();
+		if (id != null && !id.isEmpty()) {
+			return PrescriptionService.INSTANCE.findById(id);
+		}
+		return Optional.empty();
 	}
 
 	@Override
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
 		return MedicationOrder.class.equals(fhirClazz) && Prescription.class.equals(localClazz);
+	}
+
+	@Override
+	public void updateLocalObject(MedicationOrder fhirObject, Prescription localObject) {
+		Type medication = fhirObject.getMedication();
+		if (medication instanceof CodeableConcept) {
+			CodeableConcept medicationCode = (CodeableConcept) medication;
+			for (Coding coding : medicationCode.getCoding()) {
+				// update article according to gtin, if we can find it
+				if ("urn:oid:1.3.160‎".equals(coding.getSystem())) {
+					String gtin = coding.getCode();
+					if (gtin != null && !gtin.isEmpty() && !gtin.equals(getArticleGtin(localObject))) {
+						JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+						qbe.add(ArtikelstammItem_.gtin, QUERY.LIKE, gtin);
+						Optional<ArtikelstammItem> updateAticle = qbe.executeGetSingleResult();
+						updateAticle.ifPresent(ua -> localObject.setArtikel(ua));
+					}
+				}
+			}
+		} else if (medication instanceof Reference) {
+			throw new IllegalStateException("Can not handle medication reference.");
+		}
+
+		List<MedicationOrderDosageInstructionComponent> dosageInstructions = fhirObject.getDosageInstruction();
+		for (MedicationOrderDosageInstructionComponent medicationOrderDosageInstructionComponent : dosageInstructions) {
+
+		}
+
+		List<MedicationOrderEventHistoryComponent> history = fhirObject.getEventHistory();
+		for (MedicationOrderEventHistoryComponent medicationOrderEventHistoryComponent : history) {
+
+		}
+	}
+
+	private String getArticleGtin(Prescription localObject) {
+		AbstractDBObjectIdDeleted localArticel = localObject.getArtikel();
+		if (localArticel instanceof ArtikelstammItem) {
+			return ((ArtikelstammItem) localArticel).getGtin();
+		} else if (localArticel instanceof Artikel) {
+			return ((Artikel) localArticel).getEan();
+		}
+		return null;
+	}
+
+	private String getArticleAtc(Prescription localObject) {
+		AbstractDBObjectIdDeleted localArticel = localObject.getArtikel();
+		if (localArticel instanceof ArtikelstammItem) {
+			return ((ArtikelstammItem) localArticel).getAtc();
+		}
+		return null;
+	}
+
+	private String getArticleLabel(Prescription localObject) {
+		AbstractDBObjectIdDeleted localArticel = localObject.getArtikel();
+		if (localArticel instanceof ArtikelstammItem) {
+			return ((ArtikelstammItem) localArticel).getLabel();
+		} else if (localArticel instanceof Artikel) {
+			return ((Artikel) localArticel).getLabel();
+		}
+		return "Unknown article";
+	}
+
+	@Override
+	public Optional<Prescription> createLocalObject(MedicationOrder fhirObject) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 }

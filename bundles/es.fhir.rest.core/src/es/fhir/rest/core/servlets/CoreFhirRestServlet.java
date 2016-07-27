@@ -66,7 +66,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 	}
 
 	public CoreFhirRestServlet() {
-		super(FhirContext.forDstu2());
+		super(FhirContext.forDstu3());
 	}
 
 	@Activate

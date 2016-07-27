@@ -1,15 +1,15 @@
 package es.fhir.rest.core.resources;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -41,14 +41,14 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Read
-	public Patient getResourceById(@IdParam IdDt theId) {
+	public Patient getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if(idPart != null) {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(idPart);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
-					Patient fhirPatient = patientMapper.getFhirObject(patient.get());
-					return fhirPatient;
+					Optional<Patient> fhirPatient = patientMapper.getFhirObject(patient.get());
+					return fhirPatient.get();
 				}
 			}
 		}
@@ -61,8 +61,8 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(Integer.valueOf(patientNumber));
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
-					Patient fhirPatient = patientMapper.getFhirObject(patient.get());
-					return Collections.singletonList(fhirPatient);
+					Optional<Patient> fhirPatient = patientMapper.getFhirObject(patient.get());
+					return Collections.singletonList(fhirPatient.get());
 				}
 			}
 		}
@@ -79,9 +79,12 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 			query.add(Kontakt_.patient, QUERY.EQUALS, true);
 			List<Kontakt> patients = query.execute();
 			if (!patients.isEmpty()) {
-				List<Patient> result = patients.stream().map(f -> patientMapper.getFhirObject(f))
-						.collect(Collectors.toList());
-				return result;
+				List<Patient> ret = new ArrayList<Patient>();
+				for (Kontakt patient : patients) {
+					Optional<Patient>fhirPatient = patientMapper.getFhirObject(patient);
+					fhirPatient.ifPresent(fp -> ret.add(fp));
+				}
+				return ret;
 			}
 		}
 		return null;
