@@ -78,7 +78,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		}
 		LocalDateTime dateUntil = localObject.getDateUntil();
 		if (dateUntil != null) {
-			Date time = Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant());
+			Date time = Date.from(dateUntil.atZone(ZoneId.systemDefault()).toInstant());
 			MedicationOrderEventHistoryComponent event = new MedicationOrderEventHistoryComponent();
 			event.setDateTime(time);
 			event.setStatus(MedicationOrderStatus.STOPPED);
