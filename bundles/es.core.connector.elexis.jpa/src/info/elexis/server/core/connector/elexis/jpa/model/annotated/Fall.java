@@ -12,9 +12,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "faelle")
@@ -26,11 +23,9 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 80)
 	private String bezeichnung;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datumBis;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	private LocalDate datumVon;
 
