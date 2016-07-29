@@ -6,39 +6,77 @@ import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 
 public interface ILockService {
+
 	/**
-	 * All or none
+	 * Request a lock for a given {@link LockInfo} referenced object
+	 * (non-blocking)
 	 * 
-	 * @param objectIds
-	 * @param userId
+	 * @param lockInfo
 	 * @return
 	 */
-
 	public LockResponse acquireLock(LockInfo lockInfo);
+
+	/**
+	 * Tries to acquire a lock for a given number of seconds
+	 * 
+	 * @param lockInfo
+	 * @param timeout
+	 *            in seconds
+	 * @return
+	 */
+	public LockResponse acquireLockBlocking(LockInfo lockInfo, int timeout);
 
 	/**
 	 * To be implemented by a {@link ILockServiceContributor} only!
 	 * 
 	 * @param lockInfos
 	 * @param lockServiceContributorClass
-	 *            to skip
+	 *            contributor to skip
 	 * @return
 	 */
 	public LockResponse acquireLock(LockInfo lockInfos,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass);
 
 	/**
+	 * Tries to acquire a lock for a given number of seconds
 	 * 
-	 * @param objectIds
-	 * @param userId
+	 * @param lockInfo
+	 * @param lockServiceContributorClass
+	 * @param timeout
+	 *            in seconds
+	 * @return
+	 */
+	public LockResponse acquireLockBlocking(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout);
+
+	/**
+	 * 
+	 * @param lockInfos
 	 * @return
 	 */
 	public LockResponse releaseLock(LockInfo lockInfos);
 
+	/**
+	 * 
+	 * @param lockInfos
+	 * @param lockServiceContributorClass
+	 *            contributor to skip
+	 * @return
+	 */
 	public LockResponse releaseLock(LockInfo lockInfos,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass);
 
+	/**
+	 * 
+	 * @param lockInfo
+	 * @return
+	 */
 	public boolean isLocked(LockInfo lockInfo);
 
+	/**
+	 * 
+	 * @param storeToString
+	 * @return
+	 */
 	public Optional<LockInfo> getLockInfo(String storeToString);
 }

@@ -6,7 +6,7 @@ import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 import info.elexis.server.core.connector.elexis.services.LockService;
 
-public enum LockServiceInstance implements ILockService{
+public enum LockServiceInstance implements ILockService {
 
 	INSTANCE;
 
@@ -44,6 +44,15 @@ public enum LockServiceInstance implements ILockService{
 		return ls.releaseLock(lockInfo, lockServiceContributorClass);
 	}
 
+	@Override
+	public LockResponse acquireLockBlocking(LockInfo lockInfo, int timeout) {
+		return ls.acquireLockBlocking(lockInfo, timeout);
+	}
 
+	@Override
+	public LockResponse acquireLockBlocking(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout) {
+		return ls.acquireLockBlocking(lockInfo, lockServiceContributorClass, timeout);
+	}
 
 }

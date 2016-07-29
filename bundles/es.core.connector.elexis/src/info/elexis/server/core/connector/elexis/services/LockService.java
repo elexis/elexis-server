@@ -71,6 +71,16 @@ public class LockService implements ILockService {
 	}
 
 	@Override
+	public LockResponse acquireLock(final LockInfo lockInfo) {
+		return acquireLock(lockInfo, null);
+	}
+
+	@Override
+	public LockResponse acquireLockBlocking(LockInfo lockInfo, int timeout) {
+		return acquireLockBlocking(lockInfo, null, timeout);
+	}
+
+	@Override
 	public LockResponse acquireLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		if (lockInfo == null) {
@@ -127,8 +137,32 @@ public class LockService implements ILockService {
 	}
 
 	@Override
-	public LockResponse acquireLock(final LockInfo lockInfo) {
-		return acquireLock(lockInfo, null);
+	public LockResponse acquireLockBlocking(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout) {
+		LockResponse response = (lockServiceContributorClass != null)
+				? acquireLock(lockInfo, lockServiceContributorClass) : acquireLock(lockInfo);
+		int sleptMilli = 0;
+		while (!response.isOk()) {
+			try {
+				Thread.sleep(1000);
+				sleptMilli += 1000;
+				log.trace("Retry acquire lock blocking ({} sec) for [{}].", Integer.toString(sleptMilli),
+						lockInfo.getElementStoreToString());
+				response = (lockServiceContributorClass != null) ? acquireLock(lockInfo, lockServiceContributorClass)
+						: acquireLock(lockInfo);
+				if (response.getStatus() == LockResponse.Status.DENIED_PERMANENT) {
+					return response;
+				}
+				if (sleptMilli > (timeout * 1000)) {
+					log.warn("Timeout acquiring lock blocking ({} sec) for [{}].", Integer.toString(timeout),
+							lockInfo.getElementStoreToString());
+					return response;
+				}
+			} catch (InterruptedException e) {
+				// ignore and keep trying
+			}
+		}
+		return response;
 	}
 
 	@Override
