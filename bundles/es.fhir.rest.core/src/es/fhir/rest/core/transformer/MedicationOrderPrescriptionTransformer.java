@@ -9,6 +9,8 @@ import java.util.Optional;
 import org.hl7.fhir.dstu3.model.Annotation;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Enumeration;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.MedicationOrder;
 import org.hl7.fhir.dstu3.model.MedicationOrder.MedicationOrderDosageInstructionComponent;
@@ -22,6 +24,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.model.prescription.Constants;
+import ch.elexis.core.model.prescription.EntryType;
 import es.fhir.rest.core.IFhirTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
@@ -36,6 +39,8 @@ import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
 @Component
 public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<MedicationOrder, Prescription> {
+
+	private PrescriptionEntryTypeFactory entryTypeFactory = new PrescriptionEntryTypeFactory();
 
 	@Override
 	public Optional<MedicationOrder> getFhirObject(Prescription localObject) {
@@ -131,7 +136,22 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		Narrative narrative = new Narrative();
 		narrative.setDivAsString(textBuilder.toString());
 		order.setText(narrative);
+		
+		Extension elexisEntryType = new Extension();
+		elexisEntryType.setUrl("www.elexis.info/extensions/prescription/entrytype");
+		elexisEntryType.setValue(
+				new Enumeration<>(entryTypeFactory,
+						EntryType.byNumeric(getNumericEntryType(localObject))));
+		order.addExtension(elexisEntryType);
 		return Optional.of(order);
+	}
+
+	private int getNumericEntryType(Prescription localObject) {
+		String prescriptionType = localObject.getPrescriptionType();
+		if(prescriptionType != null && !prescriptionType.isEmpty()) {
+			return Integer.parseInt(prescriptionType);
+		}
+		return -1;
 	}
 
 	private Reference getPatientReference(Kontakt patient) {
