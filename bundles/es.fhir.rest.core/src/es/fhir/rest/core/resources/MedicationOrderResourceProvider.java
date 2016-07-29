@@ -59,9 +59,9 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 
 	@Search()
 	public List<MedicationOrder> findMedicationsByPatient(
-			@RequiredParam(name = MedicationOrder.SP_PATIENT) String thePatientId) {
+			@RequiredParam(name = MedicationOrder.SP_PATIENT) IdType thePatientId) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId);
+			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					JPAQuery<Prescription> qbe = new JPAQuery<Prescription>(Prescription.class);
@@ -87,12 +87,14 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationOrder updateOrder) {
 		Optional<Prescription> localObject = prescriptionMapper.getLocalObject(updateOrder);
 		MethodOutcome outcome = new MethodOutcome();
+		outcome.setCreated(false);
 		if (localObject.isPresent()) {
 			try {
-				prescriptionMapper.updateLocalObject(updateOrder, localObject.get());
-
-				outcome.setId(updateOrder.getIdElement());
-				outcome.setResource(updateOrder);
+				Optional<Prescription> updated = prescriptionMapper.updateLocalObject(updateOrder, localObject.get());
+				updated.ifPresent(prescription -> {
+					outcome.setCreated(true);
+					outcome.setId(new IdType(prescription.getId()));
+				});
 			} catch (RuntimeException e) {
 				OperationOutcome issueOutcome = new OperationOutcome();
 				issueOutcome.addIssue().setDiagnostics("Update failed. " + e.getMessage());
@@ -100,6 +102,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 		} else {
 			OperationOutcome issueOutcome = new OperationOutcome();
 			issueOutcome.addIssue().setDiagnostics("No local object found");
+			outcome.setOperationOutcome(issueOutcome);
 		}
 		return outcome;
 	}

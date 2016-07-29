@@ -66,7 +66,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 				}
 			}
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Search()
@@ -87,6 +87,6 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 				return ret;
 			}
 		}
-		return null;
+		return Collections.emptyList();
 	}
 }

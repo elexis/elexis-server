@@ -15,6 +15,7 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.types.Gender;
 import es.fhir.rest.core.IFhirTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kontakt> {
@@ -60,6 +61,10 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 
 	@Override
 	public Optional<Kontakt> getLocalObject(Patient fhirObject) {
+		String id = fhirObject.getIdElement().getIdPart();
+		if (id != null && !id.isEmpty()) {
+			return KontaktService.INSTANCE.findById(id);
+		}
 		return Optional.empty();
 	}
 
@@ -69,9 +74,8 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 	}
 
 	@Override
-	public void updateLocalObject(Patient fhirObject, Kontakt localObject) {
-		// TODO Auto-generated method stub
-
+	public Optional<Kontakt> updateLocalObject(Patient fhirObject, Kontakt localObject) {
+		return Optional.empty();
 	}
 
 	@Override

@@ -27,9 +27,11 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
 @Component
@@ -45,6 +47,8 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		Identifier elexisId = order.addIdentifier();
 		elexisId.setSystem("www.elexis.info/objid");
 		elexisId.setValue(localObject.getId());
+
+		order.setPatient(getPatientReference(localObject.getPatient()));
 
 		StringBuilder textBuilder = new StringBuilder();
 
@@ -130,9 +134,15 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		return Optional.of(order);
 	}
 
+	private Reference getPatientReference(Kontakt patient) {
+		Reference ref = new Reference();
+		ref.setId(patient.getId());
+		return ref;
+	}
+
 	@Override
 	public Optional<Prescription> getLocalObject(MedicationOrder fhirObject) {
-		String id = fhirObject.getId();
+		String id = fhirObject.getIdElement().getIdPart();
 		if (id != null && !id.isEmpty()) {
 			return PrescriptionService.INSTANCE.findById(id);
 		}
@@ -145,35 +155,16 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 	}
 
 	@Override
-	public void updateLocalObject(MedicationOrder fhirObject, Prescription localObject) {
-		Type medication = fhirObject.getMedication();
-		if (medication instanceof CodeableConcept) {
-			CodeableConcept medicationCode = (CodeableConcept) medication;
-			for (Coding coding : medicationCode.getCoding()) {
-				// update article according to gtin, if we can find it
-				if ("urn:oid:1.3.160‎".equals(coding.getSystem())) {
-					String gtin = coding.getCode();
-					if (gtin != null && !gtin.isEmpty() && !gtin.equals(getArticleGtin(localObject))) {
-						JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-						qbe.add(ArtikelstammItem_.gtin, QUERY.LIKE, gtin);
-						Optional<ArtikelstammItem> updateAticle = qbe.executeGetSingleResult();
-						updateAticle.ifPresent(ua -> localObject.setArtikel(ua));
-					}
-				}
-			}
-		} else if (medication instanceof Reference) {
-			throw new IllegalStateException("Can not handle medication reference.");
+	public Optional<Prescription> updateLocalObject(MedicationOrder fhirObject, Prescription localObject) {
+		Optional<MedicationOrder> localFhirObject = getFhirObject(localObject);
+		if (!fhirObject.equalsDeep(localFhirObject.get())) {
+			// a change means we need to stop the current prescription
+			localObject.setDateUntil(LocalDateTime.now());
+			localObject.setExtInfoValue(Constants.FLD_EXT_STOP_REASON, "Geändert durch FHIR Server");
+			// and create a new one with the changed properties
+			return createLocalObject(fhirObject);
 		}
-
-		List<MedicationOrderDosageInstructionComponent> dosageInstructions = fhirObject.getDosageInstruction();
-		for (MedicationOrderDosageInstructionComponent medicationOrderDosageInstructionComponent : dosageInstructions) {
-
-		}
-
-		List<MedicationOrderEventHistoryComponent> history = fhirObject.getEventHistory();
-		for (MedicationOrderEventHistoryComponent medicationOrderEventHistoryComponent : history) {
-
-		}
+		return Optional.empty();
 	}
 
 	private String getArticleGtin(Prescription localObject) {
@@ -206,7 +197,115 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 
 	@Override
 	public Optional<Prescription> createLocalObject(MedicationOrder fhirObject) {
-		// TODO Auto-generated method stub
+		// lookup item
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.add(ArtikelstammItem_.gtin, QUERY.EQUALS, getMedicationOrderGtin(fhirObject).get());
+		Optional<ArtikelstammItem> item = qbe.executeGetSingleResult();
+		// lookup patient
+		Optional<Kontakt> patient = KontaktService.INSTANCE.findById(fhirObject.getPatient().getId());
+		if (item.isPresent() && patient.isPresent()) {
+			Prescription localObject = PrescriptionService.INSTANCE.create(item.get(), patient.get(),
+					getMedicationOrderDosage(fhirObject));
+
+			Optional<LocalDateTime> startDateTime = getMedicationOrderStartDateTime(fhirObject);
+			startDateTime.ifPresent(date -> localObject.setDateFrom(date));
+
+			Optional<LocalDateTime> endDateTime = getMedicationOrderEndDateTime(fhirObject);
+			endDateTime.ifPresent(date -> localObject.setDateFrom(date));
+
+			localObject.setExtInfoValue(Constants.FLD_EXT_DISPOSAL_COMMENT,
+					getMedicationOrderAdditionalInstructions(fhirObject));
+
+			localObject.setBemerkung(getMedicationOrderRemark(fhirObject));
+
+			return Optional.of(localObject);
+		}
 		return Optional.empty();
+	}
+
+	private Optional<LocalDateTime> getMedicationOrderEndDateTime(MedicationOrder fhirObject) {
+		List<MedicationOrderEventHistoryComponent> history = fhirObject.getEventHistory();
+		for (MedicationOrderEventHistoryComponent medicationOrderEventHistoryComponent : history) {
+			if (medicationOrderEventHistoryComponent.getStatus() == MedicationOrderStatus.STOPPED) {
+				Date date = medicationOrderEventHistoryComponent.getDateTime();
+				return Optional.of(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+			}
+		}
+		return Optional.empty();
+	}
+
+	private Optional<LocalDateTime> getMedicationOrderStartDateTime(MedicationOrder fhirObject) {
+		List<MedicationOrderEventHistoryComponent> history = fhirObject.getEventHistory();
+		for (MedicationOrderEventHistoryComponent medicationOrderEventHistoryComponent : history) {
+			if (medicationOrderEventHistoryComponent.getStatus() == MedicationOrderStatus.ACTIVE) {
+				Date date = medicationOrderEventHistoryComponent.getDateTime();
+				return Optional.of(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+			}
+		}
+		return Optional.empty();
+	}
+
+	private String getMedicationOrderRemark(MedicationOrder fhirObject) {
+		List<Annotation> notes = fhirObject.getNote();
+		StringBuilder sb = new StringBuilder();
+		for (Annotation annotation : notes) {
+			String text = annotation.getText();
+			if (text != null) {
+				if (sb.length() == 0) {
+					sb.append(text);
+				} else {
+					sb.append(", ").append(text);
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	private Object getMedicationOrderAdditionalInstructions(MedicationOrder fhirObject) {
+		List<MedicationOrderDosageInstructionComponent> instructions = fhirObject.getDosageInstruction();
+		StringBuilder sb = new StringBuilder();
+		for (MedicationOrderDosageInstructionComponent medicationOrderDosageInstructionComponent : instructions) {
+			List<CodeableConcept> additionals = medicationOrderDosageInstructionComponent.getAdditionalInstructions();
+			for (CodeableConcept codeableConcept : additionals) {
+				String text = codeableConcept.getText();
+				if (text != null) {
+					if (sb.length() == 0) {
+						sb.append(text);
+					} else {
+						sb.append(", ").append(text);
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	private Optional<String> getMedicationOrderGtin(MedicationOrder fhirObject) {
+		Type medication = fhirObject.getMedication();
+		if (medication instanceof CodeableConcept) {
+			List<Coding> codings = ((CodeableConcept) medication).getCoding();
+			for (Coding coding : codings) {
+				if ("urn:oid:1.3.160‎".equals(coding.getSystem())) {
+					return Optional.of(coding.getCode());
+				}
+			}
+		}
+		return Optional.empty();
+	}
+
+	private String getMedicationOrderDosage(MedicationOrder fhirObject) {
+		List<MedicationOrderDosageInstructionComponent> instructions = fhirObject.getDosageInstruction();
+		StringBuilder sb = new StringBuilder();
+		for (MedicationOrderDosageInstructionComponent medicationOrderDosageInstructionComponent : instructions) {
+			String text = medicationOrderDosageInstructionComponent.getText();
+			if (text != null) {
+				if (sb.length() == 0) {
+					sb.append(text);
+				} else {
+					sb.append(", ").append(text);
+				}
+			}
+		}
+		return sb.toString();
 	}
 }

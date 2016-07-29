@@ -20,12 +20,14 @@ public interface IFhirTransformer<F, L> {
 	public Optional<L> getLocalObject(F fhirObject);
 
 	/**
-	 * Update th local Object matching the FHIR object.
+	 * Update the local Object with the content of the FHIR object.
 	 * 
 	 * @param fhirObject
-	 * @return
+	 * @param localObject
+	 * @return the updated local Object, possibly not same as localObject
+	 *         parameter, empty if nothing changed
 	 */
-	public void updateLocalObject(F fhirObject, L localObject);
+	public Optional<L> updateLocalObject(F fhirObject, L localObject);
 
 	/**
 	 * Create a new local Object matching the FHIR object.
@@ -35,5 +37,12 @@ public interface IFhirTransformer<F, L> {
 	 */
 	public Optional<L> createLocalObject(F fhirObject);
 
+	/**
+	 * Test if the implementation has matching FHIR and local class types.
+	 * 
+	 * @param fhirClazz
+	 * @param localClazz
+	 * @return
+	 */
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz);
 }
