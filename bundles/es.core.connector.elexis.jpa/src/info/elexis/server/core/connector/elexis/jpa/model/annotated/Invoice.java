@@ -10,6 +10,8 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
 
+import ch.elexis.core.model.InvoiceState;
+
 @Entity
 @Table(name = "RECHNUNGEN")
 public class Invoice extends AbstractDBObjectIdDeletedExtInfo {
@@ -38,7 +40,7 @@ public class Invoice extends AbstractDBObjectIdDeletedExtInfo {
 	protected LocalDate invoiceDateTo;
 
 	@Column(length = 20, name = "RnStatus")
-	protected String status;
+	protected InvoiceState state;
 
 	@Convert("ElexisDBStringDateConverter")
 	@Column(name = "StatusDatum")
@@ -95,12 +97,12 @@ public class Invoice extends AbstractDBObjectIdDeletedExtInfo {
 		this.invoiceDateTo = invoiceDateTo;
 	}
 
-	public String getStatus() {
-		return status;
+	public InvoiceState getState() {
+		return state;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setState(InvoiceState state) {
+		this.state = state;
 	}
 
 	public LocalDate getStatusDate() {
