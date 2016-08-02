@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +28,6 @@ public class KontaktService extends AbstractService<Kontakt> {
 		super(Kontakt.class);
 	}
 
-	private static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
 	/**
 	 * 
 	 * @return a managed {@link Kontakt} entity
@@ -47,21 +44,6 @@ public class KontaktService extends AbstractService<Kontakt> {
 		pat.setGender(sex);
 		em.getTransaction().commit();
 		return pat;
-	}
-
-	/**
-	 * @deprecated unfinished
-	 */
-	private IContact createLaboratory(String identifier, String name) {
-		em.getTransaction().begin();
-		Kontakt laboratory = create(false);
-		laboratory.setDescription1(name);
-		laboratory.setDescription2("Labor");
-		laboratory.setCode(identifier);
-		laboratory.setOrganisation(true);
-		laboratory.setLaboratory(true);
-		em.getTransaction().commit();
-		return laboratory;
 	}
 
 	/**

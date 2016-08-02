@@ -80,6 +80,20 @@ public class FallService extends AbstractService<Fall> {
 	}
 
 	/**
+	 * Determine whether a {@link Fall} is closed, which is the case when a
+	 * final date is set
+	 * 
+	 * @param fall
+	 * @return
+	 */
+	public static boolean isOpen(Fall fall) {
+		if (fall.getDatumBis() == null) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Retrieve a required String Value from this billing system's definition.
 	 * If no variable with that name is found, the billings system constants
 	 * will be searched

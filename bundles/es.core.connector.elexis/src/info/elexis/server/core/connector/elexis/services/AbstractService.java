@@ -127,7 +127,7 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 			em.refresh(object);
 		}
 	}
-	
+
 	/**
 	 * Returns a list of elements according to fuzzy ID starts with matching.
 	 * Useful with deterministic Id strings.
@@ -255,11 +255,16 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 *            whether to perform a commit within the operation
 	 */
 	public void remove(T entity, final boolean performCommit) {
-		if (performCommit)
+		if (performCommit) {
 			em.getTransaction().begin();
-		em.remove(entity);
-		if (performCommit)
+		}
+
+		T find = em.find(clazz, entity.getId());
+		em.remove(find);
+
+		if (performCommit) {
 			em.getTransaction().commit();
+		}
 	}
 
 	/**

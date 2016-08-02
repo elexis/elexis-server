@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.Optional;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.model.issue.Priority;
@@ -17,14 +17,14 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.ReminderResp
 
 public class ReminderServiceTest extends AbstractServiceTest {
 
-	@BeforeClass
-	public static void beforeClass() {
-		createTestKontakt();
+	@Before
+	public void beforeClass() {
+		createTestMandantPatientFallBehandlung();
 	}
 
-	@AfterClass
-	public static void afterClass() {
-		deleteTestKontakt();
+	@After
+	public void afterClass() {
+		cleanup();
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ public class ReminderServiceTest extends AbstractServiceTest {
 		reminder.getResponsible().add(rr);
 		ReminderService.INSTANCE.flush();
 		
-		createTestKontakt();
+		createTestMandantPatientFallBehandlung();
 		
 		reminder.getResponsible().clear(); // clear the list, although one already inserted
 		
@@ -77,7 +77,7 @@ public class ReminderServiceTest extends AbstractServiceTest {
 		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(1), true);
 		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(1), true);
 		
-		createTestKontakt();
+		createTestMandantPatientFallBehandlung();
 		
 		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(2), true);
 		
