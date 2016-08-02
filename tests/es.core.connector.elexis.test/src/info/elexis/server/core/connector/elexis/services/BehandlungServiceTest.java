@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.elexis.core.model.InvoiceState;
@@ -18,7 +17,6 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeist
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Invoice;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 
 public class BehandlungServiceTest extends AbstractServiceTest {
@@ -37,12 +35,9 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 	public static final String TARMED_KONS_ZUSCHLAG = "00.0015";
 
 	@Test
-	@Ignore
 	public void testGetAllConsultationsForPatient() {
-		Kontakt myPatient = KontaktService.INSTANCE.findById("z7562af3f31f535503455").get();
-		List<Behandlung> consultations = BehandlungService.findAllConsultationsForPatient(myPatient);
+		List<Behandlung> consultations = BehandlungService.findAllConsultationsForPatient(testPatients.get(0));
 		assertTrue(consultations.size() > 0);
-		assertTrue(consultations.get(0).getDatum().isAfter(consultations.get(1).getDatum()));
 	}
 
 	// @Test
@@ -107,15 +102,15 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		Invoice invoice = InvoiceService.INSTANCE.create("15", testContacts.get(0), testBehandlungen.get(0).getFall(),
 				LocalDate.now().minusWeeks(2), LocalDate.now(), new Money(34.50), InvoiceState.OFFEN);
 		testBehandlungen.get(0).setInvoice(invoice);
-		
+
 		Optional<TarmedLeistung> tarmedZuschlag = TarmedLeistungService.findFromCode(TARMED_KONS_ZUSCHLAG);
 		assertTrue(tarmedZuschlag.isPresent());
 		VerrechenbarTarmedLeistung vtlZuschlag = new VerrechenbarTarmedLeistung(tarmedZuschlag.get());
-		
-		IStatus chargeBillableZuschlagOnBehandlung = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(0), vtlZuschlag,
-				testContacts.get(0), testContacts.get(0));
+
+		IStatus chargeBillableZuschlagOnBehandlung = BehandlungService.chargeBillableOnBehandlung(
+				testBehandlungen.get(0), vtlZuschlag, testContacts.get(0), testContacts.get(0));
 		assertTrue(!chargeBillableZuschlagOnBehandlung.isOK());
-		
+
 		InvoiceService.INSTANCE.remove(invoice);
 	}
 
