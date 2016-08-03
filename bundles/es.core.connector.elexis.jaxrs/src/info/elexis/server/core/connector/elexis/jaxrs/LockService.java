@@ -13,7 +13,7 @@ import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 
 @Component(service = LockService.class, immediate = true)
 public class LockService implements ILockService {
-	
+
 	@Override
 	public boolean isLocked(LockRequest request) {
 		return LockServiceInstance.INSTANCE.isLocked(request.getLockInfo());
@@ -27,14 +27,21 @@ public class LockService implements ILockService {
 
 	@Override
 	public LockResponse acquireOrReleaseLocks(LockRequest request) {
+		// System.out.println("******************** "+request.getRequestType()+"
+		// "+request.getLockInfo().getElementStoreToString());
+		LockResponse lr = new LockResponse(Status.ERROR, null);
 		switch (request.getRequestType()) {
 		case ACQUIRE:
-			return LockServiceInstance.INSTANCE.acquireLock(request.getLockInfo());
+			lr = LockServiceInstance.INSTANCE.acquireLock(request.getLockInfo());
+			break;
 		case RELEASE:
-			return LockServiceInstance.INSTANCE.releaseLock(request.getLockInfo());
+			lr = LockServiceInstance.INSTANCE.releaseLock(request.getLockInfo());
+			break;
 		default:
 			break;
 		}
-		return new LockResponse(Status.ERROR, null);
+		// System.out.println("******************** "+lr.getStatus()+"
+		// "+request.getLockInfo().getElementStoreToString());
+		return lr;
 	}
 }
