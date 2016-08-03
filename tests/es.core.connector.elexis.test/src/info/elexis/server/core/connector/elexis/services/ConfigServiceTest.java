@@ -3,9 +3,11 @@ package info.elexis.server.core.connector.elexis.services;
 import static org.junit.Assert.*;
 
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConfigServiceTest {
@@ -14,18 +16,18 @@ public class ConfigServiceTest {
 	public static final String TEST_VALUE = "TestValue";
 	public static final String TEST_KEY_SET = "TestKeySet";
 	public static final String TEST_VALUE_SET = "TestValue,TestValue2,TestValue3";
-	
+
 	@BeforeClass
 	public static void init() {
 		ConfigService.INSTANCE.set(TEST_KEY, TEST_VALUE);
 	}
-	
+
 	@AfterClass
 	public static void deinit() {
 		ConfigService.INSTANCE.remove(TEST_KEY);
 		ConfigService.INSTANCE.remove(TEST_KEY_SET);
 	}
-	
+
 	@Test
 	public void testGet() {
 		String string = ConfigService.INSTANCE.get(TEST_KEY, null);
@@ -49,6 +51,66 @@ public class ConfigServiceTest {
 		assertTrue(asSet.contains("TestValue"));
 		assertTrue(asSet.contains("TestValue2"));
 		assertTrue(asSet.contains("TestValue3"));
+	}
+
+	@Test
+	@Ignore
+	public void testMultipleParallelSetAndGet() {
+		int LIMIT = 1000000;
+		Semaphore s = new Semaphore(1);
+
+		Thread t1, t2 = null;
+
+		t1 = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int currentValue = 0;
+				while (currentValue < LIMIT) {
+					try {
+						s.acquireUninterruptibly();
+						System.out.println("[T1] Setting " + currentValue);
+						ConfigService.INSTANCE.set(TEST_VALUE, Integer.toString(currentValue));
+						Thread.sleep(25);
+						String value = ConfigService.INSTANCE.get(TEST_VALUE, "-999999");
+						assertEquals(currentValue, Integer.parseInt(value));
+						currentValue++;
+						s.release();
+					} catch (InterruptedException ie) {
+						ie.printStackTrace();
+					}
+
+				}
+			}
+		});
+
+		t2 = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int currentValue = 0;
+				while (currentValue < LIMIT) {
+					s.acquireUninterruptibly();
+					System.out.println("[T2] Reading " + currentValue);
+					String value = ConfigService.INSTANCE.get(TEST_VALUE, "-999999");
+//					assertEquals(currentValue, Integer.parseInt(value));
+					currentValue++;
+					s.release();
+				}
+			}
+		});
+
+		t1.start();
+//		t2.start();
+
+		try {
+			t1.join();
+//			t2.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

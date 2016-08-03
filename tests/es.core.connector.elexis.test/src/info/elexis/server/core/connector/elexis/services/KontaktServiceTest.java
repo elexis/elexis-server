@@ -1,9 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,5 +53,21 @@ public class KontaktServiceTest {
 		assertEquals("Birthname", patient.getExtInfoAsString(PatientConstants.FLD_EXTINFO_BIRTHNAME));
 
 		KontaktService.INSTANCE.remove(patient);
+	}
+	
+	@Test
+	public void testCreateAndDeleteKontaktWithStringExceedsLimit()
+			throws InstantiationException, IllegalAccessException {
+		Kontakt val = KontaktService.INSTANCE.create();
+
+		System.out.println(val.getId());
+		
+		val.setDescription1(
+				"ThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255Characters");
+
+		KontaktService.INSTANCE.flush();
+		
+		KontaktService.INSTANCE.remove(val);
+
 	}
 }
