@@ -23,12 +23,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 
@@ -37,6 +37,7 @@ import ch.elexis.core.types.ContactType;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import ch.rgw.tools.TimeTool;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
 
@@ -49,6 +50,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.Fu
 @Entity
 @Table(name = "KONTAKT")
 @XmlRootElement(name = "contact")
+@Cache(type = CacheType.NONE)
 public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Serializable, IPatient {
 	protected static final long serialVersionUID = 1L;
 
@@ -101,6 +103,8 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Column(length = 30)
 	protected String fax;
 
+	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
+	@Convert("ElexisDBStringDateConverter")
 	@Column(name = "geburtsdatum")
 	protected LocalDate dob;
 
@@ -192,18 +196,15 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	protected Map<String, Xid> xids;
 
 	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patientID", insertable = false)
+	protected List<Fall> faelle;
+
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "UserID", insertable = false)
 	protected List<Userconfig> userconfig;
 
 	// ---------------------------------------------
 	public Kontakt() {
-	}
-
-	@PrePersist
-	@PreUpdate
-	protected void prePersist() {
-		this.description1 = (description1 != null && description1.length() > 255) ? description1.substring(0, 255)
-				: description1;
 	}
 
 	@Override
@@ -354,6 +355,14 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	public void setXids(Map<String, Xid> xids) {
 		this.xids = xids;
+	}
+
+	public List<Fall> getFaelle() {
+		return faelle;
+	}
+
+	public void setFaelle(List<Fall> faelle) {
+		this.faelle = faelle;
 	}
 
 	public List<Userconfig> getUserconfig() {
