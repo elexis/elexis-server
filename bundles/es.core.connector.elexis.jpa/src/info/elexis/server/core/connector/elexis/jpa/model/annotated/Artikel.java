@@ -23,6 +23,8 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	public static final String TYP_MEDICAL = "Medical";
 	public static final String TYP_MEDIKAMENT = "Medikament";
 
+	public static final String FLD_EXTINFO_PACKAGESIZE = "Verpackungseinheit";
+	
 	@Column(length = 15)
 	private String ean;
 

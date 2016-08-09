@@ -29,7 +29,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_ARTIKELSTAMM = "ch.artikelstamm.elexis.common.ArtikelstammItem";
 	public static final String TYPE_BRIEF = "ch.elexis.data.Brief";
 	public static final String TYPE_DOCHANDLE = "ch.elexis.omnivore.data.DocHandle";
-	public static final String TYPE_EIGENARTIKEL = "ch.elexis.eigenartikel.Eigenartikel";
+	public static final String TYPE_EIGENARTIKEL = "ch.elexis.core.eigenartikel.Eigenartikel";
 	public static final String TYPE_EIGENLEISTUNG = "ch.elexis.data.Eigenleistung";
 	public static final String TYPE_MEDIKAMENT = "ch.elexis.artikel_ch.data.Medikament";
 	public static final String TYPE_MEDICAL = "ch.elexis.artikel_ch.data.Medical";
