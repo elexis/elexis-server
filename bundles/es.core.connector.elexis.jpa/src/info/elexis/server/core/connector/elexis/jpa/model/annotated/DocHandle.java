@@ -17,6 +17,8 @@ import org.eclipse.persistence.annotations.Convert;
 @Table(name = "CH_ELEXIS_OMNIVORE_DATA")
 public class DocHandle extends AbstractDBObjectIdDeleted {
 
+	public static final String CATEGORY_CATEGORY = "text/category";
+	
 	@OneToOne
 	@JoinColumn(name = "PatID")
 	protected Kontakt kontakt;
