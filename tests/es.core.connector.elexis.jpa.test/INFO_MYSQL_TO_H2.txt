@@ -1,0 +1,2 @@
+Exporting a blob from MySQL to H2 requires to remove the prepending 0x and quote the string. 
+See http://stackoverflow.com/questions/11627248/cannot-transfer-blob-from-mysql-to-h2

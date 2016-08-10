@@ -50,6 +50,7 @@ public class TestDatabaseInitializer {
 					executeDbScript(jdbcConnection, "/rsc/dbScripts/User.sql");
 					executeDbScript(jdbcConnection, "/rsc/dbScripts/Role.sql");
 					executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
+					executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
 
 					isDbInitialized = true;
 				} catch (IOException | SQLException e) {
