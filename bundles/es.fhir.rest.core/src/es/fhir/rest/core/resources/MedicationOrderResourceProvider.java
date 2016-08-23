@@ -98,6 +98,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 			} catch (RuntimeException e) {
 				OperationOutcome issueOutcome = new OperationOutcome();
 				issueOutcome.addIssue().setDiagnostics("Update failed. " + e.getMessage());
+				outcome.setOperationOutcome(issueOutcome);
 			}
 		} else {
 			OperationOutcome issueOutcome = new OperationOutcome();

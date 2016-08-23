@@ -305,7 +305,8 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		if (medication instanceof CodeableConcept) {
 			List<Coding> codings = ((CodeableConcept) medication).getCoding();
 			for (Coding coding : codings) {
-				if ("urn:oid:1.3.160‎".equals(coding.getSystem())) {
+				String codeSystem = coding.getSystem();
+				if ("urn:oid:1.3.160".equals(codeSystem)) {
 					return Optional.of(coding.getCode());
 				}
 			}
