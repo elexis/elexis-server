@@ -241,7 +241,7 @@ public class LockService implements ILockService {
 
 	public static String consoleListLocks() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("======= " + LocalDateTime.now() + " ==== server uuid [" + systemUuid.toString() + "]\n");
+		sb.append("======= " + LocalDateTime.now() + " ==== server uuid [" + LockService.getSystemuuid() + "]\n");
 		for (LockInfo lockInfo : getAllLockInfo()) {
 			sb.append(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
 					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
@@ -270,7 +270,7 @@ public class LockService implements ILockService {
 						for (String key : keys) {
 							LockInfo lockInfo = locks.get(key);
 							// do not evict locks set by server system
-							if (lockInfo.getSystemUuid().equals(LockService.systemUuid)) {
+							if (getSystemuuid().equals(lockInfo.getSystemUuid())) {
 								continue;
 							}
 							if (lockInfo.evict(currentMillis)) {
