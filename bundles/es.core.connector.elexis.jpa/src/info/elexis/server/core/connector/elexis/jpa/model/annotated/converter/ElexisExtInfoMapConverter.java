@@ -109,22 +109,22 @@ public class ElexisExtInfoMapConverter implements Converter {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Hashtable<Object, Object> fold(final byte[] flat) {
-		Hashtable<Object, Object> res = null;
 		if (flat.length == 0) {
-			return res;
+			return null;
 		}
-		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(flat);
-			ZipInputStream zis = new ZipInputStream(bais);
-			zis.getNextEntry();
-			ObjectInputStream ois = new ObjectInputStream(zis);
-			res = (Hashtable<Object, Object>) ois.readObject();
-			ois.close();
-			bais.close();
-		} catch (IOException | ClassNotFoundException e) {
-			log.warn("Exception folding byte array: " + e.getMessage());
-		}
-		return res;
+		try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(flat))) {
+			ZipEntry entry = zis.getNextEntry();
+			if (entry != null) {
+				try (ObjectInputStream ois = new ObjectInputStream(zis)) {
+					return (Hashtable<Object, Object>)  ois.readObject();
+				}
+			} else {
+				return null;
+			}
+		} catch (IOException | ClassNotFoundException ex) {
+			log.error("Exception folding byte array", ex);
+			return null;
+		}		
 	}
 	
 }
