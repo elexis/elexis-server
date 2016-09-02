@@ -1,9 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,11 +9,13 @@ import java.util.Optional;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.elexis.core.model.FallConstants;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.types.Gender;
+import info.elexis.server.core.connector.elexis.AllTestsSuite;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
@@ -47,6 +46,13 @@ public class BillingTest {
 	private Kontakt mandator;
 	private Behandlung consultation;
 	private Verrechnet vr;
+
+	@BeforeClass
+	public static void init() {
+		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();
+		AllTestsSuite.getInitializer().initializeTarmedTables();
+		AllTestsSuite.getInitializer().initializeArzttarifePhysioLeistungTables();
+	}
 
 	@Before
 	public void setupPatientAndBehandlung() {
@@ -84,7 +90,7 @@ public class BillingTest {
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
-		
+
 		assertEquals(12000, vr.getVk_tp());
 		assertEquals(12000, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
@@ -123,7 +129,7 @@ public class BillingTest {
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
-		
+
 		assertEquals("0.92", vr.getVk_scale());
 		assertEquals(4800, vr.getVk_tp());
 		assertEquals(4416, vr.getVk_preis());
@@ -164,6 +170,28 @@ public class BillingTest {
 		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
 		status = ivlt_000750.add(consultation, userContact, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
+	}
+
+	@Test
+	public void testDoNotBillTympanometrieTwicePerSideTicket5004() {
+		TarmedLeistung code_090510 = TarmedLeistungService.findFromCode("09.0510", null).get();
+		assertNotNull(code_090510);
+		VerrechenbarTarmedLeistung vtl_090510 = new VerrechenbarTarmedLeistung(code_090510);
+
+		IStatus status = vtl_090510.add(consultation, userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		status = vtl_090510.add(consultation, userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		status = vtl_090510.add(consultation, userContact, mandator);
+		assertFalse(status.getMessage(), status.isOK());
 	}
 
 	@Test

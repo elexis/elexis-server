@@ -249,7 +249,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			newVerrechnet.setDetail(TL, Integer.toString(tc.getTL()));
 			lst.add(newVerrechnet);
 		}
-		
+
 		/*
 		 * Dies führt zu Fehlern bei Codes mit mehreren Master-Möglichkeiten ->
 		 * vorerst raus // "Zusammen mit" - Bedingung nicht erfüllt ->
@@ -269,7 +269,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				for (String line : lin) {
 					String[] f = line.split(","); //$NON-NLS-1$
 					if (f.length == 5) {
-						switch (Integer.parseInt(f[4].trim())) {
+						Integer limitCode = Integer.parseInt(f[4].trim());
+						switch (limitCode) {
+						case 10: // Pro Seite
 						case 7: // Pro Sitzung
 							Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE
 									.getVerrechenbar(newVerrechnet);
@@ -281,14 +283,20 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 								}
 							}
 							// todo check if electronic billing
-							if (f[2].equals("1") && f[0].equals("<=")) { // 1 //$NON-NLS-1$
-																			// Sitzung
+							if (f[2].equals("1") && f[0].equals("<=")) {
 								int menge = Math.round(Float.parseFloat(f[1]));
 								if (newVerrechnet.getZahl() > menge) {
 									newVerrechnet.setZahl(menge);
-									return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
-											Messages.TarmedOptifier_codemax + menge
-													+ Messages.TarmedOptifier_perSession);
+									if (limitCode == 7) {
+										return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
+												Messages.TarmedOptifier_codemax + menge
+														+ Messages.TarmedOptifier_perSession);
+
+									} else if (limitCode == 10) {
+										return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
+												Messages.TarmedOptifier_codemax + menge
+														+ Messages.TarmedOptifier_perSide);
+									}
 								}
 							}
 							break;
@@ -324,7 +332,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 			// add 39.0020, will be changed according to case (see above)
 			Optional<IBillable> tla = TarmedLeistungService.INSTANCE.getVerrechenbarFromCode("39.0020");
-			if(tla.isPresent()) {
+			if (tla.isPresent()) {
 				add(tla.get(), kons, userContact, mandatorContact);
 			}
 		}
@@ -548,7 +556,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		String leistungenCode = v.getLeistungenCode();
 
 		String keyForObject = ElexisTypeMap.getKeyForObject((AbstractDBObjectIdDeleted) tmpl.getEntity());
-		
+
 		if (klasse.equals(keyForObject)) {
 			if (leistungenCode.equals(tmpl.getId())) {
 				return true;

@@ -38,6 +38,9 @@ public class TestDatabaseInitializer {
 	private static boolean isArtikelstammInitialized = false;
 	private static ArtikelstammItem artikelstammitem;
 
+	private static boolean isLaborTarif2009Initialized = false;
+	private static boolean isTarmedInitialized = false;
+	private static boolean isPhysioLeistungInitialized = false;
 
 	public synchronized void initializeDb() {
 		if (!isDbInitialized) {
@@ -51,7 +54,7 @@ public class TestDatabaseInitializer {
 					executeDbScript(jdbcConnection, "/rsc/dbScripts/Role.sql");
 					executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
 					executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
-
+					executeDbScript(jdbcConnection, "/rsc/dbScripts/BillingVKPreise.sql");
 					isDbInitialized = true;
 				} catch (IOException | SQLException e) {
 					logger.error("Faild to run sql script on test database.", e);
@@ -65,6 +68,49 @@ public class TestDatabaseInitializer {
 				}
 			}
 		}
+	}
+
+	public synchronized void initializeLaborTarif2009Tables() {
+		initializeDb();
+		if (!isLaborTarif2009Initialized) {
+			isLaborTarif2009Initialized = initializeDbScript("/rsc/dbScripts/LaborTarif2009.sql");
+		}
+	}
+
+	public synchronized void initializeTarmedTables() {
+		initializeDb();
+		if (!isTarmedInitialized) {
+			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/Tarmed.sql");
+			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/TarmedKumulation.sql");
+		}
+	}
+	public synchronized void initializeArzttarifePhysioLeistungTables() {
+		initializeDb();
+		if (!isPhysioLeistungInitialized) {
+			isPhysioLeistungInitialized = initializeDbScript("/rsc/dbScripts/ArzttarifePhysio.sql");
+		}
+	}
+
+	private boolean initializeDbScript(String dbScript) {
+		// initialize
+		Optional<Connection> connection = getJdbcConnection(TestDatabase.getDBConnection());
+		if (connection.isPresent()) {
+			Connection jdbcConnection = connection.get();
+			try {
+				executeDbScript(jdbcConnection, dbScript);
+				return true;
+			} catch (IOException | SQLException e) {
+				logger.error("Failed to run sql script on test database.", e);
+				org.junit.Assert.fail("Failed to run sql script on test database:" + e.getMessage());
+			} finally {
+				try {
+					jdbcConnection.close();
+				} catch (SQLException e) {
+					// ignore
+				}
+			}
+		}
+		return false;
 	}
 
 	private void executeDbScript(Connection jdbcConnection, String path) throws IOException, SQLException {
@@ -115,8 +161,8 @@ public class TestDatabaseInitializer {
 	/**
 	 * Initialize an test Prescription.
 	 * 
-	 * <li>Article: see
-	 * {@link TestDatabaseInitializer#initializeArtikelstamm()}</li>
+	 * <li>Article: see {@link TestDatabaseInitializer#initializeArtikelstamm()}
+	 * </li>
 	 * <li>Patient: see {@link TestDatabaseInitializer#initializePatient()}</li>
 	 * <li>Dosage: 1-1-1-1</li>
 	 * 
@@ -153,7 +199,7 @@ public class TestDatabaseInitializer {
 		if (!isArtikelstammInitialized) {
 			artikelstammitem = ArtikelstammItemService.INSTANCE.create(0, "7680336700282", BigInteger.valueOf(58985l),
 					"ASPIRIN C Brausetabl 10 Stk");
-			
+
 			isArtikelstammInitialized = true;
 		}
 	}
