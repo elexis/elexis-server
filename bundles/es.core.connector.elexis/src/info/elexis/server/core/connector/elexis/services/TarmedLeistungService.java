@@ -40,6 +40,14 @@ public class TarmedLeistungService extends AbstractService<TarmedLeistung> {
 		return Optional.empty();
 	}
 
+	/**
+	 * Get the exclusions as String, containing the service and chapter codes.
+	 * Group exclusions are NOT part of the String.
+	 * 
+	 * @param tl
+	 * @param date
+	 * @return
+	 */
 	public static String getExclusionsForTarmedLeistung(TarmedLeistung tl, LocalDate date) {
 		if (date == null) {
 			date = LocalDate.now();
@@ -56,6 +64,9 @@ public class TarmedLeistungService extends AbstractService<TarmedLeistung> {
 
 		StringBuilder sb = new StringBuilder();
 		for (TarmedKumulation excl : exclusions) {
+			if ("G".equals(excl.getSlaveArt())) {
+				continue;
+			}
 			if (isValidTarmedKumulation(excl, new TimeTool(date))) {
 				if (!sb.toString().isEmpty()) {
 					sb.append(",");
