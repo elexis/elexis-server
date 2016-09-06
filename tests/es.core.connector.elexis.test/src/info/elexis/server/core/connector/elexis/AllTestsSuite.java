@@ -7,10 +7,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import info.elexis.server.core.connector.elexis.billable.BillingTest;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.core.connector.elexis.services.DocHandleServiceTest;
 import info.elexis.server.core.connector.elexis.services.KontaktServiceTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ KontaktServiceTest.class, BillingTest.class })
+@SuiteClasses({ KontaktServiceTest.class, BillingTest.class, DocHandleServiceTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();

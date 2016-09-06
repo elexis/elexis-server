@@ -145,6 +145,10 @@ public class ConfigService {
 
 		return true;
 	}
+	
+	public boolean setFromBoolean(String key, boolean value) {
+		return set(key, Boolean.toString(value));
+	}
 
 	/**
 	 * Store a set of values to a configuration key
@@ -153,7 +157,7 @@ public class ConfigService {
 	 * @param values
 	 * @return <code>true</code> if the values were successfully set
 	 */
-	public boolean setAsSet(String key, Set<String> values) {
+	public boolean setFromSet(String key, Set<String> values) {
 		String flattenedValue = values.stream().map(o -> o.toString()).reduce((u, t) -> u + LIST_SEPARATOR + t).get();
 		return set(key, flattenedValue);
 	}
@@ -184,7 +188,7 @@ public class ConfigService {
 		Set<String> propertySet = getAsSet(key);
 		Set<String> valueSet = new HashSet<String>(propertySet);
 		valueSet.add(value);
-		setAsSet(key, valueSet);
+		setFromSet(key, valueSet);
 	}
 
 }

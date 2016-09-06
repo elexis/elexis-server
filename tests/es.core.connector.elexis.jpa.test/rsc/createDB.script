@@ -639,7 +639,25 @@ CREATE TABLE DBIMAGE (
     Title          VARCHAR(80),  			# A title unique within the prefix's namespace
     Bild           BLOB
 );
-CREATE INDEX DBIMAGE1 on DBIMAGE(Title);     
+CREATE INDEX DBIMAGE1 on DBIMAGE(Title);
+
+CREATE TABLE IF NOT EXISTS `ch_elexis_omnivore_data` (
+  `ID` varchar(25) NOT NULL,
+  `lastupdate` bigint(20) DEFAULT NULL,
+  `deleted` char(1) DEFAULT '0',
+  `PatID` varchar(25) DEFAULT NULL,
+  `Datum` char(8) DEFAULT NULL,
+  `CreationDate` char(8) DEFAULT NULL,
+  `Category` varchar(80) DEFAULT NULL,
+  `Title` varchar(255) DEFAULT NULL,
+  `Mimetype` varchar(255) DEFAULT NULL,
+  `Keywords` varchar(255) DEFAULT NULL,
+  `Path` varchar(255) DEFAULT NULL,
+  `Doc` longblob,
+  PRIMARY KEY (`ID`)
+);
+INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE) VALUES ('1','"2.0.3"');
+INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE, CATEGORY, MIMETYPE) VALUES ('c86beffec61dd2550021','"default"', '"default"', '"text/category"');
 
 INSERT INTO CONFIG (param,wert) VALUES ('dbversion','3.1.0');
 INSERT INTO CONFIG (param,wert) VALUES ('ElexisVersion','3.1.0');
