@@ -656,7 +656,7 @@ CREATE TABLE IF NOT EXISTS `ch_elexis_omnivore_data` (
   `Doc` longblob,
   PRIMARY KEY (`ID`)
 );
-INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE) VALUES ('1','"2.0.3"');
+INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE) VALUES ('1','"2.0.4"');
 INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE, CATEGORY, MIMETYPE) VALUES ('c86beffec61dd2550021','"default"', '"default"', '"text/category"');
 
 INSERT INTO CONFIG (param,wert) VALUES ('dbversion','3.1.0');

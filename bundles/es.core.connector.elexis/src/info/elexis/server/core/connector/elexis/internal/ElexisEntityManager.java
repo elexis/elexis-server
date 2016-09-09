@@ -53,7 +53,9 @@ public class ElexisEntityManager {
 			props.put("javax.persistence.jdbc.password", connection.get().password);
 			props.put("eclipselink.ddl-generation", "none");
 			if (ElexisDBConnection.isTestMode()) {
-				props.put("eclipselink.ddl-generation", "drop-and-create-tables");
+				// we don't want the entities to generate the database, as
+				// initialization is handled via the creation scripts
+				props.put("eclipselink.ddl-generation", "none");
 				props.put("eclipselink.ddl-generation.output-mode", "database");
 			}
 
