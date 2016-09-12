@@ -201,6 +201,8 @@ public class LockService implements ILockService {
 					}
 				}
 
+				log.warn("Denying lock release for [{}]",
+						lockInfo.getElementStoreToString() + "#" + lockInfo.getUser() + "@" + lockInfo.getSystemUuid());
 				return LockResponse.DENIED(lockInfo);
 			} else {
 				log.warn("Could not acquire locksLock in releaseLock method on thread {}. ", Thread.currentThread());
