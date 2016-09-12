@@ -69,6 +69,7 @@ location "http://download.elexis.info/elexis.3.core/beta/" {
 location "http://download.elexis.info/elexis.3.base/beta/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
+	at.medevit.atc_codes
 }
 
 // RAP e4 target https://wiki.eclipse.org/RAP/E4
