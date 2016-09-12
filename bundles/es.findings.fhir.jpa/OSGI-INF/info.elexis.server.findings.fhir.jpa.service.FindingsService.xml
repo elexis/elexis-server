@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.findings.fhir.jpa.service.FindingsService">
+   <service>
+      <provide interface="ch.elexis.core.findings.IFindingsService"/>
+   </service>
+   <implementation class="info.elexis.server.findings.fhir.jpa.service.FindingsService"/>
+</scr:component>
