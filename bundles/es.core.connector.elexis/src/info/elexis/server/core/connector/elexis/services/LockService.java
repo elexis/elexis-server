@@ -25,21 +25,18 @@ import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
 import info.elexis.server.core.common.LocalProperties;
-import info.elexis.server.core.connector.elexis.internal.BundleConstants;
+import info.elexis.server.core.connector.elexis.Properties;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 
 @Component(service = {})
 public class LockService implements ILockService {
 
-	public static final String PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS = BundleConstants.BUNDLE_ID
-			+ ".requiredLockContributors";
-
 	private static HashMap<String, LockInfo> locks = new HashMap<String, LockInfo>();
 	private static ReentrantLock locksLock = new ReentrantLock();
 	private static Map<String, ILockServiceContributor> contributors = new HashMap<String, ILockServiceContributor>();
 	private static Set<String> requiredContributors = LocalProperties
-			.getPropertyAsSet(PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS);
+			.getPropertyAsSet(Properties.PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS);
 
 	private static Logger log = LoggerFactory.getLogger(LockService.class);
 
