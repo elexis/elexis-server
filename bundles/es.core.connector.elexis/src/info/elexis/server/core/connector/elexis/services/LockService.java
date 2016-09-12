@@ -174,6 +174,12 @@ public class LockService implements ILockService {
 
 		try {
 			if (locksLock.tryLock()) {
+				LockInfo lie = locks.get(lockInfo.getElementId());
+				if (lie == null) {
+					log.warn("Releasing lock for object not in locks map [{}]", lockInfo.getElementStoreToString() + "#"
+							+ lockInfo.getUser() + "@" + lockInfo.getSystemUuid());
+				}
+
 				synchronized (contributors) {
 					for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
 						if (iLockServiceContributor.getClass().equals(lockServiceContributorClass)) {
@@ -187,7 +193,6 @@ public class LockService implements ILockService {
 					}
 				}
 
-				LockInfo lie = locks.get(lockInfo.getElementId());
 				if (lie != null) {
 					if (lie.getUser().equals(lockInfo.getUser())
 							&& lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
