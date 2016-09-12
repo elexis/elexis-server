@@ -17,9 +17,11 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
+import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
@@ -31,6 +33,15 @@ public class TestDatabaseInitializer {
 
 	private static boolean isPatientInitialized = false;
 	private static Kontakt patient;
+
+	private static boolean isOrganizationInitialized = false;
+	private static Kontakt organization;
+
+	private static boolean isMandantInitialized = false;
+	private static Kontakt mandant;
+
+	private static boolean isFallInitialized = false;
+	private static Fall fall;
 
 	private static boolean isPrescriptionInitialized = false;
 	private static Prescription prescription;
@@ -159,6 +170,55 @@ public class TestDatabaseInitializer {
 	}
 
 	/**
+	 * Get the initialized Patient
+	 * 
+	 * @return
+	 */
+	public static Kontakt getPatient() {
+		return patient;
+	}
+
+	/**
+	 * Initialize a test Patient.
+	 * 
+	 * <li>Firstname: Test</li>
+	 * <li>Lastname: Test</li>
+	 * <li>DateofBirth: 1.1.1990</li>
+	 * <li>Gender: FEMALE</li>
+	 * 
+	 */
+	public synchronized void initializeOrganization() {
+		if (!isDbInitialized) {
+			initializeDb();
+		}
+
+		if (!isOrganizationInitialized) {
+			organization = KontaktService.INSTANCE.create();
+			organization.setOrganisation(true);
+			organization.setDescription1("Organization Test");
+			KontaktService.INSTANCE.write(organization);
+			KontaktService.INSTANCE.flush();
+			isOrganizationInitialized = true;
+		}
+	}
+
+	public synchronized void initializeMandant() {
+		if (!isDbInitialized) {
+			initializeDb();
+		}
+
+		if (!isMandantInitialized) {
+			mandant = KontaktService.INSTANCE.create();
+			mandant.setMandator(true);
+			mandant.setDescription1("Test");
+			mandant.setDescription2("Test");
+			KontaktService.INSTANCE.write(mandant);
+			KontaktService.INSTANCE.flush();
+			isMandantInitialized = true;
+		}
+	}
+
+	/**
 	 * Initialize an test Prescription.
 	 * 
 	 * <li>Article: see {@link TestDatabaseInitializer#initializeArtikelstamm()}
@@ -181,6 +241,28 @@ public class TestDatabaseInitializer {
 			prescription = PrescriptionService.INSTANCE.create(artikelstammitem, patient, "1-1-1-1");
 
 			isPrescriptionInitialized = true;
+		}
+	}
+
+	/**
+	 * Initialize a test Fall.
+	 * 
+	 */
+	public synchronized void initializeFall() {
+		if (!isPatientInitialized) {
+			initializePatient();
+		}
+		if (!isOrganizationInitialized) {
+			initializeOrganization();
+		}
+		if (!isFallInitialized) {
+			fall = FallService.INSTANCE.create(patient, "Test", "reason", "method");
+			fall.setKostentrKontakt(organization);
+			fall.setVersNummer("1234-5678");
+			FallService.INSTANCE.write(fall);
+
+			KontaktService.INSTANCE.refresh(patient);
+			isFallInitialized = true;
 		}
 	}
 

@@ -1,5 +1,9 @@
 package es.fhir.rest.core;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 public interface IFhirTransformer<F, L> {
@@ -45,4 +49,13 @@ public interface IFhirTransformer<F, L> {
 	 * @return
 	 */
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz);
+
+	default Date getDate(LocalDateTime localDateTime) {
+		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+		return Date.from(zdt.toInstant());
+	}
+
+	default LocalDateTime getLocalDateTime(Date date) {
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+	}
 }

@@ -21,6 +21,8 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.model.prescription.Constants;
@@ -41,6 +43,15 @@ import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<MedicationOrder, Prescription> {
 
 	private PrescriptionEntryTypeFactory entryTypeFactory = new PrescriptionEntryTypeFactory();
+
+	private Logger logger;
+
+	private Logger getLogger() {
+		if (logger == null) {
+			logger = LoggerFactory.getLogger(MedicationOrderPrescriptionTransformer.class);
+		}
+		return logger;
+	}
 
 	@Override
 	public Optional<MedicationOrder> getFhirObject(Prescription localObject) {
@@ -63,7 +74,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		String articelLabel = getArticleLabel(localObject);
 		if (gtin != null) {
 			Coding coding = medication.addCoding();
-			coding.setSystem("urn:oid:1.3.160‎");
+			coding.setSystem("urn:oid:1.3.160");
 			coding.setCode(gtin);
 		}
 		if (atc != null) {
@@ -217,10 +228,16 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 
 	@Override
 	public Optional<Prescription> createLocalObject(MedicationOrder fhirObject) {
-		// lookup item
-		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.add(ArtikelstammItem_.gtin, QUERY.EQUALS, getMedicationOrderGtin(fhirObject).get());
-		Optional<ArtikelstammItem> item = qbe.executeGetSingleResult();
+		Optional<ArtikelstammItem> item = Optional.empty();
+		Optional<String> gtin = getMedicationOrderGtin(fhirObject);
+		if (gtin.isPresent()) {
+			// lookup item
+			JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+			qbe.add(ArtikelstammItem_.gtin, QUERY.EQUALS, gtin.get());
+			item = qbe.executeGetSingleResult();
+		} else {
+			getLogger().error("MedicationOrder with no gtin");
+		}
 		// lookup patient
 		Optional<Kontakt> patient = KontaktService.INSTANCE.findById(fhirObject.getPatient().getId());
 		if (item.isPresent() && patient.isPresent()) {

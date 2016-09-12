@@ -42,6 +42,9 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
 		prescriptionMapper = (IFhirTransformer<MedicationOrder, Prescription>) transformerRegistry
 				.getTransformerFor(MedicationOrder.class, Prescription.class);
+		if (prescriptionMapper == null) {
+			throw new IllegalStateException("No transformer available");
+		}
 	}
 
 	@Read

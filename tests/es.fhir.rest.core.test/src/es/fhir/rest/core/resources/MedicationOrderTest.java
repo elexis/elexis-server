@@ -35,12 +35,9 @@ public class MedicationOrderTest {
 
 		client = FhirClient.getTestClient();
 		assertNotNull(client);
-		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))
-				.returnBundle(Bundle.class).execute();
-		assertNotNull(results);
-		List<BundleEntryComponent> entries = results.getEntry();
-		assertFalse(entries.isEmpty());
-		patient = (Patient) entries.get(0).getResource();
+		patient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+				.execute();
+		assertNotNull(patient);
 	}
 
 	@Test

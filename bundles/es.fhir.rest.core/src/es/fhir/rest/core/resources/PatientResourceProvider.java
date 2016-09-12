@@ -38,6 +38,9 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
 		patientMapper = (IFhirTransformer<Patient, Kontakt>) transformerRegistry.getTransformerFor(Patient.class,
 				Kontakt.class);
+		if (patientMapper == null) {
+			throw new IllegalStateException("No transformer available");
+		}
 	}
 
 	@Read
