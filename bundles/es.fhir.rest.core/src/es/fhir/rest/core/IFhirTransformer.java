@@ -1,9 +1,5 @@
 package es.fhir.rest.core;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Identifier;
@@ -59,14 +55,5 @@ public interface IFhirTransformer<F, L> {
 		identifier.setSystem("www.elexis.info/objid");
 		identifier.setValue(dbObject.getId());
 		return identifier;
-	}
-
-	default Date getDate(LocalDateTime localDateTime) {
-		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
-		return Date.from(zdt.toInstant());
-	}
-
-	default LocalDateTime getLocalDateTime(Date date) {
-		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
 }

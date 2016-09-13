@@ -1,7 +1,6 @@
 package es.fhir.rest.core.transformer;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -20,7 +19,7 @@ import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 
-public class KontaktHelper {
+public class KontaktHelper extends AbstractHelper {
 
 	public List<HumanName> getHumanNames(Kontakt kontakt) {
 		List<HumanName> ret = new ArrayList<>();
@@ -36,10 +35,19 @@ public class KontaktHelper {
 	}
 
 	public String getOrganizationName(Kontakt kontakt) {
+		StringBuilder sb = new StringBuilder();
 		if (kontakt.isOrganisation()) {
-			return kontakt.getDescription1() + " " + kontakt.getDescription2();
+			if (kontakt.getDescription1() != null) {
+				sb.append(kontakt.getDescription1());
+			}
+			if (kontakt.getDescription2() != null) {
+				if (sb.length() > 0) {
+					sb.append(" ");
+				}
+				sb.append(kontakt.getDescription2());
+			}
 		}
-		return "No Organization";
+		return sb.toString();
 	}
 
 	public AdministrativeGender getGender(Gender gender) {
@@ -57,7 +65,7 @@ public class KontaktHelper {
 	public Date getBirthDate(Kontakt kontakt) {
 		LocalDate dateOfBirth = kontakt.getDob();
 		if (dateOfBirth != null) {
-			return Date.from(dateOfBirth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+			return getDate(dateOfBirth);
 		}
 		return null;
 	}
@@ -116,10 +124,8 @@ public class KontaktHelper {
 
 	public List<Identifier> getIdentifiers(Kontakt kontakt) {
 		List<Identifier> ret = new ArrayList<>();
-		System.out.println("Get Xids [" + kontakt.getId() + "]");
 		Collection<Xid> xids = kontakt.getXids().values();
 		for (Xid xid : xids) {
-			System.out.println("XID Domain " + xid.getDomain() + " ID " + xid.getDomainId());
 			Identifier identifier = new Identifier();
 			identifier.setSystem(xid.getDomain());
 			identifier.setValue(xid.getDomainId());

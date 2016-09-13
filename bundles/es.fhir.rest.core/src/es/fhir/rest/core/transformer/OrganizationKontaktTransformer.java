@@ -38,8 +38,6 @@ public class OrganizationKontaktTransformer implements IFhirTransformer<Organiza
 			organization.addTelecom(contactPoint);
 		}
 
-		organization.setName(localObject.getLabel());
-
 		return Optional.of(organization);
 	}
 

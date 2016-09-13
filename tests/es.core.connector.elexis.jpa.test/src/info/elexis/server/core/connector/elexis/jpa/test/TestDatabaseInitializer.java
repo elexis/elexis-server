@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -253,6 +254,10 @@ public class TestDatabaseInitializer {
 		}
 	}
 
+	public static Kontakt getOrganization() {
+		return organization;
+	}
+
 	/**
 	 * Initialize a test Mandant.
 	 * 
@@ -334,6 +339,14 @@ public class TestDatabaseInitializer {
 	/**
 	 * Initialize a test Fall.
 	 * 
+	 * <li>Patient: {@link TestDatabaseInitializer#getPatient()}</li>
+	 * <li>Label: "Test Fall"</li>
+	 * <li>Reason: "reason"</li>
+	 * <li>BillingMethod: "method"</li>
+	 * <li>KostentrKontakt:
+	 * {@link TestDatabaseInitializer#getOrganization()}</li>
+	 * <li>VersNummer: 1234-5678</li>
+	 * <li>DatumVon: 1.9.2016</li>
 	 */
 	public synchronized void initializeFall() {
 		if (!isPatientInitialized) {
@@ -343,14 +356,19 @@ public class TestDatabaseInitializer {
 			initializeOrganization();
 		}
 		if (!isFallInitialized) {
-			fall = FallService.INSTANCE.create(patient, "Test", "reason", "method");
+			fall = FallService.INSTANCE.create(patient, "Test Fall", "reason", "method");
 			fall.setKostentrKontakt(organization);
 			fall.setVersNummer("1234-5678");
+			fall.setDatumVon(LocalDate.of(2016, Month.SEPTEMBER, 1));
 			FallService.INSTANCE.flush();
 
 			KontaktService.INSTANCE.refresh(patient);
 			isFallInitialized = true;
 		}
+	}
+
+	public static Fall getFall() {
+		return fall;
 	}
 
 	/**

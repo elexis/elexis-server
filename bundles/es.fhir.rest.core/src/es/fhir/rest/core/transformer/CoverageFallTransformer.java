@@ -1,64 +1,30 @@
 package es.fhir.rest.core.transformer;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Coverage;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Reference;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
 @Component
 public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall> {
+
+	private FallHelper fallHelper = new FallHelper();
 
 	@Override
 	public Optional<Coverage> getFhirObject(Fall localObject) {
 		Coverage coverage = new Coverage();
 
 		coverage.setId(new IdDt("Coverage", localObject.getId()));
-
 		coverage.addIdentifier(getElexisObjectIdentifier(localObject));
 
-		String coverageNumber = localObject.getVersNummer();
-		if (coverageNumber != null) {
-			Identifier coverageId = coverage.addIdentifier();
-			coverageId.setSystem("http://www.elexis.info/coverage");
-			coverageId.setValue(coverageNumber);
-		}
-
-		Kontakt patient = localObject.getPatientKontakt();
-		if (patient != null) {
-			Reference reference = new Reference(new IdDt("Patient", patient.getId()));
-			coverage.setBeneficiary(reference);
-		}
-
-		Kontakt kostenTr = localObject.getKostentrKontakt();
-		if (kostenTr != null) {
-			Reference reference = null;
-			if(kostenTr.isOrganisation()) {
-				reference = new Reference(new IdDt("Organization", kostenTr.getId()));
-			} else if (kostenTr.isPatient()) {
-				reference = new Reference(new IdDt("Patient", kostenTr.getId()));
-			}
-			coverage.setIssuer(reference);
-		}
-
-		Period period = new Period();
-		LocalDate startDate = localObject.getDatumVon();
-		if(startDate != null) {
-			period.setStart(getDate(startDate.atStartOfDay()));
-		}
-		LocalDate endDate = localObject.getDatumBis();
-		if(endDate != null) {
-			period.setEnd(getDate(endDate.atStartOfDay()));
-		}
-		coverage.setPeriod(period);
+		coverage.setBin(fallHelper.getBin(localObject));
+		coverage.setBeneficiary(fallHelper.getBeneficiaryReference(localObject));
+		coverage.setIssuer(fallHelper.getIssuerReference(localObject));
+		coverage.setPeriod(fallHelper.getPeriod(localObject));
 
 		return Optional.of(coverage);
 	}
