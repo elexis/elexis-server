@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.Collections;
 import java.util.List;
 
+import ch.elexis.core.constants.StringConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
@@ -78,6 +79,17 @@ public class ArtikelService extends AbstractService<Artikel> {
 	 */
 	public static boolean eigenartikelDetermineIfProduct(Artikel article) {
 		return (article.getExtId() == null || article.getExtId().length() == 0);
+	}
+
+	public static List<Artikel> getAllStockArticles(String articleType) {
+		JPAQuery<Artikel> qbe = new JPAQuery<Artikel>(Artikel.class);
+		qbe.or(Artikel_.minbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
+		qbe.or(Artikel_.istbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
+		qbe.or(Artikel_.maxbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
+		if (articleType != null) {
+			qbe.add(Artikel_.Typ, QUERY.LIKE, articleType);
+		}
+		return qbe.execute();
 	}
 
 }

@@ -24,7 +24,7 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	public static final String TYP_MEDIKAMENT = "Medikament";
 
 	public static final String FLD_EXTINFO_PACKAGESIZE = "Verpackungseinheit";
-	
+
 	@Column(length = 15)
 	private String ean;
 
@@ -45,13 +45,13 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	private String nameIntern;
 
 	@Column(length = 4)
-	private String maxbestand;
+	private Integer maxbestand;
 
 	@Column(length = 4)
-	private String minbestand;
+	private Integer minbestand;
 
 	@Column(length = 4)
-	private String istbestand;
+	private Integer istbestand;
 
 	@Column(length = 8, name = "EK_Preis")
 	private String ekPreis;
@@ -139,27 +139,27 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 		this.nameIntern = nameIntern;
 	}
 
-	public String getMaxbestand() {
+	public Integer getMaxbestand() {
 		return maxbestand;
 	}
 
-	public void setMaxbestand(String maxbestand) {
+	public void setMaxbestand(Integer maxbestand) {
 		this.maxbestand = maxbestand;
 	}
 
-	public String getMinbestand() {
+	public Integer getMinbestand() {
 		return minbestand;
 	}
 
-	public void setMinbestand(String minbestand) {
+	public void setMinbestand(Integer minbestand) {
 		this.minbestand = minbestand;
 	}
 
-	public String getIstbestand() {
+	public Integer getIstbestand() {
 		return istbestand;
 	}
 
-	public void setIstbestand(String istbestand) {
+	public void setIstbestand(Integer istbestand) {
 		this.istbestand = istbestand;
 	}
 

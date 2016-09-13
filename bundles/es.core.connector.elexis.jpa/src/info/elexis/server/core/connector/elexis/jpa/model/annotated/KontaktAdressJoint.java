@@ -29,11 +29,11 @@ public class KontaktAdressJoint extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "otherID")
 	private Kontakt otherKontakt;
 
-	@Column
-	private int myRType;
+	@Column(length = 4)
+	private Integer myRType;
 
-	@Column
-	private int otherRType;
+	@Column(length = 4)
+	private Integer otherRType;
 
 	public Kontakt getMyKontakt() {
 		return myKontakt;
@@ -59,19 +59,19 @@ public class KontaktAdressJoint extends AbstractDBObjectIdDeleted {
 		this.bezug = bezug;
 	}
 
-	public int getMyRType() {
+	public Integer getMyRType() {
 		return myRType;
 	}
 
-	public void setMyRType(int myRType) {
+	public void setMyRType(Integer myRType) {
 		this.myRType = myRType;
 	}
 
-	public int getOtherRType() {
+	public Integer getOtherRType() {
 		return otherRType;
 	}
 
-	public void setOtherRType(int otherRType) {
+	public void setOtherRType(Integer otherRType) {
 		this.otherRType = otherRType;
 	}
 }

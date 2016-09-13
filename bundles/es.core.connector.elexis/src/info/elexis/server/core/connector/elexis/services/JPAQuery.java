@@ -31,7 +31,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
 public class JPAQuery<T extends AbstractDBObject> {
 
 	public static enum QUERY {
-		LIKE, EQUALS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS
+		LIKE, EQUALS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS, GREATER_OR_EQUAL
 	};
 
 	private CriteriaBuilder cb;
@@ -41,9 +41,8 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	private Predicate predicate;
 	private boolean includeDeleted;
-	
+
 	private final Class<T> clazz;
-	
 
 	public JPAQuery(Class<T> clazz) {
 		this(clazz, false);
@@ -110,6 +109,9 @@ public class JPAQuery<T extends AbstractDBObject> {
 		case GREATER:
 			Path<Integer> pathG = root.get(attribute);
 			return cb.gt(pathG, Integer.parseInt(value.toString()));
+		case GREATER_OR_EQUAL:
+			Path<Integer> pathGE = root.get(attribute);
+			return cb.ge(pathGE, Integer.parseInt(value.toString()));
 		case NOT_LIKE:
 			return cb.not(cb.like(root.get(attribute), value.toString()));
 		case NOT_EQUALS:
@@ -149,7 +151,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	 */
 	public Optional<T> executeGetSingleResult() {
 		List<T> result = execute();
-		if (result !=  null && result.size() == 1) {
+		if (result != null && result.size() == 1) {
 			return Optional.of(result.get(0));
 		}
 		return Optional.empty();

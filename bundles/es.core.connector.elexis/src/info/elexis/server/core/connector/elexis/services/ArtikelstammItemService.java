@@ -111,8 +111,9 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	 */
 	public static List<ArtikelstammItem> getAllStockArticles() {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.or(ArtikelstammItem_.minbestand, QUERY.GREATER, StringConstants.ZERO);
-		qbe.or(ArtikelstammItem_.maxbestand, QUERY.GREATER, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.minbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.maxbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
+		qbe.or(ArtikelstammItem_.istbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
 		return qbe.execute();
 	}
 

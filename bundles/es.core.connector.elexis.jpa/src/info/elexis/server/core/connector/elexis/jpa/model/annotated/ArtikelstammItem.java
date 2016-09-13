@@ -91,14 +91,14 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "lieferantId")
 	private Kontakt lieferant;
 
-	@Convert(value = "IntegerStringConverter")
-	private int maxbestand;
+	@Column(length = 4)
+	private Integer maxbestand;
 
-	@Convert(value = "IntegerStringConverter")
-	private int minbestand;
+	@Column(length = 4)
+	private Integer minbestand;
 
-	@Convert(value = "IntegerStringConverter")
-	private int istbestand;
+	@Column(length = 4)
+	private Integer istbestand;
 
 	@Column(length = 4)
 	private String verkaufseinheit;
@@ -229,6 +229,14 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		return lppv;
 	}
 	
+	public boolean isSl_entry() {
+		return sl_entry;
+	}
+	
+	public void setSl_entry(boolean sl_entry) {
+		this.sl_entry = sl_entry;
+	}
+	
 	public void setLppv(boolean lppv) {
 		this.lppv = lppv;
 	}
@@ -293,27 +301,27 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.lieferant = lieferant;
 	}
 
-	public int getMaxbestand() {
+	public Integer getMaxbestand() {
 		return maxbestand;
 	}
 
-	public void setMaxbestand(int maxbestand) {
+	public void setMaxbestand(Integer maxbestand) {
 		this.maxbestand = maxbestand;
 	}
 
-	public int getMinbestand() {
+	public Integer getMinbestand() {
 		return minbestand;
 	}
 
-	public void setMinbestand(int minbestand) {
+	public void setMinbestand(Integer minbestand) {
 		this.minbestand = minbestand;
 	}
 
-	public int getIstbestand() {
+	public Integer getIstbestand() {
 		return istbestand;
 	}
 
-	public void setIstbestand(int istbestand) {
+	public void setIstbestand(Integer istbestand) {
 		this.istbestand = istbestand;
 	}
 
