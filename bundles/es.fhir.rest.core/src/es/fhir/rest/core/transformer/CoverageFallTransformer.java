@@ -23,9 +23,7 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 
 		coverage.setId(new IdDt("Coverage", localObject.getId()));
 
-		Identifier elexisId = coverage.addIdentifier();
-		elexisId.setSystem("www.elexis.info/objid");
-		elexisId.setValue(localObject.getId());
+		coverage.addIdentifier(getElexisObjectIdentifier(localObject));
 
 		String coverageNumber = localObject.getVersNummer();
 		if (coverageNumber != null) {

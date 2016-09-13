@@ -1,54 +1,36 @@
 package es.fhir.rest.core.transformer;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
-import ch.elexis.core.types.Gender;
 import es.fhir.rest.core.IFhirTransformer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
 @Component
 public class PractitionerKontaktTransformer implements IFhirTransformer<Practitioner, Kontakt> {
 
+	private KontaktHelper kontaktHelper = new KontaktHelper();
+
 	@Override
 	public Optional<Practitioner> getFhirObject(Kontakt localObject) {
 		Practitioner practitioner = new Practitioner();
 
 		practitioner.setId(new IdDt("Practitioner", localObject.getId()));
-		Identifier elexisId = practitioner.addIdentifier();
 
-		elexisId.setSystem("www.elexis.info/objid");
-		elexisId.setValue(localObject.getId());
+		List<Identifier> identifiers = kontaktHelper.getIdentifiers(localObject);
+		identifiers.add(getElexisObjectIdentifier(localObject));
+		practitioner.setIdentifier(identifiers);
 
-		HumanName practitionerName = practitioner.addName();
-		practitionerName.addFamily(localObject.getFamilyName());
-		practitionerName.addGiven(localObject.getFirstName());
-		practitionerName.addPrefix(localObject.getTitel());
-		practitionerName.addSuffix(localObject.getTitelSuffix());
-
-		if (localObject.getGender() == Gender.FEMALE) {
-			practitioner.setGender(AdministrativeGender.FEMALE);
-		} else if (localObject.getGender() == Gender.MALE) {
-			practitioner.setGender(AdministrativeGender.MALE);
-		} else if (localObject.getGender() == Gender.UNDEFINED) {
-			practitioner.setGender(AdministrativeGender.OTHER);
-		} else {
-			practitioner.setGender(AdministrativeGender.UNKNOWN);
-		}
-
-		LocalDate dateOfBirth = localObject.getDob();
-		if (dateOfBirth != null) {
-			practitioner.setBirthDate(Date.from(dateOfBirth.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-		}
+		practitioner.setName(kontaktHelper.getHumanNames(localObject));
+		practitioner.setGender(kontaktHelper.getGender(localObject.getGender()));
+		practitioner.setBirthDate(kontaktHelper.getBirthDate(localObject));
+		practitioner.setAddress(kontaktHelper.getAddresses(localObject));
+		practitioner.setTelecom(kontaktHelper.getContactPoints(localObject));
 
 		return Optional.of(practitioner);
 	}

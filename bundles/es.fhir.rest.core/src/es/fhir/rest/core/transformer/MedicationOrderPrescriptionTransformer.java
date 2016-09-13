@@ -11,7 +11,6 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Enumeration;
 import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.MedicationOrder;
 import org.hl7.fhir.dstu3.model.MedicationOrder.MedicationOrderDosageInstructionComponent;
 import org.hl7.fhir.dstu3.model.MedicationOrder.MedicationOrderEventHistoryComponent;
@@ -59,10 +58,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		MedicationOrderStatus statusEnum = MedicationOrderStatus.ACTIVE;
 		
 		order.setId(new IdDt("MedicationOrder", localObject.getId()));
-		
-		Identifier elexisId = order.addIdentifier();
-		elexisId.setSystem("www.elexis.info/objid");
-		elexisId.setValue(localObject.getId());
+		order.addIdentifier(getElexisObjectIdentifier(localObject));
 
 		order.setPatient(getPatientReference(localObject.getPatient()));
 

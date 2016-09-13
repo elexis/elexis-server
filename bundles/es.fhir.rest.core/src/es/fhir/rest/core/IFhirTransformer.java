@@ -6,6 +6,10 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Identifier;
+
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+
 public interface IFhirTransformer<F, L> {
 	/**
 	 * Create a new FHIR object representing the localObject.
@@ -49,6 +53,13 @@ public interface IFhirTransformer<F, L> {
 	 * @return
 	 */
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz);
+
+	default Identifier getElexisObjectIdentifier(AbstractDBObjectIdDeleted dbObject) {
+		Identifier identifier = new Identifier();
+		identifier.setSystem("www.elexis.info/objid");
+		identifier.setValue(dbObject.getId());
+		return identifier;
+	}
 
 	default Date getDate(LocalDateTime localDateTime) {
 		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());

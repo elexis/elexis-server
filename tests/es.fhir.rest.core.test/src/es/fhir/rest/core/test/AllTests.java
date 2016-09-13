@@ -1,5 +1,10 @@
 package es.fhir.rest.core.test;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -15,4 +20,12 @@ import es.fhir.rest.core.resources.PractitionerTest;
 		PractitionerTest.class })
 public class AllTests {
 
+	public static Date getDate(LocalDateTime localDateTime) {
+		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+		return Date.from(zdt.toInstant());
+	}
+
+	public static LocalDateTime getLocalDateTime(Date date) {
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+	}
 }

@@ -1,7 +1,10 @@
 package es.fhir.rest.core.transformer;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.osgi.service.component.annotations.Component;
@@ -13,15 +16,27 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 @Component
 public class OrganizationKontaktTransformer implements IFhirTransformer<Organization, Kontakt> {
 
+	private KontaktHelper kontaktHelper = new KontaktHelper();
+
 	@Override
 	public Optional<Organization> getFhirObject(Kontakt localObject) {
 		Organization organization = new Organization();
 
 		organization.setId(new IdDt("Organization", localObject.getId()));
-		Identifier elexisId = organization.addIdentifier();
 
-		elexisId.setSystem("www.elexis.info/objid");
-		elexisId.setValue(localObject.getId());
+		List<Identifier> identifiers = kontaktHelper.getIdentifiers(localObject);
+		identifiers.add(getElexisObjectIdentifier(localObject));
+		organization.setIdentifier(identifiers);
+
+		organization.setName(kontaktHelper.getOrganizationName(localObject));
+		List<Address> addresses = kontaktHelper.getAddresses(localObject);
+		for (Address address : addresses) {
+			organization.addAddress(address);
+		}
+		List<ContactPoint> contactPoints = kontaktHelper.getContactPoints(localObject);
+		for (ContactPoint contactPoint : contactPoints) {
+			organization.addTelecom(contactPoint);
+		}
 
 		organization.setName(localObject.getLabel());
 
