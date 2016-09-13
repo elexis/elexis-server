@@ -1,10 +1,16 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKey;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 
 import org.eclipse.persistence.annotations.Convert;
 
@@ -22,6 +28,11 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	@Column
 	@Convert("booleanStringConverter")
 	protected boolean deleted = false;
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "object", insertable = false, updatable = false)
+	@MapKey(name = "domain")
+	protected Map<String, Xid> xids;
 	
 	public String getId() {
 		return id;
@@ -40,6 +51,14 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 		// TODO if true, remove all Xids
 	}
 	
+	public Map<String, Xid> getXids() {
+		return xids;
+	}
+
+	public void setXids(Map<String, Xid> xids) {
+		this.xids = xids;
+	}
+
 	public String getLabel(){
 		return getId()+"@"+getClass().getName()+" "+isDeleted();
 	};

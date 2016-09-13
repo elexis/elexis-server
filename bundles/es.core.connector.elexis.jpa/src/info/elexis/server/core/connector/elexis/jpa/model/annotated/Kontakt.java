@@ -13,7 +13,6 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,7 +20,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -191,11 +189,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	protected String website;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "object", insertable = false)
-	@MapKey(name = "domain")
-	protected Map<String, Xid> xids;
-
-	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patientID", insertable = false)
 	protected List<Fall> faelle;
 
@@ -347,14 +340,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	public void setWebsite(String website) {
 		this.website = website;
-	}
-
-	public Map<String, Xid> getXids() {
-		return xids;
-	}
-
-	public void setXids(Map<String, Xid> xids) {
-		this.xids = xids;
 	}
 
 	public List<Fall> getFaelle() {

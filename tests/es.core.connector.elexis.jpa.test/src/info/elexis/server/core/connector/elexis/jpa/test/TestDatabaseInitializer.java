@@ -14,12 +14,15 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.types.Gender;
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
@@ -152,9 +155,15 @@ public class TestDatabaseInitializer {
 	 * Initialize a test Patient.
 	 * 
 	 * <li>Firstname: Test</li>
-	 * <li>Lastname: Test</li>
+	 * <li>Lastname: Patient</li>
 	 * <li>DateofBirth: 1.1.1990</li>
 	 * <li>Gender: FEMALE</li>
+	 * <li>Phone1: +01555123</li>
+	 * <li>Mobile: +01444123</li>
+	 * <li>City: City</li>
+	 * <li>Zip: 123</li>
+	 * <li>Street: Street 1</li>
+	 * <li>Xid AHV: 756...</li>
 	 * 
 	 */
 	public synchronized void initializePatient() {
@@ -163,8 +172,16 @@ public class TestDatabaseInitializer {
 		}
 
 		if (!isPatientInitialized) {
-			patient = KontaktService.INSTANCE.createPatient("Test", "Test", LocalDate.of(1990, 1, 1), Gender.FEMALE);
+			patient = KontaktService.INSTANCE.createPatient("Test", "Patient", LocalDate.of(1990, 1, 1), Gender.FEMALE);
+			patient.setPhone1("+01555123");
+			patient.setMobile("+01444123");
 
+			patient.setCity("City");
+			patient.setZip("123");
+			patient.setStreet("Street 1");
+
+			KontaktService.INSTANCE.flush();
+			addAHVNumber(patient, 1);
 			isPatientInitialized = true;
 		}
 	}
@@ -178,13 +195,41 @@ public class TestDatabaseInitializer {
 		return patient;
 	}
 
+	private void addAHVNumber(Kontakt kontakt, int index) {
+		String country = "756";
+		String number = String.format("%09d", index);
+		StringBuilder ahvBuilder = new StringBuilder(country + number);
+		ahvBuilder.append(getAHVCheckNumber(ahvBuilder.toString()));
+
+		KontaktService.INSTANCE.setDomainId(kontakt, XidConstants.DOMAIN_AHV, ahvBuilder.toString(),
+				XidQuality.ASSIGNMENT_REGIONAL);
+	}
+
+	private String getAHVCheckNumber(String string) {
+		int sum = 0;
+		for (int i = 0; i < string.length(); i++) {
+			// reverse order
+			char character = string.charAt((string.length() - 1) - i);
+			int intValue = Character.getNumericValue(character);
+			if (i % 2 == 0) {
+				sum += intValue * 3;
+			} else {
+				sum += intValue;
+			}
+		}
+		return Integer.toString(sum % 10);
+	}
+
 	/**
-	 * Initialize a test Patient.
+	 * Initialize a test Organization.
 	 * 
-	 * <li>Firstname: Test</li>
+	 * <li>Description1: Test Organization</li>
 	 * <li>Lastname: Test</li>
-	 * <li>DateofBirth: 1.1.1990</li>
-	 * <li>Gender: FEMALE</li>
+	 * <li>Phone1: +01555345</li>
+	 * <li>Mobile: +01444345</li>
+	 * <li>City: City</li>
+	 * <li>Zip: 123</li>
+	 * <li>Street: Street 10</li>
 	 * 
 	 */
 	public synchronized void initializeOrganization() {
@@ -195,13 +240,35 @@ public class TestDatabaseInitializer {
 		if (!isOrganizationInitialized) {
 			organization = KontaktService.INSTANCE.create();
 			organization.setOrganisation(true);
-			organization.setDescription1("Organization Test");
-			KontaktService.INSTANCE.write(organization);
+			organization.setDescription1("Test Organization");
+			organization.setPhone1("+01555345");
+			organization.setMobile("+01444345");
+
+			organization.setCity("City");
+			organization.setZip("123");
+			organization.setStreet("Street 10");
+
 			KontaktService.INSTANCE.flush();
 			isOrganizationInitialized = true;
 		}
 	}
 
+	/**
+	 * Initialize a test Mandant.
+	 * 
+	 * <li>Firstname: Test</li>
+	 * <li>Lastname: Mandant</li>
+	 * <li>DateofBirth: 1.1.1970</li>
+	 * <li>Gender: MALE</li>
+	 * <li>Phone1: +01555234</li>
+	 * <li>Mobile: +01444234</li>
+	 * <li>City: City</li>
+	 * <li>Zip: 123</li>
+	 * <li>Street: Street 100</li>
+	 * <li>EAN: 2000000000002</li>
+	 * <li>KSK: C000002</li>
+	 * 
+	 */
 	public synchronized void initializeMandant() {
 		if (!isDbInitialized) {
 			initializeDb();
@@ -209,13 +276,33 @@ public class TestDatabaseInitializer {
 
 		if (!isMandantInitialized) {
 			mandant = KontaktService.INSTANCE.create();
+			mandant.setPerson(true);
 			mandant.setMandator(true);
-			mandant.setDescription1("Test");
+			mandant.setDescription1("Mandant");
 			mandant.setDescription2("Test");
-			KontaktService.INSTANCE.write(mandant);
+
+			mandant.setGender(Gender.MALE);
+			mandant.setDateOfBirth(new TimeTool("01.01.1970"));
+
+			mandant.setPhone1("+01555234");
+			mandant.setMobile("+01444234");
+
+			mandant.setCity("City");
+			mandant.setZip("123");
+			mandant.setStreet("Street 100");
 			KontaktService.INSTANCE.flush();
+
+			KontaktService.INSTANCE.setDomainId(mandant, XidConstants.DOMAIN_EAN, "2000000000002",
+					XidQuality.ASSIGNMENT_GLOBAL);
+
+			KontaktService.INSTANCE.setDomainId(mandant, "www.xid.ch/id/ksk", "C000002",
+					XidQuality.ASSIGNMENT_REGIONAL);
 			isMandantInitialized = true;
 		}
+	}
+
+	public static Kontakt getMandant() {
+		return mandant;
 	}
 
 	/**
@@ -259,7 +346,7 @@ public class TestDatabaseInitializer {
 			fall = FallService.INSTANCE.create(patient, "Test", "reason", "method");
 			fall.setKostentrKontakt(organization);
 			fall.setVersNummer("1234-5678");
-			FallService.INSTANCE.write(fall);
+			FallService.INSTANCE.flush();
 
 			KontaktService.INSTANCE.refresh(patient);
 			isFallInitialized = true;
