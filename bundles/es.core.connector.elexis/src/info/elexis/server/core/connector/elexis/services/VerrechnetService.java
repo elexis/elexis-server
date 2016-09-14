@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.constants.StringConstants;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarEigenleistung;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
@@ -92,6 +93,10 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) iv;
 			vat.singleDisposal(1);
 			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
+		} else if (iv instanceof VerrechenbarArtikel) {
+			VerrechenbarArtikel vat = (VerrechenbarArtikel) iv;
+			vat.singleDisposal(1);
+			ArtikelService.INSTANCE.write(vat.getEntity());
 		}
 
 		// call the adjusters
@@ -162,6 +167,11 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 			vat.singleReturn(previous);
 			vat.singleDisposal(count);
 			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
+		} else if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikel)) {
+			VerrechenbarArtikel vat = (VerrechenbarArtikel) verrechenbar.get();
+			vat.singleReturn(previous);
+			vat.singleDisposal(count);
+			ArtikelService.INSTANCE.write(vat.getEntity());
 		}
 	}
 }

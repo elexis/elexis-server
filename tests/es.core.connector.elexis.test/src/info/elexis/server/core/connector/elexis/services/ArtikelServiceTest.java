@@ -14,12 +14,21 @@ public class ArtikelServiceTest extends AbstractServiceTest {
 	@Test
 	public void testCreateEigenartikel() {
 		Artikel ea1 = ArtikelService.INSTANCE.create("Name", "InternalName", Artikel.TYP_EIGENARTIKEL);
+		ea1.setIstbestand(1);
+		ea1.setMinbestand(3);
+		ea1.setMaxbestand(15);
+		
+		ArtikelService.INSTANCE.write(ea1);
 
 		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
 		assertTrue(findById.isPresent());
 		assertEquals(ea1.getName(), findById.get().getName());
 		assertEquals(ea1.getNameIntern(), findById.get().getNameIntern());
 		assertEquals(ea1.getTyp(), findById.get().getTyp());
+		
+		assertEquals(1, (int) findById.get().getIstbestand());
+		assertEquals(3, (int) findById.get().getMinbestand());
+		assertEquals(15, (int) findById.get().getMaxbestand());
 
 		ArtikelService.INSTANCE.remove(ea1);
 	}

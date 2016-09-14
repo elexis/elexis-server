@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.DefaultOptifier;
+import info.elexis.server.core.connector.elexis.billable.optifier.NoObligationOptifier;
 import info.elexis.server.core.connector.elexis.common.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -87,12 +88,8 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		} catch (Exception e) {
 			log.warn("Error parsing sell unit: " + e.getMessage() + " @ " + artikelstammItem.getId());
 		}
-
-		if ((vpe > 0.0) && (vke > 0.0) && (vpe != vke)) {
-			return (int) Math.round(vke * (vkt / vpe));
-		} else {
-			return vkt;
-		}
+		
+		return VerrechenbarArtikel.determineTP(date, fall, vpe, vke, vkt);
 	}
 
 	@Override

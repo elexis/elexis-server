@@ -18,6 +18,7 @@ import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.AllTestsSuite;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -27,6 +28,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tar
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.services.ArtikelService;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
@@ -294,8 +296,37 @@ public class BillingTest {
 
 		artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
 		assertTrue(artikelstammItem.isPresent());
-		assertEquals(3, artikelstammItem.get().getMaxbestand());
-		assertEquals(2, artikelstammItem.get().getMinbestand());
-		assertEquals(1, artikelstammItem.get().getIstbestand());
+		assertEquals(3, (int) artikelstammItem.get().getMaxbestand());
+		assertEquals(2, (int) artikelstammItem.get().getMinbestand());
+		assertEquals(1, (int) artikelstammItem.get().getIstbestand());
+	}
+
+	@Test
+	public void testAddEigenartikelBilling() {
+		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
+		ea1.setIstbestand(2);
+		ea1.setEkPreis("13");
+		ea1.setVkPreis("15");
+		ArtikelService.INSTANCE.write(ea1);
+		
+		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
+
+		IStatus status = verrechenbar.add(consultation, userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+		assertTrue(os.isOK());
+
+		assertEquals(ElexisTypeMap.TYPE_EIGENARTIKEL, vr.getKlasse());
+		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(1, vr.getZahl());
+		assertEquals(1500, vr.getVk_preis());
+		assertEquals(100, vr.getScale());
+		
+		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
+		assertEquals(1, (int) findById.get().getIstbestand());
+
+		ArtikelService.INSTANCE.remove(ea1);
 	}
 }
