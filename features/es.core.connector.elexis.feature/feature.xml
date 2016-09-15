@@ -215,4 +215,11 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="at.medevit.atc_codes"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
