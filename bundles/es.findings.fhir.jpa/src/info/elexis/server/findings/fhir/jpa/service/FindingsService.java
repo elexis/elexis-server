@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +18,10 @@ import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IFindingsService;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
-import info.elexis.server.core.connector.elexis.services.JPAQuery;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
 import info.elexis.server.findings.fhir.jpa.service.internal.DbInitializer;
+import info.elexis.server.findings.fhir.jpa.service.internal.JPAQuery;
 
 @Component
 public class FindingsService implements IFindingsService {
@@ -31,6 +33,8 @@ public class FindingsService implements IFindingsService {
 	private static ReentrantLock dbInitializedLock = new ReentrantLock();
 
 	private FindingsFactory factory;
+
+	private EncounterService encounterService;
 
 	public FindingsService() {
 		try {
@@ -46,6 +50,11 @@ public class FindingsService implements IFindingsService {
 			dbInitializedLock.unlock();
 		}
 		factory = new FindingsFactory();
+	}
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindEncounterService(EncounterService encounterService) {
+		this.encounterService = encounterService;
 	}
 
 	@Override
@@ -148,14 +157,14 @@ public class FindingsService implements IFindingsService {
 	private List<Encounter> getEncounters(String patientId) {
 		JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
 		if (patientId != null) {
-			query.add(Encounter_.patientid, QUERY.EQUALS, patientId);
+			query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
 		}
 		return query.execute();
 	}
 
 	private Optional<IEncounter> getEncounter(String consultationId) {
 		JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
-		query.add(Encounter_.consultationid, QUERY.EQUALS, consultationId);
+		query.add(Encounter_.consultationid, JPAQuery.QUERY.EQUALS, consultationId);
 		List<Encounter> encounters = query.execute();
 		if (encounters != null && !encounters.isEmpty()) {
 			if (encounters.size() > 1) {
@@ -180,6 +189,15 @@ public class FindingsService implements IFindingsService {
 	@Override
 	public IFindingsFactory getFindingsFactory() {
 		return factory;
+	}
+
+	@Override
+	public Optional<IFinding> findById(String id) {
+		Optional<Encounter> encounter = encounterService.findById(id);
+		if(encounter.isPresent()) {
+			return Optional.of(encounter.get());
+		}
+		return Optional.empty();
 	}
 
 }

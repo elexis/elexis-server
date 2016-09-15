@@ -18,6 +18,7 @@
 
    <requires>
       <import feature="info.elexis.server.core.connector.elexis.feature" version="1.0.0.qualifier"/>
+      <import feature="info.elexis.server.findings.feature" version="1.0.0.qualifier"/>
    </requires>
 
    <plugin

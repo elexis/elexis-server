@@ -14,7 +14,9 @@ Require-Bundle: ch.elexis.core.findings;bundle-version="1.0.0",
 Meta-Persistence: META-INF/persistence.xml
 JPA-PersistenceUnits: elexis
 Export-Package: info.elexis.server.findings.fhir.jpa.model.annotated
-Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.FindingsService.xml
+Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.FindingsService.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.service.EncounterService.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.service.internal.FindingsEntityManager.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: org.h2,
  org.slf4j
