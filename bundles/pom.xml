@@ -26,5 +26,6 @@
 	    	<module>es.core.connector.elexis.jaxrs</module>
 		<module>at.medevit.logback.pushnotification</module>
 		<module>es.fhir.rest.core</module>
+		<module>es.findings.fhir.jpa</module>
        </modules>
 </project>
