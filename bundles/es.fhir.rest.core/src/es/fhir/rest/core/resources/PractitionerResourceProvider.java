@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.hl7.fhir.dstu3.model.CodeType;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 
@@ -76,5 +80,52 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	@Search()
+	public List<Practitioner> findPractitioner(@RequiredParam(name = Practitioner.SP_ROLE) CodeType roleCode) {
+		if (roleCode != null) {
+			String codeValue = roleCode.getValue();
+			if (codeValue != null) {
+				String[] parts = codeValue.split("\\|");
+				if (parts.length == 2) {
+					String codeSystem = parts[0];
+					String codeCode = parts[1];
+					List<Practitioner> allPractitioners = getAllPractitioners();
+					return allPractitioners.stream()
+							.filter(p -> practitionerHasRole(p, codeSystem, codeCode))
+							.collect(Collectors.toList());
+
+				}
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	private boolean practitionerHasRole(Practitioner p, String codeSystem, String codeCode) {
+		List<PractitionerPractitionerRoleComponent> roles = p.getPractitionerRole();
+		for (PractitionerPractitionerRoleComponent practitionerPractitionerRoleComponent : roles) {
+			List<Coding> codings = practitionerPractitionerRoleComponent.getRole().getCoding();
+			for (Coding coding : codings) {
+				if (coding.getSystem().equals(codeSystem) && coding.getCode().equals(codeCode)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private List<Practitioner> getAllPractitioners() {
+		JPAQuery<Kontakt> query = new JPAQuery<>(Kontakt.class);
+		query.add(Kontakt_.mandator, QUERY.EQUALS, true);
+		List<Kontakt> practitioners = query.execute();
+		List<Practitioner> ret = new ArrayList<Practitioner>();
+		if (!practitioners.isEmpty()) {
+			for (Kontakt practitioner : practitioners) {
+				Optional<Practitioner> fhirPractitioner = practitionerMapper.getFhirObject(practitioner);
+				fhirPractitioner.ifPresent(fp -> ret.add(fp));
+			}
+		}
+		return ret;
 	}
 }

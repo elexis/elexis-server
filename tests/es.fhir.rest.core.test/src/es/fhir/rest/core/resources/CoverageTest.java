@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Coverage;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.junit.BeforeClass;
@@ -42,9 +43,11 @@ public class CoverageTest {
 
 	@Test
 	public void getCoverage() {
-		// search by name
+		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+				.execute();
+		// search by BENEFICIARY
 		Bundle results = client.search().forResource(Coverage.class)
-				.where(Coverage.BENEFICIARYIDENTIFIER.exactly().code(TestDatabaseInitializer.getPatient().getId()))
+				.where(Coverage.BENEFICIARYREFERENCE.hasId(readPatient.getId()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
@@ -55,12 +58,6 @@ public class CoverageTest {
 				.execute();
 		assertNotNull(readCoverage);
 		assertEquals(coverage.getId(), readCoverage.getId());
-		// search by patientId
-		results = client.search().byUrl("Coverage?patientId=" + TestDatabaseInitializer.getPatient().getId())
-				.returnBundle(Bundle.class).execute();
-		assertNotNull(results);
-		entries = results.getEntry();
-		assertFalse(entries.isEmpty());
 	}
 
 	/**

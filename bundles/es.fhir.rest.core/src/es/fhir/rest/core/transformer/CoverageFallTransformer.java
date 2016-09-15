@@ -7,6 +7,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
+import es.fhir.rest.core.transformer.helper.FallHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 
 @Component

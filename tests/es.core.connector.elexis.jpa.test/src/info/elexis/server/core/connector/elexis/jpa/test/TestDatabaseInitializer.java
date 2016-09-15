@@ -9,6 +9,8 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -23,11 +25,15 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.FallService;
+import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
+import info.elexis.server.core.connector.elexis.services.UserService;
 
 public class TestDatabaseInitializer {
 
@@ -297,6 +303,14 @@ public class TestDatabaseInitializer {
 			mandant.setStreet("Street 100");
 			KontaktService.INSTANCE.flush();
 
+			User user = UserService.INSTANCE.create();
+			user.setKontakt(mandant);
+			Optional<Role> doctorRole = getRoleWithId("doctor");
+			if (doctorRole.isPresent()) {
+				user.setRoles(Collections.singletonList(doctorRole.get()));
+			}
+			UserService.INSTANCE.flush();
+
 			KontaktService.INSTANCE.setDomainId(mandant, XidConstants.DOMAIN_EAN, "2000000000002",
 					XidQuality.ASSIGNMENT_GLOBAL);
 
@@ -304,6 +318,17 @@ public class TestDatabaseInitializer {
 					XidQuality.ASSIGNMENT_REGIONAL);
 			isMandantInitialized = true;
 		}
+	}
+
+	public Optional<Role> getRoleWithId(String id) {
+		JPAQuery<Role> query = new JPAQuery<>(Role.class);
+		List<Role> roles = query.execute();
+		for (Role role : roles) {
+			if (id.equals(role.getId())) {
+				return Optional.of(role);
+			}
+		}
+		return Optional.empty();
 	}
 
 	public static Kontakt getMandant() {

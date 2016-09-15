@@ -55,12 +55,15 @@ public class PatientTest {
 		Patient readPatient = client.read().resource(Patient.class).withId(patient.getId()).execute();
 		assertNotNull(readPatient);
 		assertEquals(patient.getId(), readPatient.getId());
-		// search by elexis patient number
-		results = client.search().byUrl("Patient?patientNumber=" + getPatientNumber(patient)).returnBundle(Bundle.class)
-				.execute();
+		// search by elexis patient number identifier
+		results = client.search()
+				.forResource(Patient.class).where(Patient.IDENTIFIER.exactly()
+						.systemAndIdentifier("www.elexis.info/patnr",
+				Integer.toString(getPatientNumber(patient)))).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
+
 	}
 
 	/**

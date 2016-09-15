@@ -13,6 +13,7 @@ import java.util.List;
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
@@ -20,9 +21,11 @@ import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import es.fhir.rest.core.test.AllTests;
@@ -56,6 +59,28 @@ public class PractitionerTest {
 				.execute();
 		assertNotNull(readPractitioner);
 		assertEquals(practitioner.getId(), readPractitioner.getId());
+
+		// search by role
+		results = client.search()
+				.forResource(Practitioner.class).where(Practitioner.ROLE.exactly()
+						.systemAndCode(PractitionerRoleEnum.VALUESET_IDENTIFIER, PractitionerRoleEnum.DOCTOR.getCode()))
+				.returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+		practitioner = (Practitioner) entries.get(0).getResource();
+		List<PractitionerPractitionerRoleComponent> roles = practitioner.getPractitionerRole();
+		boolean doctorRoleFound = false;
+		for (PractitionerPractitionerRoleComponent practitionerPractitionerRoleComponent : roles) {
+			List<Coding> codings = practitionerPractitionerRoleComponent.getRole().getCoding();
+			for (Coding coding : codings) {
+				if (coding.getSystem().equals(PractitionerRoleEnum.VALUESET_IDENTIFIER)
+						&& coding.getCode().equals(PractitionerRoleEnum.DOCTOR.getCode())) {
+					doctorRoleFound = true;
+				}
+			}
+		}
+		assertTrue(doctorRoleFound);
 	}
 
 	/**

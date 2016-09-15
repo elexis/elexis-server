@@ -10,6 +10,7 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -59,13 +60,17 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Patient> findPatientByPatientNumber(@RequiredParam(name = "patientNumber") String patientNumber) {
-		if (patientNumber != null) {
-			Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(Integer.valueOf(patientNumber));
-			if (patient.isPresent()) {
-				if (patient.get().isPatient()) {
-					Optional<Patient> fhirPatient = patientMapper.getFhirObject(patient.get());
-					return Collections.singletonList(fhirPatient.get());
+	public List<Patient> findPatientByIndetifier(
+			@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+		if (identifier != null) {
+			if (identifier.getSystem().equals("www.elexis.info/patnr")) {
+				Optional<Kontakt> patient = KontaktService
+						.findPatientByPatientNumber(Integer.valueOf(identifier.getValue().getValue()));
+				if (patient.isPresent()) {
+					if (patient.get().isPatient()) {
+						Optional<Patient> fhirPatient = patientMapper.getFhirObject(patient.get());
+						return Collections.singletonList(fhirPatient.get());
+					}
 				}
 			}
 		}
