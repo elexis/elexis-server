@@ -93,6 +93,7 @@ public class BillingTest {
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
+		assertEquals(immunglobulinValid.getName(), vr.getLeistungenText());
 		assertEquals(12000, vr.getVk_tp());
 		assertEquals(12000, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
@@ -132,6 +133,7 @@ public class BillingTest {
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
+		assertEquals(validDefault.getTitel(), vr.getLeistungenText());
 		assertEquals("0.92", vr.getVk_scale());
 		assertEquals(4800, vr.getVk_tp());
 		assertEquals(4416, vr.getVk_preis());
@@ -160,6 +162,7 @@ public class BillingTest {
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
+		assertEquals(code_000010.getTx255(), vr.getLeistungenText());
 		assertEquals("0.92", vr.getVk_scale());
 		assertEquals(1776, vr.getVk_tp());
 		assertEquals(1634, vr.getVk_preis());
@@ -291,6 +294,7 @@ public class BillingTest {
 		assertNotNull(vr);
 
 		assertEquals(ElexisTypeMap.TYPE_ARTIKELSTAMM, vr.getKlasse());
+		assertEquals(artikelstammItem.get().getDscr(), vr.getLeistungenText());
 		assertEquals(consultation.getId(), vr.getBehandlung().getId());
 		assertEquals(1, vr.getZahl());
 
@@ -308,7 +312,7 @@ public class BillingTest {
 		ea1.setEkPreis("13");
 		ea1.setVkPreis("15");
 		ArtikelService.INSTANCE.write(ea1);
-		
+
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
 
 		IStatus status = verrechenbar.add(consultation, userContact, mandator);
@@ -319,11 +323,12 @@ public class BillingTest {
 		assertTrue(os.isOK());
 
 		assertEquals(ElexisTypeMap.TYPE_EIGENARTIKEL, vr.getKlasse());
+		assertEquals(ea1.getLabel(), vr.getLeistungenText());
 		assertEquals(consultation.getId(), vr.getBehandlung().getId());
 		assertEquals(1, vr.getZahl());
 		assertEquals(1500, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
-		
+
 		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
 		assertEquals(1, (int) findById.get().getIstbestand());
 

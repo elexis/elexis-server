@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.article.Constants;
+import ch.elexis.core.model.eigenartikel.EigenartikelTyp;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.DefaultOptifier;
@@ -51,7 +52,7 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 
 	@Override
 	public String getText() {
-		return article.getNameIntern();
+		return article.getLabel();
 	}
 
 	@Override
@@ -103,6 +104,20 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 
 	@Override
 	public VatInfo getVatInfo() {
+		if(Artikel.TYP_EIGENARTIKEL.equalsIgnoreCase(article.getTyp())) {
+			EigenartikelTyp eat = EigenartikelTyp.byCharSafe(article.getCodeclass());
+			switch (eat) {
+			case PHARMA:
+			case MAGISTERY:
+				return VatInfo.VAT_CH_ISMEDICAMENT;
+			case NONPHARMA:
+				return VatInfo.VAT_CH_NOTMEDICAMENT;
+			default:
+				break;
+			}
+			return VatInfo.VAT_NONE;
+		}
+		
 		return VatInfo.VAT_DEFAULT;
 	}
 
@@ -159,4 +174,5 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 			article.setExtInfoValue(Constants.FLD_EXT_BEGINNING_PACKAGE, Integer.toString(rest));
 		}
 	}
+	
 }

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.DefaultOptifier;
-import info.elexis.server.core.connector.elexis.billable.optifier.NoObligationOptifier;
 import info.elexis.server.core.connector.elexis.common.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -98,11 +97,10 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
-		// VatInfo vatInfo = getVatInfo();
-		// if (!vatInfo.equals(VatInfo.VAT_CH_ISMEDICAMENT))
-		// return noObligationOptifier;
-		// return defaultOptifier;
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {	
+//		if(!artikelstammItem.isSl_entry()) {
+//			return new NoObligationOptifier().add(this, kons, userContact, mandatorContact);
+//		}
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
 	}
 

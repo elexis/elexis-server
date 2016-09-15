@@ -19,6 +19,7 @@ import info.elexis.server.core.connector.elexis.billable.adjuster.VatVerrechnetA
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
@@ -50,10 +51,12 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 			return new VerrechenbarTarmedLeistung((TarmedLeistung) object);
 		} else if (object instanceof Labor2009Tarif) {
 			return new VerrechenbarLabor2009Tarif((Labor2009Tarif) object);
-		} else if (object instanceof ArtikelstammItem) {
-			return new VerrechenbarArtikelstammItem((ArtikelstammItem) object);
 		} else if (object instanceof Eigenleistung) {
 			return new VerrechenbarEigenleistung((Eigenleistung) object);
+		} else if (object instanceof ArtikelstammItem) {
+			return new VerrechenbarArtikelstammItem((ArtikelstammItem) object);
+		} else if (object instanceof Artikel) {
+			return new VerrechenbarArtikel((Artikel) object);
 		}
 
 		log.warn("Unsupported object for create verrechenbar {}", object.getClass().getName());

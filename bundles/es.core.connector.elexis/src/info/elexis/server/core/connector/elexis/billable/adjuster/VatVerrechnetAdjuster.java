@@ -13,6 +13,7 @@ import ch.elexis.core.constants.StringConstants;
 import ch.rgw.tools.Money;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.IBillable.VatInfo;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ObjVatInfo;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ObjVatInfo_;
@@ -40,7 +41,8 @@ public class VatVerrechnetAdjuster implements IBillableAdjuster {
 			return;
 		}
 
-		if (verrechenbar.get() instanceof VerrechenbarArtikelstammItem) {
+		if (verrechenbar.get() instanceof VerrechenbarArtikelstammItem
+				|| verrechenbar.get() instanceof VerrechenbarArtikel) {
 			handleArtikel(verrechenbar.get(), verrechnet);
 		} else {
 			handleLeistung(verrechenbar.get(), verrechnet);
