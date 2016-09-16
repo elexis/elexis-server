@@ -46,6 +46,7 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	ch.elexis.core
 	ch.elexis.core.importer.div
 	ch.elexis.core.hl7.v2x
+	ch.elexis.core.findings
 	org.postgresql
 	org.h2
 	org.jdom
