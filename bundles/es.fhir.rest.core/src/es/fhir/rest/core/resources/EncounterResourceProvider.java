@@ -42,6 +42,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		return Encounter.class;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
 		encounterMapper = (IFhirTransformer<Encounter, IEncounter>) transformerRegistry
