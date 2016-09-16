@@ -47,7 +47,7 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<shared-cache-mode>NONE</shared-cache-mode>
 		<properties>
-			<property name="eclipselink.weaving.internal" value="false"/>
+			<property name="eclipselink.weaving" value="false"/>
 			<property name="eclipselink.logging.logger"
 				value="org.eclipse.persistence.jpa.logging.slf4j.Slf4jSessionLogger" />
 			<property name="eclipselink.exception-handler"
