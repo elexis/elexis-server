@@ -22,10 +22,10 @@ import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
+import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import es.fhir.rest.core.test.AllTests;
@@ -63,7 +63,7 @@ public class PractitionerTest {
 		// search by role
 		results = client.search()
 				.forResource(Practitioner.class).where(Practitioner.ROLE.exactly()
-						.systemAndCode(PractitionerRoleEnum.VALUESET_IDENTIFIER, PractitionerRoleEnum.DOCTOR.getCode()))
+						.systemAndCode(PractitionerRole.DOCTOR.getSystem(), PractitionerRole.DOCTOR.toCode()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();
@@ -74,8 +74,8 @@ public class PractitionerTest {
 		for (PractitionerPractitionerRoleComponent practitionerPractitionerRoleComponent : roles) {
 			List<Coding> codings = practitionerPractitionerRoleComponent.getRole().getCoding();
 			for (Coding coding : codings) {
-				if (coding.getSystem().equals(PractitionerRoleEnum.VALUESET_IDENTIFIER)
-						&& coding.getCode().equals(PractitionerRoleEnum.DOCTOR.getCode())) {
+				if (coding.getSystem().equals(PractitionerRole.DOCTOR.getSystem())
+						&& coding.getCode().equals(PractitionerRole.DOCTOR.toCode())) {
 					doctorRoleFound = true;
 				}
 			}

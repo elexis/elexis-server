@@ -3,8 +3,7 @@ package es.fhir.rest.core.transformer.helper;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
-
-import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
+import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
 
 public class MandantHelper extends AbstractHelper {
 
@@ -13,11 +12,11 @@ public class MandantHelper extends AbstractHelper {
 		CodeableConcept code = new CodeableConcept();
 		if ("assistant".equals(roleId)) {
 			code.addCoding(
-					new Coding(PractitionerRoleEnum.VALUESET_IDENTIFIER, PractitionerRoleEnum.NURSE.getCode(),
-							PractitionerRoleEnum.NURSE.getCode()));
+					new Coding(PractitionerRole.NURSE.getSystem(), PractitionerRole.NURSE.toCode(),
+							PractitionerRole.NURSE.toCode()));
 		} else if ("doctor".equals(roleId)) {
-			code.addCoding(new Coding(PractitionerRoleEnum.VALUESET_IDENTIFIER, PractitionerRoleEnum.DOCTOR.getCode(),
-					PractitionerRoleEnum.DOCTOR.getCode()));
+			code.addCoding(new Coding(PractitionerRole.DOCTOR.getSystem(), PractitionerRole.DOCTOR.toCode(),
+					PractitionerRole.DOCTOR.toCode()));
 		} else if ("executive_doctor".equals(roleId)) {
 			code.addCoding(new Coding("www.elexis.info/practRole", "mandant", "mandant"));
 		} else {
