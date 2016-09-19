@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -241,16 +240,6 @@ public class LockService implements ILockService {
 
 	public static void clearAllLocks() {
 		locks.clear();
-	}
-
-	public static String consoleListLocks() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("======= " + LocalDateTime.now() + " ==== server uuid [" + LockService.getSystemuuid() + "]\n");
-		for (LockInfo lockInfo : getAllLockInfo()) {
-			sb.append(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
-					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
-		}
-		return sb.toString();
 	}
 
 	public static String getSystemuuid() {

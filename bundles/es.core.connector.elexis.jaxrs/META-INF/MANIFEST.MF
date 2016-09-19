@@ -9,10 +9,14 @@ Service-Component: OSGI-INF/*.xml
 Require-Bundle: org.eclipse.equinox.ds,
  org.eclipse.osgi.services,
  org.eclipse.core.runtime
-Import-Package: ch.elexis.core.lock.types,
+Import-Package: ch.elexis.core.common,
+ ch.elexis.core.lock.types,
  ch.elexis.core.server,
  info.elexis.server.core.connector.elexis.common,
+ info.elexis.server.core.connector.elexis.instances,
  info.elexis.server.core.connector.elexis.locking,
+ javax.servlet;version="3.1.0",
+ javax.servlet.http;version="2.4.0",
  javax.ws.rs;version="2.0.1",
  javax.ws.rs.core;version="2.0.1"
 Bundle-ActivationPolicy: lazy
