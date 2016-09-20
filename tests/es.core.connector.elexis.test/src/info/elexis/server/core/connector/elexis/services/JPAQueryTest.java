@@ -37,7 +37,7 @@ public class JPAQueryTest {
 		JPACountQuery<ArtikelstammItem> qbec = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class);
 		qbec.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
 		qbec.add(ArtikelstammItem_.type, JPACountQuery.QUERY.EQUALS, "P");
-		qbec.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "35");
+		qbec.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "8");
 
 		long result = qbec.count();
 		assertTrue(result > 5);
