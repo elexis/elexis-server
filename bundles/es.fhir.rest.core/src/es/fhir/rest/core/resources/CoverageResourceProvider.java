@@ -57,7 +57,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 
 	@Search()
 	public List<Coverage> findCoverageByBeneficiary(
-			@RequiredParam(name = Coverage.SP_BENEFICIARYREFERENCE) IdType theBeneficiaryId) {
+			@RequiredParam(name = Coverage.SP_BENEFICIARY_REFERENCE) IdType theBeneficiaryId) {
 		if (theBeneficiaryId != null) {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(theBeneficiaryId.getIdPart());
 			if (patient.isPresent()) {

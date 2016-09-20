@@ -45,7 +45,7 @@ public class PractitionerKontaktTransformer implements IFhirTransformer<Practiti
 			for (Role role : roles) {
 				String roleId = role.getId();
 				if (roleId != null) {
-					practitioner.addPractitionerRole(mandantHelper.getPractitionerRoleComponent(roleId));
+					practitioner.addRole(mandantHelper.getPractitionerRoleComponent(roleId));
 				}
 			}
 		}

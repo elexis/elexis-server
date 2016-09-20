@@ -10,7 +10,7 @@ import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Practitioner;
-import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 
@@ -103,9 +103,9 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	}
 
 	private boolean practitionerHasRole(Practitioner p, String codeSystem, String codeCode) {
-		List<PractitionerPractitionerRoleComponent> roles = p.getPractitionerRole();
-		for (PractitionerPractitionerRoleComponent practitionerPractitionerRoleComponent : roles) {
-			List<Coding> codings = practitionerPractitionerRoleComponent.getRole().getCoding();
+		List<PractitionerRoleComponent> roles = p.getRole();
+		for (PractitionerRoleComponent practitionerRoleComponent : roles) {
+			List<Coding> codings = practitionerRoleComponent.getCode().getCoding();
 			for (Coding coding : codings) {
 				if (coding.getSystem().equals(codeSystem) && coding.getCode().equals(codeCode)) {
 					return true;
