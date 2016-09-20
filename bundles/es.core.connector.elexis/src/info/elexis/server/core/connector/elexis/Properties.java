@@ -20,4 +20,10 @@ public class Properties {
 	 */
 	public static final String PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS = BundleConstants.BUNDLE_ID
 			+ ".requiredLockContributors";
+
+	/**
+	 * Do accept that required lock contributors are not available. USED FOR
+	 * TESTING PURPOSES ONLY!
+	 */
+	public static final String SYSTEM_PROPERTY_ACCEPT_MISSING_LOCKSERVICE_CONTRIBUTORS = "acceptMissingLockServiceContributor";
 }

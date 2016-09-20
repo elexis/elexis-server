@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +35,21 @@ public class LockService implements ILockService {
 	private static HashMap<String, LockInfo> locks = new HashMap<String, LockInfo>();
 	private static ReentrantLock locksLock = new ReentrantLock();
 	private static Map<String, ILockServiceContributor> contributors = new HashMap<String, ILockServiceContributor>();
-	private static Set<String> requiredContributors = LocalProperties
-			.getPropertyAsSet(Properties.PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS);
+	private static Set<String> requiredContributors;
 
 	private static Logger log = LoggerFactory.getLogger(LockService.class);
+
+	static {
+		Boolean acceptMissingContributors = Boolean
+				.valueOf(System.getProperty(Properties.SYSTEM_PROPERTY_ACCEPT_MISSING_LOCKSERVICE_CONTRIBUTORS));
+		if (acceptMissingContributors) {
+			log.warn("!!! WILL ACCEPT MISSING LOCK SERVICE CONTRIBUTORS !!!");
+			requiredContributors = Collections.emptySet();
+		} else {
+			requiredContributors = LocalProperties
+					.getPropertyAsSet(Properties.PROPERTY_CONFIG_REQUIRED_LOCK_CONTRIBUTORS);
+		}
+	}
 
 	/**
 	 * A unique id for this instance of Elexis. Changes on every restart
