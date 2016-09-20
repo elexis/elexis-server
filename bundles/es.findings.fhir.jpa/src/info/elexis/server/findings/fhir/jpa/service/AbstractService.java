@@ -17,7 +17,6 @@ import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
@@ -42,39 +41,13 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @return
 	 */
 	public T create() {
-		return create(null, true);
-	}
-
-	/**
-	 * 
-	 * @param performCommit
-	 *            whether to perform a commit within the operation
-	 * @return an instance of T, or <code>null</code> on any error
-	 */
-	public T create(final boolean performCommit) {
-		return create(null, performCommit);
-	}
-
-	/**
-	 * 
-	 * @param id
-	 * @param performCommit
-	 * @return
-	 */
-	public T create(String id, final boolean performCommit) {
 		EntityManager em = getEntityManager();
 		try {
 			T obj = clazz.newInstance();
 			obj.setDeleted(false);
-			if (performCommit)
-				em.getTransaction().begin();
-			if (id != null) {
-				obj.setId(id);
-			}
+			em.getTransaction().begin();
 			em.persist(obj);
-			if (performCommit) {
-				em.getTransaction().commit();
-			}
+			em.getTransaction().commit();
 			return obj;
 		} catch (IllegalAccessException | InstantiationException e) {
 			log.error("Error creating instance " + clazz.getName(), e);
@@ -239,12 +212,13 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * 
 	 * @param entity
 	 */
-	public void write(T entity) {
+	public T write(T entity) {
 		EntityManager em = getEntityManager();
 		try {
 			em.getTransaction().begin();
 			em.merge(entity);
 			em.getTransaction().commit();
+			return entity;
 		} finally {
 			em.close();
 		}
@@ -255,29 +229,11 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * removes the entry, to mark it as deleted use {@link #delete(Object)}
 	 */
 	public void remove(T entity) {
-		remove(entity, true);
-	}
-
-	/**
-	 * see {@link #remove(AbstractDBObject)}
-	 * 
-	 * @param entity
-	 * @param performCommit
-	 *            whether to perform a commit within the operation
-	 */
-	public void remove(T entity, final boolean performCommit) {
 		EntityManager em = getEntityManager();
 		try {
-			if (performCommit) {
-				em.getTransaction().begin();
-			}
-
-			T find = em.find(clazz, entity.getId());
-			em.remove(find);
-
-			if (performCommit) {
-				em.getTransaction().commit();
-			}
+			em.getTransaction().begin();
+			em.remove(entity);
+			em.getTransaction().commit();
 		} finally {
 			em.close();
 		}
@@ -293,6 +249,7 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 		try {
 			em.getTransaction().begin();
 			entity.setDeleted(true);
+			em.merge(entity);
 			em.getTransaction().commit();
 		} finally {
 			em.close();

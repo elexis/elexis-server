@@ -15,11 +15,15 @@ Require-Bundle: ch.elexis.core.findings;bundle-version="1.0.0",
  com.mysql.jdbc,
  org.postgresql
 Meta-Persistence: META-INF/persistence.xml
-JPA-PersistenceUnits: elexis
+JPA-PersistenceUnits: findings
 Export-Package: info.elexis.server.findings.fhir.jpa.model.annotated
 Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.FindingsService.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.service.EncounterService.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.service.internal.FindingsEntityManager.xml
 Bundle-ActivationPolicy: lazy
-Import-Package: org.slf4j
+Import-Package: ca.uhn.fhir.context;version="2.0.0",
+ ca.uhn.fhir.parser;version="2.0.0",
+ org.hl7.fhir.dstu3.model;version="2.0.0",
+ org.hl7.fhir.instance.model.api;version="2.0.0",
+ org.slf4j
 Bundle-ClassPath: .
