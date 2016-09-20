@@ -1,7 +1,10 @@
 package info.elexis.server.core.connector.elexis.jaxrs;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
 import org.osgi.service.component.annotations.Component;
@@ -20,6 +23,15 @@ public class InstanceService implements IInstanceService {
 		info.elexis.server.core.connector.elexis.instances.InstanceService.updateInstanceStatus(request,
 				hsrRequest.getRemoteAddr());
 		return Response.ok().build();
+	}
+
+	@Override
+	public Response getStatus() {
+		List<InstanceStatus> statusList = info.elexis.server.core.connector.elexis.instances.InstanceService
+				.getInstanceStatus();
+		final GenericEntity<List<InstanceStatus>> list = new GenericEntity<List<InstanceStatus>>(statusList) {
+		};
+		return Response.ok(list).build();
 	}
 
 }
