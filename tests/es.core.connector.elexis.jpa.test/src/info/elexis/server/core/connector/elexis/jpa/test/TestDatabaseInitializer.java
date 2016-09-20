@@ -22,6 +22,7 @@ import ch.elexis.core.types.Gender;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
@@ -29,6 +30,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
+import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
@@ -52,6 +54,9 @@ public class TestDatabaseInitializer {
 
 	private static boolean isFallInitialized = false;
 	private static Fall fall;
+
+	private static boolean isBehandlungInitialized = false;
+	private static Behandlung behandlung;
 
 	private static boolean isPrescriptionInitialized = false;
 	private static Prescription prescription;
@@ -394,6 +399,23 @@ public class TestDatabaseInitializer {
 
 	public static Fall getFall() {
 		return fall;
+	}
+
+	public void initializeBehandlung() {
+		if (!isMandantInitialized) {
+			initializeMandant();
+		}
+		if (!isFallInitialized) {
+			initializeFall();
+		}
+		if (!isBehandlungInitialized) {
+			behandlung = BehandlungService.INSTANCE.create(getFall(), getMandant());
+
+			BehandlungService.INSTANCE.flush();
+
+			KontaktService.INSTANCE.refresh(patient);
+			isBehandlungInitialized = true;
+		}
 	}
 
 	/**

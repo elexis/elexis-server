@@ -21,11 +21,11 @@ import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
-import org.hl7.fhir.dstu3.model.Practitioner.PractitionerPractitionerRoleComponent;
-import org.hl7.fhir.dstu3.model.valuesets.PractitionerRole;
+import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import es.fhir.rest.core.test.AllTests;
@@ -63,19 +63,19 @@ public class PractitionerTest {
 		// search by role
 		results = client.search()
 				.forResource(Practitioner.class).where(Practitioner.ROLE.exactly()
-						.systemAndCode(PractitionerRole.DOCTOR.getSystem(), PractitionerRole.DOCTOR.toCode()))
+						.systemAndCode(PractitionerRoleEnum.DOCTOR.getSystem(), PractitionerRoleEnum.DOCTOR.getCode()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
 		practitioner = (Practitioner) entries.get(0).getResource();
-		List<PractitionerPractitionerRoleComponent> roles = practitioner.getPractitionerRole();
+		List<PractitionerRoleComponent> roles = practitioner.getRole();
 		boolean doctorRoleFound = false;
-		for (PractitionerPractitionerRoleComponent practitionerPractitionerRoleComponent : roles) {
-			List<Coding> codings = practitionerPractitionerRoleComponent.getRole().getCoding();
+		for (PractitionerRoleComponent practitionerRoleComponent : roles) {
+			List<Coding> codings = practitionerRoleComponent.getCode().getCoding();
 			for (Coding coding : codings) {
-				if (coding.getSystem().equals(PractitionerRole.DOCTOR.getSystem())
-						&& coding.getCode().equals(PractitionerRole.DOCTOR.toCode())) {
+				if (coding.getSystem().equals(PractitionerRoleEnum.DOCTOR.getSystem())
+						&& coding.getCode().equals(PractitionerRoleEnum.DOCTOR.getCode())) {
 					doctorRoleFound = true;
 				}
 			}

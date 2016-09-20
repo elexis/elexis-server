@@ -10,6 +10,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import es.fhir.rest.core.resources.CoverageTest;
+import es.fhir.rest.core.resources.EncounterTest;
 import es.fhir.rest.core.resources.MedicationOrderTest;
 import es.fhir.rest.core.resources.OrganizationTest;
 import es.fhir.rest.core.resources.PatientTest;
@@ -17,7 +18,7 @@ import es.fhir.rest.core.resources.PractitionerTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ MedicationOrderTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
-		PractitionerTest.class })
+		PractitionerTest.class, EncounterTest.class })
 public class AllTests {
 
 	public static Date getDate(LocalDateTime localDateTime) {

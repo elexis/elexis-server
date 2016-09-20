@@ -47,7 +47,7 @@ public class CoverageTest {
 				.execute();
 		// search by BENEFICIARY
 		Bundle results = client.search().forResource(Coverage.class)
-				.where(Coverage.BENEFICIARYREFERENCE.hasId(readPatient.getId()))
+				.where(Coverage.BENEFICIARY_REFERENCE.hasId(readPatient.getId()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
