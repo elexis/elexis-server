@@ -9,13 +9,11 @@ import java.util.Optional;
 import org.eclipse.core.runtime.IStatus;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.elexis.core.model.FallConstants;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.AllTestsSuite;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
@@ -48,14 +46,7 @@ public class BillingTest {
 	private Kontakt mandator;
 	private Behandlung consultation;
 	private Verrechnet vr;
-
-	@BeforeClass
-	public static void init() {
-		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();
-		AllTestsSuite.getInitializer().initializeTarmedTables();
-		AllTestsSuite.getInitializer().initializeArzttarifePhysioLeistungTables();
-	}
-
+	
 	@Before
 	public void setupPatientAndBehandlung() {
 		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);

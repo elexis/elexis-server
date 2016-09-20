@@ -15,7 +15,6 @@ import ch.elexis.core.model.InvoiceState;
 import ch.rgw.tools.Money;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Invoice;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 
@@ -40,38 +39,10 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertTrue(consultations.size() > 0);
 	}
 
-	// @Test
-	// public void testSetAndGetDiagnosesForConsultation() {
-	// cons = BehandlungService.INSTANCE.create();
-	// cons.setDatum(LocalDate.now());
-	//
-	// Diagnosis d = new Diagnosis();
-	// d.setCode("testCode");
-	// d.setDeleted(false);
-	// d.setText("blaText");
-	//
-	// BehandlungService.INSTANCE.setDiagnosisOnConsultation(cons, d);
-	// BehandlungService.INSTANCE.setDiagnosisOnConsultation(cons, d);
-	//
-	// BehandlungService.INSTANCE.flush();
-	//
-	// Optional<Behandlung> storedCons =
-	// BehandlungService.INSTANCE.findById(cons.getId());
-	//
-	// assertEquals(1, storedCons.get().getDiagnoses().size());
-	// BehandlungService.INSTANCE.remove(cons);
-	// }
-
 	@Test
-	public void testGetBehandlungAndInvoice() {
-		Optional<Behandlung> findById = BehandlungService.INSTANCE.findById("A2ad825e84b7b72710127");
-		Invoice invoice = findById.get().getInvoice();
-		assertNotNull(invoice);
-
-		Fall fall = invoice.getFall();
-		assertEquals(findById.get().getFall().getId(), fall.getId());
-		InvoiceState state = invoice.getState();
-		assertEquals(InvoiceState.OFFEN, state);
+	public void testGetBehandlung() {
+		Optional<Behandlung> findById = BehandlungService.INSTANCE.findById(testBehandlungen.get(0).getId());
+		assertTrue(findById.isPresent());
 	}
 
 	@Test
