@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1474015464">
+<target name="Elexis-Server" sequenceNumber="1474355679">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.2.0.a20160527-0936"/>
-      <unit id="ch.elexis.core" version="3.2.0.a20160914-1054"/>
+      <unit id="ch.elexis.core" version="3.2.0.a20160920-0555"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.a20160316-1430"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20160914-1139"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.a20160915-0519"/>
@@ -129,14 +129,14 @@
       <unit id="com.fasterxml.jackson.core.jackson-core" version="2.3.0"/>
       <unit id="com.fasterxml.jackson.core.jackson-databind" version="2.3.0"/>
       <unit id="com.fasterxml.jackson.core.jackson-annotations" version="2.3.0"/>
-      <unit id="hapi-fhir-osgi-core" version="1.6.0"/>
-      <unit id="org.thymeleaf" version="2.1.4.RELEASE"/>
+      <unit id="hapi-fhir-osgi-core" version="2.0.0"/>
+      <unit id="org.thymeleaf" version="3.0.1.RELEASE"/>
       <unit id="javassist" version="3.20.0.GA"/>
       <unit id="woodstox-core-asl" version="4.4.1"/>
       <unit id="javax.xml.stream.stax-api" version="1.0.0.2"/>
       <unit id="stax2-api" version="3.1.4"/>
       <unit id="net.sf.saxon.Saxon-HE" version="9.6.0.4"/>
-      <unit id="com.phloc.commons" version="4.4.4"/>
+      <unit id="com.phloc.commons" version="4.4.5"/>
       <unit id="com.phloc.schematron" version="2.7.1"/>
       <unit id="findbugsAnnotations" version="2.0.3"/>
       <repository location="http://download.elexis.info/elexis-server/elexis-server-dependencies/"/>
