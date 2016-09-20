@@ -10,11 +10,12 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer
 import info.elexis.server.core.connector.elexis.services.ArtikelServiceTest;
 import info.elexis.server.core.connector.elexis.services.BehandlungServiceTest;
 import info.elexis.server.core.connector.elexis.services.DocHandleServiceTest;
+import info.elexis.server.core.connector.elexis.services.JPAQueryTest;
 import info.elexis.server.core.connector.elexis.services.KontaktServiceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ArtikelServiceTest.class, BehandlungServiceTest.class, BillingTest.class, DocHandleServiceTest.class,
-		KontaktServiceTest.class })
+	JPAQueryTest.class, KontaktServiceTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();
