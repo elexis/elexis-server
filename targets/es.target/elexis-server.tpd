@@ -104,7 +104,7 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.joda.money
 	
 	hapi-fhir-osgi-core
-	org.thymeleaf[2.1.4,3.0.0)
+	org.thymeleaf
 	javassist
 	woodstox-core-asl
 	javax.xml.stream.stax-api
