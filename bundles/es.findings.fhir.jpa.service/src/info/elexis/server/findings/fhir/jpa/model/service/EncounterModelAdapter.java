@@ -4,9 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
+import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.IEncounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
@@ -29,6 +33,13 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public void setPatientId(String patientId) {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			fhirEncounter.setPatient(new Reference(new IdDt("Patient", patientId)));
+		}
+		getFhirHelper().saveResource(resource.get(), this);
+
 		getModel().setPatientId(patientId);
 	}
 
@@ -76,8 +87,31 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public Optional<String> getText() {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			if (fhirEncounter.hasText()) {
+				Narrative narrative = fhirEncounter.getText();
+				return Optional.of(narrative.getDivAsString());
+			}
+		}
+		return Optional.empty();
+	}
+
+	public void setText(String text) {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			Narrative narrative;
+			if (fhirEncounter.hasText()) {
+				narrative = fhirEncounter.getText();
+			} else {
+				narrative = new Narrative();
+			}
+			narrative.setDivAsString(text);
+			fhirEncounter.setText(narrative);
+		}
+		getFhirHelper().saveResource(resource.get(), this);
 	}
 
 	@Override
@@ -102,6 +136,26 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public void setConsultationId(String consultationId) {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			boolean identifierFound = false;
+			List<Identifier> existing = fhirEncounter.getIdentifier();
+			for (Identifier existingIdentifier : existing) {
+				if ("www.elexis.info/consultationid".equals(existingIdentifier.getSystem())) {
+					existingIdentifier.setValue(consultationId);
+					identifierFound = true;
+					break;
+				}
+			}
+			if (!identifierFound) {
+				Identifier identifier = fhirEncounter.addIdentifier();
+				identifier.setSystem("www.elexis.info/consultationid");
+				identifier.setValue(consultationId);
+			}
+		}
+		getFhirHelper().saveResource(resource.get(), this);
+
 		getModel().setConsultationId(consultationId);
 	}
 
@@ -112,6 +166,13 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public void setServiceProviderId(String serviceProviderId) {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			fhirEncounter.setServiceProvider(new Reference(new IdDt("Practitioner", serviceProviderId)));
+		}
+		getFhirHelper().saveResource(resource.get(), this);
+
 		getModel().setServiceProviderId(serviceProviderId);
 	}
 }

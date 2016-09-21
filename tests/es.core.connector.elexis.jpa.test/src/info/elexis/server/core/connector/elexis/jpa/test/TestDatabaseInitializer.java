@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.types.Gender;
 import ch.rgw.tools.TimeTool;
+import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -401,6 +402,13 @@ public class TestDatabaseInitializer {
 		return fall;
 	}
 
+	/**
+	 * Initialize a test Behandlung.
+	 * 
+	 * <li>Patient: {@link TestDatabaseInitializer#getPatient()}</li>
+	 * <li>ServiceProvider: {@link TestDatabaseInitializer#getMandant()}</li>
+	 * <li>Datum: 21.9.2016</li>
+	 */
 	public void initializeBehandlung() {
 		if (!isMandantInitialized) {
 			initializeMandant();
@@ -410,12 +418,19 @@ public class TestDatabaseInitializer {
 		}
 		if (!isBehandlungInitialized) {
 			behandlung = BehandlungService.INSTANCE.create(getFall(), getMandant());
-
+			behandlung.setDatum(LocalDate.of(2016, Month.SEPTEMBER, 21));
+			VersionedResource vr = VersionedResource.load(null);
+			vr.update("Test consultation\nWith some test text.", "test remark");
+			behandlung.setEintrag(vr);
 			BehandlungService.INSTANCE.flush();
 
 			KontaktService.INSTANCE.refresh(patient);
 			isBehandlungInitialized = true;
 		}
+	}
+
+	public static Behandlung getBehandlung() {
+		return behandlung;
 	}
 
 	/**

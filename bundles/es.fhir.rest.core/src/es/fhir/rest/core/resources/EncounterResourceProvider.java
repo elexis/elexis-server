@@ -6,12 +6,14 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -83,6 +85,24 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 						return ret;
 					}
 				}
+			}
+		}
+		return null;
+	}
+
+	@Search()
+	public List<Encounter> findEncounter(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
+				&& !identifier.getValue().isEmpty()) {
+			List<IFinding> findings = findingsService.getConsultationsFindings(identifier.getValue().getValue(),
+					IEncounter.class);
+			if (findings != null && !findings.isEmpty()) {
+				List<Encounter> ret = new ArrayList<Encounter>();
+				for (IFinding iFinding : findings) {
+					Optional<Encounter> fhirEncounter = encounterMapper.getFhirObject((IEncounter) iFinding);
+					fhirEncounter.ifPresent(fe -> ret.add(fe));
+				}
+				return ret;
 			}
 		}
 		return null;

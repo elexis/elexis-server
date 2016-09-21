@@ -21,6 +21,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
@@ -234,7 +235,34 @@ public class FindingsService implements IFindingsService {
 				logger.warn("Too many encounters [" + encounters.size() + "] found for consultation [" + consultationId
 						+ "] using first.");
 			}
-			return Optional.of(new EncounterModelAdapter(encounters.get(0)));
+			if (createOrUpdateFindings) {
+				createOrUpdateLock.lock();
+				try {
+					Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
+					if (behandlung.isPresent()) {
+						EncounterModelAdapter encounter = new EncounterModelAdapter(encounters.get(0));
+						encounterService.updateEncounter(encounter, behandlung.get());
+						return Optional.of(encounter);
+					}
+				} finally {
+					createOrUpdateLock.unlock();
+				}
+			} else {
+				return Optional.of(new EncounterModelAdapter(encounters.get(0)));
+			}
+		} else {
+			if (createOrUpdateFindings) {
+				createOrUpdateLock.lock();
+				try {
+					Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
+					if (behandlung.isPresent()) {
+						EncounterModelAdapter encounter = encounterService.createEncounter(behandlung.get());
+						return Optional.of(encounter);
+					}
+				} finally {
+					createOrUpdateLock.unlock();
+				}
+			}
 		}
 		return Optional.empty();
 	}

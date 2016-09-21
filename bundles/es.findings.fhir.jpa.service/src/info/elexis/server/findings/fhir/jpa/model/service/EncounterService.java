@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 
+import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -30,6 +31,8 @@ public class EncounterService extends AbstractService<Encounter> {
 
 	public EncounterModelAdapter updateEncounter(EncounterModelAdapter encounter, Behandlung behandlung) {
 		encounter.setConsultationId(behandlung.getId());
+		encounter.setServiceProviderId(behandlung.getMandant().getId());
+
 		LocalDate encounterDate = behandlung.getDatum();
 		if (encounterDate != null) {
 			encounter.setEffectiveTime(encounterDate.atStartOfDay());
@@ -41,6 +44,13 @@ public class EncounterService extends AbstractService<Encounter> {
 				encounter.setPatientId(patient.getId());
 			}
 		}
+
+		VersionedResource vr = behandlung.getEintrag();
+		if (vr != null) {
+			String text = vr.getHead();
+			encounter.setText(text);
+		}
+
 		write(encounter.getModel());
 		return encounter;
 	}
