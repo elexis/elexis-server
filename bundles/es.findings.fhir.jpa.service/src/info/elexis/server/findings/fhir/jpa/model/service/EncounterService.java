@@ -29,6 +29,7 @@ public class EncounterService extends AbstractService<Encounter> {
 	}
 
 	public EncounterModelAdapter updateEncounter(EncounterModelAdapter encounter, Behandlung behandlung) {
+		encounter.setConsultationId(behandlung.getId());
 		LocalDate encounterDate = behandlung.getDatum();
 		if (encounterDate != null) {
 			encounter.setEffectiveTime(encounterDate.atStartOfDay());

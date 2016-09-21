@@ -13,5 +13,6 @@ Meta-Persistence: META-INF/persistence.xml
 JPA-PersistenceUnits: findings
 Export-Package: info.elexis.server.findings.fhir.jpa.model.annotated
 Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
 Import-Package: javax.persistence,
- javax.persistence.metamodel;version="2.1.1"
+ javax.persistence.metamodel

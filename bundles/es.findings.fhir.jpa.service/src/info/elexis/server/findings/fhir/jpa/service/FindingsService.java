@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,8 @@ public class FindingsService implements IFindingsService {
 
 	private boolean createOrUpdateFindings;
 
-	public FindingsService() {
+	@Activate
+	protected void activate() {
 		getLogger().debug("New IFindingsService " + this);
 		try {
 			dbInitializedLock.lock();
@@ -57,11 +59,12 @@ public class FindingsService implements IFindingsService {
 					initializer.init();
 				}
 			}
+		} catch (Exception e) {
+			getLogger().debug("Error activating IFindingsService " + this, e);
 		} finally {
 			dbInitializedLock.unlock();
 		}
 		factory = new FindingsFactory();
-
 		encounterService = new EncounterService();
 	}
 
