@@ -1,18 +1,16 @@
-package info.elexis.server.findings.fhir.jpa.service;
+package info.elexis.server.findings.fhir.jpa.model.service;
 
 import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 
-import org.osgi.service.component.annotations.Component;
-
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
-import info.elexis.server.findings.fhir.jpa.service.internal.FindingsEntityManager;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager;
+import info.elexis.server.findings.fhir.jpa.service.FindingsFactory;
 
-@Component(service = EncounterService.class)
 public class EncounterService extends AbstractService<Encounter> {
 
 	public EncounterService() {
@@ -24,14 +22,13 @@ public class EncounterService extends AbstractService<Encounter> {
 		return FindingsEntityManager.getEntityManager();
 	}
 
-	public Encounter createEncounter(Behandlung behandlung) {
+	public EncounterModelAdapter createEncounter(Behandlung behandlung) {
 		FindingsFactory factory = new FindingsFactory();
-		Encounter encounter = (Encounter) factory.createEncounter();
-		updateEncounter(encounter, behandlung);
-		return encounter;
+		EncounterModelAdapter encounter = (EncounterModelAdapter) factory.createEncounter();
+		return updateEncounter(encounter, behandlung);
 	}
 
-	public Encounter updateEncounter(Encounter encounter, Behandlung behandlung) {
+	public EncounterModelAdapter updateEncounter(EncounterModelAdapter encounter, Behandlung behandlung) {
 		LocalDate encounterDate = behandlung.getDatum();
 		if (encounterDate != null) {
 			encounter.setEffectiveTime(encounterDate.atStartOfDay());
@@ -43,6 +40,7 @@ public class EncounterService extends AbstractService<Encounter> {
 				encounter.setPatientId(patient.getId());
 			}
 		}
-		return write(encounter);
+		write(encounter.getModel());
+		return encounter;
 	}
 }

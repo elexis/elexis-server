@@ -1,4 +1,4 @@
-package info.elexis.server.findings.fhir.jpa.service;
+package info.elexis.server.findings.fhir.jpa.model.service;
 
 import java.util.Collections;
 import java.util.List;

@@ -3,6 +3,5 @@
    <service>
       <provide interface="ch.elexis.core.findings.IFindingsService"/>
    </service>
-   <reference bind="bindEncounterService" cardinality="1..1" interface="info.elexis.server.findings.fhir.jpa.service.EncounterService" name="EncounterService" policy="static"/>
    <implementation class="info.elexis.server.findings.fhir.jpa.service.FindingsService"/>
 </scr:component>

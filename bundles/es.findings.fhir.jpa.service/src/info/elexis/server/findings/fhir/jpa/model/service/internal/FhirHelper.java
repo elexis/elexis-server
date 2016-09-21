@@ -1,4 +1,4 @@
-package info.elexis.server.findings.fhir.jpa.model.helper;
+package info.elexis.server.findings.fhir.jpa.model.service.internal;
 
 import java.util.Optional;
 

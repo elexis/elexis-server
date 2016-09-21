@@ -1,4 +1,4 @@
-package info.elexis.server.findings.fhir.jpa.service.internal;
+package info.elexis.server.findings.fhir.jpa.model.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +12,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-import org.eclipse.persistence.jpa.JpaQuery;
-
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager;
 
 /**
  * This class tries to resemble the Query class known by Elexis user by
@@ -133,15 +132,6 @@ public class JPAQuery<T extends AbstractDBObject> {
 		} finally {
 			em.close();
 		}
-	}
-
-	@Override
-	public String toString() {
-		if (query != null) {
-			// will only print SQL string after execute()
-			return query.unwrap(JpaQuery.class).getDatabaseQuery().getSQLString();
-		}
-		return super.toString();
 	}
 
 	/**

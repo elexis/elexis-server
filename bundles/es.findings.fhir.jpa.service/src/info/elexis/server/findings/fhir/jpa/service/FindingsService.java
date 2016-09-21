@@ -6,9 +6,6 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,19 +23,22 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
-import info.elexis.server.findings.fhir.jpa.service.internal.DbInitializer;
-import info.elexis.server.findings.fhir.jpa.service.internal.JPAQuery;
+import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
+import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.DbInitializer;
 
 @Component
 public class FindingsService implements IFindingsService {
 
-	private static Logger logger = LoggerFactory.getLogger(FindingsService.class);
+	private Logger logger;
 
 	private static boolean dbInitialized;
 
 	private static ReentrantLock dbInitializedLock = new ReentrantLock();
 
-	private static ReentrantLock getEncountersLock = new ReentrantLock();
+	private static ReentrantLock createOrUpdateLock = new ReentrantLock();
 
 	private FindingsFactory factory;
 
@@ -47,9 +47,10 @@ public class FindingsService implements IFindingsService {
 	private boolean createOrUpdateFindings;
 
 	public FindingsService() {
+		getLogger().debug("New IFindingsService " + this);
 		try {
 			dbInitializedLock.lock();
-			if(!dbInitialized) {
+			if (!dbInitialized) {
 				Optional<DBConnection> connectionOpt = ElexisDBConnection.getConnection();
 				if (connectionOpt.isPresent()) {
 					DbInitializer initializer = new DbInitializer(connectionOpt.get());
@@ -60,11 +61,15 @@ public class FindingsService implements IFindingsService {
 			dbInitializedLock.unlock();
 		}
 		factory = new FindingsFactory();
+
+		encounterService = new EncounterService();
 	}
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindEncounterService(EncounterService encounterService) {
-		this.encounterService = encounterService;
+	private Logger getLogger() {
+		if (logger == null) {
+			logger = LoggerFactory.getLogger(FindingsService.class);
+		}
+		return logger;
 	}
 
 	@Override
@@ -99,18 +104,18 @@ public class FindingsService implements IFindingsService {
 				if (filter.isAssignableFrom(IEncounter.class)) {
 					ret.add(encounter.get());
 				}
-			// if (filter.isAssignableFrom(ICondition.class)) {
-			// ret.addAll(getConditions(patientId, null));
-			// }
-			// if (filter.isAssignableFrom(IClinicalImpression.class)) {
-			// ret.addAll(getClinicalImpressions(patientId, null));
-			// }
-			// if (filter.isAssignableFrom(IObservation.class)) {
-			// ret.addAll(getObservations(patientId, null));
-			// }
-			// if (filter.isAssignableFrom(IProcedureRequest.class)) {
-			// ret.addAll(getProcedureRequests(patientId, null));
-			// }
+				// if (filter.isAssignableFrom(ICondition.class)) {
+				// ret.addAll(getConditions(patientId, null));
+				// }
+				// if (filter.isAssignableFrom(IClinicalImpression.class)) {
+				// ret.addAll(getClinicalImpressions(patientId, null));
+				// }
+				// if (filter.isAssignableFrom(IObservation.class)) {
+				// ret.addAll(getObservations(patientId, null));
+				// }
+				// if (filter.isAssignableFrom(IProcedureRequest.class)) {
+				// ret.addAll(getProcedureRequests(patientId, null));
+				// }
 			}
 		}
 		return ret;
@@ -164,12 +169,12 @@ public class FindingsService implements IFindingsService {
 	// return query.execute();
 	// }
 
-	private List<Encounter> getEncounters(String patientId) {
-		List<Encounter> ret = new ArrayList<>();
-		getEncountersLock.lock();
-		try {
-			if (patientId != null) {
-				if (createOrUpdateFindings) {
+	private List<EncounterModelAdapter> getEncounters(String patientId) {
+		List<EncounterModelAdapter> ret = new ArrayList<>();
+		if (patientId != null) {
+			if (createOrUpdateFindings) {
+				createOrUpdateLock.lock();
+				try {
 					List<Behandlung> behandlungen = getBehandlungen(patientId);
 					for (Behandlung behandlung : behandlungen) {
 						JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
@@ -179,17 +184,19 @@ public class FindingsService implements IFindingsService {
 						if (encounters.isEmpty()) {
 							ret.add(encounterService.createEncounter(behandlung));
 						} else {
-							ret.add(encounterService.updateEncounter(encounters.get(0), behandlung));
+							ret.add(encounterService.updateEncounter(new EncounterModelAdapter(encounters.get(0)),
+									behandlung));
 						}
 					}
-				} else {
-					JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
-					query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
-					ret.addAll(query.execute());
+				} finally {
+					createOrUpdateLock.unlock();
 				}
+			} else {
+				JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
+				query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+				List<Encounter> encounters = query.execute();
+				encounters.stream().forEach(e -> ret.add(new EncounterModelAdapter(e)));
 			}
-		} finally {
-			getEncountersLock.unlock();
 		}
 		return ret;
 	}
@@ -224,19 +231,19 @@ public class FindingsService implements IFindingsService {
 				logger.warn("Too many encounters [" + encounters.size() + "] found for consultation [" + consultationId
 						+ "] using first.");
 			}
-			return Optional.of(encounters.get(0));
+			return Optional.of(new EncounterModelAdapter(encounters.get(0)));
 		}
 		return Optional.empty();
 	}
 
 	@Override
 	public void saveFinding(IFinding finding) {
-		factory.saveFinding(finding);
+		factory.saveFinding((AbstractModelAdapter<?>) finding);
 	}
 
 	@Override
 	public void deleteFinding(IFinding finding) {
-		factory.deleteFinding(finding);
+		factory.deleteFinding((AbstractModelAdapter<?>) finding);
 	}
 
 	@Override
@@ -247,8 +254,8 @@ public class FindingsService implements IFindingsService {
 	@Override
 	public Optional<IFinding> findById(String id) {
 		Optional<Encounter> encounter = encounterService.findById(id);
-		if(encounter.isPresent()) {
-			return Optional.of(encounter.get());
+		if (encounter.isPresent()) {
+			return Optional.of(new EncounterModelAdapter(encounter.get()));
 		}
 		return Optional.empty();
 	}

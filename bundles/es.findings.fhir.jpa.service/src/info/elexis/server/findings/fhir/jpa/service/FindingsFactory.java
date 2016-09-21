@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.findings.IClinicalImpression;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
-import info.elexis.server.findings.fhir.jpa.model.helper.FhirHelper;
+import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.FhirHelper;
 
 public class FindingsFactory implements IFindingsFactory {
 
@@ -28,11 +30,11 @@ public class FindingsFactory implements IFindingsFactory {
 
 	@Override
 	public IEncounter createEncounter() {
-		Encounter ret = encounterService.create();
+		EncounterModelAdapter ret = new EncounterModelAdapter(encounterService.create());
 		org.hl7.fhir.dstu3.model.Encounter fhirEncounter = new org.hl7.fhir.dstu3.model.Encounter();
 		fhirEncounter.setId(new IdType("Encounter", ret.getId()));
 		fhirHelper.saveResource(fhirEncounter, ret);
-		encounterService.write(ret);
+		saveFinding(ret);
 		return ret;
 	}
 
@@ -60,18 +62,20 @@ public class FindingsFactory implements IFindingsFactory {
 		return null;
 	}
 
-	public void saveFinding(IFinding finding) {
-		if (finding instanceof Encounter) {
-			encounterService.write((Encounter) finding);
+	public void saveFinding(AbstractModelAdapter<?> finding) {
+		Object model = finding.getModel();
+		if (model instanceof Encounter) {
+			encounterService.write((Encounter) model);
 			return;
 		}
 		logger.error("Could not save unknown finding type [" + finding + "]");
 	}
 
-	public void deleteFinding(IFinding finding) {
-		if (finding instanceof Encounter) {
-			encounterService.delete((Encounter) finding);
-			encounterService.write((Encounter) finding);
+	public void deleteFinding(AbstractModelAdapter<?> finding) {
+		Object model = finding.getModel();
+		if (model instanceof Encounter) {
+			encounterService.delete((Encounter) model);
+			encounterService.write((Encounter) model);
 			return;
 		}
 		logger.error("Could not delete unknown finding type [" + finding + "]");

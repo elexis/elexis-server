@@ -1,4 +1,4 @@
-package info.elexis.server.findings.fhir.jpa.service.internal;
+package info.elexis.server.findings.fhir.jpa.model.service.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 @Component
 public class FindingsEntityManager {
 
-	private static Logger log = LoggerFactory.getLogger(FindingsEntityManager.class);
+	private static Logger logger = LoggerFactory.getLogger(FindingsEntityManager.class);
 
 	private static EntityManagerFactory factory;
 
@@ -29,7 +29,7 @@ public class FindingsEntityManager {
 	protected synchronized void bindEntityManagerFactoryBuilder(EntityManagerFactoryBuilder factoryBuilder) {
 		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
 		if (!connection.isPresent()) {
-			log.error("No database-connection available");
+			logger.error("No database-connection available");
 			return;
 		}
 
@@ -42,8 +42,9 @@ public class FindingsEntityManager {
 
 			factory = factoryBuilder.createEntityManagerFactory(props);
 		} catch (RuntimeException ite) {
-			log.error("Error creating EntityManagerFactory", ite);
+			logger.error("Error creating EntityManagerFactory", ite);
 		}
+		logger.debug("EntityManagerFactoryBuilder set " + factoryBuilder);
 	}
 
 	protected synchronized void unbindEntityManagerFactoryBuilder(EntityManagerFactoryBuilder factoryBuilder) {

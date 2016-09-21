@@ -1,4 +1,4 @@
-package info.elexis.server.findings.fhir.jpa.service.internal;
+package info.elexis.server.findings.fhir.jpa.model.service.internal;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
