@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 
+import ch.elexis.core.text.model.Samdas;
 import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -47,8 +48,8 @@ public class EncounterService extends AbstractService<Encounter> {
 
 		VersionedResource vr = behandlung.getEintrag();
 		if (vr != null) {
-			String text = vr.getHead();
-			encounter.setText(text);
+			Samdas samdas = new Samdas(vr.getHead());
+			encounter.setText(samdas.getRecordText());
 		}
 
 		write(encounter.getModel());
