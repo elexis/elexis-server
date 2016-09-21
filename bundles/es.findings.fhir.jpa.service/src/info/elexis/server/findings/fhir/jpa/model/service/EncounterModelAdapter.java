@@ -108,6 +108,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 			} else {
 				narrative = new Narrative();
 			}
+			text = text.replaceAll("(\r\n|\r|\n)", "<br />");
 			narrative.setDivAsString(text);
 			fhirEncounter.setText(narrative);
 		}

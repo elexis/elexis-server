@@ -85,6 +85,8 @@ public class EncounterTest {
 				AllTests.getLocalDateTime(period.getStart()).toLocalDate());
 		Narrative narrative = encounter.getText();
 		assertNotNull(narrative);
-		assertTrue(narrative.getDivAsString().contains("test"));
+		String text = narrative.getDivAsString();
+		assertNotNull(text);
+		assertTrue(text.contains("Test consultation"));
 	}
 }
