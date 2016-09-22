@@ -34,7 +34,15 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	public String getCodeSystemCode() {
 		String gtin = artikelstammItem.getGtin();
 		if (gtin != null && gtin.length() > 3) {
-			return "402";
+			String type = artikelstammItem.getType();
+			if (type != null && type.length() > 0) {
+				String t = type.substring(0, 1);
+				if (t.equalsIgnoreCase("P")) {
+					return "402";
+				} else if (t.equalsIgnoreCase("N")) {
+					return "406";
+				}
+			}
 		}
 		return "999";
 	}
@@ -87,7 +95,7 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		} catch (Exception e) {
 			log.warn("Error parsing sell unit: " + e.getMessage() + " @ " + artikelstammItem.getId());
 		}
-		
+
 		return VerrechenbarArtikel.determineTP(date, fall, vpe, vke, vkt);
 	}
 
@@ -97,10 +105,11 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {	
-//		if(!artikelstammItem.isSl_entry()) {
-//			return new NoObligationOptifier().add(this, kons, userContact, mandatorContact);
-//		}
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+		// if(!artikelstammItem.isSl_entry()) {
+		// return new NoObligationOptifier().add(this, kons, userContact,
+		// mandatorContact);
+		// }
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
 	}
 
