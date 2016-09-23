@@ -43,14 +43,14 @@ public class FindingsContentHelper {
 		RawContentFormat contentFormat = finding.getRawContentFormat();
 		if (contentFormat == RawContentFormat.FHIR_JSON) {
 			String jsonContent = finding.getRawContent();
-			if (jsonContent != null & !jsonContent.isEmpty()) {
+			if (jsonContent != null && !jsonContent.isEmpty()) {
 				if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
 					resource = getJsonParser().parseResource(finding.getRawContent());
 				}
 			}
 		} else if (contentFormat == RawContentFormat.FHIR_XML) {
 			String xmlContent = finding.getRawContent();
-			if (xmlContent != null & !xmlContent.isEmpty()) {
+			if (xmlContent != null && !xmlContent.isEmpty()) {
 				if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
 					resource = getXmlParser().parseResource(finding.getRawContent());
 				}
@@ -65,7 +65,7 @@ public class FindingsContentHelper {
 		RawContentFormat contentFormat = finding.getRawContentFormat();
 		if (contentFormat == RawContentFormat.FHIR_JSON) {
 			String jsonContent = finding.getRawContent();
-			if (jsonContent != null & !jsonContent.isEmpty()) {
+			if (jsonContent != null && !jsonContent.isEmpty()) {
 				if (resource != null) {
 					String resourceJson = getJsonParser().encodeResourceToString(resource);
 					finding.setRawContent(resourceJson);
@@ -73,7 +73,7 @@ public class FindingsContentHelper {
 			}
 		} else if (contentFormat == RawContentFormat.FHIR_XML) {
 			String xmlContent = finding.getRawContent();
-			if (xmlContent != null & !xmlContent.isEmpty()) {
+			if (xmlContent != null && !xmlContent.isEmpty()) {
 				if (resource != null) {
 					String resourceJson = getXmlParser().encodeResourceToString(resource);
 					finding.setRawContent(resourceJson);
