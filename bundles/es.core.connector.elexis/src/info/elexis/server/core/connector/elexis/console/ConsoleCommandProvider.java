@@ -60,10 +60,11 @@ public class ConsoleCommandProvider implements CommandProvider {
 			InstanceStatus inst = status.get(i);
 			ci.println(i + ") " + inst.getRemoteAddress() + " " + inst);
 			long until = new Date().getTime() - inst.getLastUpdate().getTime();
-			if (until > 60) {
-				ci.println("\tFS:" + inst.getFirstSeen() + " LU:" + inst.getLastUpdate() + " (!!!!)");
+			ci.print("\tFS:" + inst.getFirstSeen() + " LU:" + inst.getLastUpdate());
+			if (until > 60 * 1000) {
+				ci.print(" (!!!!)\n");
 			} else {
-				ci.println("\tFS:" + inst.getFirstSeen() + " LU:" + inst.getLastUpdate());
+				ci.print("\n");
 			}
 		}
 	}
