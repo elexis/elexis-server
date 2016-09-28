@@ -16,6 +16,7 @@ public class DocHandle_ {
     public static volatile SingularAttribute<DocHandle, Kontakt> kontakt;
     public static volatile SingularAttribute<DocHandle, byte[]> doc;
     public static volatile SingularAttribute<DocHandle, String> mimetype;
+    public static volatile SingularAttribute<DocHandle, LocalDate> creationDate;
     public static volatile SingularAttribute<DocHandle, String> category;
     public static volatile SingularAttribute<DocHandle, String> title;
 

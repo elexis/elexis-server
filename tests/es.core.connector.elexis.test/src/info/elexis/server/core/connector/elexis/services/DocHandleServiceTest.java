@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -45,12 +46,17 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 
 		DocHandle docHandle = DocHandleService.INSTANCE.create(patient.get(), "Title", "Filename.pdf", "Category",
 				sampleDocument);
+		LocalDate now = LocalDate.now();
+		docHandle.setCreationDate(now);
+		DocHandleService.INSTANCE.flush();
 
 		Optional<DocHandle> findById = DocHandleService.INSTANCE.findById(docHandle.getId());
 		assertTrue(findById.isPresent());
 		assertEquals("Title", findById.get().getTitle());
 		assertEquals("Filename.pdf", findById.get().getMimetype());
 		assertEquals("Category", findById.get().getCategory());
+		assertEquals(now.toEpochDay(), findById.get().getDatum().toEpochDay());
+		assertEquals(now.toEpochDay(), findById.get().getCreationDate().toEpochDay());
 		assertTrue(Arrays.equals(sampleDocument, findById.get().getDoc()));
 	}
 

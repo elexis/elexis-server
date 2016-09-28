@@ -25,6 +25,9 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate datum;
+	
+	@Convert("ElexisDBStringDateConverter")
+	protected LocalDate creationDate;
 
 	@Column(length = 80)
 	protected String category;
@@ -59,6 +62,14 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 
 	public void setDatum(LocalDate datum) {
 		this.datum = datum;
+	}
+	
+	public LocalDate getCreationDate() {
+		return creationDate;
+	}
+	
+	public void setCreationDate(LocalDate creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public String getCategory() {
