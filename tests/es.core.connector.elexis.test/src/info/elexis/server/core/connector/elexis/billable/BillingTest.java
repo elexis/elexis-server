@@ -2,55 +2,47 @@ package info.elexis.server.core.connector.elexis.billable;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.elexis.core.model.FallConstants;
 import ch.elexis.core.status.ObjectStatus;
-import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.services.AbstractServiceTest;
 import info.elexis.server.core.connector.elexis.services.ArtikelService;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
-import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.Labor2009TarifService;
 import info.elexis.server.core.connector.elexis.services.PhysioLeistungService;
 import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
-public class BillingTest {
+public class BillingTest extends AbstractServiceTest {
 
-	private Kontakt patient;
-	private Kontakt userContact;
-	private Fall testFall;
-	private Kontakt mandator;
-	private Behandlung consultation;
+	private static Kontakt userContact;
+	private static Kontakt mandator;
+
 	private Verrechnet vr;
-	
-	@Before
-	public void setupPatientAndBehandlung() {
-		patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
-		testFall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
+
+	@BeforeClass
+	public static void init() {
 		JPAQuery<Kontakt> mandantQuery = new JPAQuery<Kontakt>(Kontakt.class);
 		mandantQuery.add(Kontakt_.person, QUERY.EQUALS, true);
 		mandantQuery.add(Kontakt_.mandator, QUERY.EQUALS, true);
@@ -58,18 +50,33 @@ public class BillingTest {
 		assertTrue(!mandants.isEmpty());
 		mandator = mandants.get(0);
 		userContact = mandator;
+	}
 
-		consultation = BehandlungService.INSTANCE.create(testFall, mandator);
+	@Before
+	public void before() {
+		createTestMandantPatientFallBehandlung();
+		createTestMandantPatientFallBehandlung();
 	}
 
 	@After
 	public void teardownPatientAndBehandlung() {
-		if (vr != null) {
-			VerrechnetService.INSTANCE.remove(vr);
-		}
-		BehandlungService.INSTANCE.remove(consultation);
-		FallService.INSTANCE.remove(testFall);
-		KontaktService.INSTANCE.remove(patient);
+		cleanup();
+	}
+
+	@Test
+	public void testBehandlungResolvesVerrechnet() {
+		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
+		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
+		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, null);
+
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+		assertTrue(os.isOK());
+
+		assertTrue(vr.getBehandlung().getVerrechnet().size() > 0);
+		assertTrue(vr.getBehandlung().getVerrechnet().contains(vr));
 	}
 
 	@Test
@@ -78,7 +85,7 @@ public class BillingTest {
 		assertNotNull(immunglobulinValid);
 		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
 
-		IStatus status = validLabTarif.add(consultation, userContact, mandator);
+		IStatus status = validLabTarif.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
@@ -90,14 +97,14 @@ public class BillingTest {
 		assertEquals(100, vr.getScale());
 		assertEquals(100, vr.getScale2());
 		assertEquals(immunglobulinValid.getId(), vr.getLeistungenCode());
-		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
 		assertEquals(ElexisTypeMap.TYPE_LABOR2009TARIF, vr.getKlasse());
 		assertEquals(1, vr.getZahl());
 
 		Labor2009Tarif immunglobulinInvalid = Labor2009TarifService.INSTANCE.findById("ub49a50af4d3e51e40906").get();
 		VerrechenbarLabor2009Tarif invalidLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinInvalid);
 
-		status = invalidLabTarif.add(consultation, userContact, mandator);
+		status = invalidLabTarif.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
 	}
 
@@ -106,7 +113,7 @@ public class BillingTest {
 		Labor2009Tarif immunglobulinValid = Labor2009TarifService.findFromCode("1442.00").get();
 		assertNotNull(immunglobulinValid);
 		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
-		IStatus status = validLabTarif.add(consultation, userContact, mandator);
+		IStatus status = validLabTarif.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
@@ -118,20 +125,20 @@ public class BillingTest {
 		PhysioLeistung validDefault = PhysioLeistungService.findFromCode("7301").get();
 		assertNotNull(validDefault);
 		VerrechenbarPhysioLeistung validPhysTarif = new VerrechenbarPhysioLeistung(validDefault);
-		IStatus status = validPhysTarif.add(consultation, userContact, mandator);
+		IStatus status = validPhysTarif.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
 		assertEquals(validDefault.getTitel(), vr.getLeistungenText());
-		assertEquals("0.92", vr.getVk_scale());
+		assertEquals("0.89", vr.getVk_scale());
 		assertEquals(4800, vr.getVk_tp());
-		assertEquals(4416, vr.getVk_preis());
+		assertEquals(4272, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 		assertEquals(100, vr.getScale2());
 		assertEquals(validDefault.getId(), vr.getLeistungenCode());
-		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
 		assertEquals(ElexisTypeMap.TYPE_PHYSIOLEISTUNG, vr.getKlasse());
 		assertEquals(1, vr.getZahl());
 	}
@@ -147,24 +154,24 @@ public class BillingTest {
 
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
 
-		IStatus status = vlt_000010.add(consultation, userContact, mandator);
+		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
 		assertEquals(code_000010.getTx255(), vr.getLeistungenText());
-		assertEquals("0.92", vr.getVk_scale());
+		assertEquals("0.89", vr.getVk_scale());
 		assertEquals(1776, vr.getVk_tp());
-		assertEquals(1634, vr.getVk_preis());
+		assertEquals(1581, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 		assertEquals(100, vr.getScale2());
 		assertEquals(ElexisTypeMap.TYPE_TARMEDLEISTUNG, vr.getKlasse());
-		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
 		assertEquals(1, vr.getZahl());
 
 		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
-		status = ivlt_000750.add(consultation, userContact, mandator);
+		status = ivlt_000750.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), !status.isOK());
 	}
 
@@ -174,19 +181,19 @@ public class BillingTest {
 		assertNotNull(code_090510);
 		VerrechenbarTarmedLeistung vtl_090510 = new VerrechenbarTarmedLeistung(code_090510);
 
-		IStatus status = vtl_090510.add(consultation, userContact, mandator);
+		IStatus status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
-		status = vtl_090510.add(consultation, userContact, mandator);
+		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 
-		status = vtl_090510.add(consultation, userContact, mandator);
+		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
 		assertFalse(status.getMessage(), status.isOK());
 	}
 
@@ -200,11 +207,11 @@ public class BillingTest {
 		VerrechenbarTarmedLeistung tlUltrasoundV = new VerrechenbarTarmedLeistung(tlUltrasound);
 		VerrechenbarTarmedLeistung tlTapingCat1V = new VerrechenbarTarmedLeistung(tlTapingCat1);
 
-		IStatus status = tlUltrasoundV.add(consultation, userContact, mandator);
+		IStatus status = tlUltrasoundV.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.isOK());
-		status = tlBaseXRayV.add(consultation, userContact, mandator);
+		status = tlBaseXRayV.add(testBehandlungen.get(0), userContact, mandator);
 		assertFalse(status.isOK());
-		status = tlTapingCat1V.add(consultation, userContact, mandator);
+		status = tlTapingCat1V.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.isOK());
 	}
 
@@ -220,11 +227,11 @@ public class BillingTest {
 				.get();
 		VerrechenbarTarmedLeistung tlBaseRadiologyHospitalV = new VerrechenbarTarmedLeistung(tlBaseRadiologyHospital);
 
-		IStatus status = tlBaseXRayV.add(consultation, userContact, mandator);
+		IStatus status = tlBaseXRayV.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.isOK());
-		status = tlUltrasoundV.add(consultation, userContact, mandator);
+		status = tlUltrasoundV.add(testBehandlungen.get(0), userContact, mandator);
 		assertFalse(status.isOK());
-		status = tlBaseRadiologyHospitalV.add(consultation, userContact, mandator);
+		status = tlBaseRadiologyHospitalV.add(testBehandlungen.get(0), userContact, mandator);
 		assertFalse(status.isOK());
 	}
 
@@ -278,7 +285,7 @@ public class BillingTest {
 
 		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
 
-		IStatus status = verrechenbar.add(consultation, userContact, mandator);
+		IStatus status = verrechenbar.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
@@ -286,8 +293,14 @@ public class BillingTest {
 
 		assertEquals(ElexisTypeMap.TYPE_ARTIKELSTAMM, vr.getKlasse());
 		assertEquals(artikelstammItem.get().getDscr(), vr.getLeistungenText());
-		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
 		assertEquals(1, vr.getZahl());
+		assertEquals("1.0", vr.getVk_scale());
+		Double ppub = Double.valueOf(artikelstammItem.get().getPpub()) * 100;
+		assertEquals(ppub.intValue(), vr.getVk_tp());
+		assertEquals(ppub.intValue(), vr.getVk_preis());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
 
 		artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
 		assertTrue(artikelstammItem.isPresent());
@@ -306,7 +319,7 @@ public class BillingTest {
 
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
 
-		IStatus status = verrechenbar.add(consultation, userContact, mandator);
+		IStatus status = verrechenbar.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
@@ -315,7 +328,7 @@ public class BillingTest {
 
 		assertEquals(ElexisTypeMap.TYPE_EIGENARTIKEL, vr.getKlasse());
 		assertEquals(ea1.getLabel(), vr.getLeistungenText());
-		assertEquals(consultation.getId(), vr.getBehandlung().getId());
+		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
 		assertEquals(1, vr.getZahl());
 		assertEquals(1500, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
@@ -324,5 +337,78 @@ public class BillingTest {
 		assertEquals(1, (int) findById.get().getIstbestand());
 
 		ArtikelService.INSTANCE.remove(ea1);
+	}
+
+	@Test
+	public void testChangeCountAddOnVerrechnetInvalid() {
+		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
+		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
+
+		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		IStatus invalid = VerrechnetService.changeCountValidated(vr, 2, mandator);
+		assertFalse(invalid.isOK());
+		assertEquals(Status.WARNING, invalid.getSeverity());
+
+		VerrechnetService.INSTANCE.refresh(vr);
+		assertEquals(1, vr.getZahl());
+	}
+
+	@Test
+	public void testChangeCountAddOnVerrechnetValid() {
+		Optional<ArtikelstammItem> artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
+		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
+
+		IStatus status = verrechenbar.add(testBehandlungen.get(1), userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		IStatus valid = VerrechnetService.changeCountValidated(vr, 3, mandator);
+		assertTrue(valid.isOK());
+
+		assertEquals(1, vr.getBehandlung().getVerrechnet().size());
+		assertEquals(3, vr.getBehandlung().getVerrechnet().get(0).getZahl());
+		Double ppub = Double.valueOf(artikelstammItem.get().getPpub()) * 100;
+		assertEquals(ppub.intValue(), vr.getVk_tp());
+		assertEquals(ppub.intValue(), vr.getVk_preis());
+	}
+
+	@Test
+	public void testChangeCountRemoveOnVerrechnetValid() {
+		Optional<ArtikelstammItem> artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
+		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
+
+		IStatus status = verrechenbar.add(testBehandlungen.get(1), userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		IStatus valid = VerrechnetService.changeCountValidated(vr, 3, mandator);
+		assertTrue(valid.isOK());
+
+		BehandlungService.INSTANCE.refresh(testBehandlungen.get(1));
+		VerrechnetService.INSTANCE.refresh(vr);
+
+		assertEquals(vr.getId(), testBehandlungen.get(1).getVerrechnet().get(0).getId());
+		assertEquals(1, testBehandlungen.get(1).getVerrechnet().size());
+		assertEquals(3, testBehandlungen.get(1).getVerrechnet().get(0).getZahl());
+		Double ppub = Double.valueOf(artikelstammItem.get().getPpub()) * 100;
+		assertEquals(ppub.intValue(), vr.getVk_tp());
+		assertEquals(ppub.intValue(), vr.getVk_preis());
+
+		valid = VerrechnetService.changeCountValidated(testBehandlungen.get(1).getVerrechnet().get(0), 1, mandator);
+		assertTrue(valid.isOK());
+
+		BehandlungService.INSTANCE.refresh(testBehandlungen.get(1));
+
+		assertEquals(1, testBehandlungen.get(1).getVerrechnet().size());
+		assertEquals(1, testBehandlungen.get(1).getVerrechnet().get(0).getZahl());
 	}
 }

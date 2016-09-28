@@ -531,7 +531,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	 * keine Prüfungen, sondern erfüllt nur die Anfrage..
 	 */
 	@Override
-	public IStatus remove(Verrechnet code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+	public IStatus remove(Verrechnet code) {
 		VerrechnetService.INSTANCE.delete(code);
 		return Status.OK_STATUS;
 	}

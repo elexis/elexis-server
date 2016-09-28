@@ -13,6 +13,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
 public class VerrechenbarEigenleistung implements IBillable<Eigenleistung> {
 
@@ -57,6 +58,11 @@ public class VerrechenbarEigenleistung implements IBillable<Eigenleistung> {
 	@Override
 	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
+	}
+
+	@Override
+	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
+		return new DefaultOptifier().remove(vr);
 	}
 
 	@Override

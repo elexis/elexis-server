@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,36 +147,30 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return 1.0;
 	}
 
-	public void changeCount(Verrechnet foundVerrechnet, int newCount) {
-		changeCount(foundVerrechnet, 1.0 * newCount);
-	}
-
-	public static void changeCount(Verrechnet vr, double newCount) {
+	public static IStatus changeCountValidated(Verrechnet vr, int newCount, Kontakt mandatorContact) {
 		int previous = vr.getZahl();
-		int count = 1;
-
-		if (newCount == Math.rint(newCount)) {
-			// integer
-			count = new Double(newCount).intValue();
-			vr.setZahl(count);
-			vr.setSecondaryScaleFactor(1.0);
-		} else {
-			vr.setZahl(count);
-			vr.setSecondaryScaleFactor(newCount);
-			vr.setLeistungenText(vr.getLeistungenText() + " (" + Double.toString(newCount) + ")");
+		if (newCount == previous) {
+			return Status.OK_STATUS;
 		}
-
+		
+		int difference = newCount - previous;
 		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
-		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
-			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) verrechenbar.get();
-			vat.singleReturn(previous);
-			vat.singleDisposal(count);
-			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
-		} else if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikel)) {
-			VerrechenbarArtikel vat = (VerrechenbarArtikel) verrechenbar.get();
-			vat.singleReturn(previous);
-			vat.singleDisposal(count);
-			ArtikelService.INSTANCE.write(vat.getEntity());
+		if (difference > 0) {
+			for (int i = 0; i < difference; i++) {
+				IStatus ret = verrechenbar.get().add(vr.getBehandlung(), vr.getUser(), mandatorContact);
+				if (!ret.isOK()) {
+					return ret;
+				}
+			}
+		} else {
+			int abs = Math.abs(difference);
+			for (int i = 0; i < abs; i++) {
+				IStatus ret = verrechenbar.get().removeFromConsultation(vr, mandatorContact);
+				if (!ret.isOK()) {
+					return ret;
+				}
+			}
 		}
+		return Status.OK_STATUS;
 	}
 }

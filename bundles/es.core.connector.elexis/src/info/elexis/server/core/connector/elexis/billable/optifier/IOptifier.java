@@ -33,9 +33,9 @@ public interface IOptifier<T extends AbstractDBObjectIdDeleted> {
 	 * 
 	 * @param code
 	 *            der zu enfternende code
-	 * @param kons
-	 *            die KOnsultation
 	 * @return 
 	 */
-	public IStatus remove(Verrechnet code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact);
+	public IStatus remove(Verrechnet code);
+	
+	
 }

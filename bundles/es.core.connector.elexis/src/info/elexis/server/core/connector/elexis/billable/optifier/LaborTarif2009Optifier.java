@@ -235,9 +235,9 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 	}
 
 	@Override
-	public IStatus remove(Verrechnet code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+	public IStatus remove(Verrechnet code) {
 		VerrechnetService.INSTANCE.delete(code);
-		return optify(kons, userContact, mandatorContact);
+		return optify(code.getBehandlung(), code.getUser(), null);
 	}
 
 }

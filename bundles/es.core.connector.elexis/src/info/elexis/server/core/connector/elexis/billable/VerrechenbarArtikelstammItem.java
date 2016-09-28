@@ -14,6 +14,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
 public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem> {
 
@@ -111,6 +112,11 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		// mandatorContact);
 		// }
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
+	}
+
+	@Override
+	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
+		return new DefaultOptifier().remove(vr);
 	}
 
 	public void singleReturn(int n) {

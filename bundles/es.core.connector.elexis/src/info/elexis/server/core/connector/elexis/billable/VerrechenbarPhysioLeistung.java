@@ -10,6 +10,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
@@ -70,6 +71,11 @@ public class VerrechenbarPhysioLeistung implements IBillable<PhysioLeistung> {
 	@Override
 	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
+	}
+
+	@Override
+	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
+		return new DefaultOptifier().remove(vr);
 	}
 
 	@Override

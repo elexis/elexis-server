@@ -9,9 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.services.ArtikelService;
+import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
+import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 public class DefaultOptifier implements IOptifier {
@@ -25,6 +30,7 @@ public class DefaultOptifier implements IOptifier {
 
 	public IStatus add(final IBillable code, final Behandlung kons, final Kontakt userContact,
 			final Kontakt mandatorContact) {
+		BehandlungService.INSTANCE.refresh(kons);
 		Verrechnet foundVerrechnet = null;
 		for (Verrechnet verrechnet : kons.getVerrechnet()) {
 			Optional<IBillable> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
@@ -46,7 +52,7 @@ public class DefaultOptifier implements IOptifier {
 		}
 
 		if (foundVerrechnet != null) {
-			VerrechnetService.INSTANCE.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
+			DefaultOptifier.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
 			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
 					foundVerrechnet.getZahl() + 1);
 			return ObjectStatus.OK_STATUS(foundVerrechnet);
@@ -57,9 +63,39 @@ public class DefaultOptifier implements IOptifier {
 		}
 	}
 
-	public IStatus remove(final Verrechnet v, final Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
-		VerrechnetService.INSTANCE.delete(v);
-		return Status.OK_STATUS;
+	public IStatus remove(final Verrechnet code) {
+		DefaultOptifier.changeCount(code, code.getZahl() - 1);
+		log.trace("Changed count on existing Verrechnet entry [{}]: {}", code.getId(), code.getZahl() - 1);
+		return ObjectStatus.OK_STATUS(code);
+	}
+
+	protected static void changeCount(Verrechnet vr, int newCount) {
+		int previous = vr.getZahl();
+		int count = 1;
+
+		if (newCount == Math.rint(newCount)) {
+			// integer
+			count = new Double(newCount).intValue();
+			vr.setZahl(count);
+			vr.setSecondaryScaleFactor(1.0);
+		} else {
+			vr.setZahl(count);
+			vr.setSecondaryScaleFactor(newCount);
+			vr.setLeistungenText(vr.getLeistungenText() + " (" + Double.toString(newCount) + ")");
+		}
+
+		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
+		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
+			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) verrechenbar.get();
+			vat.singleReturn(previous);
+			vat.singleDisposal(count);
+			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
+		} else if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikel)) {
+			VerrechenbarArtikel vat = (VerrechenbarArtikel) verrechenbar.get();
+			vat.singleReturn(previous);
+			vat.singleDisposal(count);
+			ArtikelService.INSTANCE.write(vat.getEntity());
+		}
 	}
 
 }

@@ -10,6 +10,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
@@ -56,6 +57,11 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 	}
 
 	@Override
+	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
+		return new TarmedOptifier().remove(vr);
+	}
+
+	@Override
 	public List<Object> getActions(Object context) {
 		return null;
 	}
@@ -64,8 +70,8 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 	public TarmedLeistung getEntity() {
 		return tarmedLeistung;
 	}
-	
-	public int getTP(final TimeTool date, final Fall fall){
+
+	public int getTP(final TimeTool date, final Fall fall) {
 		String t = (String) tarmedLeistung.getExtension().getLimits().get("TP_TL");
 		String a = (String) tarmedLeistung.getExtension().getLimits().get("TP_AL");
 		double tl = 0.0;
@@ -88,7 +94,7 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 		String billingSystem = FallService.getAbrechnungsSystem(fall);
 		return VerrechnetService.INSTANCE.getVKMultiplikator(date, billingSystem);
 	}
-	
+
 	@Override
 	public VatInfo getVatInfo() {
 		return VatInfo.VAT_CH_ISTREATMENT;

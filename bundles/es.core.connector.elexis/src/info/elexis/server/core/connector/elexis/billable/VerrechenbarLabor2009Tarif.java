@@ -11,6 +11,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 public class VerrechenbarLabor2009Tarif implements IBillable<Labor2009Tarif> {
@@ -49,6 +50,11 @@ public class VerrechenbarLabor2009Tarif implements IBillable<Labor2009Tarif> {
 	@Override
 	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		return new LaborTarif2009Optifier().add(this, kons, userContact, mandatorContact);
+	}
+
+	@Override
+	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
+		return new LaborTarif2009Optifier().remove(vr);
 	}
 
 	@Override

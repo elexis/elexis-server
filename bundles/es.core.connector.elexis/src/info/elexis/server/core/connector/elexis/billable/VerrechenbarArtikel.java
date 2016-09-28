@@ -16,6 +16,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
 public class VerrechenbarArtikel implements IBillable<Artikel> {
 
@@ -66,6 +67,11 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 	}
 
 	@Override
+	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
+		return new DefaultOptifier().remove(vr);
+	}
+
+	@Override
 	public Artikel getEntity() {
 		return article;
 	}
@@ -104,7 +110,7 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 
 	@Override
 	public VatInfo getVatInfo() {
-		if(Artikel.TYP_EIGENARTIKEL.equalsIgnoreCase(article.getTyp())) {
+		if (Artikel.TYP_EIGENARTIKEL.equalsIgnoreCase(article.getTyp())) {
 			EigenartikelTyp eat = EigenartikelTyp.byCharSafe(article.getCodeclass());
 			switch (eat) {
 			case PHARMA:
@@ -117,7 +123,7 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 			}
 			return VatInfo.VAT_NONE;
 		}
-		
+
 		return VatInfo.VAT_DEFAULT;
 	}
 
@@ -174,5 +180,5 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 			article.setExtInfoValue(Constants.FLD_EXT_BEGINNING_PACKAGE, Integer.toString(rest));
 		}
 	}
-	
+
 }
