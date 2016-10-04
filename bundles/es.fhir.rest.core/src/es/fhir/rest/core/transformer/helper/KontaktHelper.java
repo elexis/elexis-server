@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
@@ -18,7 +19,9 @@ import org.hl7.fhir.dstu3.model.StringType;
 
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
+import info.elexis.server.core.connector.elexis.services.UserService;
 
 public class KontaktHelper extends AbstractHelper {
 
@@ -34,10 +37,13 @@ public class KontaktHelper extends AbstractHelper {
 			ret.add(humanName);
 		}
 		if (kontakt.isMandator()) {
-			HumanName sysName = new HumanName();
-			sysName.setText(kontakt.getDescription3());
-			sysName.setUse(NameUse.ANONYMOUS);
-			ret.add(sysName);
+			Optional<User> userLocalObject = UserService.INSTANCE.findByKontakt(kontakt);
+			if (userLocalObject.isPresent()) {
+				HumanName sysName = new HumanName();
+				sysName.setText(userLocalObject.get().getId());
+				sysName.setUse(NameUse.ANONYMOUS);
+				ret.add(sysName);
+			}
 		}
 		return ret;
 	}

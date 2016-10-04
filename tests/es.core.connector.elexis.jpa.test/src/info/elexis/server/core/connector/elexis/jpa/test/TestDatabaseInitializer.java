@@ -297,7 +297,6 @@ public class TestDatabaseInitializer {
 			mandant.setMandator(true);
 			mandant.setDescription1("Mandant");
 			mandant.setDescription2("Test");
-			mandant.setDescription3("tst");
 
 			mandant.setGender(Gender.MALE);
 			mandant.setDateOfBirth(new TimeTool("01.01.1970"));
@@ -310,7 +309,7 @@ public class TestDatabaseInitializer {
 			mandant.setStreet("Street 100");
 			KontaktService.INSTANCE.flush();
 
-			User user = UserService.INSTANCE.create();
+			User user = UserService.INSTANCE.create("tst", true);
 			user.setKontakt(mandant);
 			user.setActive(true);
 			Optional<Role> doctorRole = getRoleWithId("doctor");
