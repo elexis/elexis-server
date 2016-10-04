@@ -48,6 +48,7 @@ public class PractitionerKontaktTransformer implements IFhirTransformer<Practiti
 					practitioner.addRole(mandantHelper.getPractitionerRoleComponent(roleId));
 				}
 			}
+			practitioner.setActive(userLocalObject.get().isActive());
 		}
 
 		return Optional.of(practitioner);

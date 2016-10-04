@@ -9,6 +9,9 @@ import org.hl7.fhir.dstu3.model.MedicationOrder;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -30,21 +33,23 @@ import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 @Component
 public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 
-	private IFhirTransformer<MedicationOrder, Prescription> prescriptionMapper;
-
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return MedicationOrder.class;
 	}
 
+	private IFhirTransformerRegistry transformerRegistry;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+		this.transformerRegistry = transformerRegistry;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
-		prescriptionMapper = (IFhirTransformer<MedicationOrder, Prescription>) transformerRegistry
+	public IFhirTransformer<MedicationOrder, Prescription> getTransformer() {
+		return (IFhirTransformer<MedicationOrder, Prescription>) transformerRegistry
 				.getTransformerFor(MedicationOrder.class, Prescription.class);
-		if (prescriptionMapper == null) {
-			throw new IllegalStateException("No transformer available");
-		}
 	}
 
 	@Read
@@ -53,7 +58,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 		if (idPart != null) {
 			Optional<Prescription> prescription = PrescriptionService.INSTANCE.findById(idPart);
 			if (prescription.isPresent()) {
-				Optional<MedicationOrder> fhirMedicationOrder = prescriptionMapper.getFhirObject(prescription.get());
+				Optional<MedicationOrder> fhirMedicationOrder = getTransformer().getFhirObject(prescription.get());
 				return fhirMedicationOrder.get();
 			}
 		}
@@ -74,7 +79,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 					if (prescriptions != null && !prescriptions.isEmpty()) {
 						List<MedicationOrder> ret = new ArrayList<MedicationOrder>();
 						for (Prescription prescription : prescriptions) {
-							Optional<MedicationOrder> fhirMedicationOrder = prescriptionMapper
+							Optional<MedicationOrder> fhirMedicationOrder = getTransformer()
 									.getFhirObject(prescription);
 							fhirMedicationOrder.ifPresent(fmo -> ret.add(fmo));
 						}
@@ -88,12 +93,12 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 
 	@Update
 	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationOrder updateOrder) {
-		Optional<Prescription> localObject = prescriptionMapper.getLocalObject(updateOrder);
+		Optional<Prescription> localObject = getTransformer().getLocalObject(updateOrder);
 		MethodOutcome outcome = new MethodOutcome();
 		outcome.setCreated(false);
 		if (localObject.isPresent()) {
 			try {
-				Optional<Prescription> updated = prescriptionMapper.updateLocalObject(updateOrder, localObject.get());
+				Optional<Prescription> updated = getTransformer().updateLocalObject(updateOrder, localObject.get());
 				updated.ifPresent(prescription -> {
 					outcome.setCreated(true);
 					outcome.setId(new IdType(prescription.getId()));

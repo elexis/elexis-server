@@ -297,6 +297,7 @@ public class TestDatabaseInitializer {
 			mandant.setMandator(true);
 			mandant.setDescription1("Mandant");
 			mandant.setDescription2("Test");
+			mandant.setDescription3("tst");
 
 			mandant.setGender(Gender.MALE);
 			mandant.setDateOfBirth(new TimeTool("01.01.1970"));
@@ -311,6 +312,7 @@ public class TestDatabaseInitializer {
 
 			User user = UserService.INSTANCE.create();
 			user.setKontakt(mandant);
+			user.setActive(true);
 			Optional<Role> doctorRole = getRoleWithId("doctor");
 			if (doctorRole.isPresent()) {
 				user.setRoles(Collections.singletonList(doctorRole.get()));

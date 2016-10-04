@@ -10,8 +10,11 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
+import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.internal.FhirHelper;
@@ -24,8 +27,11 @@ public class FindingsFactory implements IFindingsFactory {
 
 	private EncounterService encounterService;
 
+	private ConditionService conditionService;
+
 	public FindingsFactory() {
 		encounterService = new EncounterService();
+		conditionService = new ConditionService();
 	}
 
 	@Override
@@ -46,8 +52,12 @@ public class FindingsFactory implements IFindingsFactory {
 
 	@Override
 	public ICondition createCondition() {
-		// TODO Auto-generated method stub
-		return null;
+		ConditionModelAdapter ret = new ConditionModelAdapter(conditionService.create());
+		org.hl7.fhir.dstu3.model.Condition fhirCondition = new org.hl7.fhir.dstu3.model.Condition();
+		fhirCondition.setId(new IdType("Condition", ret.getId()));
+		fhirHelper.saveResource(fhirCondition, ret);
+		saveFinding(ret);
+		return ret;
 	}
 
 	@Override
@@ -67,6 +77,8 @@ public class FindingsFactory implements IFindingsFactory {
 		if (model instanceof Encounter) {
 			encounterService.write((Encounter) model);
 			return;
+		} else if (model instanceof Condition) {
+			conditionService.write((Condition) model);
 		}
 		logger.error("Could not save unknown finding type [" + finding + "]");
 	}
@@ -75,8 +87,9 @@ public class FindingsFactory implements IFindingsFactory {
 		Object model = finding.getModel();
 		if (model instanceof Encounter) {
 			encounterService.delete((Encounter) model);
-			encounterService.write((Encounter) model);
 			return;
+		} else if (model instanceof Condition) {
+			conditionService.delete((Condition) model);
 		}
 		logger.error("Could not delete unknown finding type [" + finding + "]");
 	}

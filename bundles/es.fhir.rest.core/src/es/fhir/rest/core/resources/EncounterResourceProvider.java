@@ -30,8 +30,6 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 @Component
 public class EncounterResourceProvider implements IFhirResourceProvider {
 
-	private IFhirTransformer<Encounter, IEncounter> encounterMapper;
-
 	private IFindingsService findingsService;
 
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
@@ -44,15 +42,18 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		return Encounter.class;
 	}
 
+	private IFhirTransformerRegistry transformerRegistry;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+		this.transformerRegistry = transformerRegistry;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
-		encounterMapper = (IFhirTransformer<Encounter, IEncounter>) transformerRegistry
-				.getTransformerFor(Encounter.class,
-						IEncounter.class);
-		if (encounterMapper == null) {
-			throw new IllegalStateException("No transformer available");
-		}
+	public IFhirTransformer<Encounter, IEncounter> getTransformer() {
+		return (IFhirTransformer<Encounter, IEncounter>) transformerRegistry
+					.getTransformerFor(Encounter.class, IEncounter.class);
 	}
 
 	@Read
@@ -61,7 +62,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		if (idPart != null) {
 			Optional<IFinding> encounter = findingsService.findById(idPart);
 			if (encounter.isPresent() && (encounter.get() instanceof IEncounter)) {
-				Optional<Encounter> fhirEncounter = encounterMapper.getFhirObject((IEncounter) encounter.get());
+				Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) encounter.get());
 				return fhirEncounter.get();
 			}
 		}
@@ -79,7 +80,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 					if (findings != null && !findings.isEmpty()) {
 						List<Encounter> ret = new ArrayList<Encounter>();
 						for (IFinding iFinding : findings) {
-							Optional<Encounter> fhirEncounter = encounterMapper.getFhirObject((IEncounter) iFinding);
+							Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) iFinding);
 							fhirEncounter.ifPresent(fe -> ret.add(fe));
 						}
 						return ret;
@@ -99,7 +100,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 			if (findings != null && !findings.isEmpty()) {
 				List<Encounter> ret = new ArrayList<Encounter>();
 				for (IFinding iFinding : findings) {
-					Optional<Encounter> fhirEncounter = encounterMapper.getFhirObject((IEncounter) iFinding);
+					Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) iFinding);
 					fhirEncounter.ifPresent(fe -> ret.add(fe));
 				}
 				return ret;

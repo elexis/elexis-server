@@ -12,6 +12,7 @@ import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.StringType;
 
@@ -29,7 +30,14 @@ public class KontaktHelper extends AbstractHelper {
 			humanName.addGiven(kontakt.getFirstName());
 			humanName.addPrefix(kontakt.getTitel());
 			humanName.addSuffix(kontakt.getTitelSuffix());
+			humanName.setUse(NameUse.OFFICIAL);
 			ret.add(humanName);
+		}
+		if (kontakt.isMandator()) {
+			HumanName sysName = new HumanName();
+			sysName.setText(kontakt.getDescription3());
+			sysName.setUse(NameUse.ANONYMOUS);
+			ret.add(sysName);
 		}
 		return ret;
 	}

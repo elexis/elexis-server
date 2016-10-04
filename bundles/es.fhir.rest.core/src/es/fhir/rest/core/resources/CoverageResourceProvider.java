@@ -9,6 +9,9 @@ import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -25,21 +28,23 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 @Component
 public class CoverageResourceProvider implements IFhirResourceProvider {
 
-	private IFhirTransformer<Coverage, Fall> coverageMapper;
-
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Coverage.class;
 	}
 
+	private IFhirTransformerRegistry transformerRegistry;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+		this.transformerRegistry = transformerRegistry;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
-		coverageMapper = (IFhirTransformer<Coverage, Fall>) transformerRegistry.getTransformerFor(Coverage.class,
-				Fall.class);
-		if (coverageMapper == null) {
-			throw new IllegalStateException("No transformer available");
-		}
+	public IFhirTransformer<Coverage, Fall> getTransformer() {
+		return (IFhirTransformer<Coverage, Fall>) transformerRegistry.getTransformerFor(Coverage.class,
+					Fall.class);
 	}
 
 	@Read
@@ -48,7 +53,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 		if (idPart != null) {
 			Optional<Fall> coverage = FallService.INSTANCE.findById(idPart);
 			if (coverage.isPresent()) {
-				Optional<Coverage> fhirCoverage = coverageMapper.getFhirObject(coverage.get());
+				Optional<Coverage> fhirCoverage = getTransformer().getFhirObject(coverage.get());
 				return fhirCoverage.get();
 			}
 		}
@@ -65,7 +70,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 				if (faelle != null) {
 					List<Coverage> ret = new ArrayList<Coverage>();
 					for (Fall fall : faelle) {
-						Optional<Coverage> fhirCoverage = coverageMapper.getFhirObject(fall);
+						Optional<Coverage> fhirCoverage = getTransformer().getFhirObject(fall);
 						fhirCoverage.ifPresent(fp -> ret.add(fp));
 					}
 					return ret;

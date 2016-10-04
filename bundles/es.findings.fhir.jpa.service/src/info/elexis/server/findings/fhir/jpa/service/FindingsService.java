@@ -10,6 +10,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsFactory;
@@ -23,9 +24,12 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
+import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
+import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
@@ -83,9 +87,9 @@ public class FindingsService implements IFindingsService {
 			if (filter.isAssignableFrom(IEncounter.class)) {
 				ret.addAll(getEncounters(patientId));
 			}
-			// if (filter.isAssignableFrom(ICondition.class)) {
-			// ret.addAll(getConditions(patientId, null));
-			// }
+			if (filter.isAssignableFrom(ICondition.class)) {
+				ret.addAll(getConditions(patientId, null));
+			}
 			// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 			// ret.addAll(getClinicalImpressions(patientId, null));
 			// }
@@ -108,9 +112,9 @@ public class FindingsService implements IFindingsService {
 				if (filter.isAssignableFrom(IEncounter.class)) {
 					ret.add(encounter.get());
 				}
-				// if (filter.isAssignableFrom(ICondition.class)) {
-				// ret.addAll(getConditions(patientId, null));
-				// }
+				if (filter.isAssignableFrom(ICondition.class)) {
+					ret.addAll(getConditions(encounter.get().getPatientId(), encounter.get().getId()));
+				}
 				// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 				// ret.addAll(getClinicalImpressions(patientId, null));
 				// }
@@ -148,19 +152,21 @@ public class FindingsService implements IFindingsService {
 	// }
 	// return query.execute();
 	// }
-	//
-	// private List<Condition> getConditions(String patientId, String
-	// encounterId) {
-	// Query<Condition> query = new Query<>(Condition.class);
-	// if (patientId != null) {
-	// query.add(Condition.FLD_PATIENTID, Query.EQUALS, patientId);
-	// }
-	// if (encounterId != null) {
-	// query.add(Condition.FLD_ENCOUNTERID, Query.EQUALS, encounterId);
-	// }
-	// return query.execute();
-	// }
-	//
+
+	private List<ConditionModelAdapter> getConditions(String patientId, String encounterId) {
+		List<ConditionModelAdapter> ret = new ArrayList<>();
+		JPAQuery<Condition> query = new JPAQuery<>(Condition.class);
+		if (patientId != null) {
+			query.add(Condition_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+		}
+		if (encounterId != null) {
+			query.add(Condition_.encounterid, JPAQuery.QUERY.EQUALS, encounterId);
+		}
+		List<Condition> conditions = query.execute();
+		conditions.stream().forEach(e -> ret.add(new ConditionModelAdapter(e)));
+		return ret;
+	}
+
 	// private List<Observation> getObservations(String patientId, String
 	// encounterId) {
 	// Query<Observation> query = new Query<>(Observation.class);

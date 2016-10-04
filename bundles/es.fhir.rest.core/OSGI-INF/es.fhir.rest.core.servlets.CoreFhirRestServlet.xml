@@ -5,6 +5,5 @@
    </service>
    <reference bind="bindHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unbindHttpService"/>
    <reference bind="bindProviderRegistry" cardinality="1..1" interface="es.fhir.rest.core.IFhirResourceProviderRegistry" name="ProviderRegistry" policy="static" unbind="unbindProviderRegistry"/>
-   <reference bind="bindTransformerRegistry" cardinality="1..1" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="TransformerRegistry" policy="static" unbind="unbindTransformerRegistry"/>
    <implementation class="es.fhir.rest.core.servlets.CoreFhirRestServlet"/>
 </scr:component>

@@ -25,7 +25,9 @@ Service-Component: OSGI-INF/es.fhir.rest.core.servlets.CoreFhirRestServlet.xml,
  OSGI-INF/es.fhir.rest.core.transformer.PractitionerKontaktTransformer.xml,
  OSGI-INF/es.fhir.rest.core.resources.PractitionerResourceProvider.xml,
  OSGI-INF/es.fhir.rest.core.resources.EncounterResourceProvider.xml,
- OSGI-INF/es.fhir.rest.core.transformer.EncounterIEncounterTransformer.xml
+ OSGI-INF/es.fhir.rest.core.transformer.EncounterIEncounterTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.resources.ConditionResourceProvider.xml,
+ OSGI-INF/es.fhir.rest.core.transformer.ConditionIConditionTransformer.xml
 Require-Bundle: hapi-fhir-osgi-core;bundle-version="1.6.0",
  info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
  com.google.gson;bundle-version="2.5.0",

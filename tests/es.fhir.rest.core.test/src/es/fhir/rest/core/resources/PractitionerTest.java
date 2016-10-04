@@ -18,6 +18,7 @@ import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
@@ -96,10 +97,19 @@ public class PractitionerTest {
 		List<HumanName> names = readPractitioner.getName();
 		assertNotNull(names);
 		assertFalse(names.isEmpty());
+		assertEquals(2, names.size());
+
 		HumanName name = names.get(0);
 		assertNotNull(name);
+		assertEquals(NameUse.OFFICIAL, name.getUse());
 		assertEquals("Mandant", name.getFamilyAsSingleString());
 		assertEquals("Test", name.getGivenAsSingleString());
+
+		HumanName sysName = names.get(1);
+		assertNotNull(sysName);
+		assertEquals(NameUse.ANONYMOUS, sysName.getUse());
+		assertEquals("tst", sysName.getText());
+
 		Date dob = readPractitioner.getBirthDate();
 		assertNotNull(dob);
 		assertEquals(LocalDate.of(1970, Month.JANUARY, 1), AllTests.getLocalDateTime(dob).toLocalDate());
@@ -133,5 +143,6 @@ public class PractitionerTest {
 		}
 		assertTrue(eanFound);
 		assertTrue(kskFound);
+		assertTrue(readPractitioner.getActive());
 	}
 }

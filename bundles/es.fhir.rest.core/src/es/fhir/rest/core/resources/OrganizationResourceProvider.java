@@ -9,6 +9,9 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -26,21 +29,23 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 @Component
 public class OrganizationResourceProvider implements IFhirResourceProvider {
 
-	private IFhirTransformer<Organization, Kontakt> organizationMapper;
-
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Organization.class;
 	}
 
+	private IFhirTransformerRegistry transformerRegistry;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+		this.transformerRegistry = transformerRegistry;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
-		organizationMapper = (IFhirTransformer<Organization, Kontakt>) transformerRegistry
-				.getTransformerFor(Organization.class, Kontakt.class);
-		if (organizationMapper == null) {
-			throw new IllegalStateException("No transformer available");
-		}
+	public IFhirTransformer<Organization, Kontakt> getTransformer() {
+		return (IFhirTransformer<Organization, Kontakt>) transformerRegistry
+					.getTransformerFor(Organization.class, Kontakt.class);
 	}
 
 	@Read
@@ -50,7 +55,7 @@ public class OrganizationResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> organization = KontaktService.INSTANCE.findById(idPart);
 			if (organization.isPresent()) {
 				if (organization.get().isOrganisation()) {
-					Optional<Organization> fhirOrganization = organizationMapper.getFhirObject(organization.get());
+					Optional<Organization> fhirOrganization = getTransformer().getFhirObject(organization.get());
 					return fhirOrganization.get();
 				}
 			}
@@ -69,7 +74,7 @@ public class OrganizationResourceProvider implements IFhirResourceProvider {
 			if (!organizations.isEmpty()) {
 				List<Organization> ret = new ArrayList<Organization>();
 				for (Kontakt organization : organizations) {
-					Optional<Organization> fhirOrganization = organizationMapper.getFhirObject(organization);
+					Optional<Organization> fhirOrganization = getTransformer().getFhirObject(organization);
 					fhirOrganization.ifPresent(fp -> ret.add(fp));
 				}
 				return ret;

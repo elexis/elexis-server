@@ -20,7 +20,6 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirResourceProviderRegistry;
-import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component(service = CoreFhirRestServlet.class, immediate = true)
 public class CoreFhirRestServlet extends RestfulServer {
@@ -53,18 +52,6 @@ public class CoreFhirRestServlet extends RestfulServer {
 		this.providerRegistry = null;
 	}
 
-	// transformers used by resource providers
-	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
-	public void bindTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
-
-	public void unbindTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = null;
-	}
-
 	public CoreFhirRestServlet() {
 		super(FhirContext.forDstu3());
 	}
@@ -87,10 +74,6 @@ public class CoreFhirRestServlet extends RestfulServer {
 	protected void initialize() throws ServletException {
 		// add the resource providers
 		List<IFhirResourceProvider> providers = providerRegistry.getResourceProviders();
-		for (IFhirResourceProvider iFhirResourceProvider : providers) {
-			logger.info("Initializing Resource " + iFhirResourceProvider);
-			iFhirResourceProvider.initTransformer(transformerRegistry);
-		}
 		// make a copy, to satisfy type
 		List<IResourceProvider> resourceProviders = new ArrayList<IResourceProvider>();
 		resourceProviders.addAll(providers);

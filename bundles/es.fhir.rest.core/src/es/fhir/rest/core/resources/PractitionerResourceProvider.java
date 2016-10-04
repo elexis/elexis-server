@@ -13,6 +13,9 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -30,21 +33,23 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 @Component
 public class PractitionerResourceProvider implements IFhirResourceProvider {
 
-	private IFhirTransformer<Practitioner, Kontakt> practitionerMapper;
-
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Practitioner.class;
 	}
 
+	private IFhirTransformerRegistry transformerRegistry;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+		this.transformerRegistry = transformerRegistry;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initTransformer(IFhirTransformerRegistry transformerRegistry) {
-		practitionerMapper = (IFhirTransformer<Practitioner, Kontakt>) transformerRegistry
-				.getTransformerFor(Practitioner.class, Kontakt.class);
-		if (practitionerMapper == null) {
-			throw new IllegalStateException("No transformer available");
-		}
+	public IFhirTransformer<Practitioner, Kontakt> getTransformer() {
+		return (IFhirTransformer<Practitioner, Kontakt>) transformerRegistry
+					.getTransformerFor(Practitioner.class, Kontakt.class);
 	}
 
 	@Read
@@ -54,7 +59,7 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> practitioner = KontaktService.INSTANCE.findById(idPart);
 			if (practitioner.isPresent()) {
 				if (practitioner.get().isMandator()) {
-					Optional<Practitioner> fhirPractitioner = practitionerMapper.getFhirObject(practitioner.get());
+					Optional<Practitioner> fhirPractitioner = getTransformer().getFhirObject(practitioner.get());
 					return fhirPractitioner.get();
 				}
 			}
@@ -73,7 +78,7 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			if (!practitioners.isEmpty()) {
 				List<Practitioner> ret = new ArrayList<Practitioner>();
 				for (Kontakt practitioner : practitioners) {
-					Optional<Practitioner> fhirPractitioner = practitionerMapper.getFhirObject(practitioner);
+					Optional<Practitioner> fhirPractitioner = getTransformer().getFhirObject(practitioner);
 					fhirPractitioner.ifPresent(fp -> ret.add(fp));
 				}
 				return ret;
@@ -122,7 +127,7 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 		List<Practitioner> ret = new ArrayList<Practitioner>();
 		if (!practitioners.isEmpty()) {
 			for (Kontakt practitioner : practitioners) {
-				Optional<Practitioner> fhirPractitioner = practitionerMapper.getFhirObject(practitioner);
+				Optional<Practitioner> fhirPractitioner = getTransformer().getFhirObject(practitioner);
 				fhirPractitioner.ifPresent(fp -> ret.add(fp));
 			}
 		}
