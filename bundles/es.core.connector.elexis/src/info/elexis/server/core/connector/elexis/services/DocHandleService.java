@@ -78,7 +78,7 @@ public class DocHandleService extends AbstractService<DocHandle> {
 		return q.getResultList();
 	}
 
-	protected static final String CONFIG_OMNIVORE_STORE_GLOBAL = "ch.elexis.omnivore//store_in_fs_global";
+	protected static final String CONFIG_OMNIVORE_STORE_GLOBAL = "ch.elexis.omnivore/store_in_fs_global";
 	protected static final String CONFIG_OMNIVORE_STORE_IN_FS = "ch.elexis.omnivore/store_in_fs";
 
 	/**
