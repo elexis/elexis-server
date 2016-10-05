@@ -24,7 +24,7 @@ public class ElexisDBStoreToStringConverter implements Converter {
 		}
 		
 		if (!(objectValue instanceof AbstractDBObjectIdDeleted)) {
-			log.warn(" {} is not an AbstractDBObject", objectValue.getClass());
+			log.warn(" [{}] is not an AbstractDBObject", objectValue.getClass());
 			return null;
 		}
 
@@ -33,12 +33,15 @@ public class ElexisDBStoreToStringConverter implements Converter {
 
 	@Override
 	public Object convertDataValueToObjectValue(Object dataValue, Session session) {
+		if (dataValue == null) {
+			return null;
+		}
 		Optional<AbstractDBObjectIdDeleted> object = StoreToStringService.INSTANCE
 				.createDetachedFromString((String) dataValue);
 		if(object.isPresent()) {
 			return object.get();
 		}
-		log.warn("Could not create object from store to string: "+dataValue);
+		log.warn("Could not create object from store to string [{}]. ", dataValue);
 		return null;
 	}
 
