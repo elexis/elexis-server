@@ -83,7 +83,9 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 		double vke = 0.0;
 
 		try {
-			vkt = new Money(article.getVkPreis()).getCents();
+			Money m = new Money();
+			m.addCent(article.getVkPreis());
+			vkt = m.getCents();
 		} catch (Exception e) {
 			log.warn("Error parsing public price: " + e.getMessage() + " @ " + article.getId());
 		}

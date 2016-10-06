@@ -313,8 +313,8 @@ public class BillingTest extends AbstractServiceTest {
 	public void testAddEigenartikelBilling() {
 		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
 		ea1.setIstbestand(2);
-		ea1.setEkPreis("13");
-		ea1.setVkPreis("15");
+		ea1.setEkPreis("150");
+		ea1.setVkPreis("300");
 		ArtikelService.INSTANCE.write(ea1);
 
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
@@ -330,7 +330,7 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(ea1.getLabel(), vr.getLeistungenText());
 		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
 		assertEquals(1, vr.getZahl());
-		assertEquals(1500, vr.getVk_preis());
+		assertEquals(300, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 
 		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
