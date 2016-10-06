@@ -141,12 +141,14 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 		int vk = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT));
 		int num = n * ve;
 		if (vk == ve) {
-			article.setIstbestand(article.getIstbestand() + n);
+			int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
+			article.setIstbestand(current + n);
 		} else {
 			int rest = anbruch + num;
 			while (rest > vk) {
 				rest = rest - vk;
-				article.setIstbestand(article.getIstbestand() + 1);
+				int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
+				article.setIstbestand(current + 1);
 			}
 			article.setExtInfoValue(Constants.FLD_EXT_BEGINNING_PACKAGE, Integer.toString(rest));
 		}
@@ -170,12 +172,14 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 		}
 		int num = n * ve;
 		if (vk == ve) {
-			article.setIstbestand(article.getIstbestand() - n);
+			int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
+			article.setIstbestand(current - n);
 		} else {
 			int rest = anbruch - num;
 			while (rest < 0) {
 				rest = rest + vk;
-				article.setIstbestand(article.getIstbestand() - 1);
+				int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
+				article.setIstbestand(current - 1);
 			}
 			article.setExtInfoValue(Constants.FLD_EXT_BEGINNING_PACKAGE, Integer.toString(rest));
 		}
