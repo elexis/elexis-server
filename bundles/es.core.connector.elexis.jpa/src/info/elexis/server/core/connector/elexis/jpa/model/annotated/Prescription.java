@@ -9,11 +9,13 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 
+import ch.elexis.core.model.prescription.EntryType;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
@@ -41,7 +43,7 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 255)
 	private String dosis;
-	
+
 	@Column(length = 2, name = "prescType")
 	private String prescriptionType;
 
@@ -51,6 +53,37 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 25)
 	private String rezeptID;
+
+	@Transient
+	public EntryType getEntryType() {
+		String prescTypeString = getPrescriptionType();
+		int typeNum = -1;
+		if (prescTypeString != null && !prescTypeString.isEmpty()) {
+			try {
+				typeNum = Integer.parseInt(prescTypeString);
+			} catch (NumberFormatException e) {
+				// ignore and return -1
+			}
+		}
+
+		if (typeNum != -1) {
+			return EntryType.byNumeric(typeNum);
+		}
+
+		String rezeptId = getRezeptID();
+		if (rezeptId != null && !rezeptId.isEmpty()) {
+			// this is necessary due to a past impl. where self dispensed was
+			// not set as entry type
+			if (rezeptId.equals("Direktabgabe")) {
+				setPrescriptionType(Integer.toString(EntryType.SELF_DISPENSED.numericValue()));
+				setRezeptID("");
+				return EntryType.SELF_DISPENSED;
+			}
+			return EntryType.RECIPE;
+		}
+
+		return EntryType.FIXED_MEDICATION;
+	}
 
 	public String getAnzahl() {
 		return anzahl;
@@ -91,11 +124,11 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	public void setDateUntil(LocalDateTime dateUntil) {
 		this.dateUntil = dateUntil;
 	}
-	
+
 	public String getPrescriptionType() {
 		return prescriptionType;
 	}
-	
+
 	public void setPrescriptionType(String prescriptionType) {
 		this.prescriptionType = prescriptionType;
 	}
