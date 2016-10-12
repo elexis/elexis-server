@@ -1,5 +1,7 @@
 package es.fhir.rest.core.resources;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Condition;
@@ -12,12 +14,16 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.Search;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class ConditionResourceProvider implements IFhirResourceProvider {
@@ -54,8 +60,30 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 		if (idPart != null) {
 			Optional<IFinding> condition = findingsService.findById(idPart);
 			if (condition.isPresent() && (condition.get() instanceof ICondition)) {
-				Optional<Condition> fhirEncounter = getTransformer().getFhirObject((ICondition) condition.get());
-				return fhirEncounter.get();
+				Optional<Condition> fhirCondition = getTransformer().getFhirObject((ICondition) condition.get());
+				return fhirCondition.get();
+			}
+		}
+		return null;
+	}
+
+	@Search()
+	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId) {
+		if (thePatientId != null && !thePatientId.isEmpty()) {
+			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
+			if (patient.isPresent()) {
+				if (patient.get().isPatient()) {
+					List<IFinding> findings = findingsService.getPatientsFindings(patient.get().getId(),
+							ICondition.class);
+					if (findings != null && !findings.isEmpty()) {
+						List<Condition> ret = new ArrayList<Condition>();
+						for (IFinding iFinding : findings) {
+							Optional<Condition> fhirEncounter = getTransformer().getFhirObject((ICondition) iFinding);
+							fhirEncounter.ifPresent(fe -> ret.add(fe));
+						}
+						return ret;
+					}
+				}
 			}
 		}
 		return null;

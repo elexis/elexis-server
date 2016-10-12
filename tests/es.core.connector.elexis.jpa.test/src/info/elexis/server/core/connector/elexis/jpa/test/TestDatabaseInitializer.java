@@ -177,6 +177,7 @@ public class TestDatabaseInitializer {
 	 * <li>Zip: 123</li>
 	 * <li>Street: Street 1</li>
 	 * <li>Xid AHV: 756...</li>
+	 * <li>Diagnosen: Test Diagnose 1\nTest Diagnose 2</li>
 	 * 
 	 */
 	public synchronized void initializePatient() {
@@ -192,6 +193,8 @@ public class TestDatabaseInitializer {
 			patient.setCity("City");
 			patient.setZip("123");
 			patient.setStreet("Street 1");
+
+			patient.setDiagnosen("Test Diagnose 1\nTest Diagnose 2");
 
 			KontaktService.INSTANCE.flush();
 			addAHVNumber(patient, 1);
