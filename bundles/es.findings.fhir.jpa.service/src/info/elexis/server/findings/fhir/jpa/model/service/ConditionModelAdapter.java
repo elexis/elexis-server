@@ -1,10 +1,14 @@
 package info.elexis.server.findings.fhir.jpa.model.service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Condition.ConditionClinicalStatus;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
@@ -17,6 +21,12 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 
 public class ConditionModelAdapter extends AbstractModelAdapter<Condition> implements ICondition {
 
+	private EnumMapping categoryMapping = new EnumMapping(
+			org.hl7.fhir.instance.model.valuesets.ConditionCategory.class,
+			ch.elexis.core.findings.ICondition.ConditionCategory.class);
+	private EnumMapping statusMapping = new EnumMapping(ConditionClinicalStatus.class,
+			ch.elexis.core.findings.ICondition.ConditionStatus.class);
+	
 	public ConditionModelAdapter(Condition model) {
 		super(model);
 	}
@@ -45,14 +55,41 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public List<ICoding> getCoding() {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
+			CodeableConcept codeableConcept = fhirCondition.getCode();
+			if (codeableConcept != null) {
+
+			}
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
 	public void addCoding(ICoding coding) {
-		// TODO Auto-generated method stub
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
+			CodeableConcept codeableConcept = fhirCondition.getCode();
+			if(codeableConcept == null) {
+				codeableConcept = new CodeableConcept();
+			}
+			addCodingToConcept(codeableConcept, coding);
+			fhirCondition.setCode(codeableConcept);
+			getFhirHelper().saveResource(resource.get(), this);
+		}
+	}
 
+	private void addCodingToConcept(CodeableConcept codeableConcept, ICoding coding) {
+		// check if it is already contained in the concept
+		List<Coding> conceptCoding = codeableConcept.getCoding();
+		for (Coding conceptCode : conceptCoding) {
+			if (conceptCode.getSystem().equals(coding.getSystem()) && conceptCode.getCode().equals(coding.getCode())) {
+				return;
+			}
+		}
+		codeableConcept.addCoding(new Coding(coding.getSystem(), coding.getCode(), coding.getDisplay()));
 	}
 
 	@Override
@@ -115,4 +152,64 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 		setPatientId(encounter.getPatientId());
 	}
 
+	@Override
+	public ConditionCategory getCategory() {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
+			List<Coding> coding = fhirCondition.getCategory().getCoding();
+			if (!coding.isEmpty()) {
+				for (Coding categoryCoding : coding) {
+					if (categoryCoding.getSystem().equals("http://hl7.org/fhir/condition-category")) {
+						return (ConditionCategory) categoryMapping.getLocalEnumValueByCode(categoryCoding.getCode());
+					}
+				}
+			}
+		}
+		return ConditionCategory.UNKNOWN;
+	}
+
+	@Override
+	public void setCategory(ConditionCategory category) {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
+			CodeableConcept categoryCode = new CodeableConcept();
+			org.hl7.fhir.instance.model.valuesets.ConditionCategory fhirCategoryCode = (org.hl7.fhir.instance.model.valuesets.ConditionCategory) categoryMapping
+					.getFhirEnumValueByEnum(category);
+			if (fhirCategoryCode != null) {
+				categoryCode.setCoding(Collections.singletonList(new Coding(fhirCategoryCode.getSystem(),
+						fhirCategoryCode.toCode(), fhirCategoryCode.getDisplay())));
+				fhirCondition.setCategory(categoryCode);
+			}
+		}
+		getFhirHelper().saveResource(resource.get(), this);
+	}
+
+	@Override
+	public ConditionStatus getStatus() {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
+			ConditionClinicalStatus fhirStatus = fhirCondition.getClinicalStatus();
+			if (fhirStatus != null) {
+				return (ConditionStatus) statusMapping.getLocalEnumValueByCode(fhirStatus.toCode());
+			}
+		}
+		return ConditionStatus.UNKNOWN;
+	}
+
+	@Override
+	public void setStatus(ConditionStatus status) {
+		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
+			ConditionClinicalStatus fhirCategoryCode = (ConditionClinicalStatus) statusMapping
+					.getFhirEnumValueByEnum(status);
+			if (fhirCategoryCode != null) {
+				fhirCondition.setClinicalStatus(fhirCategoryCode);
+			}
+		}
+		getFhirHelper().saveResource(resource.get(), this);
+	}
 }

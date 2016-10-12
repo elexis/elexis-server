@@ -79,6 +79,7 @@ public class FindingsFactory implements IFindingsFactory {
 			return;
 		} else if (model instanceof Condition) {
 			conditionService.write((Condition) model);
+			return;
 		}
 		logger.error("Could not save unknown finding type [" + finding + "]");
 	}

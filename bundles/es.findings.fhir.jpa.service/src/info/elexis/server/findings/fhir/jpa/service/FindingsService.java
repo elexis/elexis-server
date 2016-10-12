@@ -30,9 +30,11 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.CreateOrUpdateHandler;
 import info.elexis.server.findings.fhir.jpa.model.service.internal.DbInitializer;
 
 @Component
@@ -49,6 +51,10 @@ public class FindingsService implements IFindingsService {
 	private FindingsFactory factory;
 
 	private EncounterService encounterService;
+
+	private ConditionService conditionService;
+
+	private CreateOrUpdateHandler createOrUpdateHandler;
 
 	private boolean createOrUpdateFindings;
 
@@ -71,6 +77,9 @@ public class FindingsService implements IFindingsService {
 		}
 		factory = new FindingsFactory();
 		encounterService = new EncounterService();
+		conditionService = new ConditionService();
+
+		createOrUpdateHandler = new CreateOrUpdateHandler(factory);
 	}
 
 	private Logger getLogger() {
@@ -155,6 +164,17 @@ public class FindingsService implements IFindingsService {
 
 	private List<ConditionModelAdapter> getConditions(String patientId, String encounterId) {
 		List<ConditionModelAdapter> ret = new ArrayList<>();
+		if (createOrUpdateFindings) {
+			if (patientId != null) {
+				createOrUpdateLock.lock();
+				try {
+					Optional<Kontakt> patient = KontaktService.INSTANCE.findById(patientId);
+					patient.ifPresent(p -> createOrUpdateHandler.createOrUpdateCondition(p));
+				} finally {
+					createOrUpdateLock.unlock();
+				}
+			}
+		}
 		JPAQuery<Condition> query = new JPAQuery<>(Condition.class);
 		if (patientId != null) {
 			query.add(Condition_.patientid, JPAQuery.QUERY.EQUALS, patientId);
@@ -186,18 +206,9 @@ public class FindingsService implements IFindingsService {
 				createOrUpdateLock.lock();
 				try {
 					List<Behandlung> behandlungen = getBehandlungen(patientId);
-					for (Behandlung behandlung : behandlungen) {
-						JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
-						query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
-						query.add(Encounter_.consultationid, JPAQuery.QUERY.EQUALS, behandlung.getId());
-						List<Encounter> encounters = query.execute();
-						if (encounters.isEmpty()) {
-							ret.add(encounterService.createEncounter(behandlung));
-						} else {
-							ret.add(encounterService.updateEncounter(new EncounterModelAdapter(encounters.get(0)),
-									behandlung));
-						}
-					}
+					List<EncounterModelAdapter> encounters = createOrUpdateHandler
+							.createOrUpdateEncounters(behandlungen);
+					ret.addAll(encounters);
 				} finally {
 					createOrUpdateLock.unlock();
 				}
@@ -245,11 +256,8 @@ public class FindingsService implements IFindingsService {
 				createOrUpdateLock.lock();
 				try {
 					Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
-					if (behandlung.isPresent()) {
-						EncounterModelAdapter encounter = new EncounterModelAdapter(encounters.get(0));
-						encounterService.updateEncounter(encounter, behandlung.get());
-						return Optional.of(encounter);
-					}
+					return behandlung.map(b -> createOrUpdateHandler
+							.updateEncounter(new EncounterModelAdapter(encounters.get(0)), b));
 				} finally {
 					createOrUpdateLock.unlock();
 				}
@@ -261,10 +269,7 @@ public class FindingsService implements IFindingsService {
 				createOrUpdateLock.lock();
 				try {
 					Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
-					if (behandlung.isPresent()) {
-						EncounterModelAdapter encounter = encounterService.createEncounter(behandlung.get());
-						return Optional.of(encounter);
-					}
+					return behandlung.map(b -> createOrUpdateHandler.createEncounter(b));
 				} finally {
 					createOrUpdateLock.unlock();
 				}
@@ -293,6 +298,10 @@ public class FindingsService implements IFindingsService {
 		Optional<Encounter> encounter = encounterService.findById(id);
 		if (encounter.isPresent()) {
 			return Optional.of(new EncounterModelAdapter(encounter.get()));
+		}
+		Optional<Condition> condition = conditionService.findById(id);
+		if (condition.isPresent()) {
+			return Optional.of(new ConditionModelAdapter(condition.get()));
 		}
 		return Optional.empty();
 	}
