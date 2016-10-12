@@ -6,9 +6,22 @@ import org.junit.Test;
 
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
+import ch.elexis.core.lock.types.LockResponse.Status;
 
-public class LockServiceTest  {
-	
+public class LockServiceTest {
+
+	@Test
+	public void testLockResponseInvariants() {
+		LockResponse permDeny = new LockResponse(Status.DENIED_PERMANENT, new LockInfo());
+		assertFalse(permDeny.isOk());
+		LockResponse denied = LockResponse.DENIED(new LockInfo());
+		assertFalse(denied.isOk());
+		LockResponse error = LockResponse.ERROR;
+		assertFalse(error.isOk());
+		LockResponse ok = LockResponse.OK();
+		assertTrue(ok.isOk());
+	}
+
 	@Test
 	public void testAcquireLock() {
 		LockService service = new LockService();
@@ -19,7 +32,7 @@ public class LockServiceTest  {
 		assertTrue(lockResponse.isOk());
 		lockResponse = service.releaseLock(lockInfo);
 	}
-	
+
 	@Test
 	public void testReleaseLock() {
 		LockService service = new LockService();
@@ -31,7 +44,7 @@ public class LockServiceTest  {
 		assertTrue(lockResponse.isOk());
 		assertFalse(service.isLocked(lockInfo));
 	}
-	
+
 	@Test
 	public void testDoubleAcquire() {
 		LockService service = new LockService();
@@ -48,7 +61,7 @@ public class LockServiceTest  {
 
 		lockResponse = service.releaseLock(lockInfo);
 	}
-	
+
 	@Test
 	public void testAcquireLocked() {
 		LockService service = new LockService();
