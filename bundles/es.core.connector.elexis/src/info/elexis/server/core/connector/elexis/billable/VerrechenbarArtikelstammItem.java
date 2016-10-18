@@ -153,12 +153,14 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		}
 		int num = n * ve;
 		if (vk == ve) {
-			artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() - n);
+			int current = (artikelstammItem.getIstbestand() != null) ? artikelstammItem.getIstbestand() : 0;
+			artikelstammItem.setIstbestand(current - n);
 		} else {
 			int rest = anbruch - num;
 			while (rest < 0) {
 				rest = rest + vk;
-				artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() - 1);
+				int current = (artikelstammItem.getIstbestand() != null) ? artikelstammItem.getIstbestand() : 0;
+				artikelstammItem.setIstbestand(current - 1);
 			}
 			artikelstammItem.setAnbruch(Integer.toString(rest));
 		}
