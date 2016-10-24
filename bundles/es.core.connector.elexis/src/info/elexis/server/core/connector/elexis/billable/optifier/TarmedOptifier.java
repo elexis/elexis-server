@@ -235,7 +235,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						}
 						for (Verrechnet v : lst) {
 							Optional<IBillable> vr = VerrechnetService.INSTANCE.getVerrechenbar(v);
-							if (vr.isPresent() && vr.get().getCode().equals(excludeCode)) {
+							
+							if (vr.isPresent() && vr.get().getCode() != null
+									&& vr.get().getCode().equals(excludeCode)) {
 								VerrechnetService.INSTANCE.delete(newVerrechnet);
 								return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
 										"00.0750 ist nicht im Rahmen einer ärztlichen Beratung 00.0010 verrechnenbar.");
