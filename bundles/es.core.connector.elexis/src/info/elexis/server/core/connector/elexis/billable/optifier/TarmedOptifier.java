@@ -180,7 +180,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			// "Nur zusammen mit" - Bedingung erfüllt ?
 			if (checkBezug && bOptify) {
 				Optional<IBillable> ver = VerrechnetService.INSTANCE.getVerrechenbar(v);
-				if (ver.isPresent() && ver.get().getCode().equals(bezug)) {
+				if (ver.isPresent() && ver.get().getCode() != null && ver.get().getCode().equals(bezug)) {
 					bezugOK = true;
 					if (newVerrechnet != null) {
 						break;
