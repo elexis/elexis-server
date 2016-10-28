@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -21,6 +20,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.findings.migration.IFindingMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -29,6 +29,13 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class EncounterResourceProvider implements IFhirResourceProvider {
+
+	private IFindingMigratorService migratorService;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFindingMigratorService(IFindingMigratorService migratorService) {
+		this.migratorService = migratorService;
+	}
 
 	private IFindingsService findingsService;
 
@@ -75,6 +82,9 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
+					// migrate encounters first
+					migratorService.migratePatientsFindings(thePatientId.getIdPart(), IEncounter.class);
+
 					List<IFinding> findings = findingsService.getPatientsFindings(patient.get().getId(),
 							IEncounter.class);
 					if (findings != null && !findings.isEmpty()) {
@@ -92,9 +102,11 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
 				&& !identifier.getValue().isEmpty()) {
+			migratorService.migrateConsultationsFindings(identifier.getValue().getValue(), IEncounter.class);
+
 			List<IFinding> findings = findingsService.getConsultationsFindings(identifier.getValue().getValue(),
 					IEncounter.class);
 			if (findings != null && !findings.isEmpty()) {

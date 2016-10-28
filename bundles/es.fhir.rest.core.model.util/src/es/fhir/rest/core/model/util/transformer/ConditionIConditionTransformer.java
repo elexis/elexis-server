@@ -1,4 +1,4 @@
-package es.fhir.rest.core.transformer;
+package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
 
@@ -24,7 +24,6 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
 	protected void bindIFindingsService(IFindingsService findingsService) {
 		this.findingsService = findingsService;
-		this.findingsService.setCreateOrUpdate(true);
 	}
 
 	@Override

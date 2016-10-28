@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="es.fhir.rest.core.transformer.CoverageFallTransformer">
-   <service>
-      <provide interface="es.fhir.rest.core.IFhirTransformer"/>
-   </service>
-   <implementation class="es.fhir.rest.core.transformer.CoverageFallTransformer"/>
-</scr:component>

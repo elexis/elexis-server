@@ -14,9 +14,6 @@ public class Condition extends AbstractDBObjectIdDeleted {
 	@Column(length = 80)
 	private String patientid;
 
-	@Column(length = 80)
-	private String encounterid;
-
 	@Lob
 	private String content;
 
@@ -26,14 +23,6 @@ public class Condition extends AbstractDBObjectIdDeleted {
 
 	public void setPatientId(String patientId) {
 		this.patientid = patientId;
-	}
-
-	public String getEncounterId() {
-		return encounterid;
-	}
-
-	public void setEncounterId(String encounterid) {
-		this.encounterid = encounterid;
 	}
 
 	public String getContent() {

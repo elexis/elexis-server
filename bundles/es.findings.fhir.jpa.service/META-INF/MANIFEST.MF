@@ -19,5 +19,6 @@ Import-Package: javax.persistence.metamodel,
  org.osgi.service.component.annotations;version="1.2.0",
  org.slf4j;version="1.7.2"
 Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.FindingsService.xml,
- OSGI-INF/info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager.xml
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.service.MigratorService.xml
 Export-Package: info.elexis.server.findings.fhir.jpa.service

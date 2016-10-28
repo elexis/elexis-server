@@ -22,7 +22,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
@@ -34,7 +33,6 @@ import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
-import info.elexis.server.findings.fhir.jpa.model.service.internal.CreateOrUpdateHandler;
 import info.elexis.server.findings.fhir.jpa.model.service.internal.DbInitializer;
 
 @Component
@@ -46,17 +44,11 @@ public class FindingsService implements IFindingsService {
 
 	private static ReentrantLock dbInitializedLock = new ReentrantLock();
 
-	private static ReentrantLock createOrUpdateLock = new ReentrantLock();
-
 	private FindingsFactory factory;
 
 	private EncounterService encounterService;
 
 	private ConditionService conditionService;
-
-	private CreateOrUpdateHandler createOrUpdateHandler;
-
-	private boolean createOrUpdateFindings;
 
 	@Activate
 	protected void activate() {
@@ -78,8 +70,6 @@ public class FindingsService implements IFindingsService {
 		factory = new FindingsFactory();
 		encounterService = new EncounterService();
 		conditionService = new ConditionService();
-
-		createOrUpdateHandler = new CreateOrUpdateHandler(factory);
 	}
 
 	private Logger getLogger() {
@@ -97,7 +87,7 @@ public class FindingsService implements IFindingsService {
 				ret.addAll(getEncounters(patientId));
 			}
 			if (filter.isAssignableFrom(ICondition.class)) {
-				ret.addAll(getConditions(patientId, null));
+				ret.addAll(getConditions(patientId));
 			}
 			// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 			// ret.addAll(getClinicalImpressions(patientId, null));
@@ -122,7 +112,7 @@ public class FindingsService implements IFindingsService {
 					ret.add(encounter.get());
 				}
 				if (filter.isAssignableFrom(ICondition.class)) {
-					ret.addAll(getConditions(encounter.get().getPatientId(), encounter.get().getId()));
+					ret.addAll(getConditions(encounter.get().getPatientId()));
 				}
 				// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 				// ret.addAll(getClinicalImpressions(patientId, null));
@@ -162,25 +152,11 @@ public class FindingsService implements IFindingsService {
 	// return query.execute();
 	// }
 
-	private List<ConditionModelAdapter> getConditions(String patientId, String encounterId) {
+	private List<ConditionModelAdapter> getConditions(String patientId) {
 		List<ConditionModelAdapter> ret = new ArrayList<>();
-		if (createOrUpdateFindings) {
-			if (patientId != null) {
-				createOrUpdateLock.lock();
-				try {
-					Optional<Kontakt> patient = KontaktService.INSTANCE.findById(patientId);
-					patient.ifPresent(p -> createOrUpdateHandler.createOrUpdateCondition(p));
-				} finally {
-					createOrUpdateLock.unlock();
-				}
-			}
-		}
 		JPAQuery<Condition> query = new JPAQuery<>(Condition.class);
 		if (patientId != null) {
 			query.add(Condition_.patientid, JPAQuery.QUERY.EQUALS, patientId);
-		}
-		if (encounterId != null) {
-			query.add(Condition_.encounterid, JPAQuery.QUERY.EQUALS, encounterId);
 		}
 		List<Condition> conditions = query.execute();
 		conditions.stream().forEach(e -> ret.add(new ConditionModelAdapter(e)));
@@ -202,22 +178,10 @@ public class FindingsService implements IFindingsService {
 	private List<EncounterModelAdapter> getEncounters(String patientId) {
 		List<EncounterModelAdapter> ret = new ArrayList<>();
 		if (patientId != null) {
-			if (createOrUpdateFindings) {
-				createOrUpdateLock.lock();
-				try {
-					List<Behandlung> behandlungen = getBehandlungen(patientId);
-					List<EncounterModelAdapter> encounters = createOrUpdateHandler
-							.createOrUpdateEncounters(behandlungen);
-					ret.addAll(encounters);
-				} finally {
-					createOrUpdateLock.unlock();
-				}
-			} else {
-				JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
-				query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
-				List<Encounter> encounters = query.execute();
-				encounters.stream().forEach(e -> ret.add(new EncounterModelAdapter(e)));
-			}
+			JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
+			query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+			List<Encounter> encounters = query.execute();
+			encounters.stream().forEach(e -> ret.add(new EncounterModelAdapter(e)));
 		}
 		return ret;
 	}
@@ -252,28 +216,7 @@ public class FindingsService implements IFindingsService {
 				logger.warn("Too many encounters [" + encounters.size() + "] found for consultation [" + consultationId
 						+ "] using first.");
 			}
-			if (createOrUpdateFindings) {
-				createOrUpdateLock.lock();
-				try {
-					Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
-					return behandlung.map(b -> createOrUpdateHandler
-							.updateEncounter(new EncounterModelAdapter(encounters.get(0)), b));
-				} finally {
-					createOrUpdateLock.unlock();
-				}
-			} else {
-				return Optional.of(new EncounterModelAdapter(encounters.get(0)));
-			}
-		} else {
-			if (createOrUpdateFindings) {
-				createOrUpdateLock.lock();
-				try {
-					Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
-					return behandlung.map(b -> createOrUpdateHandler.createEncounter(b));
-				} finally {
-					createOrUpdateLock.unlock();
-				}
-			}
+			return Optional.of(new EncounterModelAdapter(encounters.get(0)));
 		}
 		return Optional.empty();
 	}
@@ -307,13 +250,8 @@ public class FindingsService implements IFindingsService {
 	}
 
 	@Override
-	public void setCreateOrUpdate(boolean value) {
-		createOrUpdateFindings = value;
+	public Optional<IFinding> findById(String id, Class<? extends IFinding> clazz) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
-	@Override
-	public boolean getCreateOrUpdate() {
-		return createOrUpdateFindings;
-	}
-
 }

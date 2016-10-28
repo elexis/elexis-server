@@ -6,6 +6,18 @@ import org.hl7.fhir.dstu3.model.Identifier;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
+/**
+ * Service definition for transforming FHIR objects to local Objects. Provides
+ * REST CRUD (create, read, update, delete) operations on the local objects
+ * using the FHIR objects.
+ * 
+ * @author thomas
+ *
+ * @param <F>
+ *            FHIR class
+ * @param <L>
+ *            Local class, extends AbstractDBObjectIdDeleted
+ */
 public interface IFhirTransformer<F, L> {
 	/**
 	 * Create a new FHIR object representing the localObject.

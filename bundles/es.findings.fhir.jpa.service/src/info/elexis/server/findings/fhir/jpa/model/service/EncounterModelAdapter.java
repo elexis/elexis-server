@@ -11,7 +11,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import ca.uhn.fhir.model.primitive.IdDt;
-import ch.elexis.core.findings.ICoding;
+import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 
@@ -44,19 +44,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	}
 
 	@Override
-	public List<ICoding> getCoding() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addCoding(ICoding coding) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Optional<LocalDateTime> getEffectiveTime() {
+	public Optional<LocalDateTime> getStartTime() {
 		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
@@ -69,7 +57,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	}
 
 	@Override
-	public void setEffectiveTime(LocalDateTime time) {
+	public void setStartTime(LocalDateTime time) {
 		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
@@ -175,5 +163,17 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 		getFhirHelper().saveResource(resource.get(), this);
 
 		getModel().setServiceProviderId(serviceProviderId);
+	}
+
+	@Override
+	public List<ICondition> getIndication() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setIndication(List<ICondition> indication) {
+		// TODO Auto-generated method stub
+
 	}
 }

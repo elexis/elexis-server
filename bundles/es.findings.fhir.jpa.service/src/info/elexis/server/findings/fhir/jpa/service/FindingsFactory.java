@@ -1,5 +1,7 @@
 package info.elexis.server.findings.fhir.jpa.service;
 
+import java.util.Date;
+
 import org.hl7.fhir.dstu3.model.IdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ public class FindingsFactory implements IFindingsFactory {
 		ConditionModelAdapter ret = new ConditionModelAdapter(conditionService.create());
 		org.hl7.fhir.dstu3.model.Condition fhirCondition = new org.hl7.fhir.dstu3.model.Condition();
 		fhirCondition.setId(new IdType("Condition", ret.getId()));
+		fhirCondition.setDateRecorded(new Date());
 		fhirHelper.saveResource(fhirCondition, ret);
 		saveFinding(ret);
 		return ret;

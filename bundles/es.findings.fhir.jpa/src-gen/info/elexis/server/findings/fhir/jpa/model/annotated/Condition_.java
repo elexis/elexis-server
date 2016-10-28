@@ -9,7 +9,6 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class Condition_ { 
 
     public static volatile SingularAttribute<Condition, String> patientid;
-    public static volatile SingularAttribute<Condition, String> encounterid;
     public static volatile SingularAttribute<Condition, String> content;
 
 }

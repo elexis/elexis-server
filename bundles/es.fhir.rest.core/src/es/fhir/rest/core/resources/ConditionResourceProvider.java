@@ -19,6 +19,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.findings.migration.IFindingMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -27,6 +28,13 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class ConditionResourceProvider implements IFhirResourceProvider {
+
+	private IFindingMigratorService migratorService;
+
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFindingMigratorService(IFindingMigratorService migratorService) {
+		this.migratorService = migratorService;
+	}
 
 	private IFindingsService findingsService;
 
@@ -73,7 +81,10 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
-					List<IFinding> findings = findingsService.getPatientsFindings(patient.get().getId(),
+					// migrate diagnose condition first
+					migratorService.migratePatientsFindings(thePatientId.getIdPart(), ICondition.class);
+
+					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),
 							ICondition.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Condition> ret = new ArrayList<Condition>();

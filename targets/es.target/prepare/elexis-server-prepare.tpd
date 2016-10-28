@@ -144,6 +144,9 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	com.phloc.commons
 	com.phloc.schematron
 	findbugsAnnotations
+	ognl
+	org.attoparser
+	org.unbescape
 }
 
 // RestFuse

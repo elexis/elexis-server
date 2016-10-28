@@ -10,6 +10,7 @@ import java.util.List;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Condition;
+import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,16 +70,18 @@ public class ConditionTest {
 		Condition condition = (Condition) entries.get(0).getResource();
 
 		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), condition.getSubject().getReference());
-		assertEquals("active", condition.getClinicalStatus().toCode());
 		assertNotNull(condition.getCategory());
 		assertNotNull(condition.getCategory().getCoding());
 		assertFalse(condition.getCategory().getCoding().isEmpty());
 		assertEquals("diagnosis", condition.getCategory().getCoding().get(0).getCode());
 		assertNotNull(condition.getCode());
 		assertNotNull(condition.getCode().getCoding());
-		assertFalse(condition.getCode().getCoding().isEmpty());
-		assertEquals("www.elexis.info/diagnosis/codes/praxis", condition.getCode().getCoding().get(0).getSystem());
-		assertEquals("freetext", condition.getCode().getCoding().get(0).getCode());
-		assertTrue(condition.getCode().getCoding().get(0).getDisplay().contains("Diagnose 1"));
+		assertTrue(condition.getCode().getCoding().isEmpty());
+
+		Narrative narrative = condition.getText();
+		assertNotNull(narrative);
+		String text = narrative.getDivAsString();
+		assertNotNull(text);
+		assertTrue(text.contains("Diagnose 2"));
 	}
 }
