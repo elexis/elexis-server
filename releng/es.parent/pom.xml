@@ -50,6 +50,35 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<aggregate>true</aggregate>
+					<doctitle>Dokumentation der Java Schnittstellen f&#xFC;r Elexis
+						Server
+						${project.version}.</doctitle>
+					<header><![CDATA[Elexis ${project.version}. See also <a href="http://elexis.info">http://elexis.info</a>]]></header>
+					<bottom><![CDATA[Copyright 2016 Marco Descher and Elexis. See also <a href="http://elexis.info">Elexis</a>: eine freie Software von Ärzten für Ärzte]]></bottom>
+					<excludePackageNames>org.eclipse.*</excludePackageNames>
+					<groups>
+						<group>
+							<title>Elexis Server Core modules</title>
+							<packages>info.elexis.server.core*</packages>
+						</group>
+						<group>
+							<title>Utilities, Backward compatibility, etc</title>
+							<packages>*</packages>
+						</group>
+						<group>
+							<title>Modules for FIRH</title>
+							<packages>es.fhir*:info.elexis.server.findings.fhir*</packages>
+						</group>
+					</groups>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho.version}</version>
