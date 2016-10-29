@@ -113,6 +113,9 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	com.phloc.commons
 	com.phloc.schematron
 	findbugsAnnotations
+	ognl
+	org.attoparser
+	org.unbescape
 	
 	com.eclipsesource.restfuse
 }
