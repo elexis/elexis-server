@@ -45,7 +45,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public Optional<LocalDateTime> getStartTime() {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
 			Period period = fhirEncounter.getPeriod();
@@ -58,19 +58,47 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public void setStartTime(LocalDateTime time) {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
 			Period period = fhirEncounter.getPeriod();
 			if (period == null) {
 				period = new Period();
-				period.setStart(getDate(time));
-			} else {
-				period.setStart(getDate(time));
 			}
+			period.setStart(getDate(time));
+
 			fhirEncounter.setPeriod(period);
+			saveResource(resource.get());
 		}
-		getFhirHelper().saveResource(resource.get(), this);
+	}
+
+	@Override
+	public Optional<LocalDateTime> getEndTime() {
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			Period period = fhirEncounter.getPeriod();
+			if (period != null && period.getEnd() != null) {
+				return Optional.of(getLocalDateTime(period.getEnd()));
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public void setEndTime(LocalDateTime time) {
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			Period period = fhirEncounter.getPeriod();
+			if (period == null) {
+				period = new Period();
+			}
+			period.setEnd(getDate(time));
+
+			fhirEncounter.setPeriod(period);
+			saveResource(resource.get());
+		}
 	}
 
 	@Override

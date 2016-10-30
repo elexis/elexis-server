@@ -61,6 +61,22 @@ public class EncounterTest {
 		Encounter readEncounter = client.read().resource(Encounter.class).withId(encounter.getId()).execute();
 		assertNotNull(readEncounter);
 		assertEquals(encounter.getId(), readEncounter.getId());
+
+		// search with date parameter
+		results = client.search().forResource(Encounter.class).where(Encounter.PATIENT.hasId(readPatient.getId()))
+				.and(Encounter.DATE.afterOrEquals().day("2016-09-01"))
+				.and(Encounter.DATE.beforeOrEquals().day("2016-10-01")).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+
+		// search by patient and date
+		results = client.search().forResource(Encounter.class).where(Encounter.PATIENT.hasId(readPatient.getId()))
+				.and(Encounter.DATE.afterOrEquals().day("2016-10-01"))
+				.and(Encounter.DATE.beforeOrEquals().day("2016-11-01")).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertTrue(entries.isEmpty());
 	}
 
 	/**

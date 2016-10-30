@@ -24,6 +24,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
+import es.fhir.rest.core.resources.util.CodeTypeUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
@@ -90,29 +91,30 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	@Search()
 	public List<Practitioner> findPractitioner(@RequiredParam(name = Practitioner.SP_ROLE) CodeType roleCode) {
 		if (roleCode != null) {
-			String codeValue = roleCode.getValue();
-			if (codeValue != null) {
-				String[] parts = codeValue.split("\\|");
-				if (parts.length == 2) {
-					String codeSystem = parts[0];
-					String codeCode = parts[1];
-					List<Practitioner> allPractitioners = getAllPractitioners();
-					return allPractitioners.stream()
-							.filter(p -> practitionerHasRole(p, codeSystem, codeCode))
-							.collect(Collectors.toList());
+			Optional<String> codeSystem = CodeTypeUtil.getSystem(roleCode);
+			Optional<String> codeCode = CodeTypeUtil.getCode(roleCode);
+			List<Practitioner> allPractitioners = getAllPractitioners();
+			return allPractitioners.stream().filter(p -> practitionerHasRole(p, codeSystem, codeCode))
+					.collect(Collectors.toList());
 
-				}
-			}
 		}
 		return Collections.emptyList();
 	}
 
-	private boolean practitionerHasRole(Practitioner p, String codeSystem, String codeCode) {
+	private boolean practitionerHasRole(Practitioner p, Optional<String> codeSystem, Optional<String> codeCode) {
 		List<PractitionerRoleComponent> roles = p.getRole();
 		for (PractitionerRoleComponent practitionerRoleComponent : roles) {
 			List<Coding> codings = practitionerRoleComponent.getCode().getCoding();
 			for (Coding coding : codings) {
-				if (coding.getSystem().equals(codeSystem) && coding.getCode().equals(codeCode)) {
+				boolean matchingSystem = false;
+				boolean matchingCode = false;
+				if(codeSystem.isPresent()) {
+					matchingSystem = coding.getSystem().equals(codeSystem.get());
+				}
+				if(codeCode.isPresent()) {
+					matchingCode = coding.getCode().equals(codeCode.get());
+				}
+				if (matchingSystem && matchingCode) {
 					return true;
 				}
 			}

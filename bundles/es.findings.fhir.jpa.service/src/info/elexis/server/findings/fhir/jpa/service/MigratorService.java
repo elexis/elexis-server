@@ -127,6 +127,7 @@ public class MigratorService implements IFindingMigratorService {
 		LocalDate encounterDate = behandlung.getDatum();
 		if (encounterDate != null) {
 			encounter.setStartTime(encounterDate.atStartOfDay());
+			encounter.setEndTime(encounterDate.atTime(23, 59, 59));
 		}
 		Fall fall = behandlung.getFall();
 		if (fall != null) {

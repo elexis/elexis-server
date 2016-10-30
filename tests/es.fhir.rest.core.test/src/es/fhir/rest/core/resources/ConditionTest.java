@@ -50,6 +50,20 @@ public class ConditionTest {
 		Condition readCondition = client.read().resource(Condition.class).withId(condition.getId()).execute();
 		assertNotNull(readCondition);
 		assertEquals(condition.getId(), readCondition.getId());
+
+		// search by patient and category
+		results = client.search().forResource(Condition.class).where(Condition.SUBJECT.hasId(readPatient.getId()))
+				.and(Condition.CATEGORY.exactly().code("diagnosis")).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+
+		results = client.search().forResource(Condition.class).where(Condition.SUBJECT.hasId(readPatient.getId()))
+				.and(Condition.CATEGORY.exactly().code("abc")).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertTrue(entries.isEmpty());
+
 	}
 
 	/**

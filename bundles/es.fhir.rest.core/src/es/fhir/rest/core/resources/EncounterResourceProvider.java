@@ -14,9 +14,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
@@ -24,6 +26,7 @@ import ch.elexis.core.findings.migration.IFindingMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
+import es.fhir.rest.core.resources.util.DateRangeParamUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
@@ -76,8 +79,17 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		return null;
 	}
 
+	/**
+	 * Search for all encounters by the patient id. Optional the date range of
+	 * the returned encounters can be specified.
+	 * 
+	 * @param thePatientId
+	 * @param dates
+	 * @return
+	 */
 	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId) {
+	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
+			@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
 			if (patient.isPresent()) {
@@ -89,9 +101,17 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 							IEncounter.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Encounter> ret = new ArrayList<Encounter>();
+
 						for (IFinding iFinding : findings) {
 							Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) iFinding);
-							fhirEncounter.ifPresent(fe -> ret.add(fe));
+							fhirEncounter.ifPresent(fe -> {
+								if (dates != null) {
+									if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(), dates)) {
+										return;
+									}
+								}
+								ret.add(fe);
+							});
 						}
 						return ret;
 					}
@@ -101,6 +121,13 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		return null;
 	}
 
+	/**
+	 * Search for an Encounter with a matching Elexis consultation id.
+	 * 
+	 * 
+	 * @param identifier
+	 * @return
+	 */
 	@Search()
 	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null

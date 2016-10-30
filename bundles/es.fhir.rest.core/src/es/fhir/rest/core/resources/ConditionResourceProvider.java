@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -13,16 +14,19 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ch.elexis.core.findings.ICondition;
+import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.migration.IFindingMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
+import es.fhir.rest.core.resources.util.CodeTypeUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
@@ -76,7 +80,8 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId) {
+	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId,
+			@OptionalParam(name = Condition.SP_CATEGORY) CodeType categoryCode) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
 			if (patient.isPresent()) {
@@ -89,6 +94,9 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 					if (findings != null && !findings.isEmpty()) {
 						List<Condition> ret = new ArrayList<Condition>();
 						for (IFinding iFinding : findings) {
+							if (categoryCode != null && !isConditionCategory((ICondition) iFinding, categoryCode)) {
+								continue;
+							}
 							Optional<Condition> fhirEncounter = getTransformer().getFhirObject((ICondition) iFinding);
 							fhirEncounter.ifPresent(fe -> ret.add(fe));
 						}
@@ -98,5 +106,12 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return null;
+	}
+
+	private boolean isConditionCategory(ICondition iCondition, CodeType categoryCode) {
+		Optional<String> codeCode = CodeTypeUtil.getCode(categoryCode);
+
+		ConditionCategory category = iCondition.getCategory();
+		return category.name().equalsIgnoreCase(codeCode.orElse(""));
 	}
 }
