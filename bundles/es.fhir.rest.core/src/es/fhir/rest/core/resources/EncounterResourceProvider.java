@@ -22,7 +22,7 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
-import ch.elexis.core.findings.migration.IFindingMigratorService;
+import ch.elexis.core.findings.migration.IMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -33,10 +33,10 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 @Component
 public class EncounterResourceProvider implements IFhirResourceProvider {
 
-	private IFindingMigratorService migratorService;
+	private IMigratorService migratorService;
 
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingMigratorService(IFindingMigratorService migratorService) {
+	protected void bindIMigratorService(IMigratorService migratorService) {
 		this.migratorService = migratorService;
 	}
 

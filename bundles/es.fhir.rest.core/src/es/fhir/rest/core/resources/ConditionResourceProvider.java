@@ -1,6 +1,7 @@
 package es.fhir.rest.core.resources;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
-import ch.elexis.core.findings.migration.IFindingMigratorService;
+import ch.elexis.core.findings.migration.IMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -33,10 +34,10 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 @Component
 public class ConditionResourceProvider implements IFhirResourceProvider {
 
-	private IFindingMigratorService migratorService;
+	private IMigratorService migratorService;
 
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingMigratorService(IFindingMigratorService migratorService) {
+	protected void bindIMigratorService(IMigratorService migratorService) {
 		this.migratorService = migratorService;
 	}
 
@@ -105,7 +106,7 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 				}
 			}
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	private boolean isConditionCategory(ICondition iCondition, CodeType categoryCode) {

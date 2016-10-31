@@ -4,7 +4,7 @@
       <provide interface="es.fhir.rest.core.IFhirResourceProvider"/>
    </service>
    <reference bind="bindIFhirTransformerRegistry" cardinality="1..1" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="IFhirTransformerRegistry" policy="static"/>
-   <reference bind="bindIFindingMigratorService" cardinality="1..1" interface="ch.elexis.core.findings.migration.IFindingMigratorService" name="IFindingMigratorService" policy="static"/>
    <reference bind="bindIFindingsService" cardinality="1..1" interface="ch.elexis.core.findings.IFindingsService" name="IFindingsService" policy="static"/>
+   <reference bind="bindIMigratorService" cardinality="1..1" interface="ch.elexis.core.findings.migration.IMigratorService" name="IMigratorService" policy="static"/>
    <implementation class="es.fhir.rest.core.resources.ConditionResourceProvider"/>
 </scr:component>

@@ -49,12 +49,12 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public void setPatientId(String patientId) {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			fhirCondition.setSubject(new Reference(new IdDt("Patient", patientId)));
+			saveResource(resource.get());
 		}
-		getFhirHelper().saveResource(resource.get(), this);
 
 		getModel().setPatientId(patientId);
 	}
@@ -89,7 +89,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public Optional<LocalDate> getDateRecorded() {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			Date date = fhirCondition.getDateRecorded();
@@ -102,11 +102,11 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public void setDateRecorded(LocalDate date) {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			fhirCondition.setDateRecorded(getDate(date));
-			getFhirHelper().saveResource(resource.get(), this);
+			saveResource(resource.get());
 		}
 	}
 
@@ -127,7 +127,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public ConditionCategory getCategory() {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			List<Coding> coding = fhirCondition.getCategory().getCoding();
@@ -145,7 +145,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public void setCategory(ConditionCategory category) {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			CodeableConcept categoryCode = new CodeableConcept();
@@ -156,13 +156,13 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 						fhirCategoryCode.toCode(), fhirCategoryCode.getDisplay())));
 				fhirCondition.setCategory(categoryCode);
 			}
+			saveResource(resource.get());
 		}
-		getFhirHelper().saveResource(resource.get(), this);
 	}
 
 	@Override
 	public ConditionStatus getStatus() {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			ConditionClinicalStatus fhirStatus = fhirCondition.getClinicalStatus();
@@ -175,7 +175,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public void setStatus(ConditionStatus status) {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent() && status != ConditionStatus.UNKNOWN) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			ConditionClinicalStatus fhirCategoryCode = (ConditionClinicalStatus) statusMapping
@@ -183,7 +183,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 			if (fhirCategoryCode != null) {
 				fhirCondition.setClinicalStatus(fhirCategoryCode);
 			}
-			getFhirHelper().saveResource(resource.get(), this);
+			saveResource(resource.get());
 		}
 	}
 
@@ -199,7 +199,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public Optional<String> getStart() {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			try {
@@ -232,7 +232,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 
 	@Override
 	public Optional<String> getEnd() {
-		Optional<IBaseResource> resource = getFhirHelper().loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
 			try {

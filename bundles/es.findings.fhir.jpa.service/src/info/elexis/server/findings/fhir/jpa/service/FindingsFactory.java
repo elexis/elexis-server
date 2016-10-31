@@ -19,13 +19,11 @@ import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
-import info.elexis.server.findings.fhir.jpa.model.service.internal.FhirHelper;
+import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
 
 public class FindingsFactory implements IFindingsFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(FindingsFactory.class);
-
-	private FhirHelper fhirHelper = new FhirHelper();
 
 	private EncounterService encounterService;
 
@@ -41,7 +39,7 @@ public class FindingsFactory implements IFindingsFactory {
 		EncounterModelAdapter ret = new EncounterModelAdapter(encounterService.create());
 		org.hl7.fhir.dstu3.model.Encounter fhirEncounter = new org.hl7.fhir.dstu3.model.Encounter();
 		fhirEncounter.setId(new IdType("Encounter", ret.getId()));
-		fhirHelper.saveResource(fhirEncounter, ret);
+		ModelUtil.saveResource(fhirEncounter, ret);
 		saveFinding(ret);
 		return ret;
 	}
@@ -58,7 +56,7 @@ public class FindingsFactory implements IFindingsFactory {
 		org.hl7.fhir.dstu3.model.Condition fhirCondition = new org.hl7.fhir.dstu3.model.Condition();
 		fhirCondition.setId(new IdType("Condition", ret.getId()));
 		fhirCondition.setDateRecorded(new Date());
-		fhirHelper.saveResource(fhirCondition, ret);
+		ModelUtil.saveResource(fhirCondition, ret);
 		saveFinding(ret);
 		return ret;
 	}

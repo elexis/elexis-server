@@ -35,6 +35,8 @@
 	<logger name="se.ugli.bigqueue" level="INFO" />
 	<logger name="ch.medelexis.server.connector.rockethealth" level="TRACE" />
 
+	<logger name="ca.uhn.fhir" level="INFO" />
+
 	<root level="${root.level:-DEBUG}">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="ROLLING" />

@@ -11,7 +11,7 @@ import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
-import ch.elexis.core.findings.migration.IFindingMigratorService;
+import ch.elexis.core.findings.migration.IMigratorService;
 import ch.elexis.core.text.model.Samdas;
 import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -25,7 +25,7 @@ import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 
 @Component
-public class MigratorService implements IFindingMigratorService {
+public class MigratorService implements IMigratorService {
 
 	private FindingsService findingsService;
 
@@ -120,7 +120,7 @@ public class MigratorService implements IFindingMigratorService {
 		updateEncounter(encounter, behandlung);
 	}
 
-	public void updateEncounter(IEncounter encounter, Behandlung behandlung) {
+	private void updateEncounter(IEncounter encounter, Behandlung behandlung) {
 		encounter.setConsultationId(behandlung.getId());
 		encounter.setServiceProviderId(behandlung.getMandant().getId());
 

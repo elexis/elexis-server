@@ -15,24 +15,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IFinding;
-import info.elexis.server.findings.fhir.jpa.model.service.internal.FhirHelper;
+import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
 
 public abstract class AbstractModelAdapter<T> implements IFinding {
 
 	private T model;
-	private FhirHelper fhirHelper;
 
 	public AbstractModelAdapter(T model) {
 		this.model = model;
-		this.fhirHelper = new FhirHelper();
 	}
 
 	public T getModel() {
 		return model;
-	}
-
-	protected FhirHelper getFhirHelper() {
-		return fhirHelper;
 	}
 
 	protected Logger getLogger(Class<?> clazz) {
@@ -40,16 +34,16 @@ public abstract class AbstractModelAdapter<T> implements IFinding {
 	}
 
 	protected void saveResource(IBaseResource resource) {
-		getFhirHelper().saveResource(resource, this);
+		ModelUtil.saveResource(resource, this);
 	}
 
 	protected Optional<IBaseResource> loadResource() {
-		return getFhirHelper().loadResource(this);
+		return ModelUtil.loadResource(this);
 	}
 
 	@Override
 	public Optional<String> getText() {
-		Optional<IBaseResource> resource = fhirHelper.loadResource(this);
+		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent() && resource.get() instanceof DomainResource) {
 			Narrative narrative = ((DomainResource) resource.get()).getText();
 			if (narrative != null && narrative.getDivAsString() != null) {
