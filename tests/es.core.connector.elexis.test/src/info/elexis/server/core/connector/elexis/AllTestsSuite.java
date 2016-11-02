@@ -15,11 +15,12 @@ import info.elexis.server.core.connector.elexis.services.JPAQueryTest;
 import info.elexis.server.core.connector.elexis.services.KontaktServiceTest;
 import info.elexis.server.core.connector.elexis.services.LockServiceTest;
 import info.elexis.server.core.connector.elexis.services.PrescriptionServiceTest;
+import info.elexis.server.core.connector.elexis.services.StockServiceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ArtikelServiceTest.class, BehandlungServiceTest.class, BillingTest.class, DocHandleServiceTest.class,
 		JPAQueryTest.class, KontaktServiceTest.class, LockServiceTest.class, PrescriptionServiceTest.class,
-		VerrechenbarTest.class })
+		VerrechenbarTest.class, StockServiceTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();

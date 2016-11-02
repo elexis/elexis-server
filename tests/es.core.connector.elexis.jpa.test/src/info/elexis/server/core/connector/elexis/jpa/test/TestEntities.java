@@ -12,5 +12,7 @@ public class TestEntities {
 	public static final String LABORATORY_IDENTIFIER = "Testlabor";
 
 	public static final String ARTIKELSTAMM_ITEM_PHARMA_ID = "0768047504015713366300008";
+	public static final String ARTIKELSTAMM_ITEM_PHARMA_ID_2 = "0768047503086821812760004";
+	public static final String ARTIKELSTAMM_ITEM_PHARMA_ID_3 = "0403265109160755548550008";
 	public static final String ARTIKELSTAMM_PRODUCT_PHARMA_ID = "5631802";
 }

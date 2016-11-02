@@ -60,6 +60,6 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	}
 
 	public String getLabel(){
-		return getId()+"@"+getClass().getName()+" "+isDeleted();
+		return super.getLabel()+(isDeleted() ? " D ": "   ")+" ["+String.format("%25S", getId())+"]";
 	};
 }

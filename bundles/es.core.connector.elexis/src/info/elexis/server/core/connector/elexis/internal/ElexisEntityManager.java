@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.internal;
 
+import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
+
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -47,11 +49,11 @@ public class ElexisEntityManager {
 		
 		HashMap<String, Object> props = new HashMap<String, Object>();
 		try {
-			props.put("javax.persistence.jdbc.driver", connection.get().rdbmsType.driverName);
-			props.put("javax.persistence.jdbc.url", connection.get().connectionString);
-			props.put("javax.persistence.jdbc.user", connection.get().username);
-			props.put("javax.persistence.jdbc.password", connection.get().password);
-			props.put("eclipselink.ddl-generation", "none");
+			props.put(JDBC_DRIVER, connection.get().rdbmsType.driverName);
+			props.put(JDBC_URL, connection.get().connectionString);
+			props.put(JDBC_USER, connection.get().username);
+			props.put(JDBC_PASSWORD, connection.get().password);
+			props.put(DDL_GENERATION, NONE);
 			if (ElexisDBConnection.isTestMode()) {
 				// we don't want the entities to generate the database, as
 				// initialization is handled via the creation scripts

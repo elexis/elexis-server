@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -20,18 +21,9 @@ public enum StoreToStringService {
 
 	private static Logger log = LoggerFactory.getLogger(StoreToStringService.class);
 
-	public String storeToString(AbstractDBObjectIdDeleted adbo) {
-		String classKey = ElexisTypeMap.getKeyForObject(adbo);
-		if (classKey == null) {
-			log.warn("Could not resolve {} to storeToString name", adbo.getClass());
-			return null;
-		}
-
-		return classKey + StringConstants.DOUBLECOLON + adbo.getId();
-	}
-
 	/**
 	 * Find an object according to its storeToString
+	 * 
 	 * @param storeToString
 	 * @return a detached {@link AbstractDBObjectIdDeleted}
 	 */
@@ -41,11 +33,7 @@ public enum StoreToStringService {
 			return Optional.empty();
 		}
 
-		String[] split = storeToString.split(StringConstants.DOUBLECOLON);
-		if (split.length != 2) {
-			log.warn("Array size not 2: " + storeToString);
-			return Optional.empty();
-		}
+		String[] split = splitIntoTypeAndId(storeToString);
 
 		// map string to classname
 		String className = split[0];
@@ -62,6 +50,36 @@ public enum StoreToStringService {
 		} finally {
 			em.close();
 		}
+	}
+
+	/**
+	 * Generate an Elexis compatible store to string. This requires the mapping
+	 * of local entities to their Elexis-respective, Persistent-object-based
+	 * counter entities.
+	 * 
+	 * @param adbo
+	 * @return
+	 */
+	public static String storeToString(AbstractDBObjectIdDeleted adbo) {
+		String classKey = ElexisTypeMap.getKeyForObject(adbo);
+		if (classKey == null) {
+			log.warn("Could not resolve {} to storeToString name", adbo.getClass());
+			return null;
+		}
+
+		return classKey + StringConstants.DOUBLECOLON + adbo.getId();
+	}
+
+	/**
+	 * Split a storeToString into an array containing the type and the id
+	 * 
+	 * @param storeToString
+	 * @return a size 2 array with article type [0] and article id [1] or
+	 *         <code>null</code> in either [0] or [1]
+	 */
+	public static String[] splitIntoTypeAndId(String storeToString) {
+		String[] split = storeToString.split(StringConstants.DOUBLECOLON);
+		return Arrays.copyOf(split, 2);
 	}
 
 }

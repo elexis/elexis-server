@@ -3,6 +3,8 @@ package info.elexis.server.core.connector.elexis.jaxrs;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockRequest;
@@ -13,6 +15,8 @@ import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 
 @Component(service = LockService.class, immediate = true)
 public class LockService implements ILockService {
+
+	private Logger log = LoggerFactory.getLogger(LockService.class);
 
 	@Override
 	public boolean isLocked(LockRequest request) {

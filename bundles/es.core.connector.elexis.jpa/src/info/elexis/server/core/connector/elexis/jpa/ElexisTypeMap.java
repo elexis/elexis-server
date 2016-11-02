@@ -16,6 +16,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tar
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Reminder;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
@@ -46,6 +47,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_REMINDER = "ch.elexis.data.Reminder";
 	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
 	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
+	public static final String TYPE_STOCK_ENTRY = "ch.elexis.data.StockEntry";
 	public static final String TYPE_TARMEDLEISTUNG = "ch.elexis.data.TarmedLeistung";
 	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
 	public static final String TYPE_TESSINER_CODE = "ch.elexis.data.TICode";
@@ -78,6 +80,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
 		stsToClassMap.put(TYPE_REMINDER, Reminder.class);
 		classToStsMap.put(Reminder.class, TYPE_REMINDER);
+		stsToClassMap.put(TYPE_STOCK_ENTRY, StockEntry.class);
+		classToStsMap.put(StockEntry.class, TYPE_STOCK_ENTRY);
 		stsToClassMap.put(TYPE_TARMEDLEISTUNG, TarmedLeistung.class);
 		classToStsMap.put(TarmedLeistung.class, TYPE_TARMEDLEISTUNG);
 		stsToClassMap.put(TYPE_TERMIN, Termin.class);

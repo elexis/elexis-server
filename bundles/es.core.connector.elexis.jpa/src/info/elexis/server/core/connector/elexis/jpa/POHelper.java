@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.common;
+package info.elexis.server.core.connector.elexis.jpa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -11,7 +11,6 @@ import ch.elexis.core.model.eigenartikel.EigenartikelTyp;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.DefaultOptifier;
-import info.elexis.server.core.connector.elexis.common.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -136,55 +135,4 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 			return vkt;
 		}
 	}
-
-	public void singleReturn(int n) {
-		int anbruch = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_BEGINNING_PACKAGE));
-		int ve = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_SELL_UNIT));
-		int vk = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT));
-		int num = n * ve;
-		if (vk == ve) {
-			int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
-			article.setIstbestand(current + n);
-		} else {
-			int rest = anbruch + num;
-			while (rest > vk) {
-				rest = rest - vk;
-				int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
-				article.setIstbestand(current + 1);
-			}
-			article.setExtInfoValue(Constants.FLD_EXT_BEGINNING_PACKAGE, Integer.toString(rest));
-		}
-
-	}
-
-	public void singleDisposal(int n) {
-		int anbruch = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_BEGINNING_PACKAGE));
-		int ve = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_SELL_UNIT));
-		int vk = POHelper.checkZero(article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT));
-		if (vk == 0) {
-			if (ve != 0) {
-				vk = ve;
-			}
-		}
-		if (ve == 0) {
-			if (vk != 0) {
-				ve = vk;
-				article.setExtInfoValue(Constants.FLD_EXT_PACKAGE_UNIT_INT, Integer.toString(ve));
-			}
-		}
-		int num = n * ve;
-		if (vk == ve) {
-			int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
-			article.setIstbestand(current - n);
-		} else {
-			int rest = anbruch - num;
-			while (rest < 0) {
-				rest = rest + vk;
-				int current = (article.getIstbestand() != null) ? article.getIstbestand() : 0;
-				article.setIstbestand(current - 1);
-			}
-			article.setExtInfoValue(Constants.FLD_EXT_BEGINNING_PACKAGE, Integer.toString(rest));
-		}
-	}
-
 }

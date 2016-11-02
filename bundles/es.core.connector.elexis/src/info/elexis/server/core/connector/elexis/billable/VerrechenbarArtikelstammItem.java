@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.DefaultOptifier;
-import info.elexis.server.core.connector.elexis.common.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -86,13 +85,13 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		}
 
 		try {
-			vpe = Double.parseDouble(artikelstammItem.getPkg_size());
+			vpe = artikelstammItem.getPkg_size();
 		} catch (Exception e) {
 			log.warn("Error parsing package size: " + e.getMessage() + "@ " + artikelstammItem.getId());
 		}
 
 		try {
-			vke = Double.parseDouble(artikelstammItem.getVerkaufseinheit());
+			vke = artikelstammItem.getVerkaufseinheit();
 		} catch (Exception e) {
 			log.warn("Error parsing sell unit: " + e.getMessage() + " @ " + artikelstammItem.getId());
 		}
@@ -117,53 +116,6 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	@Override
 	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
 		return new DefaultOptifier().remove(vr);
-	}
-
-	public void singleReturn(int n) {
-		int anbruch = POHelper.checkZero(artikelstammItem.getAnbruch());
-		int ve = POHelper.checkZero(artikelstammItem.getVerkaufseinheit());
-		int vk = POHelper.checkZero(artikelstammItem.getPkg_size());
-		int num = n * ve;
-		if (vk == ve) {
-			artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() + n);
-		} else {
-			int rest = anbruch + num;
-			while (rest > vk) {
-				rest = rest - vk;
-				artikelstammItem.setIstbestand(artikelstammItem.getIstbestand() + 1);
-			}
-			artikelstammItem.setAnbruch(Integer.toString(rest));
-		}
-	}
-
-	public void singleDisposal(int n) {
-		int anbruch = POHelper.checkZero(artikelstammItem.getAnbruch());
-		int ve = POHelper.checkZero(artikelstammItem.getVerkaufseinheit());
-		int vk = POHelper.checkZero(artikelstammItem.getPkg_size());
-		if (vk == 0) {
-			if (ve != 0) {
-				vk = ve;
-			}
-		}
-		if (ve == 0) {
-			if (vk != 0) {
-				ve = vk;
-				artikelstammItem.setPkg_size(Integer.toString(ve));
-			}
-		}
-		int num = n * ve;
-		if (vk == ve) {
-			int current = (artikelstammItem.getIstbestand() != null) ? artikelstammItem.getIstbestand() : 0;
-			artikelstammItem.setIstbestand(current - n);
-		} else {
-			int rest = anbruch - num;
-			while (rest < 0) {
-				rest = rest + vk;
-				int current = (artikelstammItem.getIstbestand() != null) ? artikelstammItem.getIstbestand() : 0;
-				artikelstammItem.setIstbestand(current - 1);
-			}
-			artikelstammItem.setAnbruch(Integer.toString(rest));
-		}
 	}
 
 	@Override

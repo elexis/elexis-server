@@ -82,13 +82,13 @@ public class HTTPService {
 		SchedulerStatus schedulerStatus = SchedulerService.getSchedulerStatus();
 		return Response.ok(schedulerStatus).build();
 	}
-	
+
 	@GET
 	@Path(SCHEDULER_LAUNCH + "/{taskId}")
 	@RolesAllowed("admin")
 	public Response startScheduledTask(@PathParam("taskId") String taskId) {
 		boolean launched = SchedulerService.launchTask(taskId);
-		if(launched) {
+		if (launched) {
 			return Response.ok().build();
 		}
 		return Response.status(Response.Status.NOT_FOUND).build();

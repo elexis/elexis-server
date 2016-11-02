@@ -277,10 +277,6 @@ public class BillingTest extends AbstractServiceTest {
 		Optional<ArtikelstammItem> artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
 		assertTrue(artikelstammItem.isPresent());
 
-		artikelstammItem.get().setIstbestand(2);
-		artikelstammItem.get().setMinbestand(2);
-		artikelstammItem.get().setMaxbestand(3);
-
 		ArtikelstammItemService.INSTANCE.write(artikelstammItem.get());
 
 		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
@@ -304,15 +300,12 @@ public class BillingTest extends AbstractServiceTest {
 
 		artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
 		assertTrue(artikelstammItem.isPresent());
-		assertEquals(3, (int) artikelstammItem.get().getMaxbestand());
-		assertEquals(2, (int) artikelstammItem.get().getMinbestand());
-		assertEquals(1, (int) artikelstammItem.get().getIstbestand());
 	}
 
 	@Test
 	public void testAddEigenartikelBilling() {
 		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
-		ea1.setIstbestand(2);
+//		ea1.setIstbestand(2);
 		ea1.setEkPreis("150");
 		ea1.setVkPreis("300");
 		ArtikelService.INSTANCE.write(ea1);
@@ -333,8 +326,9 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(300, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 
-		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
-		assertEquals(1, (int) findById.get().getIstbestand());
+//		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
+//		assertEquals(1, (int) findById.get().getIstbestand());
+		// TODO
 
 		ArtikelService.INSTANCE.remove(ea1);
 	}
