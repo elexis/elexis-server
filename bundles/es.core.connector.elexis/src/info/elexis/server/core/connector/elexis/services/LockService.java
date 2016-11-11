@@ -250,8 +250,34 @@ public class LockService implements ILockService {
 		return new ArrayList<LockInfo>(locks.values());
 	}
 
+	/**
+	 * Removes all locks without performing the respective releaseLock
+	 * operations
+	 */
 	public static void clearAllLocks() {
 		locks.clear();
+	}
+
+	/**
+	 * Removes a lock without performing the respective releaseLock operation
+	 * 
+	 * @param elementId
+	 * @return <code>true</code> on success else <code>false</code>
+	 */
+	public static boolean clearLock(String elementId) {
+		if (locksLock.tryLock()) {
+			try {
+				if (locks.containsKey(elementId)) {
+					locks.remove(elementId);
+					return true;
+				}
+			} finally {
+				if (locksLock.isHeldByCurrentThread()) {
+					locksLock.unlock();
+				}
+			}
+		}
+		return false;
 	}
 
 	public static String getSystemuuid() {

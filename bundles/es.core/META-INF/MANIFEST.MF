@@ -31,7 +31,8 @@ Import-Package: javax.inject;version="1.0.0",
  org.slf4j;version="1.7.2"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
-Export-Package: info.elexis.server.core.constants,
+Export-Package: info.elexis.server.core.console,
+ info.elexis.server.core.constants,
  info.elexis.server.core.contrib,
  info.elexis.server.core.scheduler,
  it.sauronsoftware.cron4j
