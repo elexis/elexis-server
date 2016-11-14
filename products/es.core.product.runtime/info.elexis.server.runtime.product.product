@@ -9,7 +9,9 @@
    <launcherArgs>
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
 -Dorg.osgi.service.http.port=8380 
--Djava.awt.headless=true 
+-Djava.awt.headless=true
+-Duser.language=de
+-Duser.region=CH
 -Xms128m
 -Xmx1024m
       </vmArgs>
