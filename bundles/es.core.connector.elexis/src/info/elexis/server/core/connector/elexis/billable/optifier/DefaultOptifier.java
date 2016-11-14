@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.model.article.IArticle;
 import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
@@ -14,9 +15,8 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstam
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
-import info.elexis.server.core.connector.elexis.services.ArtikelService;
-import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
+import info.elexis.server.core.connector.elexis.services.StockService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 public class DefaultOptifier implements IOptifier {
@@ -85,16 +85,15 @@ public class DefaultOptifier implements IOptifier {
 		}
 
 		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
-		if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikelstammItem)) {
-			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) verrechenbar.get();
-			vat.singleReturn(previous);
-			vat.singleDisposal(count);
-			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
-		} else if (verrechenbar.isPresent() && (verrechenbar.get() instanceof VerrechenbarArtikel)) {
-			VerrechenbarArtikel vat = (VerrechenbarArtikel) verrechenbar.get();
-			vat.singleReturn(previous);
-			vat.singleDisposal(count);
-			ArtikelService.INSTANCE.write(vat.getEntity());
+		if (verrechenbar.isPresent() && ((verrechenbar.get() instanceof VerrechenbarArtikelstammItem)
+				|| (verrechenbar.get() instanceof VerrechenbarArtikel))) {
+			int diff = newCount - previous;
+			if (diff < 0) {
+				StockService.INSTANCE.performSingleReturn((IArticle) verrechenbar.get().getEntity(), Math.abs(diff),
+						null);
+			} else if (diff > 0) {
+				StockService.INSTANCE.performSingleDisposal((IArticle) verrechenbar.get().getEntity(), diff, null);
+			}
 		}
 	}
 

@@ -4,26 +4,28 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 
+import ch.elexis.core.model.article.Constants;
+import ch.elexis.core.model.article.IArticle;
 import ch.rgw.tools.StringTool;
+import info.elexis.server.core.connector.elexis.jpa.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "artikel")
-public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
+public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticle {
 
 	public static final String TYP_EIGENARTIKEL = "Eigenartikel";
 	public static final String TYP_MIGEL = "MiGeL";
 	public static final String TYP_MEDICAL = "Medical";
 	public static final String TYP_MEDIKAMENT = "Medikament";
 
-	/** 
+	/**
 	 * @deprecated switch to EigenartikelConstants after beta build
 	 */
 	public static final String FLD_EXTINFO_SELLUNIT = "Verkaufseinheit";
@@ -34,10 +36,6 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 20, name = "SubID")
 	private String subId;
 
-	@OneToOne
-	@JoinColumn(name = "LieferantID")
-	private Kontakt lieferant;
-
 	@Column(length = 80)
 	private String klasse;
 
@@ -46,15 +44,6 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 127, name = "Name_intern")
 	private String nameIntern;
-
-	@Column(length = 4)
-	private Integer maxbestand;
-
-	@Column(length = 4)
-	private Integer minbestand;
-
-	@Column(length = 4)
-	private Integer istbestand;
 
 	@Column(length = 8, name = "EK_Preis")
 	private String ekPreis;
@@ -93,6 +82,11 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 		}
 		return ret;
 	}
+	
+	@Transient
+	public String getGTIN() {
+		return getEan();
+	};
 
 	public String getEan() {
 		return ean;
@@ -108,14 +102,6 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setSubId(String subId) {
 		this.subId = subId;
-	}
-
-	public Kontakt getLieferant() {
-		return lieferant;
-	}
-
-	public void setLieferant(Kontakt lieferant) {
-		this.lieferant = lieferant;
 	}
 
 	public String getKlasse() {
@@ -140,30 +126,6 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setNameIntern(String nameIntern) {
 		this.nameIntern = nameIntern;
-	}
-
-	public Integer getMaxbestand() {
-		return maxbestand;
-	}
-
-	public void setMaxbestand(Integer maxbestand) {
-		this.maxbestand = maxbestand;
-	}
-
-	public Integer getMinbestand() {
-		return minbestand;
-	}
-
-	public void setMinbestand(Integer minbestand) {
-		this.minbestand = minbestand;
-	}
-
-	public Integer getIstbestand() {
-		return istbestand;
-	}
-
-	public void setIstbestand(Integer istbestand) {
-		this.istbestand = istbestand;
 	}
 
 	public String getEkPreis() {
@@ -236,5 +198,25 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setAtcCode(String atcCode) {
 		this.atcCode = atcCode;
+	}
+
+	@Transient
+	@Override
+	public int getPackageUnit() {
+		String extInfoAsString = getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT);
+		return POHelper.checkZero(extInfoAsString);
+	}
+
+	@Transient
+	@Override
+	public int getSellingUnit() {
+		String extInfoAsString = getExtInfoAsString(Constants.FLD_EXT_SELL_UNIT);
+		return POHelper.checkZero(extInfoAsString);
+	}
+
+	@Transient
+	@Override
+	public boolean isProduct() {
+		return false;
 	}
 }

@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
@@ -10,8 +9,6 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Artikel.class)
 public class Artikel_ { 
 
-    public static volatile SingularAttribute<Artikel, Integer> istbestand;
-    public static volatile SingularAttribute<Artikel, Integer> maxbestand;
     public static volatile SingularAttribute<Artikel, String> vkPreis;
     public static volatile SingularAttribute<Artikel, String> Typ;
     public static volatile SingularAttribute<Artikel, LocalDate> validFrom;
@@ -25,8 +22,6 @@ public class Artikel_ {
     public static volatile SingularAttribute<Artikel, String> name;
     public static volatile SingularAttribute<Artikel, String> extId;
     public static volatile SingularAttribute<Artikel, String> atcCode;
-    public static volatile SingularAttribute<Artikel, Kontakt> lieferant;
-    public static volatile SingularAttribute<Artikel, Integer> minbestand;
     public static volatile SingularAttribute<Artikel, LocalDate> validTo;
 
 }

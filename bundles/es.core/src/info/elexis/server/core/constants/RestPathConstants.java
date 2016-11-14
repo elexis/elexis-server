@@ -3,7 +3,7 @@ package info.elexis.server.core.constants;
 public class RestPathConstants {
 
 	public static final String BASE_URL_CORE = "/";
-
+	
 	/** GET: halts the system **/
 	public static final String HALT = BASE_URL_CORE + "halt";
 	public static final String RESTART = BASE_URL_CORE + "restart";

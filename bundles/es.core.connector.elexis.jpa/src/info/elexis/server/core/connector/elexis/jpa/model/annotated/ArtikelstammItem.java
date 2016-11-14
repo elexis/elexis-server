@@ -2,15 +2,19 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 
+import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
+import ch.elexis.core.model.article.IArticle;
+
+
 @Entity
 @Table(name = "artikelstamm_ch")
-public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
+public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implements IArticle {
 	@Column(length = 1)
 	private String type;
 
@@ -47,8 +51,8 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 10)
 	private String ppub;
 
-	@Column(length = 6)
-	private String pkg_size;
+	@Convert(value = "IntegerStringConverter")
+	private int pkg_size = 0;
 
 	@Convert(value = "booleanStringConverter")
 	private boolean sl_entry;
@@ -88,23 +92,8 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 1)
 	private String vaccine;
 
-	@JoinColumn(name = "lieferantId")
-	private Kontakt lieferant;
-
-	@Column(length = 4)
-	private Integer maxbestand;
-
-	@Column(length = 4)
-	private Integer minbestand;
-
-	@Column(length = 4)
-	private Integer istbestand;
-
-	@Column(length = 4)
-	private String verkaufseinheit;
-
-	@Column(length = 4)
-	private String anbruch;
+	@Convert(value = "IntegerStringConverter")
+	private int verkaufseinheit;
 
 	@Column(length = 10)
 	private String prodno;
@@ -133,6 +122,11 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.cummVersion = cummVersion;
 	}
 
+	@Transient
+	public String getGTIN() {
+		return getGtin();
+	};
+	
 	public String getGtin() {
 		return gtin;
 	}
@@ -205,38 +199,38 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.ppub = ppub;
 	}
 
-	public String getPkg_size() {
+	public int getPkg_size() {
 		return pkg_size;
 	}
 
-	public void setPkg_size(String pkg_size) {
+	public void setPkg_size(int pkg_size) {
 		this.pkg_size = pkg_size;
 	}
 
 	public String getIkscat() {
 		return ikscat;
 	}
-	
+
 	public boolean isLimitation() {
 		return limitation;
 	}
-	
+
 	public void setLimitation(boolean limitation) {
 		this.limitation = limitation;
 	}
-	
+
 	public boolean isLppv() {
 		return lppv;
 	}
-	
+
 	public boolean isSl_entry() {
 		return sl_entry;
 	}
-	
+
 	public void setSl_entry(boolean sl_entry) {
 		this.sl_entry = sl_entry;
 	}
-	
+
 	public void setLppv(boolean lppv) {
 		this.lppv = lppv;
 	}
@@ -293,52 +287,12 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 		this.vaccine = vaccine;
 	}
 
-	public Kontakt getLieferant() {
-		return lieferant;
-	}
-
-	public void setLieferant(Kontakt lieferant) {
-		this.lieferant = lieferant;
-	}
-
-	public Integer getMaxbestand() {
-		return maxbestand;
-	}
-
-	public void setMaxbestand(Integer maxbestand) {
-		this.maxbestand = maxbestand;
-	}
-
-	public Integer getMinbestand() {
-		return minbestand;
-	}
-
-	public void setMinbestand(Integer minbestand) {
-		this.minbestand = minbestand;
-	}
-
-	public Integer getIstbestand() {
-		return istbestand;
-	}
-
-	public void setIstbestand(Integer istbestand) {
-		this.istbestand = istbestand;
-	}
-
-	public String getVerkaufseinheit() {
+	public int getVerkaufseinheit() {
 		return verkaufseinheit;
 	}
 
-	public void setVerkaufseinheit(String verkaufseinheit) {
+	public void setVerkaufseinheit(int verkaufseinheit) {
 		this.verkaufseinheit = verkaufseinheit;
-	}
-
-	public String getAnbruch() {
-		return anbruch;
-	}
-
-	public void setAnbruch(String anbruch) {
-		this.anbruch = anbruch;
 	}
 
 	public String getProdno() {
@@ -352,5 +306,36 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo {
 	@Override
 	public String getLabel() {
 		return (getAdddscr() != null && getAdddscr().length() > 0) ? getDscr() + " (" + getAdddscr() + ")" : getDscr();
+	}
+
+	@Transient
+	@Override
+	public int getPackageUnit() {
+		return getPkg_size();
+	}
+
+	@Transient
+	@Override
+	public int getSellingUnit() {
+		return getVerkaufseinheit();
+	}
+
+	@Transient
+	@Override
+	public boolean isProduct() {
+		return (TYPE.X == getTYPE());
+	}
+
+	@Transient
+	public TYPE getTYPE() {
+		try {
+			String string = getType();
+			if (string != null && string.length() > 0) {
+				return Enum.valueOf(TYPE.class, Character.toString(string.charAt(0)).toUpperCase());
+			}
+			return TYPE.N;
+		} catch (IllegalArgumentException iae) {
+			return null;
+		}
 	}
 }

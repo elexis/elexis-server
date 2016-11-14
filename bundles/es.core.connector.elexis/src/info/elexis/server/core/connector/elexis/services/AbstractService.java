@@ -232,11 +232,11 @@ public abstract class AbstractService<T extends AbstractDBObjectIdDeleted> {
 	 * @param entity
 	 */
 	public void write(T entity) {
+		em.getTransaction().begin();
 		if (!em.contains(entity)) {
-			em.getTransaction().begin();
 			em.merge(entity);
-			em.getTransaction().commit();
 		}
+		em.getTransaction().commit();
 	}
 
 	/**

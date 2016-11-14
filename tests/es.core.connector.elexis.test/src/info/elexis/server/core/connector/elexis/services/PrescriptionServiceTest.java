@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,12 +25,6 @@ public class PrescriptionServiceTest extends AbstractServiceTest {
 		product = ArtikelstammItemService.INSTANCE.findById(TestEntities.ARTIKELSTAMM_PRODUCT_PHARMA_ID).get();
 		assertNotNull(article);
 		assertNotNull(product);
-	}
-
-	@After
-	public void after() {
-		ArtikelstammItemService.INSTANCE.remove(article);
-		ArtikelstammItemService.INSTANCE.remove(product);
 	}
 
 	@Test

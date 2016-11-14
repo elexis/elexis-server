@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
+import ch.elexis.core.model.article.IArticle;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
@@ -94,14 +95,8 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 
 		em.getTransaction().commit();
 
-		if (iv instanceof VerrechenbarArtikelstammItem) {
-			VerrechenbarArtikelstammItem vat = (VerrechenbarArtikelstammItem) iv;
-			vat.singleDisposal(1);
-			ArtikelstammItemService.INSTANCE.write(vat.getEntity());
-		} else if (iv instanceof VerrechenbarArtikel) {
-			VerrechenbarArtikel vat = (VerrechenbarArtikel) iv;
-			vat.singleDisposal(1);
-			ArtikelService.INSTANCE.write(vat.getEntity());
+		if (iv instanceof VerrechenbarArtikelstammItem || iv instanceof VerrechenbarArtikel) {
+			StockService.INSTANCE.performSingleDisposal((IArticle) iv.getEntity(), count, null);
 		}
 
 		// call the adjusters
@@ -152,7 +147,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		if (newCount == previous) {
 			return Status.OK_STATUS;
 		}
-		
+
 		int difference = newCount - previous;
 		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
 		if (difference > 0) {

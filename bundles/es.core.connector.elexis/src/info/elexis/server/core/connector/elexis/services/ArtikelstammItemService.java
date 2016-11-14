@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -89,32 +88,6 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		ai.setBb(StringConstants.ZERO);
 		em.getTransaction().commit();
 		return ai;
-	}
-
-	public boolean isLagerartikel(ArtikelstammItem ai) {
-		if (ai.getIstbestand() > 0) {
-			return true;
-		}
-
-		if (ai.getMinbestand() > 0 || ai.getMaxbestand() > 0) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * return all articles on stock, that is with a defined (>0) minbestand,
-	 * maxbestand or istbestand
-	 * 
-	 * @return
-	 */
-	public static List<ArtikelstammItem> getAllStockArticles() {
-		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbe.or(ArtikelstammItem_.minbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
-		qbe.or(ArtikelstammItem_.maxbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
-		qbe.or(ArtikelstammItem_.istbestand, QUERY.GREATER_OR_EQUAL, StringConstants.ZERO);
-		return qbe.execute();
 	}
 
 	public static Optional<ArtikelstammItem> findByGTIN(String itemCode) {

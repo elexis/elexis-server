@@ -23,6 +23,6 @@ public abstract class AbstractDBObject {
 	}
 	
 	public String getLabel(){
-		return getClass().getName();
+		return getClass().getSimpleName();
 	};
 }
