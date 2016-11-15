@@ -127,7 +127,9 @@ public class JPAQuery<T extends AbstractDBObject> {
 				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
 			}
 		}
-		cq = cq.where(predicate);
+		if (predicate != null) {
+			cq = cq.where(predicate);
+		}
 		EntityManager entityManager = createEntityManager();
 		query = entityManager.createQuery(cq);
 		try {

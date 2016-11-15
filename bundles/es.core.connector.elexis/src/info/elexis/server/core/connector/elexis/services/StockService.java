@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import ch.elexis.core.constants.StringConstants;
+import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.article.IArticle;
 import ch.elexis.core.stock.IStock;
 import ch.elexis.core.stock.IStockEntry;
@@ -23,6 +24,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry_;
+import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class StockService extends AbstractService<Stock> implements IStockService {
@@ -75,10 +77,12 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 	}
 
 	@Override
-	public void unstoreArticleFromStock(IStock stock, String article) {
-		// TODO Auto-generated method stub
-
-		// StockService.INSTANCE.refresh(stock);
+	public void unstoreArticleFromStock(IStock stock, String storeToString) {
+		IStockEntry stockEntry = findStockEntryForArticleInStock((Stock) stock, storeToString);
+		if (stockEntry == null) {
+			return;
+		}
+		StockEntryService.INSTANCE.remove((StockEntry) stockEntry, true);
 	}
 
 	@Override
@@ -199,41 +203,46 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "No stock entry for article found");
 		}
 
-		int fractionUnits = se.getFractionUnits();
-		int ve = article.getSellingUnit();
-		int vk = article.getPackageUnit();
+		Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
+		if (li.isPresent()) {
+			int fractionUnits = se.getFractionUnits();
+			int ve = article.getSellingUnit();
+			int vk = article.getPackageUnit();
 
-		if (vk == 0) {
-			if (ve != 0) {
-				vk = ve;
+			if (vk == 0) {
+				if (ve != 0) {
+					vk = ve;
+				}
 			}
-		}
-		if (ve == 0) {
-			if (vk != 0) {
-				ve = vk;
+			if (ve == 0) {
+				if (vk != 0) {
+					ve = vk;
+				}
 			}
-		}
-		int num = count * ve;
-		int cs = se.getCurrentStock();
-		if (vk == ve) {
-			se.setCurrentStock(cs - count);
+			int num = count * ve;
+			int cs = se.getCurrentStock();
+			if (vk == ve) {
+				se.setCurrentStock(cs - count);
 
-		} else {
-			int rest = fractionUnits - num;
-			while (rest < 0) {
-				rest = rest + vk;
-				se.setCurrentStock(cs - 1);
+			} else {
+				int rest = fractionUnits - num;
+				while (rest < 0) {
+					rest = rest + vk;
+					se.setCurrentStock(cs - 1);
+				}
+				se.setFractionUnits(rest);
 			}
-			se.setFractionUnits(rest);
+
+			StockEntryService.INSTANCE.write((StockEntry) se);
+
+			if (se.getStock().isCommissioningSystem()) {
+				return StockCommissioningSystemService.INSTANCE.performArticleOutlay(se, count, null);
+			}
+			LockServiceInstance.INSTANCE.releaseLock(li.get());
+			return Status.OK_STATUS;
 		}
 
-		StockEntryService.INSTANCE.write((StockEntry) se);
-
-		if (se.getStock().isCommissioningSystem()) {
-			return StockCommissioningSystemService.INSTANCE.performArticleOutlay(se, count, null);
-		}
-
-		return Status.OK_STATUS;
+		return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Could not acquire lock");
 	}
 
 	@Override
@@ -248,35 +257,40 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "No stock entry for article found");
 		}
 
-		int fractionUnits = se.getFractionUnits();
-		int ve = article.getSellingUnit();
-		int vk = article.getPackageUnit();
+		Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
+		if (li.isPresent()) {
+			int fractionUnits = se.getFractionUnits();
+			int ve = article.getSellingUnit();
+			int vk = article.getPackageUnit();
 
-		if (vk == 0) {
-			if (ve != 0) {
-				vk = ve;
+			if (vk == 0) {
+				if (ve != 0) {
+					vk = ve;
+				}
 			}
-		}
-		if (ve == 0) {
-			if (vk != 0) {
-				ve = vk;
+			if (ve == 0) {
+				if (vk != 0) {
+					ve = vk;
+				}
 			}
-		}
-		int num = count * ve;
-		int cs = se.getCurrentStock();
-		if (vk == ve) {
-			se.setCurrentStock(cs + count);
-		} else {
-			int rest = fractionUnits + num;
-			while (rest > vk) {
-				rest = rest - vk;
-				se.setCurrentStock(cs + 1);
+			int num = count * ve;
+			int cs = se.getCurrentStock();
+			if (vk == ve) {
+				se.setCurrentStock(cs + count);
+			} else {
+				int rest = fractionUnits + num;
+				while (rest > vk) {
+					rest = rest - vk;
+					se.setCurrentStock(cs + 1);
+				}
+				se.setFractionUnits(rest);
 			}
-			se.setFractionUnits(rest);
+
+			StockEntryService.INSTANCE.write((StockEntry) se);
+			return Status.OK_STATUS;
 		}
 
-		StockEntryService.INSTANCE.write((StockEntry) se);
-		return Status.OK_STATUS;
+		return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Could not acquire lock");
 	}
 
 }

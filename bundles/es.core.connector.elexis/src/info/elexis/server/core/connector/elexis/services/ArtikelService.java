@@ -71,12 +71,15 @@ public class ArtikelService extends AbstractService<Artikel> {
 	}
 
 	/**
-	 * Determine if an eigenartikel is a product
+	 * Determine if an article is an Eigenartikel of type product
 	 * 
 	 * @param article
 	 * @return
 	 */
 	public static boolean eigenartikelDetermineIfProduct(Artikel article) {
-		return (article.getExtId() == null || article.getExtId().length() == 0);
+		if (article != null && Artikel.TYP_EIGENARTIKEL.equals(article.getTyp())) {
+			return (article.getExtId() == null || article.getExtId().length() == 0);
+		}
+		return false;
 	}
 }

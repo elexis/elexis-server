@@ -13,14 +13,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.elexis.core.status.ObjectStatus;
+import ch.elexis.core.stock.IStockEntry;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
+import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.services.AbstractServiceTest;
@@ -31,6 +35,8 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.Labor2009TarifService;
 import info.elexis.server.core.connector.elexis.services.PhysioLeistungService;
+import info.elexis.server.core.connector.elexis.services.StockEntryService;
+import info.elexis.server.core.connector.elexis.services.StockService;
 import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
@@ -305,7 +311,6 @@ public class BillingTest extends AbstractServiceTest {
 	@Test
 	public void testAddEigenartikelBilling() {
 		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
-//		ea1.setIstbestand(2);
 		ea1.setEkPreis("150");
 		ea1.setVkPreis("300");
 		ArtikelService.INSTANCE.write(ea1);
@@ -325,10 +330,6 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(1, vr.getZahl());
 		assertEquals(300, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
-
-//		Optional<Artikel> findById = ArtikelService.INSTANCE.findById(ea1.getId());
-//		assertEquals(1, (int) findById.get().getIstbestand());
-		// TODO
 
 		ArtikelService.INSTANCE.remove(ea1);
 	}
@@ -404,5 +405,42 @@ public class BillingTest extends AbstractServiceTest {
 
 		assertEquals(1, testBehandlungen.get(1).getVerrechnet().size());
 		assertEquals(1, testBehandlungen.get(1).getVerrechnet().get(0).getZahl());
+	}
+
+	@Test
+	public void testStockRemovalOnArticleDisposal() {
+		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
+		ea1.setEkPreis("150");
+		ea1.setVkPreis("300");
+		ArtikelService.INSTANCE.write(ea1);
+
+		StockService stockService = StockService.INSTANCE;
+		Stock defaultStock = StockService.INSTANCE.findById("STD").get();
+		IStockEntry se = stockService.storeArticleInStock(defaultStock, StoreToStringService.storeToString(ea1));
+		se.setMinimumStock(5);
+		se.setCurrentStock(10);
+		se.setMaximumStock(15);
+		StockEntryService.INSTANCE.write((StockEntry) se);
+
+		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
+
+		IStatus status = verrechenbar.add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+		assertTrue(os.isOK());
+
+		assertEquals(ElexisTypeMap.TYPE_EIGENARTIKEL, vr.getKlasse());
+		assertEquals(ea1.getLabel(), vr.getLeistungenText());
+		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
+		assertEquals(1, vr.getZahl());
+		assertEquals(300, vr.getVk_preis());
+		assertEquals(100, vr.getScale());
+
+		Integer stockValue = stockService.getCumulatedStockForArticle(ea1);
+		assertEquals(9, stockValue.intValue());
+
+		ArtikelService.INSTANCE.remove(ea1);
 	}
 }

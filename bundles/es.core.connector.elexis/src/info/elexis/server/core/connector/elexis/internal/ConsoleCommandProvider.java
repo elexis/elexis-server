@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.console;
+package info.elexis.server.core.connector.elexis.internal;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -23,23 +23,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public void _es_elc(CommandInterpreter ci) {
 		executeCommand(ci);
-		final String argument = ci.nextArgument();
-		try {
-			if (argument == null) {
-				System.out.println(getHelp());
-				return;
-			}
-			switch (argument) {
-
-			case "clearAllLocks":
-
-				break;
-			default:
-				break;
-			}
-		} catch (Exception e) {
-			log.error("Execution error on argument " + argument, e);
-		}
 	}
 
 	public void __connectionStatus() {

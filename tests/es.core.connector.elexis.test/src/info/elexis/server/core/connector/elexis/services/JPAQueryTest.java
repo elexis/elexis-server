@@ -8,10 +8,21 @@ import org.junit.Test;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
 
 public class JPAQueryTest {
+
+	@Test
+	public void testJPAQueryWithoutCondition() {
+		List<Kontakt> result = new JPAQuery<Kontakt>(Kontakt.class).execute();
+		assertNotNull(result);
+		assertTrue(result.size() > 0);
+		List<Kontakt> resultIncDeleted = new JPAQuery<Kontakt>(Kontakt.class, true).execute();
+		assertNotNull(resultIncDeleted);
+		assertTrue(resultIncDeleted.size() > 0);
+	}
 
 	@Test
 	public void testBasicJPAQueryWithSingleCondition() {
@@ -20,7 +31,7 @@ public class JPAQueryTest {
 		List<Prescription> resultPrescription = query.execute();
 		assertNotNull(resultPrescription);
 	}
-	
+
 	@Test
 	public void testBasicJPAQueryWithMultipleConditions() {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
@@ -31,7 +42,7 @@ public class JPAQueryTest {
 		List<ArtikelstammItem> qre = qbe.execute();
 		assertNotNull(qre);
 	}
-	
+
 	@Test
 	public void testJPACountQueryWithMultipleConditions() {
 		JPACountQuery<ArtikelstammItem> qbec = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class);

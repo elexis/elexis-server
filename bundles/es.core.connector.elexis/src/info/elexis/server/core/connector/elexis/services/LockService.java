@@ -55,6 +55,11 @@ public class LockService implements ILockService {
 	 * A unique id for this instance of Elexis. Changes on every restart
 	 */
 	public static final UUID systemUuid = UUID.randomUUID();
+	
+	/**
+	 * The elexis-server itself acts on a lock
+	 */
+	public static final String elexisServerAgentUser = "__elexis-server__";
 
 	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
@@ -282,6 +287,10 @@ public class LockService implements ILockService {
 
 	public static String getSystemuuid() {
 		return systemUuid.toString();
+	}
+	
+	public static String getElexisserveragentuser() {
+		return elexisServerAgentUser;
 	}
 
 	private class LockEvictionTask extends TimerTask {
