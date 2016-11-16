@@ -54,6 +54,28 @@ public class ModelUtil {
 		return ret;
 	}
 	
+	public static boolean isCodeInList(String system, String code, List<ICoding> list) {
+		if (list != null && !list.isEmpty()) {
+			for (ICoding iCoding : list) {
+				if (iCoding.getSystem().equals(system) && iCoding.getCode().equals(code)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean isSystemInList(String system, List<ICoding> list) {
+		if (list != null && !list.isEmpty()) {
+			for (ICoding iCoding : list) {
+				if (iCoding.getSystem().equals(system)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private static class CodingWrapper implements ICoding {
 		
 		private Coding coding;

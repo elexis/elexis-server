@@ -1,9 +1,12 @@
 package info.elexis.server.findings.fhir.jpa.model.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Period;
@@ -11,9 +14,11 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
+import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
 
 public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> implements IEncounter {
 
@@ -191,6 +196,37 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 		}
 
 		getModel().setServiceProviderId(serviceProviderId);
+	}
+
+	public void setType(List<ICoding> coding) {
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			List<CodeableConcept> codeableConcepts = fhirEncounter.getType();
+			if (!codeableConcepts.isEmpty()) {
+				codeableConcepts.clear();
+			}
+			CodeableConcept codeableConcept = new CodeableConcept();
+			ModelUtil.setCodingsToConcept(codeableConcept, coding);
+			fhirEncounter.setType(Collections.singletonList(codeableConcept));
+			saveResource(resource.get());
+		}
+	}
+
+	public List<ICoding> getType() {
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
+			List<CodeableConcept> codeableConcepts = fhirEncounter.getType();
+			if (codeableConcepts != null) {
+				ArrayList<ICoding> ret = new ArrayList<>();
+				for (CodeableConcept codeableConcept : codeableConcepts) {
+					ret.addAll(ModelUtil.getCodingsFromConcept(codeableConcept));
+				}
+				return ret;
+			}
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
