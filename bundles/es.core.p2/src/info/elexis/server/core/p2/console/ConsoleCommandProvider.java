@@ -43,6 +43,10 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 		return missingArgument("featureName");
 	}
+	
+	public String __repo() {
+		return getHelp(1);
+	}
 
 	public String __repo_list() {
 		return HTTPServiceHelper.getRepoInfo(null).toString();
