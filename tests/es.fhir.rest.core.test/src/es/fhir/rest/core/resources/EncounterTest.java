@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
@@ -95,6 +96,10 @@ public class EncounterTest {
 		assertEquals("Practitioner/" + TestDatabaseInitializer.getMandant().getId(),
 				encounter.getServiceProvider().getReference());
 		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), encounter.getPatient().getReference());
+		List<CodeableConcept> typeConcepts = encounter.getType();
+		assertNotNull(typeConcepts);
+		assertFalse(typeConcepts.isEmpty());
+		assertTrue(AllTests.isCodeInConcepts("www.elexis.info/encounter/type", "text", typeConcepts));
 		Period period = encounter.getPeriod();
 		assertNotNull(period);
 		assertEquals(LocalDate.of(2016, Month.SEPTEMBER, 21),

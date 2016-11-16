@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="es.fhir.rest.core.resources.CodeSystemResourceProvider">
+   <service>
+      <provide interface="es.fhir.rest.core.IFhirResourceProvider"/>
+   </service>
+   <reference bind="bindIFhirTransformerRegistry" cardinality="1..1" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="IFhirTransformerRegistry" policy="static"/>
+   <implementation class="es.fhir.rest.core.resources.CodeSystemResourceProvider"/>
+</scr:component>

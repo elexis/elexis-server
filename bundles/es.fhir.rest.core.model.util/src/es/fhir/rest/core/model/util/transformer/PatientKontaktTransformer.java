@@ -11,7 +11,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.transformer.helper.KontaktHelper;
+import es.fhir.rest.core.model.util.transformer.helper.KontaktHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 

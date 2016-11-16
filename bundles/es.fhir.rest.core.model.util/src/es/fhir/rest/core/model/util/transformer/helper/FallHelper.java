@@ -1,12 +1,14 @@
-package es.fhir.rest.core.transformer.helper;
+package es.fhir.rest.core.model.util.transformer.helper;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.model.FallConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
@@ -63,4 +65,27 @@ public class FallHelper extends AbstractHelper {
 		return period;
 	}
 
+	public String getFallText(Fall fall) {
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
+		String grund = fall.getGrund();
+		String bezeichnung = fall.getBezeichnung();
+		LocalDate dateFrom = fall.getDatumVon();
+		LocalDate dateTo = fall.getDatumBis();
+		String billingSystem = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
+
+		StringBuilder ret = new StringBuilder();
+		if (dateTo != null) {
+			ret.append("-GESCHLOSSEN-");
+		}
+		ret.append(billingSystem).append(": ").append(grund).append(" - "); //$NON-NLS-1$ //$NON-NLS-2$
+		ret.append(bezeichnung).append("("); //$NON-NLS-1$
+		String ed;
+		if (dateTo == null) {
+			ed = "offen";
+		} else {
+			ed = dateTo.format(dateFormat);
+		}
+		ret.append(dateFrom.format(dateFormat)).append("-").append(ed).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+		return ret.toString();
+	}
 }

@@ -8,7 +8,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.findings.IEncounter;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.transformer.helper.FindingsContentHelper;
+import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 
 @Component
 public class EncounterIEncounterTransformer implements IFhirTransformer<Encounter, IEncounter> {

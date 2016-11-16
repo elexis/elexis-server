@@ -1,4 +1,4 @@
-package es.fhir.rest.core.transformer.helper;
+package es.fhir.rest.core.model.util.transformer.helper;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;

@@ -7,7 +7,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.transformer.helper.FallHelper;
+import es.fhir.rest.core.model.util.transformer.helper.FallHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 
 @Component
@@ -26,6 +26,8 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 		coverage.setBeneficiary(fallHelper.getBeneficiaryReference(localObject));
 		coverage.setIssuer(fallHelper.getIssuerReference(localObject));
 		coverage.setPeriod(fallHelper.getPeriod(localObject));
+
+		fallHelper.setText(coverage, fallHelper.getFallText(localObject));
 
 		return Optional.of(coverage);
 	}

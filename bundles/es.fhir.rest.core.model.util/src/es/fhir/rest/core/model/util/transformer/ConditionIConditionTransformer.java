@@ -12,7 +12,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.transformer.helper.FindingsContentHelper;
+import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 
 @Component(immediate = true)
 public class ConditionIConditionTransformer implements IFhirTransformer<Condition, ICondition> {

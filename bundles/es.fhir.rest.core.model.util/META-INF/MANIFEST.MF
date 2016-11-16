@@ -17,6 +17,7 @@ Service-Component: OSGI-INF/es.fhir.rest.core.model.util.transformer.CoverageFal
  OSGI-INF/es.fhir.rest.core.model.util.transformer.FhirTransformerRegistry.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.OrganizationKontaktTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.PatientKontaktTransformer.xml,
- OSGI-INF/es.fhir.rest.core.model.util.transformer.ConditionIConditionTransformer.xml
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.ConditionIConditionTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.CodeSystemStringTransformer.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: org.slf4j

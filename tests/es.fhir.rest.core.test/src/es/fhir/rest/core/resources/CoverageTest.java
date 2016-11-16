@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Coverage;
+import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
@@ -86,5 +87,11 @@ public class CoverageTest {
 				AllTests.getLocalDateTime(period.getStart()).toLocalDate());
 		assertTrue(period.getEnd() == null);
 		assertEquals("1234-5678", readCoverage.getBin());
+
+		Narrative narrative = readCoverage.getText();
+		assertNotNull(narrative);
+		String text = narrative.getDivAsString();
+		assertNotNull(text);
+		assertTrue(text.contains("Test Fall(01.09.2016-offen)"));
 	}
 }

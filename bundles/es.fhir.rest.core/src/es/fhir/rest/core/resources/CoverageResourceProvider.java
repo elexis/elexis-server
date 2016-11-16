@@ -66,7 +66,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 		if (theBeneficiaryId != null) {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(theBeneficiaryId.getIdPart());
 			if (patient.isPresent()) {
-				List<Fall> faelle = patient.get().getFaelle();
+				List<Fall> faelle = KontaktService.getFaelle(patient.get());
 				if (faelle != null) {
 					List<Coverage> ret = new ArrayList<Coverage>();
 					for (Fall fall : faelle) {
