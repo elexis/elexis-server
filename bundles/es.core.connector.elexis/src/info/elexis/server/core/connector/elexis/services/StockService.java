@@ -287,6 +287,7 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 			}
 
 			StockEntryService.INSTANCE.write((StockEntry) se);
+			LockServiceInstance.INSTANCE.releaseLock(li.get());
 			return Status.OK_STATUS;
 		}
 
