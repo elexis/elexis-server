@@ -12,6 +12,8 @@ import ch.elexis.core.model.IContact;
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
@@ -86,6 +88,12 @@ public class KontaktService extends AbstractService<Kontakt> {
 		} finally {
 			em.close();
 		}
+	}
+
+	public static List<Fall> getFaelle(Kontakt k) {
+		JPAQuery<Fall> query = new JPAQuery<Fall>(Fall.class);
+		query.add(Fall_.patientKontakt, QUERY.EQUALS, k);
+		return query.execute();
 	}
 
 	/**
