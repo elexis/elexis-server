@@ -9,8 +9,35 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.DataFormatException;
+import ca.uhn.fhir.parser.IParser;
+import ch.elexis.core.findings.IFinding;
 
 public class AbstractHelper {
+	private static FhirContext context = FhirContext.forDstu3();
+
+	private static IParser getJsonParser() {
+		return context.newJsonParser();
+	}
+
+	public static Optional<IBaseResource> loadResource(IFinding finding) throws DataFormatException {
+		IBaseResource resource = null;
+		if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
+			resource = getJsonParser().parseResource(finding.getRawContent());
+		}
+		return Optional.ofNullable(resource);
+	}
+
+	public static void saveResource(IBaseResource resource, IFinding finding) throws DataFormatException {
+		if (resource != null) {
+			String resourceJson = getJsonParser().encodeResourceToString(resource);
+			finding.setRawContent(resourceJson);
+		}
+	}
+
 	protected Date getDate(LocalDateTime localDateTime) {
 		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
 		return Date.from(zdt.toInstant());

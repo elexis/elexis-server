@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -102,36 +101,6 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 			period.setEnd(getDate(time));
 
 			fhirEncounter.setPeriod(period);
-			saveResource(resource.get());
-		}
-	}
-
-	@Override
-	public Optional<String> getText() {
-		Optional<IBaseResource> resource = loadResource();
-		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			if (fhirEncounter.hasText()) {
-				Narrative narrative = fhirEncounter.getText();
-				return Optional.of(narrative.getDivAsString());
-			}
-		}
-		return Optional.empty();
-	}
-
-	public void setText(String text) {
-		Optional<IBaseResource> resource = loadResource();
-		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			Narrative narrative;
-			if (fhirEncounter.hasText()) {
-				narrative = fhirEncounter.getText();
-			} else {
-				narrative = new Narrative();
-			}
-			text = text.replaceAll("(\r\n|\r|\n)", "<br />");
-			narrative.setDivAsString(text);
-			fhirEncounter.setText(narrative);
 			saveResource(resource.get());
 		}
 	}

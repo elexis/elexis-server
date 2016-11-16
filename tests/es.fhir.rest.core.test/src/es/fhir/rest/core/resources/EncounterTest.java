@@ -12,13 +12,16 @@ import java.util.List;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import es.fhir.rest.core.test.AllTests;
 import es.fhir.rest.core.test.FhirClient;
@@ -32,6 +35,7 @@ public class EncounterTest {
 	public static void setupClass() {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeBehandlung();
+		initializer.initializeMandant();
 
 		client = FhirClient.getTestClient();
 		assertNotNull(client);
@@ -78,6 +82,35 @@ public class EncounterTest {
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertTrue(entries.isEmpty());
+	}
+
+	@Test
+	public void createEncounter() {
+		Encounter encounter = new Encounter();
+		encounter.setServiceProvider(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
+		
+		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
+				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
+
+		encounter.setPatient(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		encounter.setText(narrative);
+
+		encounter.addType(new CodeableConcept()
+				.addCoding(new Coding("www.elexis.info/encounter/type", "struct", "structured enconter")));
+
+		MethodOutcome outcome = client.create().resource(encounter).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+
+		Encounter readEncounter = client.read().resource(Encounter.class).withId(outcome.getId()).execute();
+		assertNotNull(readEncounter);
+		assertEquals(outcome.getId().getIdPart(), readEncounter.getIdElement().getIdPart());
+		assertEquals(encounter.getPeriod().getStart(), readEncounter.getPeriod().getStart());
 	}
 
 	/**

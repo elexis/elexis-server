@@ -13,12 +13,16 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
+import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
@@ -146,5 +150,24 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return null;
+	}
+
+	@Create
+	public MethodOutcome createEncounter(@ResourceParam Encounter encounter) {
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<IEncounter> exists = getTransformer().getLocalObject(encounter);
+		if (exists.isPresent()) {
+			outcome.setCreated(false);
+			outcome.setId(new IdType(encounter.getId()));
+		} else {
+			Optional<IEncounter> created = getTransformer().createLocalObject(encounter);
+			if (created.isPresent()) {
+				outcome.setCreated(true);
+				outcome.setId(new IdType(created.get().getId()));
+			} else {
+				throw new InternalErrorException("Creation failed");
+			}
+		}
+		return outcome;
 	}
 }
