@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
@@ -151,20 +152,22 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	}
 
 	@Override
-	public String getServiceProviderId() {
-		return getModel().getServiceProviderId();
+	public String getMandatorId() {
+		return getModel().getMandatorId();
 	}
 
 	@Override
-	public void setServiceProviderId(String serviceProviderId) {
+	public void setMandatorId(String mandatorId) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			fhirEncounter.setServiceProvider(new Reference(new IdDt("Practitioner", serviceProviderId)));
+			EncounterParticipantComponent participant = new EncounterParticipantComponent();
+			participant.setIndividual(new Reference("Practitioner/" + mandatorId));
+			fhirEncounter.addParticipant(participant);
 			saveResource(resource.get());
 		}
 
-		getModel().setServiceProviderId(serviceProviderId);
+		getModel().setMandatorId(mandatorId);
 	}
 
 	public void setType(List<ICoding> coding) {

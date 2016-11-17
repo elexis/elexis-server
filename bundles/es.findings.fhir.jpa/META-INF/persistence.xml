@@ -6,6 +6,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Encounter</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Condition</class>
+		<class>info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<shared-cache-mode>NONE</shared-cache-mode>
 		<properties>

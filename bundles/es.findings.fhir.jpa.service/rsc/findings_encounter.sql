@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS CH_ELEXIS_CORE_FINDINGS_ENCOUNTER (
   lastupdate bigint(20) DEFAULT NULL,
   deleted char(1) DEFAULT '0',
   patientid varchar(80) DEFAULT NULL,
-  serviceproviderid varchar(80) DEFAULT NULL,
+  mandatorid varchar(80) DEFAULT NULL,
   consultationid varchar(80) DEFAULT NULL,
   content longtext
 );

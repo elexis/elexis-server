@@ -2,13 +2,13 @@ package info.elexis.server.findings.fhir.jpa.model.service;
 
 import javax.persistence.EntityManager;
 
-import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
+import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
 import info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager;
 
-public class ConditionService extends AbstractService<Condition> {
+public class ProcedureRequestService extends AbstractService<ProcedureRequest> {
 
-	public ConditionService() {
-		super(Condition.class);
+	public ProcedureRequestService() {
+		super(ProcedureRequest.class);
 	}
 
 	@Override

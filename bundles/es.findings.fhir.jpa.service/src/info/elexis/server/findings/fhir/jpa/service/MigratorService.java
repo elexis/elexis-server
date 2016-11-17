@@ -125,7 +125,7 @@ public class MigratorService implements IMigratorService {
 
 	private void updateEncounter(IEncounter encounter, Behandlung behandlung) {
 		encounter.setConsultationId(behandlung.getId());
-		encounter.setServiceProviderId(behandlung.getMandant().getId());
+		encounter.setMandatorId(behandlung.getMandant().getId());
 
 		LocalDate encounterDate = behandlung.getDatum();
 		if (encounterDate != null) {

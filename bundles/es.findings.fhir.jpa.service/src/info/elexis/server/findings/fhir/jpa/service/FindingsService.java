@@ -1,6 +1,7 @@
 package info.elexis.server.findings.fhir.jpa.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,24 +16,23 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.findings.IProcedureRequest;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung_;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
+import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
+import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest_;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
+import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestService;
 import info.elexis.server.findings.fhir.jpa.model.service.internal.DbInitializer;
 
 @Component
@@ -49,6 +49,8 @@ public class FindingsService implements IFindingsService {
 	private EncounterService encounterService;
 
 	private ConditionService conditionService;
+
+	private ProcedureRequestService procedureRequestService;
 
 	@Activate
 	protected void activate() {
@@ -70,6 +72,7 @@ public class FindingsService implements IFindingsService {
 		factory = new FindingsFactory();
 		encounterService = new EncounterService();
 		conditionService = new ConditionService();
+		procedureRequestService = new ProcedureRequestService();
 	}
 
 	private Logger getLogger() {
@@ -87,16 +90,16 @@ public class FindingsService implements IFindingsService {
 				ret.addAll(getEncounters(patientId));
 			}
 			if (filter.isAssignableFrom(ICondition.class)) {
-				ret.addAll(getConditions(patientId));
+				ret.addAll(getConditions(patientId, null));
+			}
+			if (filter.isAssignableFrom(IProcedureRequest.class)) {
+				ret.addAll(getProcedureRequests(patientId, null));
 			}
 			// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 			// ret.addAll(getClinicalImpressions(patientId, null));
 			// }
 			// if (filter.isAssignableFrom(IObservation.class)) {
 			// ret.addAll(getObservations(patientId, null));
-			// }
-			// if (filter.isAssignableFrom(IProcedureRequest.class)) {
-			// ret.addAll(getProcedureRequests(patientId, null));
 			// }
 		}
 		return ret;
@@ -112,7 +115,10 @@ public class FindingsService implements IFindingsService {
 					ret.add(encounter.get());
 				}
 				if (filter.isAssignableFrom(ICondition.class)) {
-					ret.addAll(getConditions(encounter.get().getPatientId()));
+					ret.addAll(getConditions(encounter.get().getPatientId(), encounter.get()));
+				}
+				if (filter.isAssignableFrom(IProcedureRequest.class)) {
+					ret.addAll(getProcedureRequests(null, encounter.get().getId()));
 				}
 				// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 				// ret.addAll(getClinicalImpressions(patientId, null));
@@ -120,25 +126,25 @@ public class FindingsService implements IFindingsService {
 				// if (filter.isAssignableFrom(IObservation.class)) {
 				// ret.addAll(getObservations(patientId, null));
 				// }
-				// if (filter.isAssignableFrom(IProcedureRequest.class)) {
-				// ret.addAll(getProcedureRequests(patientId, null));
-				// }
+
 			}
 		}
 		return ret;
 	}
 
-	// private List<ProcedureRequest> getProcedureRequests(String patientId,
-	// String encounterId) {
-	// Query<ProcedureRequest> query = new Query<>(ProcedureRequest.class);
-	// if (patientId != null) {
-	// query.add(ProcedureRequest.FLD_PATIENTID, Query.EQUALS, patientId);
-	// }
-	// if (encounterId != null) {
-	// query.add(ProcedureRequest.FLD_ENCOUNTERID, Query.EQUALS, encounterId);
-	// }
-	// return query.execute();
-	// }
+	private List<ProcedureRequestModelAdapter> getProcedureRequests(String patientId, String encounterId) {
+		List<ProcedureRequestModelAdapter> ret = new ArrayList<>();
+		JPAQuery<ProcedureRequest> query = new JPAQuery<>(ProcedureRequest.class);
+		if (patientId != null) {
+			query.add(ProcedureRequest_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+		}
+		if (encounterId != null) {
+			query.add(ProcedureRequest_.encounterid, JPAQuery.QUERY.EQUALS, encounterId);
+		}
+		List<ProcedureRequest> procedureRequests = query.execute();
+		procedureRequests.parallelStream().forEach(r -> ret.add(new ProcedureRequestModelAdapter(r)));
+		return ret;
+	}
 	//
 	// private List<ClinicalImpression> getClinicalImpressions(String patientId,
 	// String encounterId) {
@@ -152,14 +158,20 @@ public class FindingsService implements IFindingsService {
 	// return query.execute();
 	// }
 
-	private List<ConditionModelAdapter> getConditions(String patientId) {
+	@SuppressWarnings("unchecked")
+	private List<ConditionModelAdapter> getConditions(String patientId, IEncounter encounter) {
+		if (encounter != null) {
+			List<ConditionModelAdapter> ret = new ArrayList<ConditionModelAdapter>();
+			ret.addAll((Collection<? extends ConditionModelAdapter>) encounter.getIndication());
+			return ret;
+		}
 		List<ConditionModelAdapter> ret = new ArrayList<>();
 		JPAQuery<Condition> query = new JPAQuery<>(Condition.class);
 		if (patientId != null) {
 			query.add(Condition_.patientid, JPAQuery.QUERY.EQUALS, patientId);
 		}
 		List<Condition> conditions = query.execute();
-		conditions.stream().forEach(e -> ret.add(new ConditionModelAdapter(e)));
+		conditions.parallelStream().forEach(e -> ret.add(new ConditionModelAdapter(e)));
 		return ret;
 	}
 
@@ -181,28 +193,7 @@ public class FindingsService implements IFindingsService {
 			JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
 			query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
 			List<Encounter> encounters = query.execute();
-			encounters.stream().forEach(e -> ret.add(new EncounterModelAdapter(e)));
-		}
-		return ret;
-	}
-
-	private List<Behandlung> getBehandlungen(String patientId) {
-		List<Behandlung> ret = new ArrayList<>();
-		Optional<Kontakt> patient = KontaktService.INSTANCE.findById(patientId);
-		if (patient.isPresent()) {
-			info.elexis.server.core.connector.elexis.services.JPAQuery<Fall> queryFall = new info.elexis.server.core.connector.elexis.services.JPAQuery<>(
-					Fall.class);
-			queryFall.add(Fall_.patientKontakt, info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY.EQUALS,
-					patient.get());
-			List<Fall> faelle = queryFall.execute();
-			for (Fall fall : faelle) {
-				info.elexis.server.core.connector.elexis.services.JPAQuery<Behandlung> queryBehandlung = new info.elexis.server.core.connector.elexis.services.JPAQuery<>(
-						Behandlung.class);
-				queryBehandlung.add(Behandlung_.fall,
-						info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY.EQUALS, fall);
-				List<Behandlung> behandlungen = queryBehandlung.execute();
-				ret.addAll(behandlungen);
-			}
+			encounters.parallelStream().forEach(e -> ret.add(new EncounterModelAdapter(e)));
 		}
 		return ret;
 	}
@@ -246,12 +237,33 @@ public class FindingsService implements IFindingsService {
 		if (condition.isPresent()) {
 			return Optional.of(new ConditionModelAdapter(condition.get()));
 		}
+		Optional<ProcedureRequest> procedureRequest = procedureRequestService.findById(id);
+		if (procedureRequest.isPresent()) {
+			return Optional.of(new ProcedureRequestModelAdapter(procedureRequest.get()));
+		}
 		return Optional.empty();
 	}
 
 	@Override
 	public Optional<IFinding> findById(String id, Class<? extends IFinding> clazz) {
-		// TODO Auto-generated method stub
-		return null;
+		if (clazz.isAssignableFrom(IEncounter.class)) {
+			Optional<Encounter> encounter = encounterService.findById(id);
+			if (encounter.isPresent()) {
+				return Optional.of(new EncounterModelAdapter(encounter.get()));
+			}
+		}
+		if (clazz.isAssignableFrom(ICondition.class)) {
+			Optional<Condition> condition = conditionService.findById(id);
+			if (condition.isPresent()) {
+				return Optional.of(new ConditionModelAdapter(condition.get()));
+			}
+		}
+		if (clazz.isAssignableFrom(IProcedureRequest.class)) {
+			Optional<ProcedureRequest> procedureRequest = procedureRequestService.findById(id);
+			if (procedureRequest.isPresent()) {
+				return Optional.of(new ProcedureRequestModelAdapter(procedureRequest.get()));
+			}
+		}
+		return Optional.empty();
 	}
 }

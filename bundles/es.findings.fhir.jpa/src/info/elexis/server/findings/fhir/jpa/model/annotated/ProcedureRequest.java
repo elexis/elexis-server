@@ -7,19 +7,15 @@ import javax.persistence.Table;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
-
 @Entity
-@Table(name = "CH_ELEXIS_CORE_FINDINGS_ENCOUNTER")
-public class Encounter extends AbstractDBObjectIdDeleted {
+@Table(name = "CH_ELEXIS_CORE_FINDINGS_PROCEDUREREQUEST")
+public class ProcedureRequest extends AbstractDBObjectIdDeleted {
 
 	@Column(length = 80)
 	private String patientid;
 
 	@Column(length = 80)
-	private String mandatorid;
-
-	@Column(length = 80)
-	private String consultationid;
+	private String encounterid;
 
 	@Lob
 	private String content;
@@ -32,20 +28,12 @@ public class Encounter extends AbstractDBObjectIdDeleted {
 		this.patientid = patientId;
 	}
 
-	public String getConsultationId() {
-		return consultationid;
+	public String getEncounterId() {
+		return encounterid;
 	}
 
-	public void setConsultationId(String consultationId) {
-		this.consultationid = consultationId;
-	}
-
-	public String getMandatorId() {
-		return mandatorid;
-	}
-
-	public void setMandatorId(String serviceProviderId) {
-		this.mandatorid = serviceProviderId;
+	public void setEncounterId(String encounterId) {
+		this.encounterid = encounterId;
 	}
 
 	public String getContent() {

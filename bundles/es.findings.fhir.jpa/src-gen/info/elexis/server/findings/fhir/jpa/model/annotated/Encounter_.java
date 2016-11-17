@@ -8,8 +8,8 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Encounter.class)
 public class Encounter_ { 
 
-    public static volatile SingularAttribute<Encounter, String> serviceproviderid;
     public static volatile SingularAttribute<Encounter, String> patientid;
+    public static volatile SingularAttribute<Encounter, String> mandatorid;
     public static volatile SingularAttribute<Encounter, String> consultationid;
     public static volatile SingularAttribute<Encounter, String> content;
 

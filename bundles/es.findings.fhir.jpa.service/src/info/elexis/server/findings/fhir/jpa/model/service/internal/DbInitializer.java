@@ -37,6 +37,9 @@ public class DbInitializer {
 				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_CONDITION")) {
 					executeDbScript(jdbcConnection, "/rsc/findings_condition.sql");
 				}
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_PROCEDUREREQUEST")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_procedurereq.sql");
+				}
 			} catch (IOException | SQLException e) {
 				logger.error("Faild to run sql script on database.", e);
 				return;
