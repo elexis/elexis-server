@@ -29,12 +29,7 @@ public class ElexisEntityManager {
 	private static EntityManagerFactoryBuilder factoryBuilder;
 	private static EntityManagerFactory factory;
 
-	@Reference(
-			service = EntityManagerFactoryBuilder.class, 
-			cardinality = ReferenceCardinality.MANDATORY, 
-			policy = ReferencePolicy.STATIC, 
-			unbind = "deactivate",
-			target = "(osgi.unit.name=elexis)")
+	@Reference(service = EntityManagerFactoryBuilder.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "deactivate", target = "(osgi.unit.name=elexis)")
 	protected synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = factoryBuilder;
 		ElexisEntityManager.initializeEntityManager();
@@ -42,11 +37,11 @@ public class ElexisEntityManager {
 
 	public static void initializeEntityManager() {
 		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
-		if(!connection.isPresent()) {
+		if (!connection.isPresent()) {
 			log.error("No elexis-connection available, not initialization EntityManager");
 			return;
-		}	
-		
+		}
+
 		HashMap<String, Object> props = new HashMap<String, Object>();
 		try {
 			props.put(JDBC_DRIVER, connection.get().rdbmsType.driverName);
@@ -73,12 +68,25 @@ public class ElexisEntityManager {
 	protected synchronized void deactivate(EntityManagerFactoryBuilder factoryBuilder) {
 		ElexisEntityManager.factoryBuilder = null;
 	}
-	
+
 	public static CriteriaBuilder getCriteriaBuilder() {
-		return factory.getCriteriaBuilder();
+		if (factory != null) {
+			return factory.getCriteriaBuilder();
+		} else {
+			System.out.println("Trying to create CriteriaBuilder on null EntityManagerFactory");
+			log.error("Trying to create CriteriaBuilder on null EntityManagerFactory");
+		}
+		return null;
+
 	}
 
 	public static EntityManager createEntityManager() {
-		return factory.createEntityManager();
+		if (factory != null) {
+			return factory.createEntityManager();
+		} else {
+			System.out.println("Trying to create EntityManager on null EntityManagerFactory");
+			log.error("Trying to create EntityManager on null EntityManagerFactory");
+		}
+		return null;
 	}
 }
