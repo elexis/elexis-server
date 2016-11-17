@@ -22,7 +22,6 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	javax.annotation
 	javax.xml
 	javax.inject
-	
 	ch.qos.logback.classic
 	ch.qos.logback.core
 	ch.qos.logback.slf4j
@@ -35,13 +34,11 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.hamcrest.core
 	org.hamcrest.library
 	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
-	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
 	com.eclipsesource.jaxrs.provider.gson.feature.feature.group
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group
-	
 	ch.rgw.utility
 	ch.elexis.core
 	ch.elexis.core.importer.div
@@ -57,11 +54,9 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	ca.uhn.hapi.osgi-base
 	org.apache.poi
 	org.beanshell.bsh
-	
 	at.medevit.ch.artikelstamm
 	ch.elexis.base.ch.ticode
 	at.medevit.atc_codes
-	
 	org.eclipse.e4.ui.workbench.addons.swt
 	org.eclipse.e4.ui.workbench.renderers.swt
 	org.eclipse.e4.ui.workbench.swt
@@ -69,22 +64,18 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.eclipse.rap.jface
 	org.eclipse.rap.rwt
 	org.eclipse.rap.rwt.osgi
-	
 	org.tukaani.xz
 	osgi.enterprise
 	javax.ejb // required by org.eclipse.persistence.jpars
 	javax.transaction // required by org.eclipse.persistence.jpars
 	javax.xml.rpc // required by org.eclipse.persistence.jpars
 	javax.xml.soap // required by org.eclipse.persistence.jpars
-	
-	org.eclipse.persistence.jpa.feature.group 
+	org.eclipse.persistence.jpa.feature.group
 	org.eclipse.persistence.moxy.feature.group
 	org.eclipse.persistence.jpars
 	org.eclipse.persistence.dbws.feature.group
 	javax.validation
-	
 	org.eclipse.gemini.jpa.feature.feature.group
-	
 	com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
@@ -98,11 +89,9 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
-	com.mysql.jdbc
 	org.apache.commons.lang3
 	org.apache.commons.configuration
 	org.joda.money
-	
 	hapi-fhir-osgi-core
 	org.thymeleaf
 	javassist
@@ -116,7 +105,9 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	ognl
 	org.attoparser
 	org.unbescape
-	
 	com.eclipsesource.restfuse
 }
 
+location "http://download.elexis.info/elexis-server/elexis-server-dependencies/" {
+	com.mysql.jdbc [5.1.38,5.1.38]
+}
