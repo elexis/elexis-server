@@ -9,12 +9,17 @@ import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.instance.model.valuesets.ConditionCategory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import es.fhir.rest.core.test.FhirClient;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
@@ -66,6 +71,30 @@ public class ConditionTest {
 
 	}
 
+	@Test
+	public void createCondition() {
+		Condition condition = new Condition();
+
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		condition.setText(narrative);
+		condition.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		condition.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
+				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
+
+		MethodOutcome outcome = client.create().resource(condition).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+
+		Condition readCondition = client.read().resource(Condition.class).withId(outcome.getId()).execute();
+		assertNotNull(readCondition);
+		assertEquals(outcome.getId().getIdPart(), readCondition.getIdElement().getIdPart());
+		assertEquals(condition.getCategory().getCoding().get(0).getCode(),
+				readCondition.getCategory().getCoding().get(0).getCode());
+	}
+
 	/**
 	 * Test diagnose property set by
 	 * {@link TestDatabaseInitializer#initializePatient()}.
@@ -75,9 +104,10 @@ public class ConditionTest {
 		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
 				.execute();
 
-		// search by patient
+		// search by patient and category
 		Bundle results = client.search().forResource(Condition.class)
-				.where(Condition.SUBJECT.hasId(readPatient.getId())).returnBundle(Bundle.class).execute();
+				.where(Condition.SUBJECT.hasId(readPatient.getId()))
+				.and(Condition.CATEGORY.exactly().code("diagnosis")).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());

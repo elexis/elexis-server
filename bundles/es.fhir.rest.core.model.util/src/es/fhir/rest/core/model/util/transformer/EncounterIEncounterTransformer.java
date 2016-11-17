@@ -13,8 +13,11 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
+import es.fhir.rest.core.model.util.transformer.helper.BehandlungHelper;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class EncounterIEncounterTransformer implements IFhirTransformer<Encounter, IEncounter> {
@@ -55,10 +58,22 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 
 	@Override
 	public Optional<IEncounter> createLocalObject(Encounter fhirObject) {
-		IEncounter iEncounter = findingsService.getFindingsFactory().createEncounter();
-		AbstractHelper.saveResource(fhirObject, iEncounter);
-		findingsService.saveFinding(iEncounter);
-		return Optional.of(iEncounter);
+		// patient and performer must be present
+		Optional<Kontakt> performerKontakt = KontaktService.INSTANCE
+				.findById(BehandlungHelper.getMandatorId(fhirObject).get());
+		Optional<Kontakt> patientKontakt = KontaktService.INSTANCE
+				.findById(BehandlungHelper.getPatientId(fhirObject).get());
+		if (performerKontakt.isPresent() && patientKontakt.isPresent()) {
+			IEncounter iEncounter = findingsService.getFindingsFactory().createEncounter();
+			contentHelper.setResource(fhirObject, iEncounter);
+			patientKontakt.ifPresent(k -> iEncounter.setPatientId(k.getId()));
+			performerKontakt.ifPresent(k -> iEncounter.setMandatorId(k.getId()));
+			Optional<Behandlung> behandlung = BehandlungHelper.createBehandlung(iEncounter);
+			behandlung.ifPresent(b -> iEncounter.setConsultationId(b.getId()));
+			findingsService.saveFinding(iEncounter);
+			return Optional.of(iEncounter);
+		}
+		return Optional.empty();
 	}
 
 	@Override

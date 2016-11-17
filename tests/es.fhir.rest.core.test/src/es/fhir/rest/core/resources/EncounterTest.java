@@ -14,9 +14,11 @@ import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -87,7 +89,10 @@ public class EncounterTest {
 	@Test
 	public void createEncounter() {
 		Encounter encounter = new Encounter();
-		encounter.setServiceProvider(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
+		
+		EncounterParticipantComponent participant = new EncounterParticipantComponent();
+		participant.setIndividual(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
+		encounter.addParticipant(participant);
 		
 		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
 				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
@@ -126,8 +131,7 @@ public class EncounterTest {
 		assertFalse(entries.isEmpty());
 		Encounter encounter = (Encounter) entries.get(0).getResource();
 
-		assertEquals("Practitioner/" + TestDatabaseInitializer.getMandant().getId(),
-				encounter.getServiceProvider().getReference());
+		assertEquals(TestDatabaseInitializer.getMandant().getId(), getMandatorId(encounter));
 		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), encounter.getPatient().getReference());
 		List<CodeableConcept> typeConcepts = encounter.getType();
 		assertNotNull(typeConcepts);
@@ -142,5 +146,18 @@ public class EncounterTest {
 		String text = narrative.getDivAsString();
 		assertNotNull(text);
 		assertTrue(text.contains("Test consultation"));
+	}
+
+	private String getMandatorId(Encounter encounter) {
+		List<EncounterParticipantComponent> participants = encounter.getParticipant();
+		for (EncounterParticipantComponent encounterParticipantComponent : participants) {
+			if (encounterParticipantComponent.hasIndividual()) {
+				Reference reference = encounterParticipantComponent.getIndividual();
+				if (reference.getReferenceElement().getResourceType().equals(Practitioner.class.getSimpleName())) {
+					return reference.getReferenceElement().getIdPart();
+				}
+			}
+		}
+		return null;
 	}
 }

@@ -2,6 +2,8 @@ package es.fhir.rest.core.model.util.transformer.helper;
 
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.BaseResource;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +63,15 @@ public class FindingsContentHelper {
 		return Optional.ofNullable(resource);
 	}
 
-	public void setResource(IBaseResource resource, IFinding finding) throws DataFormatException {
+	public void setResource(BaseResource resource, IFinding finding) throws DataFormatException {
 		RawContentFormat contentFormat = finding.getRawContentFormat();
 		if (contentFormat == RawContentFormat.FHIR_JSON) {
 			String jsonContent = finding.getRawContent();
 			if (jsonContent != null && !jsonContent.isEmpty()) {
 				if (resource != null) {
+					if (resource.getId() == null) {
+						resource.setId(new IdType(resource.getClass().getSimpleName(), finding.getId()));
+					}
 					String resourceJson = getJsonParser().encodeResourceToString(resource);
 					finding.setRawContent(resourceJson);
 				}
@@ -75,6 +80,9 @@ public class FindingsContentHelper {
 			String xmlContent = finding.getRawContent();
 			if (xmlContent != null && !xmlContent.isEmpty()) {
 				if (resource != null) {
+					if (resource.getIdElement() == null) {
+						resource.setId(new IdType(resource.getClass().getSimpleName(), finding.getId()));
+					}
 					String resourceJson = getXmlParser().encodeResourceToString(resource);
 					finding.setRawContent(resourceJson);
 				}

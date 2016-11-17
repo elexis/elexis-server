@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.CodeType;
-import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -23,27 +22,18 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import ch.elexis.core.findings.ICondition;
-import ch.elexis.core.findings.ICondition.ConditionCategory;
+import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
-import ch.elexis.core.findings.migration.IMigratorService;
+import ch.elexis.core.findings.IProcedureRequest;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import es.fhir.rest.core.resources.util.CodeTypeUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
-public class ConditionResourceProvider implements IFhirResourceProvider {
-
-	private IMigratorService migratorService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIMigratorService(IMigratorService migratorService) {
-		this.migratorService = migratorService;
-	}
+public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 
 	private IFindingsService findingsService;
 
@@ -61,49 +51,56 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
-		return Condition.class;
+		return ProcedureRequest.class;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Condition, ICondition> getTransformer() {
-		return (IFhirTransformer<Condition, ICondition>) transformerRegistry
-					.getTransformerFor(Condition.class, ICondition.class);
+	public IFhirTransformer<ProcedureRequest, IProcedureRequest> getTransformer() {
+		return (IFhirTransformer<ProcedureRequest, IProcedureRequest>) transformerRegistry
+				.getTransformerFor(ProcedureRequest.class, IProcedureRequest.class);
 	}
 
 	@Read
-	public Condition getResourceById(@IdParam IdType theId) {
+	public ProcedureRequest getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> condition = findingsService.findById(idPart);
-			if (condition.isPresent() && (condition.get() instanceof ICondition)) {
-				Optional<Condition> fhirCondition = getTransformer().getFhirObject((ICondition) condition.get());
-				return fhirCondition.get();
+			Optional<IFinding> procedureRequest = findingsService.findById(idPart);
+			if (procedureRequest.isPresent() && (procedureRequest.get() instanceof IProcedureRequest)) {
+				Optional<ProcedureRequest> fhirProcedureRequest = getTransformer()
+						.getFhirObject((IProcedureRequest) procedureRequest.get());
+				return fhirProcedureRequest.get();
 			}
 		}
 		return null;
 	}
 
 	@Search()
-	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId,
-			@OptionalParam(name = Condition.SP_CATEGORY) CodeType categoryCode) {
+	public List<ProcedureRequest> findProcedureRequest(
+			@RequiredParam(name = ProcedureRequest.SP_PATIENT) IdType thePatientId,
+			@OptionalParam(name = ProcedureRequest.SP_ENCOUNTER) IdType theEncounterId) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
-					// migrate diagnose condition first
-					migratorService.migratePatientsFindings(thePatientId.getIdPart(), ICondition.class);
-
 					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),
-							ICondition.class);
-					if (findings != null && !findings.isEmpty()) {
-						List<Condition> ret = new ArrayList<Condition>();
-						for (IFinding iFinding : findings) {
-							if (categoryCode != null && !isConditionCategory((ICondition) iFinding, categoryCode)) {
-								continue;
+							IProcedureRequest.class);
+					if(theEncounterId != null) {
+						Optional<IFinding> encounter = findingsService.findById(theEncounterId.getIdPart(), IEncounter.class);
+						if(encounter.isPresent()) {
+							IEncounter iEncounter = (IEncounter) encounter.get();
+							String consid = iEncounter.getConsultationId();
+							if (consid != null && !consid.isEmpty()) {
+								findings = findingsService.getConsultationsFindings(consid, IProcedureRequest.class);
 							}
-							Optional<Condition> fhirEncounter = getTransformer().getFhirObject((ICondition) iFinding);
-							fhirEncounter.ifPresent(fe -> ret.add(fe));
+						}
+					}
+					if (findings != null && !findings.isEmpty()) {
+						List<ProcedureRequest> ret = new ArrayList<ProcedureRequest>();
+						for (IFinding iFinding : findings) {
+							Optional<ProcedureRequest> fhirProcedureRequest = getTransformer()
+									.getFhirObject((IProcedureRequest) iFinding);
+							fhirProcedureRequest.ifPresent(pr -> ret.add(pr));
 						}
 						return ret;
 					}
@@ -114,14 +111,14 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Create
-	public MethodOutcome createCondition(@ResourceParam Condition condition) {
+	public MethodOutcome createProcedureRequest(@ResourceParam ProcedureRequest procedureRequest) {
 		MethodOutcome outcome = new MethodOutcome();
-		Optional<ICondition> exists = getTransformer().getLocalObject(condition);
+		Optional<IProcedureRequest> exists = getTransformer().getLocalObject(procedureRequest);
 		if (exists.isPresent()) {
 			outcome.setCreated(false);
-			outcome.setId(new IdType(condition.getId()));
+			outcome.setId(new IdType(procedureRequest.getId()));
 		} else {
-			Optional<ICondition> created = getTransformer().createLocalObject(condition);
+			Optional<IProcedureRequest> created = getTransformer().createLocalObject(procedureRequest);
 			if (created.isPresent()) {
 				outcome.setCreated(true);
 				outcome.setId(new IdType(created.get().getId()));
@@ -130,12 +127,5 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return outcome;
-	}
-
-	private boolean isConditionCategory(ICondition iCondition, CodeType categoryCode) {
-		Optional<String> codeCode = CodeTypeUtil.getCode(categoryCode);
-
-		ConditionCategory category = iCondition.getCategory();
-		return category.name().equalsIgnoreCase(codeCode.orElse(""));
 	}
 }
