@@ -72,7 +72,7 @@ public class MigratorService implements IMigratorService {
 			String diagnosis = p.getDiagnosen();
 			if (diagnosis != null && !diagnosis.isEmpty()) {
 				List<IFinding> conditions = findingsService.getPatientsFindings(patientId, ICondition.class);
-				conditions = conditions.parallelStream()
+				conditions = conditions.stream()
 						.filter(iFinding -> isDiagnose(iFinding))
 						.collect(Collectors.toList());
 				if (conditions.isEmpty()) {
