@@ -1,37 +1,21 @@
 package info.elexis.server.findings.fhir.jpa.model.service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.exceptions.FHIRException;
-import org.hl7.fhir.dstu3.model.Annotation;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Condition.ConditionClinicalStatus;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
-import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
+import ch.elexis.core.findings.util.fhir.accessor.ConditionAccessor;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
-import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
 
 public class ConditionModelAdapter extends AbstractModelAdapter<Condition> implements ICondition {
 
-	private EnumMapping categoryMapping = new EnumMapping(
-			org.hl7.fhir.instance.model.valuesets.ConditionCategory.class,
-			ch.elexis.core.findings.ICondition.ConditionCategory.class);
-	private EnumMapping statusMapping = new EnumMapping(ConditionClinicalStatus.class,
-			ch.elexis.core.findings.ICondition.ConditionStatus.class);
+	private ConditionAccessor accessor = new ConditionAccessor();
 	
 	public ConditionModelAdapter(Condition model) {
 		super(model);
@@ -51,8 +35,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setPatientId(String patientId) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			fhirCondition.setSubject(new Reference(new IdDt("Patient", patientId)));
+			accessor.setPatientId((DomainResource) resource.get(), patientId);
 			saveResource(resource.get());
 		}
 
@@ -63,11 +46,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public List<ICoding> getCoding() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			CodeableConcept codeableConcept = fhirCondition.getCode();
-			if (codeableConcept != null) {
-				return ModelUtil.getCodingsFromConcept(codeableConcept);
-			}
+			return accessor.getCoding((DomainResource) resource.get());
 		}
 		return Collections.emptyList();
 	}
@@ -76,13 +55,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setCoding(List<ICoding> coding) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			CodeableConcept codeableConcept = fhirCondition.getCode();
-			if (codeableConcept == null) {
-				codeableConcept = new CodeableConcept();
-			}
-			ModelUtil.setCodingsToConcept(codeableConcept, coding);
-			fhirCondition.setCode(codeableConcept);
+			accessor.setCoding((DomainResource) resource.get(), coding);
 			saveResource(resource.get());
 		}
 	}
@@ -91,11 +64,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public Optional<LocalDate> getDateRecorded() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			Date date = fhirCondition.getDateRecorded();
-			if (date != null) {
-				return Optional.of(getLocalDate(date));
-			}
+			return accessor.getDateRecorded((DomainResource) resource.get());
 		}
 		return Optional.empty();
 	}
@@ -104,8 +73,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setDateRecorded(LocalDate date) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			fhirCondition.setDateRecorded(getDate(date));
+			accessor.setDateRecorded((DomainResource) resource.get(), date);
 			saveResource(resource.get());
 		}
 	}
@@ -129,16 +97,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public ConditionCategory getCategory() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			List<Coding> coding = fhirCondition.getCategory().getCoding();
-			if (!coding.isEmpty()) {
-				for (Coding categoryCoding : coding) {
-					if (categoryCoding.getSystem().equals("http://hl7.org/fhir/condition-category")) {
-						return (ConditionCategory) categoryMapping
-								.getLocalEnumValueByCode(categoryCoding.getCode().toUpperCase());
-					}
-				}
-			}
+			return accessor.getCategory((DomainResource) resource.get());
 		}
 		return ConditionCategory.UNKNOWN;
 	}
@@ -147,15 +106,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setCategory(ConditionCategory category) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			CodeableConcept categoryCode = new CodeableConcept();
-			org.hl7.fhir.instance.model.valuesets.ConditionCategory fhirCategoryCode = (org.hl7.fhir.instance.model.valuesets.ConditionCategory) categoryMapping
-					.getFhirEnumValueByEnum(category);
-			if (fhirCategoryCode != null) {
-				categoryCode.setCoding(Collections.singletonList(new Coding(fhirCategoryCode.getSystem(),
-						fhirCategoryCode.toCode(), fhirCategoryCode.getDisplay())));
-				fhirCondition.setCategory(categoryCode);
-			}
+			accessor.setCategory((DomainResource) resource.get(), category);
 			saveResource(resource.get());
 		}
 	}
@@ -164,11 +115,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public ConditionStatus getStatus() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			ConditionClinicalStatus fhirStatus = fhirCondition.getClinicalStatus();
-			if (fhirStatus != null) {
-				return (ConditionStatus) statusMapping.getLocalEnumValueByCode(fhirStatus.toCode());
-			}
+			return accessor.getStatus((DomainResource) resource.get());
 		}
 		return ConditionStatus.UNKNOWN;
 	}
@@ -177,12 +124,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setStatus(ConditionStatus status) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent() && status != ConditionStatus.UNKNOWN) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			ConditionClinicalStatus fhirCategoryCode = (ConditionClinicalStatus) statusMapping
-					.getFhirEnumValueByEnum(status);
-			if (fhirCategoryCode != null) {
-				fhirCondition.setClinicalStatus(fhirCategoryCode);
-			}
+			accessor.setStatus((DomainResource) resource.get(), status);
 			saveResource(resource.get());
 		}
 	}
@@ -191,8 +133,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setStart(String start) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			fhirCondition.setOnset(new StringType(start));
+			accessor.setStart((DomainResource) resource.get(), start);
 			saveResource(resource.get());
 		}
 	}
@@ -201,21 +142,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public Optional<String> getStart() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			try {
-				if (fhirCondition.hasOnsetDateTimeType()) {
-					DateTimeType dateTime = fhirCondition.getOnsetDateTimeType();
-					if (dateTime != null) {
-						Date date = dateTime.getValue();
-						SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-						return Optional.of(format.format(date));
-					}
-				} else if (fhirCondition.hasOnsetStringType()) {
-					return Optional.of(fhirCondition.getOnsetStringType().getValue());
-				}
-			} catch (FHIRException e) {
-				getLogger(ConditionModelAdapter.class).error("Could not access start time.", e);
-			}
+			return accessor.getStart((DomainResource) resource.get());
 		}
 		return Optional.empty();
 	}
@@ -224,8 +151,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void setEnd(String end) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			fhirCondition.setAbatement(new StringType(end));
+			accessor.setEnd((DomainResource) resource.get(), end);
 			saveResource(resource.get());
 		}
 	}
@@ -234,21 +160,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public Optional<String> getEnd() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			try {
-				if (fhirCondition.hasOnsetDateTimeType()) {
-					DateTimeType dateTime = fhirCondition.getAbatementDateTimeType();
-					if (dateTime != null) {
-						Date date = dateTime.getValue();
-						SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-						return Optional.of(format.format(date));
-					}
-				} else if (fhirCondition.hasAbatementStringType()) {
-					return Optional.of(fhirCondition.getAbatementStringType().getValue());
-				}
-			} catch (FHIRException e) {
-				getLogger(Condition.class).error("Could not access end.", e);
-			}
+			return accessor.getEnd((DomainResource) resource.get());
 		}
 		return Optional.empty();
 	}
@@ -257,10 +169,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void addNote(String text) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			Annotation annotation = new Annotation();
-			annotation.setText(text);
-			fhirCondition.addNote(annotation);
+			accessor.addNote((DomainResource) resource.get(), text);
 			saveResource(resource.get());
 		}
 	}
@@ -269,11 +178,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public void removeNote(String text) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			List<Annotation> notes = new ArrayList<Annotation>(fhirCondition.getNote());
-			notes = notes.stream().filter(annotation -> !text.equals(annotation.getText()))
-					.collect(Collectors.toList());
-			fhirCondition.setNote(notes);
+			accessor.removeNote((DomainResource) resource.get(), text);
 			saveResource(resource.get());
 		}
 	}
@@ -282,9 +187,7 @@ public class ConditionModelAdapter extends AbstractModelAdapter<Condition> imple
 	public List<String> getNotes() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Condition fhirCondition = (org.hl7.fhir.dstu3.model.Condition) resource.get();
-			List<Annotation> notes = fhirCondition.getNote();
-			return notes.stream().map(annotation -> annotation.getText()).collect(Collectors.toList());
+			return accessor.getNotes((DomainResource) resource.get());
 		}
 		return Collections.emptyList();
 	}

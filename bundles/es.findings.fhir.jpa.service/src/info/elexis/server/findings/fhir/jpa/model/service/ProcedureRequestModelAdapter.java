@@ -13,9 +13,9 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IProcedureRequest;
+import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
-import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
 
 public class ProcedureRequestModelAdapter extends AbstractModelAdapter<ProcedureRequest> implements IProcedureRequest {
 

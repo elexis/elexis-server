@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IFinding;
-import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
+import ch.elexis.core.findings.util.ModelUtil;
 
 public abstract class AbstractModelAdapter<T> implements IFinding {
 

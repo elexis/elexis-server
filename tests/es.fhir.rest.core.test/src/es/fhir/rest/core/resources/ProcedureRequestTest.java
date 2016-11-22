@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
-import es.fhir.rest.core.test.FhirClient;
+import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class ProcedureRequestTest {
@@ -30,7 +30,7 @@ public class ProcedureRequestTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeBehandlung();
 
-		client = FhirClient.getTestClient();
+		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 

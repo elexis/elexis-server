@@ -9,8 +9,9 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.ICoding;
+import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.codes.ICodingContribution;
-import info.elexis.server.findings.fhir.jpa.model.util.TransientCoding;
+import ch.elexis.core.findings.util.model.TransientCoding;
 
 @Component
 public class TessinerCodeContribution implements ICodingContribution {
@@ -27,7 +28,7 @@ public class TessinerCodeContribution implements ICodingContribution {
 
 	@Override
 	public String getCodeSystem() {
-		return "www.elexis.info/diagnose/tessinercode";
+		return CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem();
 	}
 
 	@Override

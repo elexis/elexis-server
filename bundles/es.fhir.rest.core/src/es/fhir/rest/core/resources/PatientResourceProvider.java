@@ -18,6 +18,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ch.elexis.core.findings.IdentifierSystem;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -68,7 +69,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	public List<Patient> findPatientByIndetifier(
 			@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null) {
-			if (identifier.getSystem().equals("www.elexis.info/patnr")) {
+			if (identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
 				Optional<Kontakt> patient = KontaktService
 						.findPatientByPatientNumber(Integer.valueOf(identifier.getValue().getValue()));
 				if (patient.isPresent()) {

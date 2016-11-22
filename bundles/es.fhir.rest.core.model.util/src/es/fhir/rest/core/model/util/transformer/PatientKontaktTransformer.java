@@ -10,6 +10,7 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.findings.IdentifierSystem;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.KontaktHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -30,7 +31,7 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 		identifiers.add(getElexisObjectIdentifier(localObject));
 		String patNr = localObject.getPatientNr();
 		Identifier identifier = new Identifier();
-		identifier.setSystem("www.elexis.info/patnr");
+		identifier.setSystem(IdentifierSystem.ELEXIS_PATNR.getSystem());
 		identifier.setValue(patNr);
 		identifiers.add(identifier);
 		patient.setIdentifier(identifiers);

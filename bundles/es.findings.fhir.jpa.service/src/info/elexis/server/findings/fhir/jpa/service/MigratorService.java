@@ -12,7 +12,10 @@ import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
+import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.migration.IMigratorService;
+import ch.elexis.core.findings.util.ModelUtil;
+import ch.elexis.core.findings.util.model.TransientCoding;
 import ch.elexis.core.text.model.Samdas;
 import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -24,8 +27,6 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
-import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
-import info.elexis.server.findings.fhir.jpa.model.util.TransientCoding;
 
 @Component
 public class MigratorService implements IMigratorService {
@@ -147,9 +148,9 @@ public class MigratorService implements IMigratorService {
 		}
 
 		List<ICoding> coding = encounter.getType();
-		if (!ModelUtil.isSystemInList("www.elexis.info/encounter/type", coding)) {
+		if (!ModelUtil.isSystemInList(CodingSystem.ELEXIS_ENCOUNTER_TYPE.getSystem(), coding)) {
 			coding.add(
-					new TransientCoding("www.elexis.info/encounter/type", "text",
+					new TransientCoding(CodingSystem.ELEXIS_ENCOUNTER_TYPE.getSystem(), "text",
 					"Nicht strukturierte Konsultation"));
 			encounter.setType(coding);
 		}

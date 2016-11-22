@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Narrative;
 
+import ch.elexis.core.findings.util.ModelUtil;
+
 public class AbstractHelper {
 
 	protected Date getDate(LocalDateTime localDateTime) {
@@ -40,14 +42,7 @@ public class AbstractHelper {
 	public Optional<String> getText(DomainResource domainResource) {
 		Narrative narrative = domainResource.getText();
 		if (narrative != null && narrative.getDivAsString() != null) {
-			String text = narrative.getDivAsString();
-			if (text != null) {
-				String divDecodedText = text
-						.replaceAll("<div>|<div xmlns=\"http://www.w3.org/1999/xhtml\">|</div>|</ div>", "");
-				divDecodedText = divDecodedText.replaceAll("<br/>|<br />", "\n").replaceAll("&amp;", "&")
-						.replaceAll("&gt;", ">").replaceAll("<", "&lt;");
-				return Optional.of(divDecodedText);
-			}
+			return ModelUtil.getNarrativeAsString(narrative);
 		}
 		return Optional.empty();
 	}

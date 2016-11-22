@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Identifier;
 
+import ch.elexis.core.findings.IdentifierSystem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
 /**
@@ -64,7 +65,7 @@ public interface IFhirTransformer<F, L> {
 
 	default Identifier getElexisObjectIdentifier(AbstractDBObjectIdDeleted dbObject) {
 		Identifier identifier = new Identifier();
-		identifier.setSystem("www.elexis.info/objid");
+		identifier.setSystem(IdentifierSystem.ELEXIS_OBJID.getSystem());
 		identifier.setValue(dbObject.getId());
 		return identifier;
 	}

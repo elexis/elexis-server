@@ -17,7 +17,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
-import es.fhir.rest.core.test.FhirClient;
+import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.findings.util.ModelUtil;
 
 public class CodesySystemTest {
 
@@ -25,7 +26,7 @@ public class CodesySystemTest {
 
 	@BeforeClass
 	public static void setupClass() {
-		client = FhirClient.getTestClient();
+		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 
@@ -37,7 +38,7 @@ public class CodesySystemTest {
 
 		// search by system
 		Bundle results = client.search().forResource(CodeSystem.class)
-				.where(CodeSystem.SYSTEM.matches().value("www.elexis.info/diagnose/tessinercode"))
+				.where(CodeSystem.SYSTEM.matches().value(CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
@@ -50,7 +51,8 @@ public class CodesySystemTest {
 
 		// search by system
 		results = client.search().forResource(CodeSystem.class)
-				.where(CodeSystem.SYSTEM.matches().value("www.elexis.info/coverage/type")).returnBundle(Bundle.class)
+				.where(CodeSystem.SYSTEM.matches().value(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem()))
+				.returnBundle(Bundle.class)
 				.execute();
 		assertNotNull(results);
 		entries = results.getEntry();
@@ -64,14 +66,14 @@ public class CodesySystemTest {
 		CodeSystem readCodeSystem = client.read().resource(CodeSystem.class).withId("tessinercode").execute();
 		assertNotNull(readCodeSystem);
 
-		assertEquals("www.elexis.info/diagnose/tessinercode", readCodeSystem.getUrl());
+		assertEquals(CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem(), readCodeSystem.getUrl());
 		Optional<ConceptDefinitionComponent> concept = getConceptFromSytem("A1", readCodeSystem);
 		assertTrue(concept.isPresent());
 
 		// coveragetype
 		readCodeSystem = client.read().resource(CodeSystem.class).withId("coveragetype").execute();
 		assertNotNull(readCodeSystem);
-		assertEquals("www.elexis.info/coverage/type", readCodeSystem.getUrl());
+		assertEquals(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), readCodeSystem.getUrl());
 		concept = getConceptFromSytem("KVG", readCodeSystem);
 		assertTrue(concept.isPresent());
 

@@ -9,6 +9,7 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 	ch.elexis.core.importer.div [3.2.0,3.3.0)
 	ch.elexis.core.hl7.v2x [3.2.0,3.3.0)
 	ch.elexis.core.findings
+	ch.elexis.core.findings.util
 	org.postgresql
 	org.h2
 	org.jdom

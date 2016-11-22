@@ -16,7 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
-import es.fhir.rest.core.test.FhirClient;
+import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class OrganizationTest {
@@ -28,7 +28,7 @@ public class OrganizationTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeOrganization();
 
-		client = FhirClient.getTestClient();
+		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 

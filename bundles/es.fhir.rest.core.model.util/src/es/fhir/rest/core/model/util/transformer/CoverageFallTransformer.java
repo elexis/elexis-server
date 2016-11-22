@@ -1,14 +1,22 @@
 package es.fhir.rest.core.model.util.transformer;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Coverage;
+import org.hl7.fhir.dstu3.model.Period;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.model.FallConstants;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FallHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.services.FallService;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall> {
@@ -27,6 +35,10 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 		coverage.setIssuer(fallHelper.getIssuerReference(localObject));
 		coverage.setPeriod(fallHelper.getPeriod(localObject));
 
+		fallHelper.getType(localObject).ifPresent(coding -> {
+			coverage.setType(coding);
+		});
+
 		fallHelper.setText(coverage, fallHelper.getFallText(localObject));
 
 		return Optional.of(coverage);
@@ -34,20 +46,52 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 
 	@Override
 	public Optional<Fall> getLocalObject(Coverage fhirObject) {
-		// TODO Auto-generated method stub
-		return null;
+		if (fhirObject != null && fhirObject.getId() != null) {
+			Optional<Fall> existing = FallService.INSTANCE.findById(fhirObject.getId());
+			if (existing.isPresent()) {
+				return Optional.of((Fall) existing.get());
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override
 	public Optional<Fall> updateLocalObject(Coverage fhirObject, Fall localObject) {
 		// TODO Auto-generated method stub
-		return null;
+		return Optional.empty();
 	}
 
 	@Override
 	public Optional<Fall> createLocalObject(Coverage fhirObject) {
-		// TODO Auto-generated method stub
-		return null;
+		if (fhirObject.hasBeneficiaryReference()) {
+			try {
+				Optional<Kontakt> patient = KontaktService.INSTANCE
+						.findById(fhirObject.getBeneficiaryReference().getReferenceElement().getIdPart());
+				Optional<String> type = fallHelper.getType(fhirObject);
+				if (patient.isPresent() && type.isPresent()) {
+					Fall created = FallService.INSTANCE.create(patient.get(), "online", FallConstants.TYPE_DISEASE,
+							type.get());
+					String bin = fhirObject.getBin();
+					if (bin != null) {
+						fallHelper.setBin(created, bin);
+					}
+					Period period = fhirObject.getPeriod();
+					if (period != null && period.getStart() != null) {
+						fallHelper.setPeriod(created, fhirObject.getPeriod());
+					} else {
+						created.setDatumVon(LocalDate.now());
+					}
+					return Optional.of(created);
+				} else {
+					LoggerFactory.getLogger(CoverageFallTransformer.class)
+					.warn("Could not create fall for patinet [" + patient + "] type ["
+							+ type + "]");
+				}
+			} catch (FHIRException e) {
+				LoggerFactory.getLogger(CoverageFallTransformer.class).error("Could not create local object.", e);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override

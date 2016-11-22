@@ -8,6 +8,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
@@ -72,6 +73,10 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 			behandlung.ifPresent(b -> iEncounter.setConsultationId(b.getId()));
 			findingsService.saveFinding(iEncounter);
 			return Optional.of(iEncounter);
+		} else {
+			LoggerFactory.getLogger(EncounterIEncounterTransformer.class)
+					.warn("Could not create encounter for mandator [" + performerKontakt + "] patient ["
+							+ patientKontakt + "]");
 		}
 		return Optional.empty();
 	}

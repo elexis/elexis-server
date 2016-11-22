@@ -5,6 +5,7 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
 
 import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
+import ch.elexis.core.findings.codes.CodingSystem;
 
 public class MandantHelper extends AbstractHelper {
 
@@ -19,9 +20,9 @@ public class MandantHelper extends AbstractHelper {
 			code.addCoding(new Coding(PractitionerRoleEnum.DOCTOR.getSystem(), PractitionerRoleEnum.DOCTOR.getCode(),
 					PractitionerRoleEnum.DOCTOR.getCode()));
 		} else if ("executive_doctor".equals(roleId)) {
-			code.addCoding(new Coding("www.elexis.info/practRole", "mandant", "mandant"));
+			code.addCoding(new Coding(CodingSystem.ELEXIS_PRACTITIONER_ROLE.getSystem(), "mandant", "mandant"));
 		} else {
-			code.addCoding(new Coding("www.elexis.info/practRole", roleId, roleId));
+			code.addCoding(new Coding(CodingSystem.ELEXIS_PRACTITIONER_ROLE.getSystem(), roleId, roleId));
 		}
 		component.setCode(code);
 		return component;

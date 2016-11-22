@@ -12,6 +12,7 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
+import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
@@ -22,7 +23,6 @@ import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestService;
-import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
 
 public class FindingsFactory implements IFindingsFactory {
 

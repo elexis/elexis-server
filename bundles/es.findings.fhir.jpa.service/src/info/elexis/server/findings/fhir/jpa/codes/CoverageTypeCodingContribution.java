@@ -7,10 +7,11 @@ import java.util.List;
 import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.findings.ICoding;
+import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.codes.ICodingContribution;
+import ch.elexis.core.findings.util.model.TransientCoding;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.VKPreis;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
-import info.elexis.server.findings.fhir.jpa.model.util.TransientCoding;
 
 @Component
 public class CoverageTypeCodingContribution implements ICodingContribution {
@@ -19,7 +20,7 @@ public class CoverageTypeCodingContribution implements ICodingContribution {
 
 	@Override
 	public String getCodeSystem() {
-		return "www.elexis.info/coverage/type";
+		return CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem();
 	}
 
 	@Override

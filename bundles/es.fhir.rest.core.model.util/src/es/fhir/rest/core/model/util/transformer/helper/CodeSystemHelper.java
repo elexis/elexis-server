@@ -4,13 +4,15 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
+import ch.elexis.core.findings.codes.CodingSystem;
+
 public class CodeSystemHelper extends AbstractHelper {
 
 	@SuppressWarnings("serial")
 	private static HashMap<String, String> systemIdMap = new HashMap<String, String>() {
 		{
-			put("www.elexis.info/coverage/type", "coveragetype");
-			put("www.elexis.info/diagnose/tessinercode", "tessinercode");
+			put(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "coveragetype");
+			put(CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem(), "tessinercode");
 		}
 	};
 

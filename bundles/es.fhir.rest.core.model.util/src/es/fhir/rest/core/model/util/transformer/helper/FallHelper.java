@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.model.FallConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -21,6 +24,10 @@ public class FallHelper extends AbstractHelper {
 			ret = fall.getExtInfoAsString("Versicherungsnummer");
 		}
 		return ret;
+	}
+
+	public void setBin(Fall fall, String bin) {
+		fall.setExtInfoValue("Versicherungsnummer", bin);
 	}
 
 	public Reference getBeneficiaryReference(Fall fall) {
@@ -65,6 +72,12 @@ public class FallHelper extends AbstractHelper {
 		return period;
 	}
 
+	public void setPeriod(Fall fall, Period period) {
+		if(period.getStart() != null) {
+			fall.setDatumVon(getLocalDateTime(period.getStart()).toLocalDate());
+		}
+	}
+
 	public String getFallText(Fall fall) {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
 		String grund = fall.getGrund();
@@ -87,5 +100,24 @@ public class FallHelper extends AbstractHelper {
 		}
 		ret.append(dateFrom.format(dateFormat)).append("-").append(ed).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
 		return ret.toString();
+	}
+
+	public Optional<Coding> getType(Fall fall) {
+		String billingSystem = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
+		if (billingSystem != null) {
+			Coding ret = new Coding();
+			ret.setSystem(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem());
+			ret.setCode(billingSystem);
+			return Optional.of(ret);
+		}
+		return null;
+	}
+
+	public Optional<String> getType(Coverage fhirObject) {
+		Coding fhirType = fhirObject.getType();
+		if (fhirType.getSystem().equals(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem())) {
+			return Optional.ofNullable(fhirType.getCode());
+		}
+		return Optional.empty();
 	}
 }

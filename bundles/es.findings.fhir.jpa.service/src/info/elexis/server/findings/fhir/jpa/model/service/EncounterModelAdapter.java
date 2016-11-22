@@ -1,26 +1,23 @@
 package info.elexis.server.findings.fhir.jpa.model.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
-import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
+import ch.elexis.core.findings.util.fhir.accessor.EncounterAccessor;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
-import info.elexis.server.findings.fhir.jpa.model.util.ModelUtil;
+import info.elexis.server.findings.fhir.jpa.service.FindingsService;
 
 public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> implements IEncounter {
+
+	private EncounterAccessor accessor = new EncounterAccessor();
 
 	public EncounterModelAdapter(Encounter model) {
 		super(model);
@@ -40,8 +37,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public void setPatientId(String patientId) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			fhirEncounter.setPatient(new Reference(new IdDt("Patient", patientId)));
+			accessor.setPatientId((DomainResource) resource.get(), patientId);
 			saveResource(resource.get());
 		}
 
@@ -52,11 +48,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public Optional<LocalDateTime> getStartTime() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			Period period = fhirEncounter.getPeriod();
-			if (period != null && period.getStart() != null) {
-				return Optional.of(getLocalDateTime(period.getStart()));
-			}
+			return accessor.getStartTime((DomainResource) resource.get());
 		}
 		return Optional.empty();
 	}
@@ -65,14 +57,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public void setStartTime(LocalDateTime time) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			Period period = fhirEncounter.getPeriod();
-			if (period == null) {
-				period = new Period();
-			}
-			period.setStart(getDate(time));
-
-			fhirEncounter.setPeriod(period);
+			accessor.setStartTime((DomainResource) resource.get(), time);
 			saveResource(resource.get());
 		}
 	}
@@ -81,11 +66,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public Optional<LocalDateTime> getEndTime() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			Period period = fhirEncounter.getPeriod();
-			if (period != null && period.getEnd() != null) {
-				return Optional.of(getLocalDateTime(period.getEnd()));
-			}
+			return accessor.getEndTime((DomainResource) resource.get());
 		}
 		return Optional.empty();
 	}
@@ -94,14 +75,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public void setEndTime(LocalDateTime time) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			Period period = fhirEncounter.getPeriod();
-			if (period == null) {
-				period = new Period();
-			}
-			period.setEnd(getDate(time));
-
-			fhirEncounter.setPeriod(period);
+			accessor.setEndTime((DomainResource) resource.get(), time);
 			saveResource(resource.get());
 		}
 	}
@@ -130,24 +104,9 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public void setConsultationId(String consultationId) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			boolean identifierFound = false;
-			List<Identifier> existing = fhirEncounter.getIdentifier();
-			for (Identifier existingIdentifier : existing) {
-				if ("www.elexis.info/consultationid".equals(existingIdentifier.getSystem())) {
-					existingIdentifier.setValue(consultationId);
-					identifierFound = true;
-					break;
-				}
-			}
-			if (!identifierFound) {
-				Identifier identifier = fhirEncounter.addIdentifier();
-				identifier.setSystem("www.elexis.info/consultationid");
-				identifier.setValue(consultationId);
-			}
+			accessor.setConsultationId((DomainResource) resource.get(), consultationId);
 			saveResource(resource.get());
 		}
-
 		getModel().setConsultationId(consultationId);
 	}
 
@@ -160,10 +119,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public void setMandatorId(String mandatorId) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			EncounterParticipantComponent participant = new EncounterParticipantComponent();
-			participant.setIndividual(new Reference("Practitioner/" + mandatorId));
-			fhirEncounter.addParticipant(participant);
+			accessor.setMandatorId((DomainResource) resource.get(), mandatorId);
 			saveResource(resource.get());
 		}
 
@@ -173,14 +129,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public void setType(List<ICoding> coding) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			List<CodeableConcept> codeableConcepts = fhirEncounter.getType();
-			if (!codeableConcepts.isEmpty()) {
-				codeableConcepts.clear();
-			}
-			CodeableConcept codeableConcept = new CodeableConcept();
-			ModelUtil.setCodingsToConcept(codeableConcept, coding);
-			fhirEncounter.setType(Collections.singletonList(codeableConcept));
+			accessor.setType((DomainResource) resource.get(), coding);
 			saveResource(resource.get());
 		}
 	}
@@ -188,28 +137,26 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 	public List<ICoding> getType() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Encounter fhirEncounter = (org.hl7.fhir.dstu3.model.Encounter) resource.get();
-			List<CodeableConcept> codeableConcepts = fhirEncounter.getType();
-			if (codeableConcepts != null) {
-				ArrayList<ICoding> ret = new ArrayList<>();
-				for (CodeableConcept codeableConcept : codeableConcepts) {
-					ret.addAll(ModelUtil.getCodingsFromConcept(codeableConcept));
-				}
-				return ret;
-			}
+			return accessor.getType((DomainResource) resource.get());
 		}
 		return Collections.emptyList();
 	}
 
 	@Override
 	public List<ICondition> getIndication() {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			return accessor.getIndication((DomainResource) resource.get(), new FindingsService());
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
 	public void setIndication(List<ICondition> indication) {
-		// TODO Auto-generated method stub
-
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			accessor.setIndication((DomainResource) resource.get(), indication);
+			saveResource(resource.get());
+		}
 	}
 }

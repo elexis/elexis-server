@@ -13,10 +13,14 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -78,5 +82,24 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	@Create
+	public MethodOutcome createCoverage(@ResourceParam Coverage coverage) {
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<Fall> exists = getTransformer().getLocalObject(coverage);
+		if (exists.isPresent()) {
+			outcome.setCreated(false);
+			outcome.setId(new IdType(coverage.getId()));
+		} else {
+			Optional<Fall> created = getTransformer().createLocalObject(coverage);
+			if (created.isPresent()) {
+				outcome.setCreated(true);
+				outcome.setId(new IdType(created.get().getId()));
+			} else {
+				throw new InternalErrorException("Creation failed");
+			}
+		}
+		return outcome;
 	}
 }

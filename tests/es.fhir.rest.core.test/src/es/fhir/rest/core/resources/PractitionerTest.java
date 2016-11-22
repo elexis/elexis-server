@@ -29,8 +29,8 @@ import org.junit.Test;
 import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
+import ch.elexis.core.findings.util.ModelUtil;
 import es.fhir.rest.core.test.AllTests;
-import es.fhir.rest.core.test.FhirClient;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class PractitionerTest {
@@ -42,7 +42,7 @@ public class PractitionerTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeMandant();
 
-		client = FhirClient.getTestClient();
+		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 
