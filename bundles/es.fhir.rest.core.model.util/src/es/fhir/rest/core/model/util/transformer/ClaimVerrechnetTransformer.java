@@ -13,11 +13,17 @@ import org.hl7.fhir.dstu3.model.Claim.SpecialConditionComponent;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.SimpleQuantity;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.findings.IEncounter;
+import ch.elexis.core.findings.IFinding;
+import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.status.ObjectStatus;
 import es.fhir.rest.core.IFhirTransformer;
@@ -37,6 +43,13 @@ import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 
 @Component
 public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<Verrechnet>> {
+
+	private IFindingsService findingsService;
+
+	@org.osgi.service.component.annotations.Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFindingsService(IFindingsService findingsService) {
+		this.findingsService = findingsService;
+	}
 
 	@Override
 	public Optional<Claim> getFhirObject(List<Verrechnet> localObject) {
@@ -58,125 +71,223 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 
 	@Override
 	public Optional<List<Verrechnet>> createLocalObject(Claim fhirObject) {
-		List<CoverageComponent> coverages = fhirObject.getCoverage();
-		List<ItemComponent> items = fhirObject.getItem();
-		List<DiagnosisComponent> diagnosis = fhirObject.getDiagnosis();
-		Reference providerRef = (Reference) fhirObject.getProvider();
+		ClaimContext claimContext = new ClaimContext(fhirObject);
 		// test if all the information is present
-		if (coverages != null && !coverages.isEmpty() && items != null && !items.isEmpty() && diagnosis != null
-				&& !diagnosis.isEmpty() && providerRef != null && !providerRef.isEmpty()) {
-			List<Verrechnet> ret = new ArrayList<>();
-			Fall fall = getFall(coverages.get(0));
-			List<IBillable<?>> billables = getBillable(items);
-			List<Diagnosis> diagnose = getDiagnose(diagnosis);
-			Behandlung behandlung = getOrCreateBehandlung(fhirObject, fall, providerRef);
-			if (behandlung != null) {
-				Optional<Kontakt> mandator = KontaktService.INSTANCE
-						.findById(providerRef.getReferenceElement().getIdPart());
-				if (mandator.isPresent()) {
-					for (Diagnosis diag : diagnose) {
-						BehandlungService.INSTANCE.setDiagnosisOnConsultation(behandlung, diag);
-					}
-					for (IBillable<?> billable : billables) {
-						IStatus status = billable.add(behandlung, mandator.get(), mandator.get());
-						if (status.isOK()) {
-							ObjectStatus os = (ObjectStatus) status;
-							ret.add((Verrechnet) os.getObject());
-						}
-					}
-				}
-			}
-			return Optional.of(ret);
+		if (claimContext.isValid()) {
+			return Optional.of(claimContext.bill());
 		} else {
 			LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
-					.warn("Could not create claim for coverrage [" + coverages + "] item [" + items + "] diagnosis ["
-							+ diagnosis + "] provider [" + providerRef + "]");
+					.warn("Could not create claim for coverrage [" + fhirObject.getCoverage() + "] item ["
+							+ fhirObject.getItem() + "] diagnosis [" + fhirObject.getDiagnosis() + "] provider ["
+							+ fhirObject.getProvider() + "]");
 		}
 		return Optional.empty();
-	}
-
-	private Behandlung getOrCreateBehandlung(Claim fhirObject, Fall fall, Reference providerRef) {
-		Behandlung ret = null;
-		if (fhirObject.getInformation() != null && !fhirObject.getInformation().isEmpty()) {
-			List<SpecialConditionComponent> information = fhirObject.getInformation();
-			for (SpecialConditionComponent specialConditionComponent : information) {
-				Type value = specialConditionComponent.getValue();
-				if (value instanceof StringType) {
-					if (((StringType) value).getValue().startsWith("Encounter/")) {
-						IdType ref = new IdType(((StringType) value).getValue());
-						if (ref.getIdPart() != null) {
-							Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(ref.getIdPart());
-							if (behandlung.isPresent()) {
-								ret = behandlung.get();
-							}
-						}
-					}
-				}
-			}
-		}
-		// create if not available in the information
-		if (ret == null) {
-			Optional<Kontakt> mandator = KontaktService.INSTANCE
-					.findById(providerRef.getReferenceElement().getIdPart());
-			if (mandator.isPresent()) {
-				ret = BehandlungService.INSTANCE.create(fall, mandator.get());
-			}
-		}
-		return ret;
-	}
-
-	private List<Diagnosis> getDiagnose(List<DiagnosisComponent> diagnosis) {
-		List<Diagnosis> ret = new ArrayList<>();
-		for (DiagnosisComponent diagnosisComponent : diagnosis) {
-			Coding coding = diagnosisComponent.getDiagnosis();
-			if (coding != null) {
-				Diagnosis diag = new Diagnosis();
-				diag.setCode(coding.getCode());
-				diag.setText((coding.getDisplay() != null) ? coding.getDisplay() : "MISSING");
-				if (CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem().equals(coding.getSystem())) {
-					diag.setDiagnosisClass(ElexisTypeMap.TYPE_TESSINER_CODE);
-				}
-				ret.add(diag);
-			}
-		}
-		return ret;
-	}
-
-	private List<IBillable<?>> getBillable(List<ItemComponent> items) {
-		List<IBillable<?>> ret = new ArrayList<>();
-		for (ItemComponent itemComponent : items) {
-			Coding serviceCoding = itemComponent.getService();
-			if (serviceCoding != null) {
-				Optional<IBillable<?>> billable = getBillable(serviceCoding.getSystem(), serviceCoding.getCode());
-				billable.ifPresent(b -> ret.add(b));
-			}
-		}
-		return ret;
-	}
-
-	private Optional<IBillable<?>> getBillable(String system, String code) {
-		if (system.equals(CodingSystem.ELEXIS_TARMED_CODESYSTEM.getSystem())) {
-			Optional<TarmedLeistung> tarmed = TarmedLeistungService.findFromCode(code, null);
-			if (tarmed.isPresent()) {
-				return Optional.of(new VerrechenbarTarmedLeistung(tarmed.get()));
-			}
-		}
-		LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
-				.warn("Could not find billable for system [" + system + "] code [" + code + "]");
-		return Optional.empty();
-	}
-
-	private Fall getFall(CoverageComponent coverageComponent) {
-		Reference reference = (Reference) coverageComponent.getCoverage();
-		if (reference != null && !reference.isEmpty()) {
-			Optional<Fall> fallOpt = FallService.INSTANCE.findById(reference.getReferenceElement().getIdPart());
-			return fallOpt.orElse(null);
-		}
-		return null;
 	}
 
 	@Override
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
 		return Claim.class.equals(fhirClazz) && List.class.equals(localClazz);
+	}
+
+	/**
+	 * Private class used to bill an {@link Claim} item using Elexis model
+	 * objects.
+	 * 
+	 * @author thomas
+	 *
+	 */
+	private class BillableContext {
+
+		private IStatus lastStatus;
+
+		private int amount;
+		private IBillable<?> billable;
+
+		public BillableContext(IBillable<?> billable, Integer amount) {
+			this.billable = billable;
+			this.amount = amount;
+		}
+
+		public int getAmount() {
+			return amount;
+		}
+
+		public IStatus getLastStatus() {
+			return lastStatus;
+		}
+
+		public List<Verrechnet> bill(Behandlung behandlung, Kontakt user, Kontakt mandator) {
+			List<Verrechnet> ret = new ArrayList<>();
+			for (int i = 0; i < amount; i++) {
+				lastStatus = billable.add(behandlung, user, mandator);
+				if (!lastStatus.isOK()) {
+					return ret;
+				} else {
+					ObjectStatus os = (ObjectStatus) lastStatus;
+					ret.add((Verrechnet) os.getObject());
+				}
+			}
+			return ret;
+		}
+	}
+
+	/**
+	 * Private class used to bill all {@link Claim} items using Elexis model
+	 * objects.
+	 * 
+	 * @author thomas
+	 *
+	 */
+	private class ClaimContext {
+
+		private Claim claim;
+		private List<CoverageComponent> coverages;
+		private List<ItemComponent> items;
+		private List<DiagnosisComponent> diagnosis;
+		private Reference providerRef;
+
+		public ClaimContext(Claim fhirObject) {
+			this.claim = fhirObject;
+			this.coverages = fhirObject.getCoverage();
+			this.items = fhirObject.getItem();
+			this.diagnosis = fhirObject.getDiagnosis();
+			this.providerRef = (Reference) fhirObject.getProvider();
+		}
+
+		public boolean isValid() {
+			return coverages != null && !coverages.isEmpty() && items != null && !items.isEmpty() && diagnosis != null
+					&& !diagnosis.isEmpty() && providerRef != null && !providerRef.isEmpty();
+		}
+
+		public List<Verrechnet> bill() {
+			List<Verrechnet> ret = new ArrayList<>();
+			Fall fall = getFall(coverages.get(0));
+			List<BillableContext> billables = getBillableContexts(items);
+			List<Diagnosis> diagnose = getDiagnose(diagnosis);
+			Optional<Behandlung> behandlung = getOrCreateBehandlung(claim, fall, providerRef);
+			if (behandlung.isPresent()) {
+				Optional<Kontakt> mandator = KontaktService.INSTANCE
+						.findById(providerRef.getReferenceElement().getIdPart());
+				if (mandator.isPresent()) {
+					if (!behandlung.get().getFall().getId().equals(fall.getId())) {
+						behandlung.get().setFall(fall);
+					}
+					
+					for (Diagnosis diag : diagnose) {
+						BehandlungService.INSTANCE.setDiagnosisOnConsultation(behandlung.get(), diag);
+					}
+					for (BillableContext billable : billables) {
+						List<Verrechnet> billed = billable.bill(behandlung.get(), mandator.get(), mandator.get());
+						if (billed.size() < billable.getAmount()) {
+							IStatus status = billable.getLastStatus();
+							LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
+									.error("Could not bill all items of claim. " + status);
+						}
+						ret.addAll(billed);
+					}
+				}
+			}
+			return ret;
+		}
+
+		private List<BillableContext> getBillableContexts(List<ItemComponent> items) {
+			List<BillableContext> ret = new ArrayList<>();
+			for (ItemComponent itemComponent : items) {
+				Coding serviceCoding = itemComponent.getService();
+				if (serviceCoding != null) {
+					Optional<IBillable<?>> billable = getBillable(serviceCoding.getSystem(), serviceCoding.getCode());
+					Optional<Integer> amount = getAmount(itemComponent);
+					if(billable.isPresent() && amount.isPresent()) {
+						ret.add(new BillableContext(billable.get(), amount.get()));
+					}
+				}
+			}
+			return ret;
+		}
+
+		private Optional<Integer> getAmount(ItemComponent itemComponent) {
+			SimpleQuantity quantity = itemComponent.getQuantity();
+			if (quantity != null) {
+				return Optional.of(quantity.getValue().intValue());
+			}
+			return Optional.empty();
+		}
+
+		private Optional<IBillable<?>> getBillable(String system, String code) {
+			if (system.equals(CodingSystem.ELEXIS_TARMED_CODESYSTEM.getSystem())) {
+				Optional<TarmedLeistung> tarmed = TarmedLeistungService.findFromCode(code, null);
+				if (tarmed.isPresent()) {
+					return Optional.of(new VerrechenbarTarmedLeistung(tarmed.get()));
+				}
+			}
+			LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
+					.warn("Could not find billable for system [" + system + "] code [" + code + "]");
+			return Optional.empty();
+		}
+
+		private List<Diagnosis> getDiagnose(List<DiagnosisComponent> diagnosis) {
+			List<Diagnosis> ret = new ArrayList<>();
+			for (DiagnosisComponent diagnosisComponent : diagnosis) {
+				Coding coding = diagnosisComponent.getDiagnosis();
+				if (coding != null) {
+					Diagnosis diag = new Diagnosis();
+					diag.setCode(coding.getCode());
+					diag.setText((coding.getDisplay() != null) ? coding.getDisplay() : "MISSING");
+					if (CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem().equals(coding.getSystem())) {
+						diag.setDiagnosisClass(ElexisTypeMap.TYPE_TESSINER_CODE);
+					}
+					ret.add(diag);
+				}
+			}
+			return ret;
+		}
+
+		private Fall getFall(CoverageComponent coverageComponent) {
+			Reference reference = (Reference) coverageComponent.getCoverage();
+			if (reference != null && !reference.isEmpty()) {
+				Optional<Fall> fallOpt = FallService.INSTANCE.findById(reference.getReferenceElement().getIdPart());
+				return fallOpt.orElse(null);
+			}
+			return null;
+		}
+
+		private Optional<Behandlung> getOrCreateBehandlung(Claim fhirObject, Fall fall, Reference providerRef) {
+			if (fhirObject.getInformation() != null && !fhirObject.getInformation().isEmpty()) {
+				List<SpecialConditionComponent> information = fhirObject.getInformation();
+				for (SpecialConditionComponent specialConditionComponent : information) {
+					Type value = specialConditionComponent.getValue();
+					if (value instanceof StringType) {
+						if (((StringType) value).getValue().startsWith("Encounter/")) {
+							Optional<Behandlung> found = getBehandlungWithEncounterRef(
+									new IdType(((StringType) value).getValue()));
+							if (found.isPresent()) {
+								return found;
+							}
+						}
+					}
+				}
+			}
+			// if not found create
+			Optional<Kontakt> mandator = KontaktService.INSTANCE
+					.findById(providerRef.getReferenceElement().getIdPart());
+			if (mandator.isPresent()) {
+				return Optional.of(BehandlungService.INSTANCE.create(fall, mandator.get()));
+			}
+			return Optional.empty();
+		}
+
+		private Optional<Behandlung> getBehandlungWithEncounterRef(IdType encounterRef) {
+			if (encounterRef.getIdPart() != null) {
+				Optional<IFinding> encounter = findingsService.findById(encounterRef.getIdPart(), IEncounter.class);
+				if (encounter.isPresent()) {
+					return getBehandlungForEncounter((IEncounter) encounter.get());
+				}
+			}
+			return Optional.empty();
+		}
+
+		private Optional<Behandlung> getBehandlungForEncounter(IEncounter encounter) {
+			return BehandlungService.INSTANCE.findById((encounter).getConsultationId());
+		}
 	}
 }

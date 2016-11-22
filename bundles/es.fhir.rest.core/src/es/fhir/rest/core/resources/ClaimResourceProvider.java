@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,17 +44,11 @@ public class ClaimResourceProvider implements IFhirResourceProvider {
 	@Create
 	public MethodOutcome createClaim(@ResourceParam Claim claim) {
 		MethodOutcome outcome = new MethodOutcome();
-		Optional<List<Verrechnet>> exists = getTransformer().getLocalObject(claim);
-		if (exists.isPresent()) {
-			outcome.setCreated(false);
-			outcome.setId(new IdType(claim.getId()));
+		Optional<List<Verrechnet>> created = getTransformer().createLocalObject(claim);
+		if (created.isPresent() && !created.get().isEmpty()) {
+			outcome.setCreated(true);
 		} else {
-			Optional<List<Verrechnet>> created = getTransformer().createLocalObject(claim);
-			if (created.isPresent()) {
-				outcome.setCreated(true);
-			} else {
-				throw new InternalErrorException("Creation failed");
-			}
+			throw new InternalErrorException("Creation failed");
 		}
 		return outcome;
 	}

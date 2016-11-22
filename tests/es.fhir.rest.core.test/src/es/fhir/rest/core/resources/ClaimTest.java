@@ -22,9 +22,12 @@ import org.junit.Test;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 public class ClaimTest {
 
@@ -67,8 +70,20 @@ public class ClaimTest {
 		item.setQuantity((SimpleQuantity) new SimpleQuantity().setValue(1));
 		item.setService(new Coding("www.elexis.info/billing/tarmed", "00.0010", ""));
 
+		List<Verrechnet> before = VerrechnetService.INSTANCE.findAll(false);
 		MethodOutcome outcome = client.create().resource(claim).execute();
 		assertNotNull(outcome);
 		assertTrue(outcome.getCreated());
+		List<Verrechnet> after = VerrechnetService.INSTANCE.findAll(false);
+		assertTrue(after.size() - before.size() == 1);
+
+		// "00.0010" can only be billed once ...
+		boolean failed = false;
+		try {
+			outcome = client.create().resource(claim).execute();
+		} catch (InternalErrorException e) {
+			failed = true;
+		}
+		assertTrue(failed);
 	}
 }
