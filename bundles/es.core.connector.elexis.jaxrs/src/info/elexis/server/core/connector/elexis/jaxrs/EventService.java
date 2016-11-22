@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.ElexisEvent;
+import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.server.IEventService;
 
 @Component
@@ -36,8 +37,8 @@ public class EventService implements IEventService {
 			return Response.serverError().build();
 		}
 		String topic = elexisEvent.getTopic();
-		if (!topic.startsWith(ElexisEvent.EVENT_BASE)) {
-			topic = ElexisEvent.EVENT_BASE + topic;
+		if (!topic.startsWith(ElexisEventTopics.TOPIC_BASE)) {
+			topic = ElexisEventTopics.TOPIC_BASE + topic;
 		}
 		Event event = new Event(topic, elexisEvent.getProperties());
 		if (EventService.eventAdmin != null) {

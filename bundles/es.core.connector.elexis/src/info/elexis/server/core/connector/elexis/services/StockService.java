@@ -203,46 +203,47 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "No stock entry for article found");
 		}
 
-		Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
-		if (li.isPresent()) {
-			int fractionUnits = se.getFractionUnits();
-			int ve = article.getSellingUnit();
-			int vk = article.getPackageUnit();
+		if (se.getStock().isCommissioningSystem()) {
+			return StockCommissioningSystemService.INSTANCE.performArticleOutlay(se, count, null);
+		} else {
+			Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
+			if (li.isPresent()) {
+				int fractionUnits = se.getFractionUnits();
+				int ve = article.getSellingUnit();
+				int vk = article.getPackageUnit();
 
-			if (vk == 0) {
-				if (ve != 0) {
-					vk = ve;
+				if (vk == 0) {
+					if (ve != 0) {
+						vk = ve;
+					}
 				}
-			}
-			if (ve == 0) {
-				if (vk != 0) {
-					ve = vk;
+				if (ve == 0) {
+					if (vk != 0) {
+						ve = vk;
+					}
 				}
-			}
-			int num = count * ve;
-			int cs = se.getCurrentStock();
-			if (vk == ve) {
-				se.setCurrentStock(cs - count);
+				int num = count * ve;
+				int cs = se.getCurrentStock();
+				if (vk == ve) {
+					se.setCurrentStock(cs - count);
 
-			} else {
-				int rest = fractionUnits - num;
-				while (rest < 0) {
-					rest = rest + vk;
-					se.setCurrentStock(cs - 1);
+				} else {
+					int rest = fractionUnits - num;
+					while (rest < 0) {
+						rest = rest + vk;
+						se.setCurrentStock(cs - 1);
+					}
+					se.setFractionUnits(rest);
 				}
-				se.setFractionUnits(rest);
+
+				StockEntryService.INSTANCE.write((StockEntry) se);
+
+				LockServiceInstance.INSTANCE.releaseLock(li.get());
+				return Status.OK_STATUS;
 			}
 
-			StockEntryService.INSTANCE.write((StockEntry) se);
-
-			if (se.getStock().isCommissioningSystem()) {
-				return StockCommissioningSystemService.INSTANCE.performArticleOutlay(se, count, null);
-			}
-			LockServiceInstance.INSTANCE.releaseLock(li.get());
-			return Status.OK_STATUS;
+			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Could not acquire lock");
 		}
-
-		return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Could not acquire lock");
 	}
 
 	@Override
