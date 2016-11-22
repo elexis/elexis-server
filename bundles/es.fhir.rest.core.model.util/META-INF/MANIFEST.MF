@@ -19,8 +19,10 @@ Service-Component: OSGI-INF/es.fhir.rest.core.model.util.transformer.CoverageFal
  OSGI-INF/es.fhir.rest.core.model.util.transformer.PatientKontaktTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.ConditionIConditionTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.CodeSystemStringTransformer.xml,
- OSGI-INF/es.fhir.rest.core.model.util.transformer.ProcedureRequestIProcedureRequestTransformer.xml
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.ProcedureRequestIProcedureRequestTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.ClaimVerrechnetTransformer.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.model,
+ org.eclipse.core.runtime;version="3.5.0",
  org.slf4j
