@@ -186,7 +186,7 @@ public class LockService implements ILockService {
 		}
 
 		try {
-			if (locksLock.tryLock()) {
+			if (locksLock.tryLock(100, TimeUnit.MILLISECONDS)) {
 				LockInfo lie = locks.get(lockInfo.getElementId());
 				if (lie == null) {
 					log.warn("Releasing lock for object not in locks map [{}]", lockInfo.getElementStoreToString() + "#"
@@ -221,6 +221,9 @@ public class LockService implements ILockService {
 				log.warn("Could not acquire locksLock in releaseLock method on thread {}. ", Thread.currentThread());
 				return LockResponse.DENIED(lockInfo);
 			}
+		} catch (InterruptedException ie) {
+			log.warn("Interrupted in acquire locksLock in releaseLock method on thread {}. ", Thread.currentThread());
+			return LockResponse.DENIED(lockInfo);
 		} finally {
 			if (locksLock.isHeldByCurrentThread()) {
 				locksLock.unlock();
