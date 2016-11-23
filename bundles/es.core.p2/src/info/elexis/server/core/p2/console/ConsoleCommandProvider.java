@@ -43,7 +43,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 		return missingArgument("featureName");
 	}
-	
+
 	public String __repo() {
 		return getHelp(1);
 	}
@@ -55,8 +55,14 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	public String __repo_add(Iterator<String> args) {
 		if (args.hasNext()) {
 			final String url = args.next();
-			final String user = args.next();
-			final String password = args.next();
+			String user = null;
+			String password = null;
+			if (args.hasNext()) {
+				user = args.next();
+			}
+			if (args.hasNext()) {
+				password = args.next();
+			}
 			return HTTPServiceHelper.doRepositoryAdd(url, user, password).getStatusInfo().toString();
 		}
 		return missingArgument("url [user] [password]");
