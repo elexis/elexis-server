@@ -1,25 +1,36 @@
 package es.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Encounter;
+import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.instance.model.valuesets.ConditionCategory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.findings.util.ModelUtil;
+import es.fhir.rest.core.test.AllTests;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.core.connector.elexis.services.BehandlungService;
 
 public class ProcedureRequestTest {
 
@@ -36,21 +47,48 @@ public class ProcedureRequestTest {
 
 	@Test
 	public void createProcedureRequest() {
-		Bundle results = client.search().forResource(Encounter.class).where(Encounter.IDENTIFIER.exactly()
-				.systemAndIdentifier("www.elexis.info/consultationid", TestDatabaseInitializer.getBehandlung().getId()))
-				.returnBundle(Bundle.class).execute();
-		List<BundleEntryComponent> entries = results.getEntry();
-		assertFalse(entries.isEmpty());
-		Encounter encounter = (Encounter) entries.get(0).getResource();
+		Condition subjective = new Condition();
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		subjective.setText(narrative);
+		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		subjective.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
+				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
+		MethodOutcome subjectiveOutcome = client.create().resource(subjective).execute();
+
+		Condition problem = new Condition();
+		problem.setCode(
+				new CodeableConcept().addCoding(new Coding("http://hl7.org/fhir/sid/icpc-2", "A04", "Müdigkeit")));
+		problem.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		problem.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.DIAGNOSIS.getSystem(),
+				ConditionCategory.DIAGNOSIS.toCode(), ConditionCategory.DIAGNOSIS.getDisplay())));
+		MethodOutcome problemOutcome = client.create().resource(problem).execute();
+
+		Encounter encounter = new Encounter();
+		EncounterParticipantComponent participant = new EncounterParticipantComponent();
+		participant.setIndividual(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
+		encounter.addParticipant(participant);
+		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
+				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
+		encounter.setPatient(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+
+		encounter.addIndication(
+				new Reference(new IdType(subjective.getResourceType().name(), subjectiveOutcome.getId().getIdPart())));
+		encounter.addIndication(
+				new Reference(new IdType(problem.getResourceType().name(), problemOutcome.getId().getIdPart())));
+
+		encounter.addType(new CodeableConcept()
+				.addCoding(new Coding("www.elexis.info/encounter/type", "struct", "structured enconter")));
+		MethodOutcome encounterOutcome = client.create().resource(encounter).execute();
 		
 		ProcedureRequest procedureRequest = new ProcedureRequest();
-
-		Narrative narrative = new Narrative();
-		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative = new Narrative();
+		divEncodedText = "Procedure\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
 		procedureRequest.setText(narrative);
 		procedureRequest.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		procedureRequest.setEncounter(new Reference("Encounter/" + encounter.getId()));
+		procedureRequest.setEncounter(new Reference("Encounter/" + encounterOutcome.getId().getIdPart()));
 
 		MethodOutcome outcome = client.create().resource(procedureRequest).execute();
 		assertNotNull(outcome);
@@ -66,5 +104,20 @@ public class ProcedureRequestTest {
 		assertEquals(procedureRequest.getEncounter().getReferenceElement().getIdPart(),
 				readProcedureRequest.getEncounter().getReferenceElement().getIdPart());
 		assertTrue(readProcedureRequest.getText().getDivAsString().contains("Test"));
+		
+		// check if the consultation text has been updated
+		Encounter readEncounter = client.read().resource(Encounter.class).withId(encounterOutcome.getId()).execute();
+		assertNotNull(readEncounter);
+		List<Identifier> identifier = readEncounter.getIdentifier();
+		String consultationId = null;
+		for (Identifier id : identifier) {
+			if (id.getSystem().equals(IdentifierSystem.ELEXIS_CONSID.getSystem())) {
+				consultationId = id.getValue();
+			}
+		}
+		assertNotNull(consultationId);
+		Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
+		assertTrue(behandlung.isPresent());
+		assertTrue(behandlung.get().getEintrag().getHead().contains("Procedure"));
 	}
 }

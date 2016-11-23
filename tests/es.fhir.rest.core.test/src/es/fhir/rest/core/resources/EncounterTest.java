@@ -13,13 +13,16 @@ import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.instance.model.valuesets.ConditionCategory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -88,21 +91,36 @@ public class EncounterTest {
 
 	@Test
 	public void createEncounter() {
+		Condition subjective = new Condition();
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		subjective.setText(narrative);
+		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		subjective.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
+				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
+		MethodOutcome subjectiveOutcome = client.create().resource(subjective).execute();
+
+		Condition problem = new Condition();
+		problem.setCode(
+				new CodeableConcept().addCoding(new Coding("http://hl7.org/fhir/sid/icpc-2", "A04", "Müdigkeit")));
+		problem.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		problem.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.DIAGNOSIS.getSystem(),
+				ConditionCategory.DIAGNOSIS.toCode(), ConditionCategory.DIAGNOSIS.getDisplay())));
+		MethodOutcome problemOutcome = client.create().resource(problem).execute();
+
 		Encounter encounter = new Encounter();
-		
 		EncounterParticipantComponent participant = new EncounterParticipantComponent();
 		participant.setIndividual(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
 		encounter.addParticipant(participant);
-		
 		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
 				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
-
 		encounter.setPatient(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
 
-		Narrative narrative = new Narrative();
-		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
-		narrative.setDivAsString(divEncodedText);
-		encounter.setText(narrative);
+		encounter.addIndication(
+				new Reference(new IdType(subjective.getResourceType().name(), subjectiveOutcome.getId().getIdPart())));
+		encounter.addIndication(
+				new Reference(new IdType(problem.getResourceType().name(), problemOutcome.getId().getIdPart())));
 
 		encounter.addType(new CodeableConcept()
 				.addCoding(new Coding("www.elexis.info/encounter/type", "struct", "structured enconter")));

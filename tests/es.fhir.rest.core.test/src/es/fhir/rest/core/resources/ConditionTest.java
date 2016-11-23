@@ -112,20 +112,12 @@ public class ConditionTest {
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
 		Condition condition = (Condition) entries.get(0).getResource();
+		assertNotNull(condition);
 
 		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), condition.getSubject().getReference());
 		assertNotNull(condition.getCategory());
 		assertNotNull(condition.getCategory().getCoding());
 		assertFalse(condition.getCategory().getCoding().isEmpty());
 		assertEquals("diagnosis", condition.getCategory().getCoding().get(0).getCode());
-		assertNotNull(condition.getCode());
-		assertNotNull(condition.getCode().getCoding());
-		assertTrue(condition.getCode().getCoding().isEmpty());
-
-		Narrative narrative = condition.getText();
-		assertNotNull(narrative);
-		String text = narrative.getDivAsString();
-		assertNotNull(text);
-		assertTrue(text.contains("Diagnose 2"));
 	}
 }

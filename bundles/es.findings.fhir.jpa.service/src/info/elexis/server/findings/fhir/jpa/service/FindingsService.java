@@ -52,9 +52,16 @@ public class FindingsService implements IFindingsService {
 
 	private ProcedureRequestService procedureRequestService;
 
+	public FindingsService() {
+		factory = new FindingsFactory();
+		encounterService = new EncounterService();
+		conditionService = new ConditionService();
+		procedureRequestService = new ProcedureRequestService();
+	}
+
 	@Activate
 	protected void activate() {
-		getLogger().debug("New IFindingsService " + this);
+		LoggerFactory.getLogger(FindingsService.class).debug("New IFindingsService " + this);
 		try {
 			dbInitializedLock.lock();
 			if (!dbInitialized) {
@@ -65,21 +72,10 @@ public class FindingsService implements IFindingsService {
 				}
 			}
 		} catch (Exception e) {
-			getLogger().debug("Error activating IFindingsService " + this, e);
+			LoggerFactory.getLogger(FindingsService.class).debug("Error activating IFindingsService " + this, e);
 		} finally {
 			dbInitializedLock.unlock();
 		}
-		factory = new FindingsFactory();
-		encounterService = new EncounterService();
-		conditionService = new ConditionService();
-		procedureRequestService = new ProcedureRequestService();
-	}
-
-	private Logger getLogger() {
-		if (logger == null) {
-			logger = LoggerFactory.getLogger(FindingsService.class);
-		}
-		return logger;
 	}
 
 	@Override
