@@ -25,7 +25,6 @@ import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
-import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 
 @Component
@@ -114,8 +113,6 @@ public class MigratorService implements IMigratorService {
 		List<Encounter> encounters = query.execute();
 		if (encounters.isEmpty()) {
 			createEncounter(b);
-		} else {
-			updateEncounter(new EncounterModelAdapter(encounters.get(0)), b);
 		}
 	}
 
