@@ -10,7 +10,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import ch.elexis.core.stock.IStock;
+import ch.elexis.core.model.IStock;
 
 @Entity
 @Table(name = "STOCK")

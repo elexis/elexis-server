@@ -76,7 +76,7 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 				}
 			} catch (Exception e) {
 				ci.println("Execution error on argument: " + e.getMessage());
-				log.warn("Execution error on argument " + argument, e);
+				log.warn("Execution error on argument [{}]: ", arguments, e);
 			}
 		}
 	}

@@ -325,6 +325,12 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	public boolean isProduct() {
 		return (TYPE.X == getTYPE());
 	}
+	
+	@Transient
+	@Override
+	public String getName() {
+		return getDscr();
+	}
 
 	@Transient
 	public TYPE getTYPE() {

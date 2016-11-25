@@ -1,13 +1,14 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import static ch.elexis.core.common.ElexisEventTopics.*;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -18,22 +19,25 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.lock.types.LockResponse;
+import ch.elexis.core.model.IStock;
+import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.model.article.IArticle;
+import ch.elexis.core.model.stock.ICommissioningSystemDriver;
+import ch.elexis.core.model.stock.ICommissioningSystemDriverFactory;
+import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;
-import ch.elexis.core.stock.ICommissioningSystemDriver;
-import ch.elexis.core.stock.ICommissioningSystemDriverFactory;
-import ch.elexis.core.stock.IStock;
-import ch.elexis.core.stock.IStockCommissioningSystemService;
-import ch.elexis.core.stock.IStockEntry;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.internal.StockCommissioningSystemDriverFactories;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock_;
 import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class StockCommissioningSystemService implements IStockCommissioningSystemService {
 
@@ -47,7 +51,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		static final StockCommissioningSystemService INSTANCE = new StockCommissioningSystemService();
 	}
 
-	@Component(property = { EventConstants.EVENT_TOPIC + "=" + ElexisEventTopics.TOPIC_BASE + "*" })
+	@Component(property = { EventConstants.EVENT_TOPIC + "=" + TOPIC_BASE + "*" })
 	public static class StockCommissioningSystemServiceEventHandler implements EventHandler {
 
 		private Logger log = LoggerFactory.getLogger(StockCommissioningSystemServiceEventHandler.class);
@@ -55,14 +59,13 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		@Override
 		public void handleEvent(Event event) {
 			String topic = event.getTopic();
-			if (topic.endsWith(ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_OUTLAY)) {
-				String stockEntryId = event
-						.getProperty(ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID).toString();
+			if (topic.endsWith(TOPIC_STOCK_COMMISSIONING_OUTLAY)) {
+				// perform an outlay
+				String stockEntryId = event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID).toString();
 				Optional<StockEntry> se = StockEntryService.INSTANCE.findById(stockEntryId);
 				int quantity = 0;
 				try {
-					String property = (String) event
-							.getProperty(ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_QUANTITY);
+					String property = (String) event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_QUANTITY);
 					quantity = Integer.parseInt(property);
 				} catch (NumberFormatException nfe) {
 					log.error("Error parsing [{}]", nfe.getMessage());
@@ -75,6 +78,17 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 					}
 				} else {
 					log.error("Could not find StockEntry [{}]", stockEntryId);
+				}
+			} else if (topic.endsWith(TOPIC_STOCK_COMMISSIONING_SYNC_STOCK)) {
+				// Update stock for article list
+				String stockId = (String) event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCK_ID);
+				Optional<Stock> stock = StockService.INSTANCE.findById(stockId);
+				if (stock.isPresent()) {
+					List<String> articleIds = (List<String>) event
+							.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID);
+					StockCommissioningSystemService.INSTANCE.synchronizeInventory(stock.get(), articleIds, null);
+				} else {
+					log.warn("Could not resolve stock [{}], skipping update stock", stockId);
 				}
 			}
 		}
@@ -122,7 +136,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 
 		String configuration = stock.getDriverConfig();
-		IStatus status = icsd.initializeInstance(configuration);
+		IStatus status = icsd.initializeInstance(configuration, stock);
 		if (status.isOK()) {
 			stockCommissioningSystemDriverInstances.put(stock.getId(), icsd);
 			return Status.OK_STATUS;
@@ -132,10 +146,24 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
+	public IStatus initializeInstancesUsingDriver(UUID identification) {
+		JPAQuery<Stock> sq = new JPAQuery<Stock>(Stock.class);
+		sq.add(Stock_.driverUuid, QUERY.EQUALS, identification.toString());
+		List<Stock> stocks = sq.execute();
+		for (Stock stock : stocks) {
+			IStatus status = initializeStockCommissioningSystem(stock);
+			if (!status.isOK()) {
+				return status;
+			}
+		}
+		return Status.OK_STATUS;
+	}
+
+	@Override
 	public IStatus shutdownStockCommissioningSytem(IStock stock) {
 		ICommissioningSystemDriver icsd = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (icsd == null) {
-			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Instance is not available.");
+			return Status.OK_STATUS;
 		}
 		IStatus shutdownStatus = icsd.shutdownInstance();
 		if (shutdownStatus.isOK()) {
@@ -148,18 +176,17 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
-	public void shutdownInstances() {
-		Collection<ICommissioningSystemDriver> driverInstances = stockCommissioningSystemDriverInstances.values();
-		for (Iterator<ICommissioningSystemDriver> iterator = driverInstances.iterator(); iterator.hasNext();) {
-			ICommissioningSystemDriver icsd = (ICommissioningSystemDriver) iterator.next();
-			IStatus shutdownStatus = icsd.shutdownInstance();
-			if (shutdownStatus.isOK()) {
-				stockCommissioningSystemDriverInstances.remove(icsd);
-			} else {
-				log.warn("Problem shutting down commissioning system driver  [{}]:" + shutdownStatus.getMessage(),
-						icsd.getClass().getName());
+	public IStatus shutdownInstancesUsingDriver(UUID identification) {
+		JPAQuery<Stock> sq = new JPAQuery<Stock>(Stock.class);
+		sq.add(Stock_.driverUuid, QUERY.EQUALS, identification.toString());
+		List<Stock> stocks = sq.execute();
+		for (Stock stock : stocks) {
+			IStatus status = shutdownStockCommissioningSytem(stock);
+			if (!status.isOK()) {
+				return status;
 			}
 		}
+		return Status.OK_STATUS;
 	}
 
 	@Override
@@ -187,7 +214,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
-	public IStatus synchronizeInventory(IStock stock, String articleId, Object data) {
+	public IStatus synchronizeInventory(IStock stock, List<String> articleId, Object data) {
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
 			IStatus icsStatus = initializeStockCommissioningSystem(stock);
@@ -197,7 +224,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 				if (ics == null) {
 					return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-							"Incorrect stock commissioning service initialization.");
+							"Incorrect stock commissioning service initialization, or is not machine stock.");
 				}
 			}
 		}
@@ -205,36 +232,60 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		IStatus retrieveInventory = ics.retrieveInventory(articleId, data);
 		if (retrieveInventory.isOK()) {
 			ObjectStatus os = (ObjectStatus) retrieveInventory;
-			List<IStockEntry> stockEntriesCs = (List<IStockEntry>) os.getObject();
-			List<IStockEntry> workList = new ArrayList<IStockEntry>(stockEntriesCs);
+			List<String> elexisStockEntriesToDelete = StockService.INSTANCE.findAllStockEntriesForStock(stock).stream()
+					.map(se -> se.getId()).collect(Collectors.toList());
 
-			for (Iterator<IStockEntry> iterator = workList.iterator(); iterator.hasNext();) {
+			List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
+			for (Iterator<IStockEntry> iterator = transientCommSysStockEntries.iterator(); iterator.hasNext();) {
 				IStockEntry tse = (IStockEntry) iterator.next();
 				String gtin = tse.getArticle().getGTIN();
 
-				Optional<ArtikelstammItem> findByGTIN = ArtikelstammItemService.findByGTIN(gtin);
-				if (findByGTIN.isPresent()) {
-					String storeToString = StoreToStringService.storeToString(findByGTIN.get());
+				Optional<? extends IArticle> articleByGTIN = new ArticleService().findAnyByGTIN(gtin);
+				if (articleByGTIN.isPresent()) {
+					AbstractDBObjectIdDeleted adid = (AbstractDBObjectIdDeleted) articleByGTIN.get();
+					String storeToString = StoreToStringService.storeToString(adid);
 					IStockEntry ise = StockService.INSTANCE.findStockEntryForArticleInStock(stock, storeToString);
 					if (ise != null) {
-						if (tse.getCurrentStock() != ise.getCurrentStock()) {
-							StockEntry se = (StockEntry) ise;
-							log.debug("Fixing stock for StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(),
-									tse.getCurrentStock());
-							Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
-							if (lr.isPresent()) {
-								se.setCurrentStock(ise.getCurrentStock());
-								StockEntryService.INSTANCE.write((StockEntry) se);
-								LockServiceInstance.INSTANCE.releaseLock(lr.get());
-								iterator.remove();
-								continue;
+						// modify existing stock entry
+						StockEntry se = (StockEntry) ise;
+						StockEntryService.INSTANCE.refresh(se);
+						log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(),
+								tse.getCurrentStock());
+						Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+						if (lr.isPresent()) {
+							se.setCurrentStock(tse.getCurrentStock());
+							StockEntryService.INSTANCE.write((StockEntry) se);
+							LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+							if (!lrs.isOk()) {
+								log.warn("Could not release lock for StockEntry [{}]", se.getId());
+							}
+							elexisStockEntriesToDelete.remove(se.getId());
+							iterator.remove();
+						} else {
+							log.error("Could not acquire lock");
+						}
+					} else {
+						// create stock entry
+						StockEntry se = (StockEntry) StockService.INSTANCE.storeArticleInStock(stock, storeToString,
+								tse.getCurrentStock());
+						log.info("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
+						Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+						if (lr.isPresent()) {
+							LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+							if (!lrs.isOk()) {
+								log.warn("Could not release lock for StockEntry [{}]", se.getId());
 							}
 						}
-
+						iterator.remove();
 					}
+					continue;
+				} else {
+					log.warn("Could not resolve article by GTIN [{}], will not consider in stock update.", gtin);
 				}
+			}
 
-				log.warn("Could not resolve article [{}], skipping StockEntry update.", gtin);
+			for (String seToDelete : elexisStockEntriesToDelete) {
+				Optional<StockEntry> findById = StockEntryService.INSTANCE.findById(seToDelete);
 			}
 
 			// TODO remainders in worklist?

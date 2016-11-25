@@ -11,10 +11,10 @@ import org.eclipse.core.runtime.Status;
 
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.model.IStock;
+import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.model.article.IArticle;
-import ch.elexis.core.stock.IStock;
-import ch.elexis.core.stock.IStockEntry;
-import ch.elexis.core.stock.IStockService;
+import ch.elexis.core.services.IStockService;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.QueryConstants;
@@ -64,6 +64,10 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 
 	@Override
 	public IStockEntry storeArticleInStock(IStock stock, String storeToString) {
+		return storeArticleInStock(stock, storeToString, null);
+	}
+
+	public IStockEntry storeArticleInStock(IStock stock, String storeToString, Integer currentStock) {
 		IStockEntry stockEntry = findStockEntryForArticleInStock((Stock) stock, storeToString);
 		if (stockEntry != null) {
 			return stockEntry;
@@ -73,7 +77,7 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		if (!article.isPresent()) {
 			return null;
 		}
-		return StockEntryService.INSTANCE.create((Stock) stock, article.get());
+		return StockEntryService.INSTANCE.create((Stock) stock, article.get(), currentStock);
 	}
 
 	@Override
@@ -152,6 +156,13 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		JPAQuery<StockEntry> qre = new JPAQuery<StockEntry>(StockEntry.class);
 		qre.add(StockEntry_.articleType, QUERY.EQUALS, vals[0]);
 		qre.add(StockEntry_.articleId, QUERY.EQUALS, vals[1]);
+		return qre.execute();
+	}
+
+	@Override
+	public List<StockEntry> findAllStockEntriesForStock(IStock stock) {
+		JPAQuery<StockEntry> qre = new JPAQuery<StockEntry>(StockEntry.class);
+		qre.add(StockEntry_.stock, QUERY.EQUALS, stock);
 		return qre.execute();
 	}
 
@@ -256,6 +267,11 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		IStockEntry se = findPreferredStockEntryForArticle(storeToString, null);
 		if (se == null) {
 			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "No stock entry for article found");
+		}
+
+		if (se.getStock().isCommissioningSystem()) {
+			// updates must happen via manual inputs in the machine
+			return Status.OK_STATUS;
 		}
 
 		Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);

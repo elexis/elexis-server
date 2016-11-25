@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
@@ -15,7 +16,12 @@ import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.services.LockService;
+import info.elexis.server.core.connector.elexis.services.StockCommissioningSystemService;
+import info.elexis.server.core.connector.elexis.services.StockEntryService;
+import info.elexis.server.core.connector.elexis.services.StockService;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 
 @Component(service = CommandProvider.class, immediate = true)
@@ -25,7 +31,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		executeCommand(ci);
 	}
 
-	public void __connectionStatus() {
+	public void __status() {
 		IStatus dbi = ElexisDBConnection.getDatabaseInformation();
 		StatusUtil.printStatus(System.out, dbi);
 	}
@@ -71,4 +77,54 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 
+	public String __stock() {
+		return getHelp(1);
+	}
+
+	public String __stock_list() {
+		StockService.INSTANCE.findAll(true).stream().forEach(c -> ci.print(c.getLabel() + "\n"));
+		return ok();
+	}
+
+	public String __stock_listForStock(Iterator<String> args) {
+		if (args.hasNext()) {
+			Optional<Stock> stock = StockService.INSTANCE.findById(args.next());
+			if (stock.isPresent()) {
+				StockService.INSTANCE.findAllStockEntriesForStock(stock.get()).stream().forEach(se -> ci.print(se.getLabel() + "\n"));
+				return ok();
+			} else {
+				return "Invalid stock id";
+			}
+		} else {
+			return missingArgument("stockId");
+		}
+	}
+
+	public String __stock_seCsOut(Iterator<String> args) {
+		if (args.hasNext()) {
+			Optional<StockEntry> se = StockEntryService.INSTANCE.findById(args.next());
+			if(se.isPresent()) {
+				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.performArticleOutlay(se.get(), 1, null);
+				return StatusUtil.printStatus(performArticleOutlay);
+			} else {
+				return "Invalid stock entry id";
+			}
+		} else {
+			return missingArgument("stockEntryId");
+		}
+	}
+	
+	public String __stock_stockSyncCs(Iterator<String> args) {
+		if (args.hasNext()) {
+			Optional<Stock> se = StockService.INSTANCE.findById(args.next());
+			if(se.isPresent()) {
+				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.synchronizeInventory(se.get(), null, null);
+				return StatusUtil.printStatus(performArticleOutlay);
+			} else {
+				return "Invalid stock id";
+			}
+		} else {
+			return missingArgument("stockId");
+		}
+	}
 }

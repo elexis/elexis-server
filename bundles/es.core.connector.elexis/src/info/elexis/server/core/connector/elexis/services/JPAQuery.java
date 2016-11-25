@@ -15,6 +15,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
@@ -29,6 +31,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
  * @param <T>
  */
 public class JPAQuery<T extends AbstractDBObject> {
+
+	protected static Logger log = LoggerFactory.getLogger(JPAQuery.class);
 
 	public static enum QUERY {
 		LIKE, EQUALS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS, GREATER_OR_EQUAL
@@ -153,8 +157,13 @@ public class JPAQuery<T extends AbstractDBObject> {
 	 */
 	public Optional<T> executeGetSingleResult() {
 		List<T> result = execute();
-		if (result != null && result.size() == 1) {
-			return Optional.of(result.get(0));
+		if (result != null) {
+			if (result.size() > 1) {
+				log.warn("executeGetSingleResult() returned {} results", result.size());
+			}
+			if (result.size() == 1) {
+				return Optional.of(result.get(0));
+			}
 		}
 		return Optional.empty();
 	}

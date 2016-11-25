@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import ch.elexis.core.constants.StringConstants;
+import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.model.article.IArticle;
-import ch.elexis.core.stock.IStockEntry;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 
@@ -92,6 +92,11 @@ public class StockEntry extends AbstractDBObjectIdDeleted implements IStockEntry
 		String key = ElexisTypeMap.getKeyForObject(article);
 		setArticleType(key);
 		setArticleId(article.getId());
+	}
+	
+	@Override
+	public String getLabel() {
+		return super.getLabel() + " articleId ["+getArticleId() + "] / min ["+getMinimumStock()+"] / current ["+getCurrentStock()+"]";
 	}
 
 	public Stock getStock() {

@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel_;
@@ -81,5 +82,11 @@ public class ArtikelService extends AbstractService<Artikel> {
 			return (article.getExtId() == null || article.getExtId().length() == 0);
 		}
 		return false;
+	}
+
+	public static Optional<Artikel> findByGTIN(String gtin) {
+		JPAQuery<Artikel> qbe = new JPAQuery<Artikel>(Artikel.class);
+		qbe.add(Artikel_.ean, QUERY.LIKE, gtin);
+		return qbe.executeGetSingleResult();
 	}
 }

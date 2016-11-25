@@ -31,21 +31,8 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 
 		ApplicationShutdownRegistrar.addShutdownListener(iasl);
-		
-		new Timer().schedule(new TimerTask() {
 
-			@Override
-			public void run() {
-				Locale locale = Locale.getDefault();
-				String dbStoredLocale = ConfigService.INSTANCE.get(Preferences.CFG_LOCALE, null);
-				if (dbStoredLocale == null || !locale.toString().equals(dbStoredLocale)) {
-					log.error("System locale [{}] does not match required database locale [{}].", locale.toString(),
-							dbStoredLocale);
-					System.out.println("System locale does not match required database locale!");
-				}
-				// TOOD verify db version?
-			}
-		}, 1500);
+		new Timer().schedule(new StartupTasks(), 1500);
 	}
 
 	/*
@@ -60,4 +47,21 @@ public class Activator implements BundleActivator {
 		Activator.context = null;
 	}
 
+	private class StartupTasks extends TimerTask {
+
+		@Override
+		public void run() {
+			// verify locale
+			Locale locale = Locale.getDefault();
+			String dbStoredLocale = ConfigService.INSTANCE.get(Preferences.CFG_LOCALE, null);
+			if (dbStoredLocale == null || !locale.toString().equals(dbStoredLocale)) {
+				log.error("System locale [{}] does not match required database locale [{}].", locale.toString(),
+						dbStoredLocale);
+				System.out.println("System locale does not match required database locale!");
+			}
+
+			// TODO check database version
+		}
+
+	}
 }

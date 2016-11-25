@@ -7,8 +7,8 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.elexis.core.stock.IStockEntry;
-import ch.elexis.core.stock.IStockService.Availability;
+import ch.elexis.core.model.IStockEntry;
+import ch.elexis.core.services.IStockService.Availability;
 import info.elexis.server.core.connector.elexis.AllTestsSuite;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
