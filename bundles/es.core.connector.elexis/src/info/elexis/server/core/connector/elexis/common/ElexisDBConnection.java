@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,6 @@ import info.elexis.server.core.connector.elexis.common.DBConnection.DBType;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
-
 
 public class ElexisDBConnection {
 
@@ -58,13 +58,14 @@ public class ElexisDBConnection {
 	private static void setConnection(DBConnection connection) {
 		ElexisDBConnection.connection = connection;
 
-//		try (OutputStream os = Files.newOutputStream(connectionConfigPath, StandardOpenOption.WRITE);) {
-//			connection.marshall(os);
-//		} catch (IOException | JAXBException e) {
-//			log.error("Error marshalling connection", e);
-//		}
+		// try (OutputStream os = Files.newOutputStream(connectionConfigPath,
+		// StandardOpenOption.WRITE);) {
+		// connection.marshall(os);
+		// } catch (IOException | JAXBException e) {
+		// log.error("Error marshalling connection", e);
+		// }
 
-//		ElexisEntityManager.initializeEntityManager();
+		// ElexisEntityManager.initializeEntityManager();
 	}
 
 	public static boolean isTestMode() {
@@ -78,21 +79,26 @@ public class ElexisDBConnection {
 	}
 
 	public static IStatus getDatabaseInformation() {
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		if (em == null) {
+		EntityManager entityManager = ElexisEntityManager.createEntityManager();
+		if (entityManager == null) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Entity Manager is null.");
 		}
-		Config cDBV = em.find(Config.class, "dbversion");
-		if (cDBV == null) {
-			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-					"Could not find dbversion entry in config table.");
+		try {
+			Config cDBV = entityManager.find(Config.class, "dbversion");
+			if (cDBV == null) {
+				return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
+						"Could not find dbversion entry in config table.");
+			}
+
+			String dbv = cDBV.getWert();
+			String url = (String) entityManager.getProperties().get(PersistenceUnitProperties.JDBC_URL);
+			String elVersion = entityManager.find(Config.class, "ElexisVersion").getWert();
+			String created = entityManager.find(Config.class, "created").getWert();
+			String statusInfo = "Elexis " +elVersion +" [" + url + "] DBv " + dbv + " (" + created + ")";
+			return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);
+		} finally {
+			entityManager.close();
 		}
 
-		String dbv = cDBV.getWert();
-		String elVersion = ElexisEntityManager.createEntityManager().find(Config.class, "ElexisVersion").getWert();
-		String created = ElexisEntityManager.createEntityManager().find(Config.class, "created").getWert();
-		String statusInfo = "Connected with Elexis " + elVersion + ", DB " + dbv + " (" + created + ")";
-
-		return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);
 	}
 }
