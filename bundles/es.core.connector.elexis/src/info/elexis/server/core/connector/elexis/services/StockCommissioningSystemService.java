@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -230,68 +229,87 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 
 		IStatus retrieveInventory = ics.retrieveInventory(articleId, data);
-		if (retrieveInventory.isOK()) {
-			ObjectStatus os = (ObjectStatus) retrieveInventory;
-			List<String> elexisStockEntriesToDelete = StockService.INSTANCE.findAllStockEntriesForStock(stock).stream()
-					.map(se -> se.getId()).collect(Collectors.toList());
+		if (!retrieveInventory.isOK()) {
+			return retrieveInventory;
+		}
 
-			List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
-			for (Iterator<IStockEntry> iterator = transientCommSysStockEntries.iterator(); iterator.hasNext();) {
-				IStockEntry tse = (IStockEntry) iterator.next();
-				String gtin = tse.getArticle().getGTIN();
+		boolean fullSync = (articleId == null);
+		ObjectStatus os = (ObjectStatus) retrieveInventory;
+		List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
+		return synchronizeInventory(stock, transientCommSysStockEntries, fullSync);
+	}
 
+	/**
+	 * 
+	 * @param stock
+	 *            the stock to sync upon
+	 * @param inventoryResult
+	 *            the incoming inventory result to sync the provided stock upon
+	 * @param fullSync
+	 *            if <code>true</code> remove surplus stock entries
+	 * @return
+	 */
+	IStatus synchronizeInventory(IStock stock, List<? extends IStockEntry> inventoryResult, boolean fullSync) {
+		List<StockEntry> currentStockEntries = StockService.INSTANCE.findAllStockEntriesForStock(stock);
+		for (Iterator<? extends IStockEntry> iterator = inventoryResult.iterator(); iterator.hasNext();) {
+			IStockEntry tse = (IStockEntry) iterator.next();
+			String gtin = tse.getArticle().getGTIN();
+
+			Optional<StockEntry> seo = currentStockEntries.stream()
+					.filter(s -> (gtin.equalsIgnoreCase(s.getArticle().getGTIN()))).findFirst();
+			if (seo.isPresent()) {
+				// modify existing stock entry
+				StockEntry se = seo.get();
+				StockEntryService.INSTANCE.refresh(se);
+				log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), tse.getCurrentStock());
+				Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+				if (lr.isPresent()) {
+					se.setCurrentStock(tse.getCurrentStock());
+					StockEntryService.INSTANCE.write((StockEntry) se);
+					LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+					if (!lrs.isOk()) {
+						log.warn("Could not release lock for StockEntry [{}]", se.getId());
+					}
+					currentStockEntries.remove(se.getId());
+					currentStockEntries.remove(se);
+					iterator.remove();
+				} else {
+					log.error("Could not acquire lock");
+				}
+			} else {
+				// create stock entry
 				Optional<? extends IArticle> articleByGTIN = new ArticleService().findAnyByGTIN(gtin);
 				if (articleByGTIN.isPresent()) {
 					AbstractDBObjectIdDeleted adid = (AbstractDBObjectIdDeleted) articleByGTIN.get();
 					String storeToString = StoreToStringService.storeToString(adid);
-					IStockEntry ise = StockService.INSTANCE.findStockEntryForArticleInStock(stock, storeToString);
-					if (ise != null) {
-						// modify existing stock entry
-						StockEntry se = (StockEntry) ise;
-						StockEntryService.INSTANCE.refresh(se);
-						log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(),
-								tse.getCurrentStock());
-						Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
-						if (lr.isPresent()) {
-							se.setCurrentStock(tse.getCurrentStock());
-							StockEntryService.INSTANCE.write((StockEntry) se);
-							LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
-							if (!lrs.isOk()) {
-								log.warn("Could not release lock for StockEntry [{}]", se.getId());
-							}
-							elexisStockEntriesToDelete.remove(se.getId());
-							iterator.remove();
-						} else {
-							log.error("Could not acquire lock");
+					StockEntry se = (StockEntry) StockService.INSTANCE.storeArticleInStock(stock, storeToString,
+							tse.getCurrentStock());
+					log.info("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
+					Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+					if (lr.isPresent()) {
+						LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+						if (!lrs.isOk()) {
+							log.warn("Could not release lock for StockEntry [{}]", se.getId());
 						}
-					} else {
-						// create stock entry
-						StockEntry se = (StockEntry) StockService.INSTANCE.storeArticleInStock(stock, storeToString,
-								tse.getCurrentStock());
-						log.info("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
-						Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
-						if (lr.isPresent()) {
-							LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
-							if (!lrs.isOk()) {
-								log.warn("Could not release lock for StockEntry [{}]", se.getId());
-							}
-						}
-						iterator.remove();
 					}
-					continue;
+					currentStockEntries.remove(se);
+					iterator.remove();
 				} else {
 					log.warn("Could not resolve article by GTIN [{}], will not consider in stock update.", gtin);
 				}
 			}
-
-			for (String seToDelete : elexisStockEntriesToDelete) {
-				Optional<StockEntry> findById = StockEntryService.INSTANCE.findById(seToDelete);
-			}
-
-			// TODO remainders in worklist?
 		}
 
-		return retrieveInventory;
+		if (fullSync) {
+			// remove surplus stock entries
+			for (Iterator<? extends IStockEntry> iterator = currentStockEntries.iterator(); iterator.hasNext();) {
+				IStockEntry tse = (IStockEntry) iterator.next();
+				log.debug("Removing StockEntry [{}]", ((StockEntry) tse).getId());
+				StockEntryService.INSTANCE.remove((StockEntry) tse);
+			}
+		}
+
+		return Status.OK_STATUS;
 	}
 
 }
