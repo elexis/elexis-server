@@ -3,7 +3,7 @@
 
 The Elexis-Server is a headless variant of the Elexis desktop application. It is an entire rewrite, based on Equinox and an alternative persistence implementation based on EclipseLink.
 
-Current snapshot binaries are available at [download](http://download.elexis.info/elexis-server/products/).
+Current snapshot binaries are available at [download](http://download.elexis.info/elexis-server/products/master).
 
 ## Configuration
 
