@@ -6,19 +6,16 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ScrollableCursor;
+import org.eclipse.persistence.sessions.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
@@ -38,12 +35,10 @@ public class JPAQuery<T extends AbstractDBObject> {
 		LIKE, EQUALS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS, GREATER_OR_EQUAL
 	};
 
-	private CriteriaBuilder cb;
-	private CriteriaQuery<T> cq;
-	private Root<T> root;
-	private TypedQuery<T> query;
+	private ExpressionBuilder emp = new ExpressionBuilder();
+	private ReadAllQuery readAllQuery;
+	private Expression predicate;
 
-	private Predicate predicate;
 	private boolean includeDeleted;
 
 	private final Class<T> clazz;
@@ -53,73 +48,67 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	public JPAQuery(Class<T> clazz, boolean includeDeleted) {
-		cb = ElexisEntityManager.getCriteriaBuilder();
-		cq = cb.createQuery(clazz);
-		root = cq.from(clazz);
+		readAllQuery = new ReadAllQuery(clazz);
 		this.clazz = clazz;
 		this.includeDeleted = includeDeleted;
 	}
 
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
-		Predicate predIn = derivePredicate(attribute, qt, object);
+		Expression predIn = derivePredicate(attribute, qt, object);
 
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
-			predicate = cb.and(predicate, predIn);
+			predicate = predicate.and(predIn);
 		}
 	}
 
 	public void add(SingularAttribute<?, Boolean> attribute, QUERY qt, boolean bool) {
-		Predicate predIn = derivePredicate(attribute, qt, bool);
+		Expression predIn = derivePredicate(attribute, qt, bool);
 
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
-			predicate = cb.and(predicate, predIn);
+			predicate = predicate.and(predIn);
 		}
 	}
 
 	public void addLikeNormalized(@SuppressWarnings("rawtypes") SingularAttribute attribute, String value) {
-		Predicate predIn = cb.like(cb.lower(root.get(attribute)), value.toString().toLowerCase());
+		Expression predIn = emp.get(attribute.getName()).likeIgnoreCase(value.toString());
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
-			predicate = cb.and(predicate, predIn);
+			predicate = predicate.and(predIn);
 		}
 	}
 
 	public void or(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, String string) {
-		Predicate predIn = derivePredicate(attribute, qt, string);
+		Expression predIn = derivePredicate(attribute, qt, string);
 
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
-			predicate = cb.or(predicate, predIn);
+			predicate = predicate.and(predIn);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private Predicate derivePredicate(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt,
+	private Expression derivePredicate(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt,
 			Object value) {
 		switch (qt) {
 		case LIKE:
-			return cb.like(root.get(attribute), value.toString());
+			return emp.get(attribute.getName()).like(value.toString());
 		case EQUALS:
-			return cb.equal(root.get(attribute), value);
+			return emp.get(attribute.getName()).equal(value);
 		case LESS_OR_EQUAL:
-			Path<Integer> pathLE = root.get(attribute);
-			return cb.le(pathLE, Integer.parseInt(value.toString()));
+			return emp.get(attribute.getName()).lessThanEqual(Integer.parseInt(value.toString()));
 		case GREATER:
-			Path<Integer> pathG = root.get(attribute);
-			return cb.gt(pathG, Integer.parseInt(value.toString()));
+			return emp.get(attribute.getName()).greaterThan(Integer.parseInt(value.toString()));
 		case GREATER_OR_EQUAL:
-			Path<Integer> pathGE = root.get(attribute);
-			return cb.ge(pathGE, Integer.parseInt(value.toString()));
+			return emp.get(attribute.getName()).greaterThanEqual(Integer.parseInt(value.toString()));
 		case NOT_LIKE:
-			return cb.not(cb.like(root.get(attribute), value.toString()));
+			return emp.not().get(attribute.getName()).like(value.toString());
 		case NOT_EQUALS:
-			return cb.not(cb.equal(root.get(attribute), value));
+			return emp.not().get(attribute.getName()).equal(value);
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -131,25 +120,43 @@ public class JPAQuery<T extends AbstractDBObject> {
 				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
 			}
 		}
+
 		if (predicate != null) {
-			cq = cq.where(predicate);
+			readAllQuery.setSelectionCriteria(predicate);
 		}
+
 		EntityManager entityManager = createEntityManager();
-		query = entityManager.createQuery(cq);
+		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
+				.getActiveSession();
 		try {
-			return query.getResultList();
+			return (List) session.executeQuery(readAllQuery);
 		} finally {
 			entityManager.close();
 		}
 	}
 
-	@Override
-	public String toString() {
-		if (query != null) {
-			// will only print SQL string after execute()
-			return query.unwrap(JpaQuery.class).getDatabaseQuery().getSQLString();
+	public ScrollableCursor executeAsStream() {
+		if (!includeDeleted) {
+			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+			}
 		}
-		return super.toString();
+
+		if (predicate != null) {
+			readAllQuery.setSelectionCriteria(predicate);
+		}
+
+		EntityManager entityManager = createEntityManager();
+		readAllQuery.useScrollableCursor();
+		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
+				.getActiveSession();
+		ScrollableCursor cursor = null;
+		try {
+			cursor = (ScrollableCursor) session.executeQuery(readAllQuery);
+			return cursor;
+		} finally {
+			entityManager.close();
+		}
 	}
 
 	/**

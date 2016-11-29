@@ -13,7 +13,7 @@ public class BooleanCharacterConverterSafe implements Converter {
 
 	@Override
 	public String convertObjectValueToDataValue(Object objectValue, Session session) {
-		return (((boolean) objectValue) == true) ? StringConstants.ONE : StringConstants.ZERO;
+		return (Boolean.valueOf(objectValue.toString()) == true) ? StringConstants.ONE : StringConstants.ZERO;
 	}
 
 	@Override
