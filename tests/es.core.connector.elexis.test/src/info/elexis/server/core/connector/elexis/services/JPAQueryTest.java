@@ -60,6 +60,7 @@ public class JPAQueryTest {
 			assertNotNull(ai);
 			assertEquals("0", ai.getBb());
 			assertEquals("P", ai.getType());
+			cursor.clear();
 		}
 		cursor.close();
 		assertTrue("Size is " + i, i == 17);
