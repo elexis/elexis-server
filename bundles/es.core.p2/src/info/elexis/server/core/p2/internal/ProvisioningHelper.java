@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
@@ -22,6 +23,7 @@ import org.eclipse.equinox.p2.operations.InstallOperation;
 import org.eclipse.equinox.p2.operations.ProfileChangeOperation;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
+import org.eclipse.equinox.p2.operations.UninstallOperation;
 import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.query.IQuery;
@@ -202,24 +204,37 @@ public class ProvisioningHelper {
 		return null;
 	}
 
-	public static String installFeature(String featureName) {
+	/**
+	 * 
+	 * @param featureName
+	 * @param install
+	 *            <code>true</code> to install, <code>false</code> to uninstall
+	 * @return
+	 */
+	public static String unInstallFeature(String featureName, boolean install) {
 		IInstallableUnit unit = findFeature(featureName);
 		if (unit == null) {
-			log.error("[INSTALL] Cannot find feature : " + featureName);
+			log.error(("[" + ((!install) ? "UN" : "") + "INSTALL] Cannot find feature : " + featureName));
 			return "[ERROR]";
 		}
-		return StatusUtil.printStatus(install(unit, new NullProgressMonitor()));
+		return StatusUtil.printStatus(unInstall(unit, new NullProgressMonitor(), install));
 	}
 
-	public static IStatus install(IInstallableUnit unit, IProgressMonitor monitor) {
+	public static IStatus unInstall(IInstallableUnit unit, IProgressMonitor monitor, boolean install) {
 		IProvisioningAgent agent = Provisioner.getInstance().getProvisioningAgent();
 		ProvisioningSession session = new ProvisioningSession(agent);
 
-		InstallOperation operation = new InstallOperation(session, Arrays.asList(unit));
+		ProfileChangeOperation operation;
+		if (install) {
+			operation = new InstallOperation(session, Arrays.asList(unit));
+		} else {
+			operation = new UninstallOperation(session, Arrays.asList(unit));
+		}
+
 		IStatus result = operation.resolveModal(monitor);
 
-		log.debug("[INSTALL] unit " + unit + " | result " + result.getMessage() + " | severity " + result.getSeverity()
-				+ " | code " + result.getCode());
+		log.info("[" + ((!install) ? "UN" : "") + "INSTALL] unit " + unit + " | result " + result.getMessage()
+				+ " | severity " + result.getSeverity() + " | code " + result.getCode());
 
 		if (result.isOK()) {
 			ProvisioningJob job = operation.getProvisioningJob(monitor);
@@ -228,15 +243,10 @@ public class ProvisioningHelper {
 				job.join();
 				result = job.getResult();
 			} catch (InterruptedException e) {
-				// ignore
+				return new Status(Status.ERROR, "info.elexis.server.core.p", e.getMessage());
 			}
 		}
 
 		return result;
-	}
-
-	public static String uninstallFeature(String featureName) {
-		// TODO implement
-		return null;
 	}
 }

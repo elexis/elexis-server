@@ -32,14 +32,14 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public String __features_install(Iterator<String> args) {
 		if (args.hasNext()) {
-			return ProvisioningHelper.installFeature(args.next());
+			return ProvisioningHelper.unInstallFeature(args.next(), true);
 		}
 		return missingArgument("featureName");
 	}
 
 	public String __features_uninstall(Iterator<String> args) {
 		if (args.hasNext()) {
-			return ProvisioningHelper.uninstallFeature(args.next());
+			return ProvisioningHelper.unInstallFeature(args.next(), false);
 		}
 		return missingArgument("featureName");
 	}
