@@ -49,6 +49,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	public JPAQuery(Class<T> clazz, boolean includeDeleted) {
 		readAllQuery = new ReadAllQuery(clazz);
+		readAllQuery.setIsReadOnly(true);
 		this.clazz = clazz;
 		this.includeDeleted = includeDeleted;
 	}
@@ -135,6 +136,12 @@ public class JPAQuery<T extends AbstractDBObject> {
 		}
 	}
 
+	/**
+	 * Handle the results using a stream. Please be sure to clear the cursor on
+	 * each iteration in order to avoid a memory leak.
+	 * 
+	 * @return
+	 */
 	public ScrollableCursor executeAsStream() {
 		if (!includeDeleted) {
 			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
@@ -148,6 +155,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 		EntityManager entityManager = createEntityManager();
 		readAllQuery.useScrollableCursor();
+		readAllQuery.dontMaintainCache();
 		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
 				.getActiveSession();
 		ScrollableCursor cursor = null;
