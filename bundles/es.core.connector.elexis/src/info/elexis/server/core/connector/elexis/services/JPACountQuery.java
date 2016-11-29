@@ -14,6 +14,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 
 /**
  * This class tries to resemble the Query class known by Elexis user by
@@ -34,10 +36,17 @@ public class JPACountQuery<T extends AbstractDBObject> {
 	private Root<T> root;
 	private TypedQuery<Long> tq;
 
+	private boolean includeDeleted;
+
 	private List<Predicate> conditions = new LinkedList<Predicate>();
 
 	public JPACountQuery(Class<T> clazz) {
+		this(clazz, false);
+	}
+
+	public JPACountQuery(Class<T> clazz, boolean includeDeleted) {
 		this.clazz = clazz;
+		this.includeDeleted = includeDeleted;
 
 		cb = createEntityManager().getCriteriaBuilder();
 		query = cb.createQuery(Long.class);
@@ -69,6 +78,11 @@ public class JPACountQuery<T extends AbstractDBObject> {
 	}
 
 	public long count() {
+		if (!includeDeleted) {
+			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+				conditions.add(cb.equal(root.get(AbstractDBObjectIdDeleted_.deleted.getName()), Boolean.FALSE));
+			}
+		}
 		if (conditions.size() > 0) {
 			query = query.where(conditions.toArray(new Predicate[0]));
 		}

@@ -43,18 +43,10 @@ public class JPAQueryTest {
 
 		List<ArtikelstammItem> qre = qbe.execute();
 		assertNotNull(qre);
-		assertTrue(qre.size() == 18);
 	}
 
 	@Test
 	public void testBasicJPAQueryWithMultipleConditionsAsCursor() {
-		JPACountQuery<ArtikelstammItem> qce = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qce.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
-		qce.add(ArtikelstammItem_.type, JPACountQuery.QUERY.EQUALS, "P");
-		qce.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "8");
-		long count = qce.count();
-		assertEquals(18, count);
-		
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
 		qbe.add(ArtikelstammItem_.bb, JPAQuery.QUERY.EQUALS, "0");
 		qbe.add(ArtikelstammItem_.type, JPAQuery.QUERY.EQUALS, "P");
@@ -70,7 +62,24 @@ public class JPAQueryTest {
 			assertEquals("P", ai.getType());
 		}
 		cursor.close();
-		assertTrue("Size is "+i, i == 18);
+		assertTrue("Size is " + i, i == 17);
+
+		JPAQuery<ArtikelstammItem> qbeD = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class, true);
+		qbeD.add(ArtikelstammItem_.bb, JPAQuery.QUERY.EQUALS, "0");
+		qbeD.add(ArtikelstammItem_.type, JPAQuery.QUERY.EQUALS, "P");
+		qbeD.add(ArtikelstammItem_.cummVersion, JPAQuery.QUERY.LESS_OR_EQUAL, "8");
+
+		ScrollableCursor cursorD = qbeD.executeAsStream();
+		int id = 0;
+		while (cursorD.hasNext()) {
+			id++;
+			ArtikelstammItem ai = (ArtikelstammItem) cursorD.next();
+			assertNotNull(ai);
+			assertEquals("0", ai.getBb());
+			assertEquals("P", ai.getType());
+		}
+		cursorD.close();
+		assertTrue("Size is " + id, id == 18);
 	}
 
 	@Test
@@ -81,7 +90,15 @@ public class JPAQueryTest {
 		qbec.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "8");
 
 		long result = qbec.count();
-		assertTrue(result == 18);
+		assertTrue(result == 17);
+
+		JPACountQuery<ArtikelstammItem> qbecD = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class, true);
+		qbecD.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
+		qbecD.add(ArtikelstammItem_.type, JPACountQuery.QUERY.EQUALS, "P");
+		qbecD.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "8");
+
+		long resultD = qbecD.count();
+		assertTrue(resultD == 18);
 	}
 
 }
