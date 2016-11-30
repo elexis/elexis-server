@@ -79,26 +79,29 @@ public class ElexisDBConnection {
 	}
 
 	public static IStatus getDatabaseInformation() {
+		String statusInfo = getDatabaseInformationString();
+		return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);
+	}
+
+	public static String getDatabaseInformationString() {
 		EntityManager entityManager = ElexisEntityManager.createEntityManager();
 		if (entityManager == null) {
-			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Entity Manager is null.");
+			return "Entity Manager is null.";
 		}
 		try {
 			Config cDBV = entityManager.find(Config.class, "dbversion");
 			if (cDBV == null) {
-				return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-						"Could not find dbversion entry in config table.");
+				return "Could not find dbversion entry in config table.";
 			}
 
 			String dbv = cDBV.getWert();
 			String url = (String) entityManager.getProperties().get(PersistenceUnitProperties.JDBC_URL);
 			String elVersion = entityManager.find(Config.class, "ElexisVersion").getWert();
 			String created = entityManager.find(Config.class, "created").getWert();
-			String statusInfo = "Elexis " +elVersion +" [" + url + "] DBv " + dbv + " (" + created + ")";
-			return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);
+			String statusInfo = "Elexis " + elVersion + " [" + url + "] DBv " + dbv + " (" + created + ")";
+			return statusInfo;
 		} finally {
 			entityManager.close();
 		}
-
 	}
 }

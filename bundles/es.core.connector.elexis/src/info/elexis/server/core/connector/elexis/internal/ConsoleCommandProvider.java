@@ -30,9 +30,16 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		executeCommand(ci);
 	}
 
-	public void __status() {
-		IStatus dbi = ElexisDBConnection.getDatabaseInformation();
-		StatusUtil.printStatus(System.out, dbi);
+	public String __status() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
+		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
+		sb.append("Locks:");
+		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
+			sb.append("\t\t"+lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
+					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]");
+		}
+		return sb.toString();
 	}
 
 	public void __listInstances() {
