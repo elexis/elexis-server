@@ -26,7 +26,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
 public class JPACountQuery<T extends AbstractDBObject> {
 
 	public static enum QUERY {
-		LIKE, EQUALS, LESS_OR_EQUAL
+		LIKE, EQUALS, LESS_OR_EQUAL, NOT_EQUALS
 	};
 
 	private Class<T> clazz;
@@ -65,6 +65,9 @@ public class JPACountQuery<T extends AbstractDBObject> {
 			break;
 		case EQUALS:
 			pred = cb.equal(root.get(attribute), string);
+			break;
+		case NOT_EQUALS:
+			pred = cb.not(cb.equal(root.get(attribute), string));
 			break;
 		case LESS_OR_EQUAL:
 			Path<Integer> path = root.get(attribute);
