@@ -76,6 +76,11 @@ public class JPACountQuery<T extends AbstractDBObject> {
 
 		conditions.add(pred);
 	}
+	
+	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, boolean value) {
+		conditions.add(cb.equal(root.get(attribute.getName()), Boolean.valueOf(value)));
+	}
+	
 
 	public long count() {
 		if (!includeDeleted) {

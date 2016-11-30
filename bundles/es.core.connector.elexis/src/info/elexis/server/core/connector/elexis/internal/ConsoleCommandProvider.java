@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.internal;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +36,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public void __listInstances() {
-		ci.println("======= " + LocalDateTime.now() + " ==== server uuid [" + LockService.getSystemuuid() + "]");
 		List<InstanceStatus> status = InstanceService.getInstanceStatus();
 		for (int i = 0; i < status.size(); i++) {
 			InstanceStatus inst = status.get(i);
@@ -57,7 +55,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public void __locks_list() {
-		ci.println("======= " + LocalDateTime.now() + " ==== server uuid [" + LockService.getSystemuuid() + "]");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			ci.println(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
 					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]");
@@ -76,6 +73,18 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return missingArgument("elementId");
 		}
 	}
+	
+	public String __entities() {
+		return getHelp(1);
+	}
+	
+	public String __entities_list() {
+		return "";
+	}
+	
+	public String __entities_list_user(){
+		return "";
+	}
 
 	public String __stock() {
 		return getHelp(1);
@@ -90,7 +99,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		if (args.hasNext()) {
 			Optional<Stock> stock = StockService.INSTANCE.findById(args.next());
 			if (stock.isPresent()) {
-				StockService.INSTANCE.findAllStockEntriesForStock(stock.get()).stream().forEach(se -> ci.print(se.getLabel() + "\n"));
+				StockService.INSTANCE.findAllStockEntriesForStock(stock.get()).stream()
+						.forEach(se -> ci.print(se.getLabel() + "\n"));
 				return ok();
 			} else {
 				return "Invalid stock id";
@@ -103,8 +113,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	public String __stock_seCsOut(Iterator<String> args) {
 		if (args.hasNext()) {
 			Optional<StockEntry> se = StockEntryService.INSTANCE.findById(args.next());
-			if(se.isPresent()) {
-				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.performArticleOutlay(se.get(), 1, null);
+			if (se.isPresent()) {
+				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.performArticleOutlay(se.get(),
+						1, null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {
 				return "Invalid stock entry id";
@@ -113,12 +124,13 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return missingArgument("stockEntryId");
 		}
 	}
-	
+
 	public String __stock_stockSyncCs(Iterator<String> args) {
 		if (args.hasNext()) {
 			Optional<Stock> se = StockService.INSTANCE.findById(args.next());
-			if(se.isPresent()) {
-				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.synchronizeInventory(se.get(), null, null);
+			if (se.isPresent()) {
+				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.synchronizeInventory(se.get(),
+						null, null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {
 				return "Invalid stock id";

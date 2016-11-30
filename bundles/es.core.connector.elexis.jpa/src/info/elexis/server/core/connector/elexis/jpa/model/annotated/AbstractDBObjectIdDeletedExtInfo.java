@@ -50,7 +50,7 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 		}
 		setExtInfo(ht);
 	}
-	
+
 	@Transient
 	public String getExtInfoAsString(Object key) {
 		return (String) getExtInfo().get(key);
@@ -58,6 +58,6 @@ public abstract class AbstractDBObjectIdDeletedExtInfo extends AbstractDBObjectI
 
 	@Transient
 	public String getLabel() {
-		return getId() + "@" + getClass().getName() + " [isDeleted " + isDeleted()+"]";
+		return getId() + "@" + getClass().getName() + " isDeleted [" + isDeleted() + "]";
 	};
 }

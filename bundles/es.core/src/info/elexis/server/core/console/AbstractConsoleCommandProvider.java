@@ -3,7 +3,9 @@ package info.elexis.server.core.console;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 	private String[] arguments;
 	public CommandInterpreter ci;
 
+	private String[] subArguments;
+
 	public String getArgument(int i) {
 		if (arguments.length >= i + 1) {
 			return arguments[i];
@@ -38,6 +42,7 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 			argumentQ.add(argument);
 		}
 		arguments = argumentQ.toArray(new String[] {});
+		subArguments = new String[] {};
 
 		methods = new HashMap<String, Method>();
 		for (Method method : this.getClass().getMethods()) {
@@ -65,8 +70,11 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 		if (method != null) {
 			try {
 				Object result = null;
+				String joinedArguments = String.join(" ", arguments);
+				ci.println("--( " + new Date() + " )---[cmd: " + joinedArguments + "]"
+						+ String.join("", Collections.nCopies(100 - joinedArguments.length(), "-")));
 				if (method.getParameterCount() > 0) {
-					String[] subArguments = Arrays.copyOfRange(arguments, counter, arguments.length);
+					subArguments = Arrays.copyOfRange(arguments, counter, arguments.length);
 					result = method.invoke(this, Arrays.asList(subArguments).iterator());
 				} else {
 					result = method.invoke(this);
@@ -79,6 +87,17 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 				log.warn("Execution error on argument [{}]: ", arguments, e);
 			}
 		}
+	}
+
+	public String[] requireArgs(String... required) {
+		int length = required.length;
+		if (subArguments.length >= length) {
+			return Arrays.copyOfRange(subArguments, 0, length);
+		} else {
+			ci.print(missingArgument(String.join(" ", required)));
+		}
+
+		return null;
 	}
 
 	public String ok() {
