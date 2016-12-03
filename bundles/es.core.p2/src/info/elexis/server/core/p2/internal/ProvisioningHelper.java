@@ -121,7 +121,7 @@ public class ProvisioningHelper {
 
 		UpdateOperation operation = new UpdateOperation(session, units.toUnmodifiableSet());
 		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(15000));
-		log.debug("[UPDATE] Check for updates {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
+		log.info("[UPDATE] Check for updates {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
 				status.getCode());
 		if ((!status.isOK() && status.getCode() == 10000 && status.getSeverity() == 1)) {
 			// no updates available

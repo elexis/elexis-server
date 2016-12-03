@@ -2,16 +2,19 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.junit.Test;
 
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.ORDER;
 
 public class JPAQueryTest {
 
@@ -100,6 +103,52 @@ public class JPAQueryTest {
 
 		long resultD = qbecD.count();
 		assertTrue(resultD == 18);
+	}
+
+	@Test
+	public void testJPAQueryOrdered() {
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.add(ArtikelstammItem_.bb, JPAQuery.QUERY.EQUALS, "0");
+		qbe.add(ArtikelstammItem_.type, JPAQuery.QUERY.EQUALS, "P");
+		qbe.add(ArtikelstammItem_.cummVersion, JPAQuery.QUERY.LESS_OR_EQUAL, "8");
+
+		ScrollableCursor cursor = qbe.executeAsStream(ArtikelstammItem_.gtin, ORDER.DESC);
+		int i = 0;
+		while (cursor.hasNext()) {
+			i++;
+			ArtikelstammItem ai = (ArtikelstammItem) cursor.next();
+			assertNotNull(ai);
+			assertEquals("0", ai.getBb());
+			assertEquals("P", ai.getType());
+			cursor.clear();
+		}
+		cursor.close();
+		assertTrue("Size is " + i, i == 17);
+	}
+
+	@Test
+	public void testJPAQueryOrderedLimited() {
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.add(ArtikelstammItem_.bb, JPAQuery.QUERY.EQUALS, "0");
+		qbe.add(ArtikelstammItem_.type, JPAQuery.QUERY.EQUALS, "P");
+		qbe.add(ArtikelstammItem_.cummVersion, JPAQuery.QUERY.LESS_OR_EQUAL, "8");
+
+		ScrollableCursor cursor = qbe.executeAsStream(AbstractDBObject_.lastupdate, ORDER.DESC, 5, 10);
+		int i = 0;
+		BigInteger lastUpdate = BigInteger.valueOf(Long.MAX_VALUE);
+		while (cursor.hasNext()) {
+			i++;
+			ArtikelstammItem ai = (ArtikelstammItem) cursor.next();
+			BigInteger lastupdate2 = ai.getLastupdate();
+			assertTrue(lastupdate2.longValue() < lastUpdate.longValue());
+			lastUpdate = lastupdate2;
+			assertNotNull(ai);
+			assertEquals("0", ai.getBb());
+			assertEquals("P", ai.getType());
+			cursor.clear();
+		}
+		cursor.close();
+		assertTrue("Size is " + i, i == 10);
 	}
 
 }

@@ -35,6 +35,10 @@ public class JPAQuery<T extends AbstractDBObject> {
 		LIKE, EQUALS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS, GREATER_OR_EQUAL
 	};
 
+	public static enum ORDER {
+		ASC, DESC;
+	}
+
 	private ExpressionBuilder emp = new ExpressionBuilder();
 	private ReadAllQuery readAllQuery;
 	private Expression predicate;
@@ -137,12 +141,21 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	/**
-	 * Handle the results using a stream. Please be sure to clear the cursor on
-	 * each iteration in order to avoid a memory leak.
 	 * 
+	 * @param orderBy
+	 *            order the results according to the given attribute
+	 * @param order
+	 *            the order direction
+	 * @param offset
+	 *            the offset to start delivering results from or
+	 *            <code>null</code>
+	 * @param limit
+	 *            the maximum number of results to deliver (starting from
+	 *            offset, if applied) or <code>null</code>
 	 * @return
 	 */
-	public ScrollableCursor executeAsStream() {
+	public ScrollableCursor executeAsStream(@SuppressWarnings("rawtypes") SingularAttribute orderBy, ORDER order,
+			Integer offset, Integer limit) {
 		if (!includeDeleted) {
 			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
 				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
@@ -156,6 +169,22 @@ public class JPAQuery<T extends AbstractDBObject> {
 		EntityManager entityManager = createEntityManager();
 		readAllQuery.useScrollableCursor();
 		readAllQuery.dontMaintainCache();
+		if (orderBy != null && order != null) {
+			if (ORDER.DESC == order) {
+				readAllQuery.addDescendingOrdering(orderBy.getName());
+			} else {
+				readAllQuery.addAscendingOrdering(orderBy.getName());
+			}
+		}
+
+		if (offset != null) {
+			readAllQuery.setFirstResult(offset);
+		}
+		if (limit != null) {
+			int limitC = (offset != null) ? offset + limit : limit;
+			readAllQuery.setMaxRows(limitC);
+		}
+
 		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
 				.getActiveSession();
 		ScrollableCursor cursor = null;
@@ -165,6 +194,25 @@ public class JPAQuery<T extends AbstractDBObject> {
 		} finally {
 			entityManager.close();
 		}
+	}
+
+	/**
+	 * Convenience method
+	 * 
+	 * @see #executeAsStream(SingularAttribute, ORDER, Integer, Integer)
+	 */
+	public ScrollableCursor executeAsStream(@SuppressWarnings("rawtypes") SingularAttribute orderBy, ORDER order) {
+		return executeAsStream(orderBy, order, null, null);
+	}
+
+	/**
+	 * Handle the results using a stream. Please be sure to clear the cursor on
+	 * each iteration in order to avoid a memory leak.
+	 * 
+	 * @return
+	 */
+	public ScrollableCursor executeAsStream() {
+		return executeAsStream(null, null, null, null);
 	}
 
 	/**

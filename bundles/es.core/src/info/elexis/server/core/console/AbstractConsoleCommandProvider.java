@@ -7,8 +7,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -75,7 +77,9 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 						+ String.join("", Collections.nCopies(100 - joinedArguments.length(), "-")));
 				if (method.getParameterCount() > 0) {
 					subArguments = Arrays.copyOfRange(arguments, counter, arguments.length);
-					result = method.invoke(this, Arrays.asList(subArguments).iterator());
+					NoThrowExceptionIterator<String> nullContinueIterator = new NoThrowExceptionIterator<String>(
+							Arrays.asList(subArguments).iterator());
+					result = method.invoke(this, nullContinueIterator);
 				} else {
 					result = method.invoke(this);
 				}
@@ -119,13 +123,18 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 		for (String key : methods.keySet()) {
 			if (key.startsWith("__")) {
 				String[] splitMethodNames = key.substring(2).split("_");
-				if (level == 0) {
-					if (splitMethodNames.length == 1) {
+				if (splitMethodNames.length == level + 1) {
+					if (level == 0) {
 						parameters.add(splitMethodNames[0]);
-					}
-				} else if (level == 1) {
-					if (arguments[0].equalsIgnoreCase(splitMethodNames[0]) && splitMethodNames.length == 2) {
-						parameters.add(splitMethodNames[1]);
+					} else if (level == 1) {
+						if (arguments[0].equalsIgnoreCase(splitMethodNames[0])) {
+							parameters.add(splitMethodNames[1]);
+						}
+					} else if (level == 2) {
+						if (arguments[0].equalsIgnoreCase(splitMethodNames[0])
+								&& arguments[1].equalsIgnoreCase(splitMethodNames[1])) {
+							parameters.add(splitMethodNames[2]);
+						}
 					}
 				}
 			} else if (key.startsWith("_")) {
@@ -145,6 +154,36 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 				+ ")");
 
 		return sb.toString();
+	}
+
+	/**
+	 * An {@link Iterator} that does not throw a {@link NoSuchElementException}
+	 * but simply returns <code>null</code>.
+	 *
+	 * @param <E>
+	 */
+	private class NoThrowExceptionIterator<E> implements Iterator<E> {
+
+		private final Iterator<E> iterator;
+
+		public NoThrowExceptionIterator(Iterator<E> iterator) {
+			this.iterator = iterator;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return true;
+		}
+
+		@Override
+		public E next() {
+			try {
+				return iterator.next();
+			} catch (NoSuchElementException nse) {
+				return null;
+			}
+		}
+
 	}
 
 }
