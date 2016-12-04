@@ -74,7 +74,7 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 				Object result = null;
 				String joinedArguments = String.join(" ", arguments);
 				ci.println("--( " + new Date() + " )---[cmd: " + joinedArguments + "]"
-						+ String.join("", Collections.nCopies(100 - joinedArguments.length(), "-")));
+						+ getRelativeFixedLengthSeparator(joinedArguments, 100, "-"));
 				if (method.getParameterCount() > 0) {
 					subArguments = Arrays.copyOfRange(arguments, counter, arguments.length);
 					NoThrowExceptionIterator<String> nullContinueIterator = new NoThrowExceptionIterator<String>(
@@ -102,6 +102,16 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 		}
 
 		return null;
+	}
+
+	public String getRelativeFixedLengthSeparator(String value, int determinedLength, String separator) {
+		if (value == null) {
+			return "";
+		}
+		if (value.length() > determinedLength) {
+			determinedLength = value.length() + 1;
+		}
+		return String.join("", Collections.nCopies(determinedLength - value.length(), separator)).toString();
 	}
 
 	public String ok() {
