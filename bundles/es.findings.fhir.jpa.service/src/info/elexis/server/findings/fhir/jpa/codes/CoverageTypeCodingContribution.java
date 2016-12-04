@@ -3,6 +3,7 @@ package info.elexis.server.findings.fhir.jpa.codes;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -45,5 +46,11 @@ public class CoverageTypeCodingContribution implements ICodingContribution {
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public Optional<ICoding> getCode(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

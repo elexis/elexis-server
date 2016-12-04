@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.LoggerFactory;
@@ -72,5 +73,11 @@ public class TessinerCodeContribution implements ICodingContribution {
 			ret.add(new TransientCoding(getCodeSystem(), (String) getCode.invoke(object, emptyObjParam),
 					(String) getText.invoke(object, emptyObjParam)));
 		}
+	}
+
+	@Override
+	public Optional<ICoding> getCode(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

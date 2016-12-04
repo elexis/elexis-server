@@ -3,6 +3,7 @@ package info.elexis.server.findings.fhir.jpa.codes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.osgi.service.component.annotations.Component;
@@ -124,5 +125,11 @@ public class CodingService implements ICodingService {
 			return system.substring(lastIndex + 1);
 		}
 		return system;
+	}
+
+	@Override
+	public Optional<ICoding> getCode(String arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
