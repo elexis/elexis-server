@@ -109,7 +109,9 @@ public class ConfigService {
 	 */
 	public List<Config> getNodes(String nodePrefix) {
 		JPAQuery<Config> query = new JPAQuery<Config>(Config.class);
-		query.add(Config_.param, JPAQuery.QUERY.LIKE, nodePrefix + "%");
+		if (nodePrefix != null) {
+			query.add(Config_.param, JPAQuery.QUERY.LIKE, nodePrefix + "%");
+		}
 		return query.execute();
 	}
 
@@ -145,7 +147,7 @@ public class ConfigService {
 
 		return true;
 	}
-	
+
 	public boolean setFromBoolean(String key, boolean value) {
 		return set(key, Boolean.toString(value));
 	}

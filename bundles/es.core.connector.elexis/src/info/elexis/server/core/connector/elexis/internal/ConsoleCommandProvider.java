@@ -15,12 +15,16 @@ import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
+import info.elexis.server.core.connector.elexis.services.ConfigService;
 import info.elexis.server.core.connector.elexis.services.LockService;
 import info.elexis.server.core.connector.elexis.services.StockCommissioningSystemService;
 import info.elexis.server.core.connector.elexis.services.StockEntryService;
 import info.elexis.server.core.connector.elexis.services.StockService;
+import info.elexis.server.core.connector.elexis.services.UserService;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 
 @Component(service = CommandProvider.class, immediate = true)
@@ -36,8 +40,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
-			sb.append("\t\t"+lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
-					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]");
+			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId()
+					+ "\t" + lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]");
 		}
 		return sb.toString();
 	}
@@ -80,17 +84,35 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return missingArgument("elementId");
 		}
 	}
-	
+
 	public String __entities() {
 		return getHelp(1);
 	}
-	
+
 	public String __entities_list() {
-		return "";
+		return getHelp(2);
 	}
-	
-	public String __entities_list_user(){
-		return "";
+
+	public void __entities_list_user() {
+		List<User> users = UserService.INSTANCE.findAll(true);
+		for (User user : users) {
+			String id = user.getId();
+			String isDeleted = Boolean.toString(user.isDeleted());
+			Date date = (user.getLastupdate() != null) ? new Date(user.getLastupdate().longValue()) : null;
+			ci.println("id [" + id + "]" + getRelativeFixedLengthSeparator(id, 26, " ") + "deleted [" + isDeleted + "]"
+					+ getRelativeFixedLengthSeparator(isDeleted, 2, " ") + "lastUpdate [" + date + "]");
+		}
+	}
+
+	public void __entities_list_config(Iterator<String> args) {
+		List<Config> allConfigValues = ConfigService.INSTANCE.getNodes(args.next());
+		for (Config config : allConfigValues) {
+			String key = config.getParam();
+			String value = config.getWert();
+			Date date = (config.getLastupdate() != null) ? new Date(config.getLastupdate().longValue()) : null;
+			ci.println("key [" + key + "]" + getRelativeFixedLengthSeparator(key, 40, " ") + "value [" + value + "]"
+					+ getRelativeFixedLengthSeparator(value, 40, " ") + "lastUpdate [" + date + "]");
+		}
 	}
 
 	public String __stock() {

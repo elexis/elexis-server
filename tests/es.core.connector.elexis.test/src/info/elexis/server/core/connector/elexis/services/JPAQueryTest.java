@@ -3,18 +3,24 @@ package info.elexis.server.core.connector.elexis.services;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.junit.Test;
 
+import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.ORDER;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class JPAQueryTest {
 
@@ -151,4 +157,23 @@ public class JPAQueryTest {
 		assertTrue("Size is " + i, i == 10);
 	}
 
+	@Test
+	public void testJPAQueryWithWildcard() {
+		JPAQuery<TarmedLeistung> qbe = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
+		qbe.add(TarmedLeistung_.tx255, QUERY.LIKE, "Oeso%");
+		List<TarmedLeistung> execute = qbe.execute();
+		assertEquals(15, execute.size());
+	}
+
+	@Test
+	public void testJPAQueryWithNonNull() {
+		Kontakt testPatient = KontaktService.INSTANCE.createPatient("FirstName", null, LocalDate.now(), Gender.MALE);
+		
+		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
+		qbe.add(Kontakt_.description1, QUERY.EQUALS, null);
+		List<Kontakt> execute = qbe.execute();
+		assertEquals(1, execute.size());
+		
+		KontaktService.INSTANCE.remove(testPatient);
+	}
 }
