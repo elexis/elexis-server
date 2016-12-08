@@ -32,6 +32,9 @@ public class JPAQueryTest {
 		List<Kontakt> resultIncDeleted = new JPAQuery<Kontakt>(Kontakt.class, true).execute();
 		assertNotNull(resultIncDeleted);
 		assertTrue(resultIncDeleted.size() == 5);
+
+		long count = new JPAQuery<Kontakt>(Kontakt.class, true).count();
+		assertEquals(resultIncDeleted.size(), count);
 	}
 
 	@Test
@@ -41,6 +44,8 @@ public class JPAQueryTest {
 		List<Prescription> resultPrescription = query.execute();
 		assertNotNull(resultPrescription);
 		assertTrue(resultPrescription.size() == 0);
+
+		assertEquals(resultPrescription.size(), query.count());
 	}
 
 	@Test
@@ -52,6 +57,8 @@ public class JPAQueryTest {
 
 		List<ArtikelstammItem> qre = qbe.execute();
 		assertNotNull(qre);
+
+		assertEquals(qre.size(), qbe.count());
 	}
 
 	@Test
@@ -101,6 +108,7 @@ public class JPAQueryTest {
 
 		long result = qbec.count();
 		assertTrue(result == 17);
+		assertEquals(result, qbec.count());
 
 		JPACountQuery<ArtikelstammItem> qbecD = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class, true);
 		qbecD.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
@@ -109,6 +117,7 @@ public class JPAQueryTest {
 
 		long resultD = qbecD.count();
 		assertTrue(resultD == 18);
+		assertEquals(resultD, qbecD.count());
 	}
 
 	@Test
@@ -158,6 +167,18 @@ public class JPAQueryTest {
 	}
 
 	@Test
+	public void testJPAQueryNotLike() {
+		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
+		qbe.add(ArtikelstammItem_.type, QUERY.NOT_EQUALS, "P");
+		List<ArtikelstammItem> execute = qbe.execute();
+		for (ArtikelstammItem ai : execute) {
+			assertFalse(ai.getType().equalsIgnoreCase("P"));
+		}
+		long count = qbe.count();
+		assertTrue(count > 0);
+	}
+
+	@Test
 	public void testJPAQueryWithWildcard() {
 		JPAQuery<TarmedLeistung> qbe = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
 		qbe.add(TarmedLeistung_.tx255, QUERY.LIKE, "Oeso%");
@@ -168,12 +189,12 @@ public class JPAQueryTest {
 	@Test
 	public void testJPAQueryWithNonNull() {
 		Kontakt testPatient = KontaktService.INSTANCE.createPatient("FirstName", null, LocalDate.now(), Gender.MALE);
-		
+
 		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe.add(Kontakt_.description1, QUERY.EQUALS, null);
 		List<Kontakt> execute = qbe.execute();
 		assertEquals(1, execute.size());
-		
+
 		KontaktService.INSTANCE.remove(testPatient);
 	}
 }

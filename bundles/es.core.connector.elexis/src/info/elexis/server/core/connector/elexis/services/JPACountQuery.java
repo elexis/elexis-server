@@ -22,11 +22,12 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
  * employing JPA CriteriaQueries.
  * 
  * @param <T>
+ * @Deprecated please use {@link JPAQuery#count()}
  */
 public class JPACountQuery<T extends AbstractDBObject> {
 
 	public static enum QUERY {
-		LIKE, EQUALS, LESS_OR_EQUAL, NOT_EQUALS
+		LIKE, EQUALS, LESS_OR_EQUAL, NOT_EQUALS, NOT_LIKE
 	};
 
 	private Class<T> clazz;
@@ -68,6 +69,9 @@ public class JPACountQuery<T extends AbstractDBObject> {
 			break;
 		case NOT_EQUALS:
 			pred = cb.not(cb.equal(root.get(attribute), string));
+			break;
+		case NOT_LIKE:
+			pred = cb.not(cb.like(root.get(attribute), string));
 			break;
 		case LESS_OR_EQUAL:
 			Path<Integer> path = root.get(attribute);

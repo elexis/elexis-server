@@ -11,6 +11,8 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.Session;
 import org.slf4j.Logger;
@@ -52,10 +54,13 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	public JPAQuery(Class<T> clazz, boolean includeDeleted) {
-		readAllQuery = new ReadAllQuery(clazz);
-		readAllQuery.setIsReadOnly(true);
 		this.clazz = clazz;
 		this.includeDeleted = includeDeleted;
+	}
+
+	private void initializeReadAllQuery() {
+		readAllQuery = new ReadAllQuery(clazz);
+		readAllQuery.setIsReadOnly(true);
 	}
 
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
@@ -111,15 +116,48 @@ public class JPAQuery<T extends AbstractDBObject> {
 		case GREATER_OR_EQUAL:
 			return emp.get(attribute.getName()).greaterThanEqual(Integer.parseInt(value.toString()));
 		case NOT_LIKE:
-			return emp.not().get(attribute.getName()).like(value.toString());
+			return  emp.get(attribute.getName()).like(value.toString()).not();
 		case NOT_EQUALS:
-			return emp.not().get(attribute.getName()).equal(value);
+			return emp.get(attribute.getName()).equal(value).not();
 		default:
 			throw new IllegalArgumentException();
 		}
 	}
 
+	public long count() {
+		ReportQuery rq = new ReportQuery(clazz, emp);
+		rq.setIsReadOnly(true);
+		rq.addCount();
+
+		if (!includeDeleted) {
+			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+			}
+		}
+
+		if (predicate != null) {
+			rq.setSelectionCriteria(predicate);
+		}
+
+		EntityManager entityManager = createEntityManager();
+		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
+				.getActiveSession();
+		try {
+			@SuppressWarnings("rawtypes")
+			List reportRows = (List) session.executeQuery(rq);
+			if (reportRows.size() > 0) {
+				ReportQueryResult value = (ReportQueryResult) reportRows.get(0);
+				return new Integer((int) value.getResults().get(0)).longValue();
+			}
+			return -1;
+		} finally {
+			entityManager.close();
+		}
+	}
+
 	public List<T> execute() {
+		initializeReadAllQuery();
+
 		if (!includeDeleted) {
 			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
 				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
@@ -156,6 +194,8 @@ public class JPAQuery<T extends AbstractDBObject> {
 	 */
 	public ScrollableCursor executeAsStream(@SuppressWarnings("rawtypes") SingularAttribute orderBy, ORDER order,
 			Integer offset, Integer limit) {
+		initializeReadAllQuery();
+
 		if (!includeDeleted) {
 			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
 				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
