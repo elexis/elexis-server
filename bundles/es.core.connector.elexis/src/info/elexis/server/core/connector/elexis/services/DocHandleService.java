@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,6 +18,7 @@ import ch.rgw.io.FileTool;
 import info.elexis.server.core.common.LocalProperties;
 import info.elexis.server.core.connector.elexis.Properties;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.jpa.QueryConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -176,5 +178,49 @@ public class DocHandleService extends AbstractService<DocHandle> {
 					docHandle.getId());
 		}
 		return null;
+	}
+
+	/**
+	 * Determine the size of the underlying document without loading it. Uses
+	 * the SQL length() or the Files.size method, depending on the storage type.
+	 * 
+	 * @param docHandle
+	 * @return
+	 */
+	public static long determineByteArrayLength(DocHandle docHandle) {
+		long length = -1;
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			Query docHandleLength = em.createNamedQuery(QueryConstants.QUERY_DOCHANDLE_determineLength);
+			docHandleLength.setParameter(QueryConstants.PARAM_ID, docHandle.getId());
+			@SuppressWarnings("unchecked")
+			List<Integer> resultList = docHandleLength.getResultList();
+			if (resultList.size() > 0) {
+				Integer value = resultList.get(0);
+				if (value != null) {
+					length = value.longValue();
+				}
+			}
+		} finally {
+			em.close();
+		}
+		if (length == -1) {
+			boolean storeGlobal = ConfigService.INSTANCE.get(CONFIG_OMNIVORE_STORE_GLOBAL, false);
+			if (storeGlobal) {
+				boolean storeFs = ConfigService.INSTANCE.get(CONFIG_OMNIVORE_STORE_IN_FS, false);
+				if (storeFs) {
+					File networkStorageFile = omnivoreDetermineNetworkStorageFile(docHandle);
+					if (networkStorageFile != null && networkStorageFile.canRead()) {
+						try {
+							length = Files.size(networkStorageFile.toPath());
+						} catch (IOException e) {
+							log.warn("Error reading file [{}], returning null.", networkStorageFile.getAbsolutePath(),
+									e);
+						}
+					}
+				}
+			}
+		}
+		return length;
 	}
 }

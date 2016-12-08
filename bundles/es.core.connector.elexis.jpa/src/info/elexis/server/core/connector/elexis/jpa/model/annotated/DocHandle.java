@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import static info.elexis.server.core.connector.elexis.jpa.QueryConstants.*;
+
 import java.time.LocalDate;
 
 import javax.persistence.Basic;
@@ -8,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -15,17 +19,20 @@ import org.eclipse.persistence.annotations.Convert;
 
 @Entity
 @Table(name = "CH_ELEXIS_OMNIVORE_DATA")
+@NamedQueries({
+		@NamedQuery(name = QUERY_DOCHANDLE_determineLength, query = "SELECT LENGTH(dh.doc) FROM DocHandle dh WHERE dh.id = :"
+				+ PARAM_ID) })
 public class DocHandle extends AbstractDBObjectIdDeleted {
 
 	public static final String CATEGORY_CATEGORY = "text/category";
-	
+
 	@OneToOne
 	@JoinColumn(name = "PatID")
 	protected Kontakt kontakt;
 
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate datum;
-	
+
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate creationDate;
 
@@ -63,11 +70,11 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 	public void setDatum(LocalDate datum) {
 		this.datum = datum;
 	}
-	
+
 	public LocalDate getCreationDate() {
 		return creationDate;
 	}
-	
+
 	public void setCreationDate(LocalDate creationDate) {
 		this.creationDate = creationDate;
 	}

@@ -116,4 +116,35 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		assertTrue(Arrays.equals(sampleDocument, storedValue));
 	}
 
+	@Test
+	public void testdetermineByteArrayLength() throws IOException {
+		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_GLOBAL, false);
+		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_IN_FS, false);
+
+		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
+
+		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
+		byte[] sampleDocument = new byte[32835];
+		ThreadLocalRandom.current().nextBytes(sampleDocument);
+
+		DocHandle docHandle = DocHandleService.INSTANCE.create(patient.get(), "Title2", "Filename2.pdf", "Category",
+				sampleDocument);
+
+		long determineByteArrayLength = DocHandleService.INSTANCE.determineByteArrayLength(docHandle);
+		assertEquals(32835, determineByteArrayLength);
+
+		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_GLOBAL, true);
+		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_IN_FS, true);
+
+		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
+
+		byte[] sampleDocument2 = new byte[234523];
+		ThreadLocalRandom.current().nextBytes(sampleDocument2);
+
+		DocHandle docHandle2 = DocHandleService.INSTANCE.create(patient.get(), "Title3", "Filename.pdf3", "Category",
+				sampleDocument2);
+		long determineByteArrayLength2 = DocHandleService.INSTANCE.determineByteArrayLength(docHandle2);
+		assertEquals(234523, determineByteArrayLength2);
+	}
+
 }
