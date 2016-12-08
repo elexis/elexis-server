@@ -100,27 +100,6 @@ public class JPAQueryTest {
 	}
 
 	@Test
-	public void testJPACountQueryWithMultipleConditions() {
-		JPACountQuery<ArtikelstammItem> qbec = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class);
-		qbec.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
-		qbec.add(ArtikelstammItem_.type, JPACountQuery.QUERY.EQUALS, "P");
-		qbec.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "8");
-
-		long result = qbec.count();
-		assertTrue(result == 17);
-		assertEquals(result, qbec.count());
-
-		JPACountQuery<ArtikelstammItem> qbecD = new JPACountQuery<ArtikelstammItem>(ArtikelstammItem.class, true);
-		qbecD.add(ArtikelstammItem_.bb, JPACountQuery.QUERY.EQUALS, "0");
-		qbecD.add(ArtikelstammItem_.type, JPACountQuery.QUERY.EQUALS, "P");
-		qbecD.add(ArtikelstammItem_.cummVersion, JPACountQuery.QUERY.LESS_OR_EQUAL, "8");
-
-		long resultD = qbecD.count();
-		assertTrue(resultD == 18);
-		assertEquals(resultD, qbecD.count());
-	}
-
-	@Test
 	public void testJPAQueryOrdered() {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
 		qbe.add(ArtikelstammItem_.bb, JPAQuery.QUERY.EQUALS, "0");
