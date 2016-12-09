@@ -110,11 +110,11 @@ public class JPAQuery<T extends AbstractDBObject> {
 		case EQUALS:
 			return emp.get(attribute.getName()).equal(value);
 		case LESS_OR_EQUAL:
-			return emp.get(attribute.getName()).lessThanEqual(Integer.parseInt(value.toString()));
+			return emp.get(attribute.getName()).lessThanEqual(value);
 		case GREATER:
-			return emp.get(attribute.getName()).greaterThan(Integer.parseInt(value.toString()));
+			return emp.get(attribute.getName()).greaterThan(value);
 		case GREATER_OR_EQUAL:
-			return emp.get(attribute.getName()).greaterThanEqual(Integer.parseInt(value.toString()));
+			return emp.get(attribute.getName()).greaterThanEqual(value);
 		case NOT_LIKE:
 			return  emp.get(attribute.getName()).like(value.toString()).not();
 		case NOT_EQUALS:

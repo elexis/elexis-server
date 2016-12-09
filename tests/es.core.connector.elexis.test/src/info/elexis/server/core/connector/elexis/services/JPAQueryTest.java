@@ -60,6 +60,21 @@ public class JPAQueryTest {
 
 		assertEquals(qre.size(), qbe.count());
 	}
+	
+	@Test
+	public void testJPAQueryFilterGreaterOrEquals() {
+		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
+		qbe.add(AbstractDBObject_.lastupdate, QUERY.GREATER_OR_EQUAL, 1470809122982l);
+		List<Kontakt> execute = qbe.execute();
+		assertEquals(4, execute.size());
+		assertEquals(4, qbe.count());
+		
+		JPAQuery<Kontakt> qbe2 = new JPAQuery<Kontakt>(Kontakt.class);
+		qbe2.add(AbstractDBObject_.lastupdate, QUERY.GREATER, 1470809122982l);
+		List<Kontakt> execute2 = qbe2.execute();
+		assertEquals(3, execute2.size());
+		assertEquals(3, qbe2.count());
+	}
 
 	@Test
 	public void testBasicJPAQueryWithMultipleConditionsAsCursor() {
