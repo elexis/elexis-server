@@ -96,6 +96,7 @@ public class JPAQueryTest {
 			assertEquals("P", ai.getType());
 		}
 		cursorD.close();
+		assertEquals(id, qbeD.count());
 		assertTrue("Size is " + id, id == 18);
 	}
 
@@ -117,6 +118,7 @@ public class JPAQueryTest {
 			cursor.clear();
 		}
 		cursor.close();
+		assertEquals(i, qbe.count());
 		assertTrue("Size is " + i, i == 17);
 	}
 
@@ -146,15 +148,20 @@ public class JPAQueryTest {
 	}
 
 	@Test
-	public void testJPAQueryNotLike() {
+	public void testJPAQueryNotEquals() {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
 		qbe.add(ArtikelstammItem_.type, QUERY.NOT_EQUALS, "P");
 		List<ArtikelstammItem> execute = qbe.execute();
 		for (ArtikelstammItem ai : execute) {
 			assertFalse(ai.getType().equalsIgnoreCase("P"));
 		}
-		long count = qbe.count();
-		assertTrue(count > 0);
+		assertEquals(execute.size(), qbe.count());
+		assertTrue(execute.size() > 0);
+		
+		JPAQuery<Kontakt> qbeC = new JPAQuery<Kontakt>(Kontakt.class);
+		qbeC.add(Kontakt_.country, QUERY.NOT_EQUALS, null);
+		long count = qbeC.count();
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -162,7 +169,7 @@ public class JPAQueryTest {
 		JPAQuery<TarmedLeistung> qbe = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
 		qbe.add(TarmedLeistung_.tx255, QUERY.LIKE, "Oeso%");
 		List<TarmedLeistung> execute = qbe.execute();
-		assertEquals(15, execute.size());
+		assertEquals(qbe.count(), execute.size());
 	}
 
 	@Test

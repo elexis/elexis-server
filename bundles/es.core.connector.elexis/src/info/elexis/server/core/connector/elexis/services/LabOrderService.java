@@ -1,8 +1,8 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder_;
@@ -31,17 +31,16 @@ public class LabOrderService extends AbstractService<LabOrder> {
 		query.add(LabOrder_.orderid, QUERY.EQUALS, labOrder.getOrderid());
 		return query.execute();
 	}
+	
+	public static List<LabOrder> findAllLabOrdersInSameOrderIdGroupWithResults(LabOrder labOrder) {
+		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class);
+		query.add(LabOrder_.orderid, QUERY.EQUALS, labOrder.getOrderid());
+		query.add(LabOrder_.result, QUERY.NOT_EQUALS, null);
+		return query.execute();
+	}
 
-	public static List<LabResult> findAllLabResultsForLabOrder(LabOrder labOrder) {
-		List<LabResult> ret = new ArrayList<LabResult>();
-		List<LabOrder> orders = findAllLabOrdersInSameOrderIdGroup(labOrder);
-		if (orders != null) {
-			for (LabOrder order : orders) {
-				if (order.getResult() != null) {
-					ret.add(labOrder.getResult());
-				}
-			}
-		}
-		return ret;
+	public static List<LabResult> findAllLabResultsForLabOrderIdGroup(LabOrder labOrder) {
+		List<LabOrder> ordersWithResult = findAllLabOrdersInSameOrderIdGroupWithResults(labOrder);
+		return ordersWithResult.stream().map(owr->owr.getResult()).collect(Collectors.toList());
 	}
 }
