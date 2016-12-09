@@ -312,4 +312,17 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		return Status.OK_STATUS;
 	}
 
+	public IStatus initializeAllInstances() {
+		List<UUID> allDriverUuids = StockCommissioningSystemDriverFactories.getAllDriverUuids();
+		for (UUID uuid : allDriverUuids) {
+			log.info("Initializing stock commissioning systems for driver id [{}]",
+					StockCommissioningSystemDriverFactories.getInfoStringForDriver(uuid, true));
+			IStatus status = initializeInstancesUsingDriver(uuid);
+			if (!status.isOK()) {
+				return status;
+			}
+		}
+		return Status.OK_STATUS;
+	}
+
 }

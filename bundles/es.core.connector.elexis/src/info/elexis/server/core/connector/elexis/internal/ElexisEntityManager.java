@@ -3,12 +3,14 @@ package info.elexis.server.core.connector.elexis.internal;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -17,9 +19,11 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.constants.Preferences;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
+import info.elexis.server.core.connector.elexis.services.ConfigService;
 
 @Component
 public class ElexisEntityManager {
@@ -29,13 +33,24 @@ public class ElexisEntityManager {
 	private static EntityManagerFactoryBuilder factoryBuilder;
 	private static EntityManagerFactory factory;
 
-	@Reference(service = EntityManagerFactoryBuilder.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "deactivate", target = "(osgi.unit.name=elexis)")
-	protected synchronized void activate(EntityManagerFactoryBuilder factoryBuilder) {
+	@Reference(service = EntityManagerFactoryBuilder.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, target = "(osgi.unit.name=elexis)")
+	protected synchronized void bind(EntityManagerFactoryBuilder factoryBuilder) {
+		log.debug("Binding " + factoryBuilder.getClass().getName());
 		ElexisEntityManager.factoryBuilder = factoryBuilder;
-		ElexisEntityManager.initializeEntityManager();
 	}
 
-	public static void initializeEntityManager() {
+	@Activate
+	protected synchronized void activate() {
+		initializeEntityManager();
+		executeStartupTasksRequiringEntityManager();
+	}
+
+	protected synchronized void unbind(EntityManagerFactoryBuilder factoryBuilder) {
+		log.debug("Unbinding " + factoryBuilder.getClass().getName());
+		ElexisEntityManager.factoryBuilder = null;
+	}
+
+	private void initializeEntityManager() {
 		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
 		if (!connection.isPresent()) {
 			log.error("No elexis-connection available, not initialization EntityManager");
@@ -51,6 +66,7 @@ public class ElexisEntityManager {
 			props.put(DDL_GENERATION, NONE);
 			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=379397
 			props.put(CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, Boolean.TRUE.toString());
+
 			if (ElexisDBConnection.isTestMode()) {
 				// we don't want the entities to generate the database, as
 				// initialization is handled via the creation scripts
@@ -59,6 +75,7 @@ public class ElexisEntityManager {
 			}
 
 			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
+			
 			// TODO refactor this
 			ProvidedEntityManager.setEntityManagerFactory(factory);
 		} catch (RuntimeException ite) {
@@ -67,8 +84,15 @@ public class ElexisEntityManager {
 		}
 	}
 
-	protected synchronized void deactivate(EntityManagerFactoryBuilder factoryBuilder) {
-		ElexisEntityManager.factoryBuilder = null;
+	private void executeStartupTasksRequiringEntityManager() {
+		// check locale
+		Locale locale = Locale.getDefault();
+		String dbStoredLocale = ConfigService.INSTANCE.get(Preferences.CFG_LOCALE, null);
+		if (dbStoredLocale == null || !locale.toString().equals(dbStoredLocale)) {
+			log.error("System locale [{}] does not match required database locale [{}].", locale.toString(),
+					dbStoredLocale);
+			System.out.println("System locale does not match required database locale!");
+		}
 	}
 
 	public static CriteriaBuilder getCriteriaBuilder() {

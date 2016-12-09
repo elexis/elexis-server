@@ -7,10 +7,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IStatus;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +27,16 @@ public class StockCommissioningSystemDriverFactories {
 
 	private static Map<UUID, ICommissioningSystemDriverFactory> driverFactories = new ConcurrentHashMap<UUID, ICommissioningSystemDriverFactory>();
 
-	@Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+	@Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
 	public void bind(ICommissioningSystemDriverFactory driverFactory) {
 		log.debug("Binding " + driverFactory.getClass().getName());
 		driverFactories.put(driverFactory.getIdentification(), driverFactory);
+	}
 
-		log.info("Initializing stock commissioning systems for driver id [{}]",
-				driverFactory.getIdentification().toString());
-		IStatus status = StockCommissioningSystemService.INSTANCE
-				.initializeInstancesUsingDriver(driverFactory.getIdentification());
+	@Activate
+	public void activate() {
+		log.trace("Initializing stock commissioning systems.");
+		IStatus status = StockCommissioningSystemService.INSTANCE.initializeAllInstances();
 		if (!status.isOK()) {
 			StatusUtil.logStatus(log, status, true);
 		}
