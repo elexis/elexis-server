@@ -129,7 +129,9 @@ public class ScriptRunner {
 		} catch (Exception e) {
 			throw new IOException(String.format("Error executing '%s': %s", command, e.getMessage()), e);
 		} finally {
-			conn.rollback();
+			if (!autoCommit) {
+				conn.rollback();
+			}
 		}
 	}
 
