@@ -98,7 +98,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		if (predicate == null) {
 			predicate = predIn;
 		} else {
-			predicate = predicate.and(predIn);
+			predicate = predicate.or(predIn);
 		}
 	}
 

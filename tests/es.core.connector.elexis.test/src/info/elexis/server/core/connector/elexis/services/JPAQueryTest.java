@@ -163,6 +163,15 @@ public class JPAQueryTest {
 		long count = qbeC.count();
 		assertEquals(1, count);
 	}
+	
+	@Test
+	public void testJPAQueryWithOr() {
+		String name = "Vorname";
+		JPAQuery<Kontakt> query = new JPAQuery<>(Kontakt.class);
+		query.add(Kontakt_.description1, QUERY.LIKE, "%" + name + "%");
+		query.or(Kontakt_.description2, QUERY.LIKE, "%" + name + "%");
+		assertEquals(2, query.count());
+	}
 
 	@Test
 	public void testJPAQueryWithWildcard() {
