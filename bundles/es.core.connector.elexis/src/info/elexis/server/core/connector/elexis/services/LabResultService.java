@@ -32,7 +32,7 @@ public class LabResultService extends AbstractService<LabResult> {
 
 			Optional<LabOrder> order = LabOrderService.findLabOrderByLabResult(lr);
 			if (order.isPresent()) {
-				List<LabResult> labresults = LabOrderService.findAllLabResultsForLabOrder(order.get());
+				List<LabResult> labresults = LabOrderService.findAllLabResultsForLabOrderIdGroup(order.get());
 				value = LabItemService.evaluate(order.get().getItem(), lr.getPatient(), labresults);
 			}
 			if (value == null || value.equals("?formel?")) { //$NON-NLS-1$
