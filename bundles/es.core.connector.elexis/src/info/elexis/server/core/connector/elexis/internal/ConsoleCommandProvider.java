@@ -127,17 +127,37 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			if (stock.isCommissioningSystem()) {
 				ICommissioningSystemDriver instance = StockCommissioningSystemService.INSTANCE
 						.getDriverInstanceForStock(stock);
-				if(instance!=null) {
+				if (instance != null) {
 					ci.print("\t [  isCommissioningSystem  ] ");
 					IStatus status = instance.getStatus();
 					String statusString = StatusUtil.printStatus(status);
 					ci.print(statusString);
 				} else {
-					ci.print("No driver instance found.");
+					ci.print("No driver instance found.\n");
 				}
 			}
 		}
 		return ok();
+	}
+
+	public String __stock_scs(Iterator<String> args) {
+		String stockId = args.next();
+		String action = args.next();
+		if (stockId == null || action == null) {
+			return missingArgument("stockId (start | stop)");
+		}
+
+		Optional<Stock> findById = StockService.INSTANCE.findById(stockId);
+		if (!findById.isPresent()) {
+			return "Stock not found [" + stockId + "]";
+		}
+		IStatus status;
+		if ("start".equalsIgnoreCase(action)) {
+			status = StockCommissioningSystemService.INSTANCE.initializeStockCommissioningSystem(findById.get());
+		} else {
+			status = StockCommissioningSystemService.INSTANCE.shutdownStockCommissioningSytem(findById.get());
+		}
+		return StatusUtil.printStatus(status);
 	}
 
 	public String __stock_listForStock(Iterator<String> args) {
