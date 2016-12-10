@@ -87,7 +87,11 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				if (stock.isPresent()) {
 					List<String> articleIds = (List<String>) event
 							.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID);
-					StockCommissioningSystemService.INSTANCE.synchronizeInventory(stock.get(), articleIds, null);
+					IStatus status = StockCommissioningSystemService.INSTANCE.synchronizeInventory(stock.get(),
+							articleIds, null);
+					if (!status.isOK()) {
+						StatusUtil.logStatus(log, status, true);
+					}
 				} else {
 					log.warn("Could not resolve stock [{}], skipping update stock", stockId);
 				}
@@ -254,6 +258,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	 * @return
 	 */
 	IStatus synchronizeInventory(IStock stock, List<? extends IStockEntry> inventoryResult, boolean fullSync) {
+		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] fullSync [{}]", stock.getId(),
+				inventoryResult.size(), fullSync);
 		List<StockEntry> currentStockEntries = StockService.INSTANCE.findAllStockEntriesForStock(stock);
 		for (Iterator<? extends IStockEntry> iterator = inventoryResult.iterator(); iterator.hasNext();) {
 			IStockEntry tse = (IStockEntry) iterator.next();
