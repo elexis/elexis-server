@@ -127,8 +127,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			if (stock.isCommissioningSystem()) {
 				ICommissioningSystemDriver instance = StockCommissioningSystemService.INSTANCE
 						.getDriverInstanceForStock(stock);
+				ci.print("\t [  isCommissioningSystem  ] ");
 				if (instance != null) {
-					ci.print("\t [  isCommissioningSystem  ] ");
 					IStatus status = instance.getStatus();
 					String statusString = StatusUtil.printStatus(status);
 					ci.print(statusString);

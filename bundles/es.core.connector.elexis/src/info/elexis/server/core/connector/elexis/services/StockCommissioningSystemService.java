@@ -74,6 +74,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 							.performArticleOutlay(se.get(), quantity, null);
 					if (!performArticleOutlay.isOK()) {
 						StatusUtil.logStatus(log, performArticleOutlay, true);
+					} else {
+						log.debug("Outlayed [{}] pcs of StockEntry [{}]", quantity, se.get().getId());
 					}
 				} else {
 					log.error("Could not find StockEntry [{}]", stockEntryId);
@@ -203,6 +205,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 							"Incorrect stock commissioning service initialization.");
 				}
 			}
+		} else {
+			log.warn("Received performArticleOutlay but driver is [null]");
 		}
 
 		IArticle article = stockEntry.getArticle();
