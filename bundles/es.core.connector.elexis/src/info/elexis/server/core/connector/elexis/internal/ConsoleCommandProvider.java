@@ -12,6 +12,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.model.stock.ICommissioningSystemDriver;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
@@ -120,7 +121,22 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __stock_list() {
-		StockService.INSTANCE.findAll(true).stream().forEach(c -> ci.print(c.getLabel() + "\n"));
+		List<Stock> stocks = StockService.INSTANCE.findAll(true);
+		for (Stock stock : stocks) {
+			ci.println(stock.getLabel());
+			if (stock.isCommissioningSystem()) {
+				ICommissioningSystemDriver instance = StockCommissioningSystemService.INSTANCE
+						.getDriverInstanceForStock(stock);
+				if(instance!=null) {
+					ci.print("\t [  isCommissioningSystem  ] ");
+					IStatus status = instance.getStatus();
+					String statusString = StatusUtil.printStatus(status);
+					ci.print(statusString);
+				} else {
+					ci.print("No driver instance found.");
+				}
+			}
+		}
 		return ok();
 	}
 

@@ -76,14 +76,15 @@ public class Stock extends AbstractDBObjectIdDeleted implements IStock {
 	String driverConfig;
 
 	@OneToMany
-	@JoinColumn(name = "STOCK", insertable = false)
+	@JoinColumn(name = "STOCK", insertable = false, updatable = false)
 	protected List<StockEntry> entries;
 
 	@Override
 	public String getLabel() {
-		return super.getLabel() + " code ["+getCode() + "] / driverUuid ["+getDriverUuid()+"] / driverConfig ["+getDriverConfig()+"]";
+		return super.getLabel() + " code [" + getCode() + "] / driverUuid [" + getDriverUuid() + "] / driverConfig ["
+				+ getDriverConfig() + "]";
 	}
-	
+
 	public String getCode() {
 		return code;
 	}
@@ -147,11 +148,11 @@ public class Stock extends AbstractDBObjectIdDeleted implements IStock {
 	public void setDriverConfig(String driverConfig) {
 		this.driverConfig = driverConfig;
 	}
-	
+
 	public List<StockEntry> getEntries() {
 		return entries;
 	}
-	
+
 	public void setEntries(List<StockEntry> entries) {
 		this.entries = entries;
 	}
