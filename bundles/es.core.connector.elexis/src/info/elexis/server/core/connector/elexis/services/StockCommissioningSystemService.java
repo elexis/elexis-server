@@ -3,10 +3,12 @@ package info.elexis.server.core.connector.elexis.services;
 import static ch.elexis.core.common.ElexisEventTopics.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IStatus;
@@ -221,7 +223,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
-	public IStatus synchronizeInventory(IStock stock, List<String> articleId, Object data) {
+	public IStatus synchronizeInventory(IStock stock, List<String> articleIds, Object data) {
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
 			IStatus icsStatus = initializeStockCommissioningSystem(stock);
@@ -236,15 +238,14 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			}
 		}
 
-		IStatus retrieveInventory = ics.retrieveInventory(articleId, data);
+		IStatus retrieveInventory = ics.retrieveInventory(articleIds, data);
 		if (!retrieveInventory.isOK()) {
 			return retrieveInventory;
 		}
 
-		boolean fullSync = (articleId == null);
 		ObjectStatus os = (ObjectStatus) retrieveInventory;
 		List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
-		return synchronizeInventory(stock, transientCommSysStockEntries, fullSync);
+		return synchronizeInventory(stock, transientCommSysStockEntries, articleIds);
 	}
 
 	/**
@@ -253,13 +254,16 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	 *            the stock to sync upon
 	 * @param inventoryResult
 	 *            the incoming inventory result to sync the provided stock upon
+	 * @param articleId
+	 *            s
 	 * @param fullSync
 	 *            if <code>true</code> remove surplus stock entries
 	 * @return
 	 */
-	IStatus synchronizeInventory(IStock stock, List<? extends IStockEntry> inventoryResult, boolean fullSync) {
+	IStatus synchronizeInventory(IStock stock, List<? extends IStockEntry> inventoryResult, List<String> articleIds) {
 		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] fullSync [{}]", stock.getId(),
-				inventoryResult.size(), fullSync);
+				inventoryResult.size());
+
 		List<StockEntry> currentStockEntries = StockService.INSTANCE.findAllStockEntriesForStock(stock);
 		for (Iterator<? extends IStockEntry> iterator = inventoryResult.iterator(); iterator.hasNext();) {
 			IStockEntry tse = (IStockEntry) iterator.next();
@@ -280,7 +284,6 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 					if (!lrs.isOk()) {
 						log.warn("Could not release lock for StockEntry [{}]", se.getId());
 					}
-					currentStockEntries.remove(se.getId());
 					currentStockEntries.remove(se);
 					iterator.remove();
 				} else {
@@ -310,12 +313,34 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			}
 		}
 
-		if (fullSync) {
-			// remove surplus stock entries
-			for (Iterator<? extends IStockEntry> iterator = currentStockEntries.iterator(); iterator.hasNext();) {
-				IStockEntry tse = (IStockEntry) iterator.next();
-				log.debug("Removing StockEntry [{}]", ((StockEntry) tse).getId());
-				StockEntryService.INSTANCE.remove((StockEntry) tse);
+		boolean selectiveSync = false;
+		Set<String> articleIdsToSync = new HashSet<String>(articleIds);
+		if (articleIds != null && articleIds.size() > 0) {
+			articleIdsToSync = new HashSet<String>(articleIds);
+			selectiveSync = true;
+		}
+
+		// remove surplus stock entries
+		for (Iterator<? extends IStockEntry> iterator = currentStockEntries.iterator(); iterator.hasNext();) {
+			IStockEntry tse = (IStockEntry) iterator.next();
+			if (selectiveSync) {
+				IArticle article = tse.getArticle();
+				if (article.getGTIN() == null || !articleIdsToSync.contains(article.getGTIN())) {
+					continue;
+				}
+			}
+
+			StockEntry se = (StockEntry) tse;
+			log.debug("Removing StockEntry [{}]", ((StockEntry) tse).getId());
+			Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+			if (lr.isPresent()) {
+				se.setCurrentStock(0);
+				se.setDeleted(true);
+				StockEntryService.INSTANCE.write((StockEntry) se);
+				LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+				if (!lrs.isOk()) {
+					log.warn("Could not release lock for StockEntry [{}]", se.getId());
+				}
 			}
 		}
 
