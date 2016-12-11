@@ -63,6 +63,11 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 
+	public String __listInstances_clear() {
+		InstanceService.clearInstanceStatus();
+		return ok();
+	}
+
 	public String __locks() {
 		return getHelp(1);
 	}

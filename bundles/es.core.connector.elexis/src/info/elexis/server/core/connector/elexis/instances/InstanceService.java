@@ -1,6 +1,8 @@
 package info.elexis.server.core.connector.elexis.instances;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +16,10 @@ import ch.elexis.core.common.InstanceStatus.STATE;
 
 public class InstanceService {
 
-	private static Map<String, InstanceStatus> instanceStatusMap = new HashMap<String, InstanceStatus>();
+	private static Map<String, InstanceStatus> instanceStatusMap = Collections
+			.synchronizedMap(new HashMap<String, InstanceStatus>());
 
-	public synchronized static IStatus updateInstanceStatus(InstanceStatus inst, String remoteAddress) {
+	public static IStatus updateInstanceStatus(InstanceStatus inst, String remoteAddress) {
 		InstanceStatus shis = instanceStatusMap.get(inst.getUuid());
 		if (shis != null) {
 			inst.setFirstSeen(shis.getFirstSeen());
@@ -36,7 +39,18 @@ public class InstanceService {
 	}
 
 	public static List<InstanceStatus> getInstanceStatus() {
-		return new ArrayList<InstanceStatus>(instanceStatusMap.values());
+		ArrayList<InstanceStatus> arrayList = new ArrayList<InstanceStatus>(instanceStatusMap.values());
+		Collections.sort(arrayList, new Comparator<InstanceStatus>() {
+			@Override
+			public int compare(InstanceStatus o1, InstanceStatus o2) {
+				return o1.getLastUpdate().compareTo(o2.getLastUpdate());
+			}
+		});
+		return arrayList;
+	}
+
+	public static void clearInstanceStatus() {
+		instanceStatusMap.clear();
 	}
 
 }
