@@ -124,7 +124,12 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	public IStatus initializeStockCommissioningSystem(IStock stock) {
 		UUID driver;
 		try {
-			driver = UUID.fromString(stock.getDriverUuid());
+			String driverUuid = stock.getDriverUuid();
+			if (driverUuid == null) {
+				return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
+						"Invalid SCSDriver UUID: " + stock.getDriverUuid());
+			}
+			driver = UUID.fromString(driverUuid);
 		} catch (IllegalArgumentException iae) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
 					"Invalid SCSDriver UUID: " + stock.getDriverUuid());
@@ -248,8 +253,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		ObjectStatus os = (ObjectStatus) retrieveInventory;
 		List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
 
-		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] gtinsToUpdateSize [{}]",
-				stock.getId(), transientCommSysStockEntries.size(), gtinsToUpdate.size());
+		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] gtinsToUpdateSize [{}]", stock.getId(),
+				transientCommSysStockEntries.size(), gtinsToUpdate.size());
 
 		if (gtinsToUpdate.size() > 0) {
 			return performDifferentialInventorySynchronization(stock, transientCommSysStockEntries, gtinsToUpdate);
