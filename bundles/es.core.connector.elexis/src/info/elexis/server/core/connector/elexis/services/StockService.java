@@ -202,6 +202,16 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		return qbe.get(0);
 	}
 
+	public Optional<StockEntry> findStockEntryByGTINForStock(IStock stock, String gtin) {
+		Optional<? extends IArticle> findByGTIN = new ArticleService().findAnyByGTIN(gtin);
+		if (findByGTIN.isPresent()) {
+			String storeToString = StoreToStringService.storeToString((AbstractDBObjectIdDeleted) findByGTIN.get());
+			IStockEntry stockEntry = findStockEntryForArticleInStock(stock, storeToString);
+			return Optional.ofNullable((StockEntry) stockEntry);
+		}
+		return Optional.empty();
+	}
+
 	@Override
 	public IStatus performSingleDisposal(IArticle article, int count, String mandatorId) {
 		if (article == null) {

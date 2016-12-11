@@ -2,14 +2,14 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static ch.elexis.core.common.ElexisEventTopics.*;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -211,8 +211,6 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 							"Incorrect stock commissioning service initialization.");
 				}
 			}
-		} else {
-			log.warn("Received performArticleOutlay but driver is [null]");
 		}
 
 		IArticle article = stockEntry.getArticle();
@@ -223,7 +221,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
-	public IStatus synchronizeInventory(IStock stock, List<String> articleIds, Object data) {
+	public IStatus synchronizeInventory(IStock stock, List<String> gtinsToUpdate, Object data) {
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
 			IStatus icsStatus = initializeStockCommissioningSystem(stock);
@@ -238,112 +236,143 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			}
 		}
 
-		IStatus retrieveInventory = ics.retrieveInventory(articleIds, data);
+		if (gtinsToUpdate == null) {
+			gtinsToUpdate = Collections.emptyList();
+		}
+
+		IStatus retrieveInventory = ics.retrieveInventory(gtinsToUpdate, data);
 		if (!retrieveInventory.isOK()) {
 			return retrieveInventory;
 		}
 
 		ObjectStatus os = (ObjectStatus) retrieveInventory;
 		List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
-		return synchronizeInventory(stock, transientCommSysStockEntries, articleIds);
+
+		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] gtinsToUpdateSize [{}]",
+				stock.getId(), transientCommSysStockEntries.size(), gtinsToUpdate.size());
+
+		if (gtinsToUpdate.size() > 0) {
+			return performDifferentialInventorySynchronization(stock, transientCommSysStockEntries, gtinsToUpdate);
+		}
+		return performFullInventorySynchronization(stock, transientCommSysStockEntries);
 	}
 
-	/**
-	 * 
-	 * @param stock
-	 *            the stock to sync upon
-	 * @param inventoryResult
-	 *            the incoming inventory result to sync the provided stock upon
-	 * @param articleId
-	 *            s
-	 * @param fullSync
-	 *            if <code>true</code> remove surplus stock entries
-	 * @return
-	 */
-	IStatus synchronizeInventory(IStock stock, List<? extends IStockEntry> inventoryResult, List<String> articleIds) {
-		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] fullSync [{}]", stock.getId(),
-				inventoryResult.size());
+	private IStatus performDifferentialInventorySynchronization(IStock stock,
+			List<? extends IStockEntry> scsInventoryResult, List<String> gtinsToUpdate) {
 
+		Map<String, IStockEntry> inventoryGtinMap = new HashMap<String, IStockEntry>();
+		scsInventoryResult.stream().forEach(ir -> inventoryGtinMap.put(ir.getArticle().getGTIN(), ir));
+		for (String gtin : gtinsToUpdate) {
+			IStatus status = null;
+			Optional<StockEntry> seo = StockService.INSTANCE.findStockEntryByGTINForStock(stock, gtin);
+			if (inventoryGtinMap.get(gtin) != null) {
+				IStockEntry iStockEntry = inventoryGtinMap.get(gtin);
+				if (seo.isPresent()) {
+					// if in inventory result and stockEntry exists -> update
+					status = updateStockEntry(seo.get(), iStockEntry);
+				} else {
+					// if in inventory result but stockEntry does not exist ->
+					status = createStockEntry(stock, iStockEntry);
+				}
+			} else {
+				// if not in inventory result but stockEntry exists -> remove
+				if (seo.isPresent()) {
+					status = deleteStockEntry(seo.get());
+				}
+			}
+			if (status != null && !status.isOK()) {
+				StatusUtil.logStatus(log, status, true);
+			}
+		}
+		return Status.OK_STATUS;
+	}
+
+	private IStatus performFullInventorySynchronization(IStock stock, List<? extends IStockEntry> inventoryResult) {
 		List<StockEntry> currentStockEntries = StockService.INSTANCE.findAllStockEntriesForStock(stock);
-		for (Iterator<? extends IStockEntry> iterator = inventoryResult.iterator(); iterator.hasNext();) {
-			IStockEntry tse = (IStockEntry) iterator.next();
-			String gtin = tse.getArticle().getGTIN();
+		Set<String> currentStockEntryIds = currentStockEntries.stream().map(cse -> cse.getId())
+				.collect(Collectors.toSet());
+		for (IStockEntry inventoryResultStockEntry : inventoryResult) {
+			String gtin = inventoryResultStockEntry.getArticle().getGTIN();
 
+			IStatus status = null;
 			Optional<StockEntry> seo = currentStockEntries.stream()
 					.filter(s -> (gtin.equalsIgnoreCase(s.getArticle().getGTIN()))).findFirst();
 			if (seo.isPresent()) {
-				// modify existing stock entry
-				StockEntry se = seo.get();
-				StockEntryService.INSTANCE.refresh(se);
-				log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), tse.getCurrentStock());
-				Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
-				if (lr.isPresent()) {
-					se.setCurrentStock(tse.getCurrentStock());
-					StockEntryService.INSTANCE.write((StockEntry) se);
-					LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
-					if (!lrs.isOk()) {
-						log.warn("Could not release lock for StockEntry [{}]", se.getId());
-					}
-					currentStockEntries.remove(se);
-					iterator.remove();
-				} else {
-					log.error("Could not acquire lock");
-				}
+				status = updateStockEntry(seo.get(), inventoryResultStockEntry);
+				currentStockEntryIds.remove(seo.get().getId());
 			} else {
-				// create stock entry
-				Optional<? extends IArticle> articleByGTIN = new ArticleService().findAnyByGTIN(gtin);
-				if (articleByGTIN.isPresent()) {
-					AbstractDBObjectIdDeleted adid = (AbstractDBObjectIdDeleted) articleByGTIN.get();
-					String storeToString = StoreToStringService.storeToString(adid);
-					StockEntry se = (StockEntry) StockService.INSTANCE.storeArticleInStock(stock, storeToString,
-							tse.getCurrentStock());
-					log.info("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
-					Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
-					if (lr.isPresent()) {
-						LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
-						if (!lrs.isOk()) {
-							log.warn("Could not release lock for StockEntry [{}]", se.getId());
-						}
-					}
-					currentStockEntries.remove(se);
-					iterator.remove();
-				} else {
-					log.warn("Could not resolve article by GTIN [{}], will not consider in stock update.", gtin);
-				}
+				status = createStockEntry(stock, inventoryResultStockEntry);
+				currentStockEntryIds.remove(seo.get().getId());
 			}
-		}
-
-		boolean selectiveSync = false;
-		Set<String> articleIdsToSync = new HashSet<String>(articleIds);
-		if (articleIds != null && articleIds.size() > 0) {
-			articleIdsToSync = new HashSet<String>(articleIds);
-			selectiveSync = true;
+			if (status != null && !status.isOK()) {
+				StatusUtil.logStatus(log, status, true);
+			}
 		}
 
 		// remove surplus stock entries
-		for (Iterator<? extends IStockEntry> iterator = currentStockEntries.iterator(); iterator.hasNext();) {
-			IStockEntry tse = (IStockEntry) iterator.next();
-			if (selectiveSync) {
-				IArticle article = tse.getArticle();
-				if (article.getGTIN() == null || !articleIdsToSync.contains(article.getGTIN())) {
-					continue;
-				}
+		for (String stockEntryId : currentStockEntryIds) {
+			Optional<StockEntry> seo = StockEntryService.INSTANCE.findById(stockEntryId);
+			if (seo.isPresent()) {
+				deleteStockEntry(seo.get());
+			} else {
+				log.error("StockEntry [{}] should be available!", stockEntryId);
 			}
+		}
 
-			StockEntry se = (StockEntry) tse;
-			log.debug("Removing StockEntry [{}]", ((StockEntry) tse).getId());
+		return Status.OK_STATUS;
+	}
+
+	private IStatus deleteStockEntry(StockEntry se) {
+		log.debug("Removing StockEntry [{}]", ((StockEntry) se).getId());
+		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+		if (lr.isPresent()) {
+			se.setCurrentStock(0);
+			se.setDeleted(true);
+			StockEntryService.INSTANCE.write((StockEntry) se);
+			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+			if (!lrs.isOk()) {
+				log.warn("Could not release lock for StockEntry [{}]", se.getId());
+			}
+		}
+		return Status.OK_STATUS;
+	}
+
+	private IStatus createStockEntry(IStock stock, IStockEntry tse) {
+		String gtin = tse.getArticle().getGTIN();
+		Optional<? extends IArticle> articleByGTIN = new ArticleService().findAnyByGTIN(gtin);
+		if (articleByGTIN.isPresent()) {
+			AbstractDBObjectIdDeleted adid = (AbstractDBObjectIdDeleted) articleByGTIN.get();
+			String storeToString = StoreToStringService.storeToString(adid);
+			StockEntry se = (StockEntry) StockService.INSTANCE.storeArticleInStock(stock, storeToString,
+					tse.getCurrentStock());
+			log.debug("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
 			Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
 			if (lr.isPresent()) {
-				se.setCurrentStock(0);
-				se.setDeleted(true);
-				StockEntryService.INSTANCE.write((StockEntry) se);
 				LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
 				if (!lrs.isOk()) {
 					log.warn("Could not release lock for StockEntry [{}]", se.getId());
 				}
 			}
+		} else {
+			log.warn("Could not resolve article by GTIN [{}], will not consider in stock update.", gtin);
 		}
+		return Status.OK_STATUS;
+	}
 
+	private IStatus updateStockEntry(StockEntry se, IStockEntry tse) {
+		log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), tse.getCurrentStock());
+		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+		if (lr.isPresent()) {
+			StockEntryService.INSTANCE.refresh(se);
+			se.setCurrentStock(tse.getCurrentStock());
+			StockEntryService.INSTANCE.write((StockEntry) se);
+			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+			if (!lrs.isOk()) {
+				log.warn("Could not release lock for StockEntry [{}]", se.getId());
+			}
+		} else {
+			log.error("Could not acquire lock");
+		}
 		return Status.OK_STATUS;
 	}
 

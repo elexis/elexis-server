@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.internal;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -195,7 +196,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			Optional<Stock> se = StockService.INSTANCE.findById(args.next());
 			if (se.isPresent()) {
 				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.synchronizeInventory(se.get(),
-						null, null);
+						Collections.emptyList(), null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {
 				return "Invalid stock id";
