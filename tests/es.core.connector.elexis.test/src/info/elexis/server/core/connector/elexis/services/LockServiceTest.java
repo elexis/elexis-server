@@ -96,4 +96,37 @@ public class LockServiceTest {
 		assertFalse(lockResponse.isOk());
 		assertFalse(service.isLocked(lockInfo));
 	}
+	
+	@Test
+	public void testAcquireLockBlocking() {
+		final LockService service = new LockService();
+		LockInfo lockInfo1 = new LockInfo("objStoreToString::11", "objUserA", "testUuid1");
+		LockInfo lockInfo2 = new LockInfo("objStoreToString::11", "objUserB", "testUuid2");
+		
+		LockResponse lockResponse = service.acquireLock(lockInfo1);
+		assertTrue(lockResponse.isOk());
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(500);
+					service.releaseLock(lockInfo1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
+		
+		LockResponse al1 = service.acquireLock(lockInfo2);
+		assertFalse(al1.isOk());
+		
+		long start = System.currentTimeMillis();
+		LockResponse lockResponse2 = service.acquireLockBlocking(lockInfo2, 5);
+		long end = System.currentTimeMillis();
+		assertTrue(end-start > 500);
+		assertTrue(lockResponse2.isOk());
+		assertFalse(thread.isAlive());
+	}
 }

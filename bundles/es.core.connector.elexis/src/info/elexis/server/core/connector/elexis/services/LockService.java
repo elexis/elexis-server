@@ -55,7 +55,7 @@ public class LockService implements ILockService {
 	 * A unique id for this instance of Elexis. Changes on every restart
 	 */
 	public static final UUID systemUuid = UUID.randomUUID();
-	
+
 	/**
 	 * The elexis-server itself acts on a lock
 	 */
@@ -152,30 +152,7 @@ public class LockService implements ILockService {
 	@Override
 	public LockResponse acquireLockBlocking(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout) {
-		LockResponse response = (lockServiceContributorClass != null)
-				? acquireLock(lockInfo, lockServiceContributorClass) : acquireLock(lockInfo);
-		int sleptMilli = 0;
-		while (!response.isOk()) {
-			try {
-				Thread.sleep(1000);
-				sleptMilli += 1000;
-				log.trace("Retry acquire lock blocking ({} sec) for [{}].", Integer.toString(sleptMilli),
-						lockInfo.getElementStoreToString());
-				response = (lockServiceContributorClass != null) ? acquireLock(lockInfo, lockServiceContributorClass)
-						: acquireLock(lockInfo);
-				if (response.getStatus() == LockResponse.Status.DENIED_PERMANENT) {
-					return response;
-				}
-				if (sleptMilli > (timeout * 1000)) {
-					log.warn("Timeout acquiring lock blocking ({} sec) for [{}].", Integer.toString(timeout),
-							lockInfo.getElementStoreToString());
-					return response;
-				}
-			} catch (InterruptedException e) {
-				// ignore and keep trying
-			}
-		}
-		return response;
+		return acquireOrReleaseLockBlocking(lockInfo, lockServiceContributorClass, timeout, true);
 	}
 
 	@Override
@@ -229,6 +206,53 @@ public class LockService implements ILockService {
 				locksLock.unlock();
 			}
 		}
+	}
+
+	@Override
+	public LockResponse releaseLockBlocking(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout) {
+		return acquireOrReleaseLockBlocking(lockInfo, lockServiceContributorClass, timeout, false);
+	}
+
+	private LockResponse acquireOrReleaseLockBlocking(LockInfo lockInfo,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout,
+			final boolean isAcquire) {
+		LockResponse response;
+		String method = (isAcquire) ? "acquire" : "release";
+		if (isAcquire) {
+			response = (lockServiceContributorClass != null) ? acquireLock(lockInfo, lockServiceContributorClass)
+					: acquireLock(lockInfo);
+		} else {
+			response = (lockServiceContributorClass != null) ? releaseLock(lockInfo, lockServiceContributorClass)
+					: releaseLock(lockInfo);
+		}
+		int sleptMilli = 0;
+		while (!response.isOk()) {
+			try {
+				Thread.sleep(1000);
+				sleptMilli += 1000;
+				log.trace("Retry {} lock blocking ({} sec) for [{}].", method, Integer.toString(sleptMilli),
+						lockInfo.getElementStoreToString());
+				if (isAcquire) {
+					response = (lockServiceContributorClass != null)
+							? acquireLock(lockInfo, lockServiceContributorClass) : acquireLock(lockInfo);
+				} else {
+					response = (lockServiceContributorClass != null)
+							? releaseLock(lockInfo, lockServiceContributorClass) : releaseLock(lockInfo);
+				}
+				if (response.getStatus() == LockResponse.Status.DENIED_PERMANENT) {
+					return response;
+				}
+				if (sleptMilli > (timeout * 1000)) {
+					log.warn("Timeout {} lock blocking ({} sec) for [{}].", method, Integer.toString(timeout),
+							lockInfo.getElementStoreToString());
+					return response;
+				}
+			} catch (InterruptedException e) {
+				// ignore and keep trying
+			}
+		}
+		return response;
 	}
 
 	@Override
@@ -291,7 +315,7 @@ public class LockService implements ILockService {
 	public static String getSystemuuid() {
 		return systemUuid.toString();
 	}
-	
+
 	public static String getElexisserveragentuser() {
 		return elexisServerAgentUser;
 	}

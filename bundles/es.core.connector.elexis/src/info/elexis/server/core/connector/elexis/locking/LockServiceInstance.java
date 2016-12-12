@@ -46,14 +46,20 @@ public enum LockServiceInstance implements ILockService {
 	}
 
 	@Override
+	public LockResponse acquireLockBlocking(LockInfo lockInfo, int timeout) {
+		return ls.acquireLockBlocking(lockInfo, timeout);
+	}
+	
+	@Override
 	public LockResponse releaseLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		return ls.releaseLock(lockInfo, lockServiceContributorClass);
 	}
-
+	
 	@Override
-	public LockResponse acquireLockBlocking(LockInfo lockInfo, int timeout) {
-		return ls.acquireLockBlocking(lockInfo, timeout);
+	public LockResponse releaseLockBlocking(LockInfo lockInfos,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout) {
+		return ls.releaseLockBlocking(lockInfos, lockServiceContributorClass, timeout);
 	}
 
 	@Override
@@ -82,6 +88,6 @@ public enum LockServiceInstance implements ILockService {
 
 	public Optional<LockInfo> acquireLockBlocking(AbstractDBObjectIdDeleted lobj) {
 		return acquireLockBlocking(lobj, 15);
-	}
+	}	
 
 }

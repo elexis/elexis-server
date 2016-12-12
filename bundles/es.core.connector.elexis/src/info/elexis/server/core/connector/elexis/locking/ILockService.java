@@ -67,6 +67,17 @@ public interface ILockService {
 			Class<? extends ILockServiceContributor> lockServiceContributorClass);
 
 	/**
+	 * Tries to release a lock for a given number of seconds
+	 * 
+	 * @param lockInfos
+	 * @param lockServiceContributorClass
+	 * @param timeout
+	 * @return
+	 */
+	public LockResponse releaseLockBlocking(LockInfo lockInfos,
+			Class<? extends ILockServiceContributor> lockServiceContributorClass, int timeout);
+
+	/**
 	 * 
 	 * @param lockInfo
 	 * @return
