@@ -366,7 +366,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 
 	private IStatus updateStockEntry(StockEntry se, IStockEntry tse) {
 		log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), tse.getCurrentStock());
-		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 10);
 		if (lr.isPresent()) {
 			StockEntryService.INSTANCE.refresh(se);
 			se.setCurrentStock(tse.getCurrentStock());
@@ -376,7 +376,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				log.warn("Could not release lock for StockEntry [{}]", se.getId());
 			}
 		} else {
-			log.error("Could not acquire lock");
+			log.error("Could not acquire lock in updateStockEntry");
 		}
 		return Status.OK_STATUS;
 	}
