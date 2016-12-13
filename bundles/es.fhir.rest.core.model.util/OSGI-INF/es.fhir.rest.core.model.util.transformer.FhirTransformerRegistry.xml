@@ -3,6 +3,6 @@
    <service>
       <provide interface="es.fhir.rest.core.IFhirTransformerRegistry"/>
    </service>
-   <reference bind="bindFhirTransformer" cardinality="1..n" interface="es.fhir.rest.core.IFhirTransformer" name="FhirTransformer" policy="static" policy-option="greedy" unbind="unbindFhirTransformer"/>
+   <reference bind="bindFhirTransformer" cardinality="1..n" interface="es.fhir.rest.core.IFhirTransformer" name="FhirTransformer" policy="dynamic" policy-option="greedy" unbind="unbindFhirTransformer"/>
    <implementation class="es.fhir.rest.core.model.util.transformer.FhirTransformerRegistry"/>
 </scr:component>

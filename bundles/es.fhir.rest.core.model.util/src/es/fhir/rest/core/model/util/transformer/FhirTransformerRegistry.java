@@ -20,7 +20,7 @@ public class FhirTransformerRegistry implements IFhirTransformerRegistry {
 
 	private HashMap<String, IFhirTransformer<?, ?>> cache = new HashMap<>();
 
-	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY)
+	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
 	public synchronized void bindFhirTransformer(IFhirTransformer<?, ?> transformer) {
 		if (transformers == null) {
 			transformers = new ArrayList<IFhirTransformer<?, ?>>();

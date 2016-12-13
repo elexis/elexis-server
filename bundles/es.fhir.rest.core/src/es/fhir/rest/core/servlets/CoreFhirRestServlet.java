@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.http.HttpService;
@@ -63,6 +64,11 @@ public class CoreFhirRestServlet extends RestfulServer {
 		} catch (ServletException | NamespaceException e) {
 			logger.error("Could not register FHIR servlet.", e);
 		}
+	}
+
+	@Deactivate
+	public void deactivate() {
+		httpService.unregister("/fhir/*");
 	}
 
 	/**

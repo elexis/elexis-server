@@ -3,6 +3,6 @@
    <service>
       <provide interface="es.fhir.rest.core.IFhirResourceProviderRegistry"/>
    </service>
-   <reference bind="bindFhirProvider" cardinality="1..n" interface="es.fhir.rest.core.IFhirResourceProvider" name="FhirProvider" policy="static" policy-option="greedy" unbind="unbindFhirProvider"/>
+   <reference bind="bindFhirProvider" cardinality="1..n" interface="es.fhir.rest.core.IFhirResourceProvider" name="FhirProvider" policy="dynamic" policy-option="greedy" unbind="unbindFhirProvider"/>
    <implementation class="es.fhir.rest.core.resources.FhirResourceProviderRegistry"/>
 </scr:component>

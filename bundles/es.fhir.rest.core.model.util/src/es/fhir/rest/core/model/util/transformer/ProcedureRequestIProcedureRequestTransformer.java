@@ -9,6 +9,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
@@ -26,9 +28,11 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
-@Component(immediate = true)
+@Component
 public class ProcedureRequestIProcedureRequestTransformer
 		implements IFhirTransformer<ProcedureRequest, IProcedureRequest> {
+
+	private static Logger logger = LoggerFactory.getLogger(ProcedureRequestIProcedureRequestTransformer.class);
 
 	private FindingsContentHelper contentHelper = new FindingsContentHelper();
 
@@ -98,7 +102,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 
 	private void writeBehandlungSoapText(IEncounter iEncounter, ProcedureRequest procedureRequest) {
 		Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(iEncounter.getConsultationId());
-		if (behandlung.isPresent()) {
+		behandlung.ifPresent(cons -> {
 			String subjectivText = getSubjectiveText(iEncounter);
 			String assessmentText = getAssessmentText(iEncounter);
 			String procedureText = getProcedureText(behandlung.get());
@@ -120,10 +124,12 @@ public class ProcedureRequestIProcedureRequestTransformer
 				text.append("P:\n" + procedureText);
 			}
 
+			logger.debug("Updating SOAP text of cons [" + cons.getId() + "]\n" + text.toString());
+			
 			VersionedResource vResource = VersionedResource.load(null);
 			vResource.update(text.toString(), "From FHIR");
 			behandlung.get().setEintrag(vResource);
-		}
+		});
 	}
 
 	private String getProcedureText(Behandlung behandlung) {

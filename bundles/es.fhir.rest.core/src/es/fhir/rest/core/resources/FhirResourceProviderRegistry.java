@@ -17,7 +17,7 @@ public class FhirResourceProviderRegistry implements IFhirResourceProviderRegist
 
 	private List<IFhirResourceProvider> providers;
 
-	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY)
+	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
 	public synchronized void bindFhirProvider(IFhirResourceProvider provider) {
 		if (providers == null) {
 			providers = new ArrayList<IFhirResourceProvider>();
