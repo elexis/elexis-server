@@ -80,7 +80,8 @@ public enum LockServiceInstance implements ILockService {
 		log.trace("Trying to acquire lock blocking ({}sec) for [{}].", timeout, sts);
 		LockResponse lr = acquireLockBlocking(ls, timeout);
 		if (!lr.isOk()) {
-			log.error("Failed acquiring lock for " + lobj.getId() + ".");
+			log.error("Failed acquiring lock for [{}]", lobj.getClass().getName() + "@" + lobj.getId(),
+					new Throwable("Diagnosis"));
 			return Optional.empty();
 		}
 		return Optional.of(ls);
