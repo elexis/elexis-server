@@ -27,20 +27,22 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return getHelp(1);
 	}
 
-	public void __system_halt(Iterator<String> args) {
+	public String __system_halt(Iterator<String> args) {
 		boolean force = false;
 		if (args.hasNext()) {
 			force = "force".equals(args.next());
 		}
-		Application.getInstance().shutdown(force);
+		String vetoReason = Application.getInstance().shutdown(force);
+		return (vetoReason != null) ? vetoReason : ok();
 	}
 
-	public void __system_restart(Iterator<String> args) {
+	public String __system_restart(Iterator<String> args) {
 		boolean force = false;
 		if (args.hasNext()) {
 			force = "force".equals(args.next());
 		}
-		Application.getInstance().restart(force);
+		String vetoReason = Application.getInstance().restart(force);
+		return (vetoReason != null) ? vetoReason : ok();
 	}
 
 	public String __system_status() {

@@ -65,7 +65,7 @@ public class Application implements IApplication {
 		return IApplication.EXIT_OK;
 	}
 
-	private void checkVeto() {
+	private String checkVeto() {
 		Set<IApplicationShutdownListener> shutdownListeners = ApplicationShutdownRegistrar
 				.getApplicationShutdownListeners();
 		for (IApplicationShutdownListener ias : shutdownListeners) {
@@ -77,10 +77,11 @@ public class Application implements IApplication {
 					shutdown = false;
 					restart = false;
 					log.info("[{}] shutdown/restart veto:  {}", ias.getClass().getName(), reason);
-					break;
+					return "[VETO " + ias.getClass().getName() + "] " + reason;
 				}
 			}
 		}
+		return null;
 	}
 
 	@Override
@@ -91,14 +92,38 @@ public class Application implements IApplication {
 		return instance;
 	}
 
-	public void restart(boolean force) {
+	/**
+	 * Restart the server
+	 * 
+	 * @param force
+	 * @return <code>null</code> if restart initiated, or a veto reason denying
+	 *         the request
+	 */
+	public String restart(boolean force) {
+		String veto = checkVeto();
+		if (veto != null) {
+			return veto;
+		}
 		restart = true;
 		this.force = force;
+		return null;
 	}
 
-	public void shutdown(boolean force) {
+	/**
+	 * Shutdown the server
+	 * 
+	 * @param force
+	 * @return <code>null</code> if shutdown initiated, or a veto reason denying
+	 *         the request
+	 */
+	public String shutdown(boolean force) {
+		String veto = checkVeto();
+		if (veto != null) {
+			return veto;
+		}
 		shutdown = true;
 		this.force = force;
+		return null;
 	}
 
 	public static Date getStarttime() {
