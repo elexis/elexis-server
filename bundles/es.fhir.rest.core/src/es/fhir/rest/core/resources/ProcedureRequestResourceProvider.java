@@ -32,7 +32,7 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
-@Component
+@Component(immediate = true)
 public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 
 	private IFindingsService findingsService;

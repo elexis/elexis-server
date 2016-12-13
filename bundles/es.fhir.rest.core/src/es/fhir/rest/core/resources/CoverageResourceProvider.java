@@ -29,7 +29,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
-@Component
+@Component(immediate = true)
 public class CoverageResourceProvider implements IFhirResourceProvider {
 
 	@Override

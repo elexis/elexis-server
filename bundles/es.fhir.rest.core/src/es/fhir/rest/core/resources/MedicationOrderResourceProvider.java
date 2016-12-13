@@ -30,7 +30,7 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
-@Component
+@Component(immediate = true)
 public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 
 	@Override

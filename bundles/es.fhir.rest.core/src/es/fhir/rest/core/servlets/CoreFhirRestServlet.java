@@ -10,17 +10,17 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
-import es.fhir.rest.core.IFhirResourceProviderRegistry;
 
 @Component(service = CoreFhirRestServlet.class, immediate = true)
 public class CoreFhirRestServlet extends RestfulServer {
@@ -42,15 +42,27 @@ public class CoreFhirRestServlet extends RestfulServer {
 	}
 
 	// resource providers
-	private IFhirResourceProviderRegistry providerRegistry;
+	private List<IFhirResourceProvider> providers;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
-	public void bindProviderRegistry(IFhirResourceProviderRegistry providerRegistry) {
-		this.providerRegistry = providerRegistry;
+	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
+	public synchronized void bindFhirProvider(IFhirResourceProvider provider) {
+		if (providers == null) {
+			providers = new ArrayList<IFhirResourceProvider>();
+		}
+		providers.add(provider);
+		registerProvider(provider);
 	}
 
-	public void unbindProviderRegistry(IFhirResourceProviderRegistry providerRegistry) {
-		this.providerRegistry = null;
+	public void unbindFhirProvider(IFhirResourceProvider provider) {
+		if (providers == null) {
+			providers = new ArrayList<IFhirResourceProvider>();
+		}
+		providers.remove(provider);
+		try {
+			unregisterProvider(provider);
+		} catch (Exception e) {
+			// ignore
+		}
 	}
 
 	public CoreFhirRestServlet() {
@@ -78,13 +90,6 @@ public class CoreFhirRestServlet extends RestfulServer {
 	 */
 	@Override
 	protected void initialize() throws ServletException {
-		// add the resource providers
-		List<IFhirResourceProvider> providers = providerRegistry.getResourceProviders();
-		// make a copy, to satisfy type
-		List<IResourceProvider> resourceProviders = new ArrayList<IResourceProvider>();
-		resourceProviders.addAll(providers);
-		setResourceProviders(resourceProviders);
-
 		/*
 		 * This server interceptor causes the server to return nicely formatter
 		 * and coloured responses instead of plain JSON/XML if the request is

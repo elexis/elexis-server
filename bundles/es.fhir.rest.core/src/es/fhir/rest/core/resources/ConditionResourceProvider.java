@@ -35,7 +35,7 @@ import es.fhir.rest.core.resources.util.CodeTypeUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
-@Component
+@Component(immediate = true)
 public class ConditionResourceProvider implements IFhirResourceProvider {
 
 	private IMigratorService migratorService;
