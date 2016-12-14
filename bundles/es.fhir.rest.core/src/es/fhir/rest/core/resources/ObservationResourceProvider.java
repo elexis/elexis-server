@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
@@ -19,14 +20,17 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
+import ch.elexis.core.findings.codes.CodingSystem;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.CodeTypeUtil;
+import es.fhir.rest.core.resources.util.DateRangeParamUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult_;
@@ -81,7 +85,7 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 						.getFhirObject((IObservation) observation.get());
 				return fhirObservation.get();
 			}
-			Optional<LabResult> labresult = LabResultService.INSTANCE.findById(theId);
+			Optional<LabResult> labresult = LabResultService.INSTANCE.findById(idPart);
 			if (labresult.isPresent()) {
 				Optional<Observation> fhirObservation = getLabTransformer().getFhirObject(labresult.get());
 				return fhirObservation.get();
@@ -91,10 +95,12 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Observation> findObservation(@RequiredParam(name = Observation.SP_PATIENT) IdType thePatientId,
-			@OptionalParam(name = Observation.SP_CATEGORY) CodeType categoryCode) {
-		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
+	public List<Observation> findObservation(@RequiredParam(name = Observation.SP_SUBJECT) IdType theSubjectId,
+			@OptionalParam(name = Observation.SP_CATEGORY) CodeType categoryCode,
+			@OptionalParam(name = Observation.SP_CODE) CodeType code,
+			@OptionalParam(name = Observation.SP_DATE) DateRangeParam dates) {
+		if (theSubjectId != null && !theSubjectId.isEmpty()) {
+			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(theSubjectId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<Observation> ret = new ArrayList<Observation>();
@@ -102,14 +108,17 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 					if (categoryCode == null || ObservationCategory.LABORATORY.name()
 							.equalsIgnoreCase(CodeTypeUtil.getCode(categoryCode).orElse(""))) {
 						JPAQuery<LabResult> resultQuery = new JPAQuery<>(LabResult.class);
-						resultQuery.add(LabResult_.patient, QUERY.EQUALS, patient);
+						resultQuery.add(LabResult_.patient, QUERY.EQUALS, patient.get());
 						List<LabResult> results = resultQuery.execute();
 						for (LabResult labResult : results) {
-
+							Optional<Observation> fhirObservation = getLabTransformer().getFhirObject(labResult);
+							if (fhirObservation.isPresent()) {
+								ret.add(fhirObservation.get());
+							}
 						}
 					}
 					// all other observations
-					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),
+					List<IFinding> findings = findingsService.getPatientsFindings(theSubjectId.getIdPart(),
 							IObservation.class);
 					if (findings != null && !findings.isEmpty()) {
 						for (IFinding iFinding : findings) {
@@ -118,14 +127,52 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 							}
 							Optional<Observation> fhirObservation = getTransformer()
 									.getFhirObject((IObservation) iFinding);
-							fhirObservation.ifPresent(fe -> ret.add(fe));
+							if (fhirObservation.isPresent()) {
+								ret.add(fhirObservation.get());
+							}
 						}
-						return ret;
 					}
+					if (dates != null) {
+						ret = filterDates(ret, dates);
+					}
+					if(code != null) {
+						ret = filterCode(ret, code);
+					}
+					return ret;
 				}
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	private List<Observation> filterCode(List<Observation> observations, CodeType code) {
+		ArrayList<Observation> ret = new ArrayList<>();
+		String systemString = CodeTypeUtil.getSystem(code).orElse("");
+		String codeString = CodeTypeUtil.getCode(code).orElse("");
+		for (Observation observation : observations) {
+			if (systemString.equals(CodingSystem.ELEXIS_LOCAL_LABORATORY_VITOLABKEY.getSystem())) {
+				if (CodeTypeUtil.isVitoLabkey(observation, codeString)) {
+					ret.add(observation);
+				}
+			} else if (CodeTypeUtil.isCodeInConcept(observation.getCode(), systemString, codeString)) {
+				ret.add(observation);
+			}
+		}
+		return ret;
+	}
+
+	private List<Observation> filterDates(List<Observation> observations, DateRangeParam dates) {
+		ArrayList<Observation> ret = new ArrayList<>();
+		try {
+			for (Observation observation : observations) {
+				if (DateRangeParamUtil.isDateInRange(observation.getEffectiveDateTimeType(), dates)) {
+					ret.add(observation);
+				}
+			}
+		} catch (FHIRException fe) {
+			return observations;
+		}
+		return ret;
 	}
 
 	private boolean isObservationCategory(IObservation iObservation, CodeType observationCode) {

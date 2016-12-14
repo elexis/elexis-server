@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.types.Gender;
+import ch.elexis.core.types.LabItemTyp;
 import ch.rgw.tools.TimeTool;
 import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
@@ -26,6 +28,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
@@ -35,6 +39,8 @@ import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
+import info.elexis.server.core.connector.elexis.services.LabItemService;
+import info.elexis.server.core.connector.elexis.services.LabResultService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 import info.elexis.server.core.connector.elexis.services.UserService;
 
@@ -58,6 +64,10 @@ public class TestDatabaseInitializer {
 
 	private static boolean isBehandlungInitialized = false;
 	private static Behandlung behandlung;
+
+	private static boolean isLabResultInitialized = false;
+	private static LabResult labResult;
+	private static LabItem labItem;
 
 	private static boolean isPrescriptionInitialized = false;
 	private static Prescription prescription;
@@ -435,6 +445,46 @@ public class TestDatabaseInitializer {
 
 	public static Behandlung getBehandlung() {
 		return behandlung;
+	}
+
+	/**
+	 * Initialize a test LabResult.
+	 * 
+	 */
+	public void initializeLabResult() {
+		if (!isPatientInitialized) {
+			initializePatient();
+		}
+		if (!isLabResultInitialized) {
+			Kontakt laboratory = KontaktService.INSTANCE.create();
+			laboratory.setLaboratory(true);
+			laboratory.setDescription1("Labor Test");
+			laboratory.setPatientNr("Test");
+			KontaktService.INSTANCE.flush();
+			
+			labItem = (LabItem) LabItemService.INSTANCE.create("TEST", "Test Laboratory", laboratory, ">1", "3-3.5",
+					"unit", LabItemTyp.NUMERIC, "group", 1);
+			labItem.setExport("vitolabkey:1,2");
+			LabItemService.INSTANCE.flush();
+			
+			labResult = LabResultService.INSTANCE.create();
+			labResult.setItem(labItem);
+			labResult.setPatient(patient);
+			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 14, 17, 44, 25));
+			labResult.setUnit("u");
+			labResult.setRefMale("<1");
+			labResult.setRefFemale("1-1.5");
+			labResult.setOriginId(laboratory.getId());
+			labResult.setResult("2");
+			labResult.setComment("no comment");
+			LabResultService.INSTANCE.flush();
+
+			isLabResultInitialized = true;
+		}
+	}
+
+	public static LabResult getLabResult() {
+		return labResult;
 	}
 
 	/**

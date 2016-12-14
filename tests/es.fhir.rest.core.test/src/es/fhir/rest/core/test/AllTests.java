@@ -18,6 +18,7 @@ import es.fhir.rest.core.resources.ConditionTest;
 import es.fhir.rest.core.resources.CoverageTest;
 import es.fhir.rest.core.resources.EncounterTest;
 import es.fhir.rest.core.resources.MedicationOrderTest;
+import es.fhir.rest.core.resources.ObservationTest;
 import es.fhir.rest.core.resources.OrganizationTest;
 import es.fhir.rest.core.resources.PatientTest;
 import es.fhir.rest.core.resources.PractitionerTest;
@@ -26,7 +27,7 @@ import es.fhir.rest.core.resources.ProcedureRequestTest;
 @RunWith(Suite.class)
 @SuiteClasses({ MedicationOrderTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
 		PractitionerTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
-		ProcedureRequestTest.class, ClaimTest.class })
+		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class })
 public class AllTests {
 
 	public static Date getDate(LocalDateTime localDateTime) {

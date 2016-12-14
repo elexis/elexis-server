@@ -9,8 +9,11 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Reference;
 
+import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.util.ModelUtil;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
 public class AbstractHelper {
 
@@ -26,6 +29,10 @@ public class AbstractHelper {
 
 	protected LocalDateTime getLocalDateTime(Date date) {
 		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+	}
+
+	public Reference getReference(String resourceType, AbstractDBObjectIdDeleted dbObject) {
+		return new Reference(new IdDt("Patient", dbObject.getId()));
 	}
 
 	public void setText(DomainResource domainResource, String text) {
