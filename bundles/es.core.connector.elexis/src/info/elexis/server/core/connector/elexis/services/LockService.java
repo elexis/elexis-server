@@ -229,8 +229,8 @@ public class LockService implements ILockService {
 		int sleptMilli = 0;
 		while (!response.isOk()) {
 			try {
-				Thread.sleep(1000);
-				sleptMilli += 1000;
+				Thread.sleep(100);
+				sleptMilli += 100;
 				log.trace("Retry {} lock blocking ({} sec) for [{}].", method, Integer.toString(sleptMilli),
 						lockInfo.getElementStoreToString());
 				if (isAcquire) {
