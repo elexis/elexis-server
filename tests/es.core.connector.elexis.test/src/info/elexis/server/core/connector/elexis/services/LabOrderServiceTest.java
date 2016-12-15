@@ -17,7 +17,7 @@ public class LabOrderServiceTest {
 
 	@Before
 	public void before() {
-		labresult = LabResultService.INSTANCE.findById("h2458737678162e60665").get();
+		labresult = LabResultService.INSTANCE.findById("ved209fdb6b421a56077772").get();
 		assertNotNull(labresult);
 	}
 
@@ -31,8 +31,8 @@ public class LabOrderServiceTest {
 	public void testFindAllLabOrdersInSameOrderIdGroup() {
 		Optional<LabOrder> labOrder = LabOrderService.findLabOrderByLabResult(labresult);
 		assertTrue(labOrder.isPresent());
-		List<LabOrder> laborderGroup = LabOrderService.INSTANCE.findAllLabOrdersInSameOrderIdGroup(labOrder.get());
-		assertTrue(laborderGroup.size() > 0);
+		List<LabOrder> laborderGroup = LabOrderService.findAllLabOrdersInSameOrderIdGroup(labOrder.get());
+		assertEquals(15, laborderGroup.size());
 	}
 
 }

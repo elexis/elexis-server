@@ -31,7 +31,7 @@ public class JPAQueryTest {
 		assertTrue(result.size() > 0);
 		List<Kontakt> resultIncDeleted = new JPAQuery<Kontakt>(Kontakt.class, true).execute();
 		assertNotNull(resultIncDeleted);
-		assertTrue(resultIncDeleted.size() == 5);
+		assertEquals(7, resultIncDeleted.size());
 
 		long count = new JPAQuery<Kontakt>(Kontakt.class, true).count();
 		assertEquals(resultIncDeleted.size(), count);
@@ -66,14 +66,14 @@ public class JPAQueryTest {
 		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe.add(AbstractDBObject_.lastupdate, QUERY.GREATER_OR_EQUAL, 1470809122982l);
 		List<Kontakt> execute = qbe.execute();
-		assertEquals(4, execute.size());
-		assertEquals(4, qbe.count());
+		assertEquals(6, execute.size());
+		assertEquals(6, qbe.count());
 		
 		JPAQuery<Kontakt> qbe2 = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe2.add(AbstractDBObject_.lastupdate, QUERY.GREATER, 1470809122982l);
 		List<Kontakt> execute2 = qbe2.execute();
-		assertEquals(3, execute2.size());
-		assertEquals(3, qbe2.count());
+		assertEquals(5, execute2.size());
+		assertEquals(5, qbe2.count());
 	}
 
 	@Test
@@ -176,7 +176,7 @@ public class JPAQueryTest {
 		JPAQuery<Kontakt> qbeC = new JPAQuery<Kontakt>(Kontakt.class);
 		qbeC.add(Kontakt_.country, QUERY.NOT_EQUALS, null);
 		long count = qbeC.count();
-		assertEquals(1, count);
+		assertEquals(2, count);
 	}
 	
 	@Test

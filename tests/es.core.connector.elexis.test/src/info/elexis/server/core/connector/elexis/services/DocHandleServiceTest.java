@@ -41,6 +41,7 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_IN_FS, false);
 
 		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
+		assertTrue(patient.isPresent());
 		byte[] sampleDocument = new byte[512];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
 
@@ -124,6 +125,7 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
 
 		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
+		assertTrue(patient.isPresent());
 		byte[] sampleDocument = new byte[32835];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
 

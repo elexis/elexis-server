@@ -10,7 +10,7 @@ public class LabResultServiceTest {
 
 	@Test
 	public void testGetLabResultById() {
-		LabResult result = LabResultService.INSTANCE.findById("h2458737678162e60665").get();
+		LabResult result = LabResultService.INSTANCE.findById("dafcc08ccd5e607301762").get();
 		assertNotNull(result);
 	}
 	

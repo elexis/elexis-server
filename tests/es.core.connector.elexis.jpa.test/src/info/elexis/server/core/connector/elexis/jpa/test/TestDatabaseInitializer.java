@@ -75,6 +75,8 @@ public class TestDatabaseInitializer {
 	private static boolean isArtikelstammInitialized = false;
 	private static ArtikelstammItem artikelstammitem;
 
+	private static boolean isLaborItemsOrdersResultsInitialized = false;
+
 	private static boolean isLaborTarif2009Initialized = false;
 	private static boolean isTarmedInitialized = false;
 	private static boolean isPhysioLeistungInitialized = false;
@@ -121,10 +123,22 @@ public class TestDatabaseInitializer {
 			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/TarmedKumulation.sql");
 		}
 	}
+
 	public synchronized void initializeArzttarifePhysioLeistungTables() {
 		initializeDb();
 		if (!isPhysioLeistungInitialized) {
 			isPhysioLeistungInitialized = initializeDbScript("/rsc/dbScripts/ArzttarifePhysio.sql");
+		}
+	}
+
+	/**
+	 * Initializes an intrinsic consistent set of LabItems, LabResults and
+	 * LabOrders
+	 */
+	public synchronized void initializeLaborItemsOrdersResults() {
+		initializeDb();
+		if (!isLaborItemsOrdersResultsInitialized) {
+			isLaborItemsOrdersResultsInitialized = initializeDbScript("/rsc/dbScripts/LaborItemsWerteResults.sql");
 		}
 	}
 
@@ -388,8 +402,8 @@ public class TestDatabaseInitializer {
 	 * <li>Label: "Test Fall"</li>
 	 * <li>Reason: "reason"</li>
 	 * <li>BillingMethod: "method"</li>
-	 * <li>KostentrKontakt:
-	 * {@link TestDatabaseInitializer#getOrganization()}</li>
+	 * <li>KostentrKontakt: {@link TestDatabaseInitializer#getOrganization()}
+	 * </li>
 	 * <li>VersNummer: 1234-5678</li>
 	 * <li>DatumVon: 1.9.2016</li>
 	 */

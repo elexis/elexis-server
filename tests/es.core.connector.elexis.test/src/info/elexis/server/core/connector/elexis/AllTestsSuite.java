@@ -13,14 +13,16 @@ import info.elexis.server.core.connector.elexis.services.BehandlungServiceTest;
 import info.elexis.server.core.connector.elexis.services.DocHandleServiceTest;
 import info.elexis.server.core.connector.elexis.services.JPAQueryTest;
 import info.elexis.server.core.connector.elexis.services.KontaktServiceTest;
+import info.elexis.server.core.connector.elexis.services.LabOrderServiceTest;
+import info.elexis.server.core.connector.elexis.services.LabResultServiceTest;
 import info.elexis.server.core.connector.elexis.services.LockServiceTest;
 import info.elexis.server.core.connector.elexis.services.PrescriptionServiceTest;
 import info.elexis.server.core.connector.elexis.services.StockServiceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ArtikelServiceTest.class, BehandlungServiceTest.class, BillingTest.class, DocHandleServiceTest.class,
-		JPAQueryTest.class, KontaktServiceTest.class, LockServiceTest.class, PrescriptionServiceTest.class,
-		VerrechenbarTest.class, StockServiceTest.class })
+		JPAQueryTest.class, KontaktServiceTest.class, LabOrderServiceTest.class, LabResultServiceTest.class,
+		LockServiceTest.class, PrescriptionServiceTest.class, VerrechenbarTest.class, StockServiceTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();
@@ -32,6 +34,7 @@ public class AllTestsSuite {
 		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();
 		AllTestsSuite.getInitializer().initializeArzttarifePhysioLeistungTables();
 		AllTestsSuite.getInitializer().initializeTarmedTables();
+		AllTestsSuite.getInitializer().initializeLaborItemsOrdersResults();
 	}
 
 	public static TestDatabaseInitializer getInitializer() {
