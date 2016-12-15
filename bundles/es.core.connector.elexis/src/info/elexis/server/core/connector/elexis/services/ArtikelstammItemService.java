@@ -90,9 +90,17 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		return ai;
 	}
 
+	/**
+	 * Finds an {@link ArtikelstammItem} by its GTIN. Does not consider
+	 * black-boxed articles.
+	 * 
+	 * @param itemCode
+	 * @return
+	 */
 	public static Optional<ArtikelstammItem> findByGTIN(String itemCode) {
 		JPAQuery<ArtikelstammItem> qbe = new JPAQuery<ArtikelstammItem>(ArtikelstammItem.class);
 		qbe.add(ArtikelstammItem_.gtin, QUERY.LIKE, itemCode);
+		qbe.add(ArtikelstammItem_.bb, QUERY.EQUALS, 0);
 		return qbe.executeGetSingleResult();
 	}
 
