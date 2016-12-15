@@ -41,24 +41,25 @@ public class FindingsContentHelper {
 
 	public Optional<IBaseResource> getResource(IFinding finding) throws DataFormatException {
 		IBaseResource resource = null;
-
-		RawContentFormat contentFormat = finding.getRawContentFormat();
-		if (contentFormat == RawContentFormat.FHIR_JSON) {
-			String jsonContent = finding.getRawContent();
-			if (jsonContent != null && !jsonContent.isEmpty()) {
-				if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
-					resource = getJsonParser().parseResource(finding.getRawContent());
+		if (finding != null) {
+			RawContentFormat contentFormat = finding.getRawContentFormat();
+			if (contentFormat == RawContentFormat.FHIR_JSON) {
+				String jsonContent = finding.getRawContent();
+				if (jsonContent != null && !jsonContent.isEmpty()) {
+					if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
+						resource = getJsonParser().parseResource(finding.getRawContent());
+					}
 				}
-			}
-		} else if (contentFormat == RawContentFormat.FHIR_XML) {
-			String xmlContent = finding.getRawContent();
-			if (xmlContent != null && !xmlContent.isEmpty()) {
-				if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
-					resource = getXmlParser().parseResource(finding.getRawContent());
+			} else if (contentFormat == RawContentFormat.FHIR_XML) {
+				String xmlContent = finding.getRawContent();
+				if (xmlContent != null && !xmlContent.isEmpty()) {
+					if (finding.getRawContent() != null && !finding.getRawContent().isEmpty()) {
+						resource = getXmlParser().parseResource(finding.getRawContent());
+					}
 				}
+			} else {
+				getLogger().error("Could not get resource because of unknown content format [" + contentFormat + "]");
 			}
-		} else {
-			getLogger().error("Could not get resource because of unknown content format [" + contentFormat + "]");
 		}
 		return Optional.ofNullable(resource);
 	}
