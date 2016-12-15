@@ -128,7 +128,8 @@ public class ProcedureRequestIProcedureRequestTransformer
 			
 			VersionedResource vResource = VersionedResource.load(null);
 			vResource.update(text.toString(), "From FHIR");
-			behandlung.get().setEintrag(vResource);
+			cons.setEintrag(vResource);
+			BehandlungService.INSTANCE.flush();
 		});
 	}
 

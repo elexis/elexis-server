@@ -90,11 +90,11 @@ public class BehandlungHelper extends AbstractHelper {
 	}
 
 	public static Optional<Kontakt> getPerformer(IEncounter iEncounter) {
-		return KontaktService.INSTANCE.findById(iEncounter.getPatientId());
+		return KontaktService.INSTANCE.findById(iEncounter.getMandatorId());
 	}
 
 	public static Optional<Kontakt> getPatient(IEncounter iEncounter) {
-		return KontaktService.INSTANCE.findById(iEncounter.getMandatorId());
+		return KontaktService.INSTANCE.findById(iEncounter.getPatientId());
 	}
 
 	public static Optional<String> getMandatorId(Encounter fhirObject) {
