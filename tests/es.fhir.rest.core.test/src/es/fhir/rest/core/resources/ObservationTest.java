@@ -13,6 +13,7 @@ import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Observation;
+import org.hl7.fhir.dstu3.model.Observation.ObservationReferenceRangeComponent;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,6 +21,7 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
 import es.fhir.rest.core.test.AllTests;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class ObservationTest {
@@ -37,8 +39,10 @@ public class ObservationTest {
 
 	@Test
 	public void getObservation() {
+		List<LabResult> labResults = TestDatabaseInitializer.getLabResults();
+		
 		Observation readObservation = client.read().resource(Observation.class)
-				.withId(TestDatabaseInitializer.getLabResult().getId())
+				.withId(labResults.get(0).getId())
 				.execute();
 		assertNotNull(readObservation);
 
@@ -51,7 +55,7 @@ public class ObservationTest {
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
 		Observation observation = (Observation) entries.get(0).getResource();
-		assertEquals(observation.getIdElement().getIdPart(), TestDatabaseInitializer.getLabResult().getId());
+		assertEquals(observation.getIdElement().getIdPart(), labResults.get(0).getId());
 
 		results = client.search().forResource(Observation.class)
 				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
@@ -102,8 +106,20 @@ public class ObservationTest {
 	 */
 	@Test
 	public void getObservationProperties() {
+		List<LabResult> labResults = TestDatabaseInitializer.getLabResults();
+
 		Observation readObservation = client.read().resource(Observation.class)
-				.withId(TestDatabaseInitializer.getLabResult().getId()).execute();
+				.withId(labResults.get(0).getId()).execute();
 		assertNotNull(readObservation);
+		
+		List<ObservationReferenceRangeComponent> refs = readObservation.getReferenceRange();
+		assertFalse(refs.isEmpty());
+
+		// readObservation =
+		// client.read().resource(Observation.class).withId(labResults.get(1).getId()).execute();
+		// assertNotNull(readObservation);
+		//
+		// refs = readObservation.getReferenceRange();
+		// assertFalse(refs.isEmpty());
 	}
 }

@@ -105,6 +105,7 @@ public class LabResultHelper extends AbstractHelper {
 			} else {
 				comp.setText(localRef);
 			}
+			return Collections.singletonList(comp);
 		}
 		return Collections.emptyList();
 	}

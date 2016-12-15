@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,7 @@ public class TestDatabaseInitializer {
 	private static Behandlung behandlung;
 
 	private static boolean isLabResultInitialized = false;
-	private static LabResult labResult;
+	private static List<LabResult> labResults = new ArrayList<>();
 	private static LabItem labItem;
 
 	private static boolean isPrescriptionInitialized = false;
@@ -462,10 +463,10 @@ public class TestDatabaseInitializer {
 	}
 
 	/**
-	 * Initialize a test LabResult.
+	 * Initialize a test LabResults.
 	 * 
 	 */
-	public void initializeLabResult() {
+	public synchronized void initializeLabResult() {
 		if (!isPatientInitialized) {
 			initializePatient();
 		}
@@ -481,7 +482,7 @@ public class TestDatabaseInitializer {
 			labItem.setExport("vitolabkey:1,2");
 			LabItemService.INSTANCE.flush();
 			
-			labResult = LabResultService.INSTANCE.create();
+			LabResult labResult = LabResultService.INSTANCE.create();
 			labResult.setItem(labItem);
 			labResult.setPatient(patient);
 			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 14, 17, 44, 25));
@@ -492,13 +493,24 @@ public class TestDatabaseInitializer {
 			labResult.setResult("2");
 			labResult.setComment("no comment");
 			LabResultService.INSTANCE.flush();
+			labResults.add(labResult);
+
+			labResult = LabResultService.INSTANCE.create();
+			labResult.setItem(labItem);
+			labResult.setPatient(patient);
+			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 15, 10, 10, 30));
+			labResult.setOriginId(laboratory.getId());
+			labResult.setResult("2");
+			labResult.setComment("no comment");
+			LabResultService.INSTANCE.flush();
+			labResults.add(labResult);
 
 			isLabResultInitialized = true;
 		}
 	}
 
-	public static LabResult getLabResult() {
-		return labResult;
+	public static List<LabResult> getLabResults() {
+		return labResults;
 	}
 
 	/**
