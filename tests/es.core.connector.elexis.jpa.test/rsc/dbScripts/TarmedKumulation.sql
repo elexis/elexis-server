@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS TARMED_KUMULATION (
-  ID varchar(25) NOT NULL,
+  ID varchar(25) NOT NULL PRIMARY KEY,
   lastupdate bigint(20) DEFAULT NULL,
   deleted char(1) DEFAULT '0', 
   MasterCode varchar(25) DEFAULT NULL,
@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS TARMED_KUMULATION (
   `View` char(1) DEFAULT NULL,
   ValidSide char(1) DEFAULT NULL,
   ValidFrom char(10) DEFAULT NULL,
-  ValidTo char(10) DEFAULT NULL,
-  PRIMARY KEY (ID),
+  ValidTo char(10) DEFAULT NULL
 );
 
 INSERT INTO tarmed_kumulation VALUES ('a1048ff50b7dc4ad01610',1457858862395,'0','04.0210','L','04.0230','L','E','V','0','20010101','21991231');
