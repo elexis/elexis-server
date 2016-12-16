@@ -1,5 +1,7 @@
 package es.fhir.rest.core.model.util.transformer.helper;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,25 +9,17 @@ import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.lock.types.LockInfo;
-import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.FallConstants;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 public class BehandlungHelper extends AbstractHelper {
-
-	private static Logger logger = LoggerFactory.getLogger(AbstractHelper.class);
 
 	public static Optional<Behandlung> createBehandlung(IEncounter iEncounter) {
 		Optional<Behandlung> ret = getBehandlung(iEncounter);
@@ -36,7 +30,13 @@ public class BehandlungHelper extends AbstractHelper {
 				Behandlung behandlung = BehandlungService.INSTANCE.create();
 				behandlung.setFall(getOrCreateDefaultFall(patient.get()));
 				serviceProvider.ifPresent(sp -> behandlung.setMandant(sp));
-
+				Optional<LocalDateTime> startTime = iEncounter.getStartTime();
+				if (startTime.isPresent()) {
+					behandlung.setDatum(startTime.get().toLocalDate());
+				} else {
+					behandlung.setDatum(LocalDate.now());
+				}
+				BehandlungService.INSTANCE.flush();
 				acquireAndReleaseLock(behandlung);
 				
 				ret = Optional.of(behandlung);
@@ -54,16 +54,6 @@ public class BehandlungHelper extends AbstractHelper {
 			acquireAndReleaseLock(defaultFall);
 		}
 		return defaultFall;
-	}
-
-	private static void acquireAndReleaseLock(AbstractDBObjectIdDeleted dbObj) {
-		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(dbObj, 5);
-		if (lr.isPresent()) {
-			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
-			if (!lrs.isOk()) {
-				logger.warn("Could not release lock for [{}] [{}]", dbObj.getClass().getName(), dbObj.getId());
-			}
-		}
 	}
 
 	private static Fall createDefaultFall(Kontakt kontakt) {

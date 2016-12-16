@@ -22,6 +22,7 @@ import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.codes.ICodingService;
 import ch.rgw.tools.VersionedResource;
 import es.fhir.rest.core.IFhirTransformer;
+import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -130,6 +131,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 			vResource.update(text.toString(), "From FHIR");
 			cons.setEintrag(vResource);
 			BehandlungService.INSTANCE.flush();
+			AbstractHelper.acquireAndReleaseLock(cons);
 		});
 	}
 
