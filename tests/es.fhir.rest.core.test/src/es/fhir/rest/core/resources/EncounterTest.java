@@ -72,7 +72,7 @@ public class EncounterTest {
 		assertNotNull(readEncounter);
 		assertEquals(encounter.getId(), readEncounter.getId());
 
-		// search with date parameter
+		// search by patient and date
 		results = client.search().forResource(Encounter.class).where(Encounter.PATIENT.hasId(readPatient.getId()))
 				.and(Encounter.DATE.afterOrEquals().day("2016-09-01"))
 				.and(Encounter.DATE.beforeOrEquals().day("2016-10-01")).returnBundle(Bundle.class).execute();
@@ -80,7 +80,7 @@ public class EncounterTest {
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
 
-		// search by patient and date
+		// search by patient and date not found
 		results = client.search().forResource(Encounter.class).where(Encounter.PATIENT.hasId(readPatient.getId()))
 				.and(Encounter.DATE.afterOrEquals().day("2016-10-01"))
 				.and(Encounter.DATE.beforeOrEquals().day("2016-11-01")).returnBundle(Bundle.class).execute();

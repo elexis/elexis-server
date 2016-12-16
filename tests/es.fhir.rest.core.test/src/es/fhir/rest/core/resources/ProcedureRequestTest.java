@@ -1,13 +1,17 @@
 package es.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Condition;
@@ -69,8 +73,9 @@ public class ProcedureRequestTest {
 		EncounterParticipantComponent participant = new EncounterParticipantComponent();
 		participant.setIndividual(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
 		encounter.addParticipant(participant);
-		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
-				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
+		encounter.setPeriod(
+				new Period().setStart(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atStartOfDay()))
+						.setEnd(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atTime(23, 59, 59))));
 		encounter.setPatient(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
 
 		encounter.addIndication(
@@ -106,8 +111,18 @@ public class ProcedureRequestTest {
 		assertTrue(readProcedureRequest.getText().getDivAsString().contains("Test"));
 		
 		// check if the consultation text has been updated
-		Encounter readEncounter = client.read().resource(Encounter.class).withId(encounterOutcome.getId()).execute();
+		// search by patient and date
+		Bundle results = client.search().forResource(Encounter.class)
+				.where(Encounter.PATIENT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.and(Encounter.DATE.exactly()
+						.day(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atStartOfDay())))
+				.returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		List<BundleEntryComponent> entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+		Encounter readEncounter = (Encounter) entries.get(0).getResource();
 		assertNotNull(readEncounter);
+		assertEquals(readEncounter.getIdElement().getIdPart(), encounterOutcome.getId().getIdPart());
 		List<Identifier> identifier = readEncounter.getIdentifier();
 		String consultationId = null;
 		for (Identifier id : identifier) {
