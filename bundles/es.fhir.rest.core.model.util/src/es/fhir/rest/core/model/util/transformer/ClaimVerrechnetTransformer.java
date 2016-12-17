@@ -169,9 +169,11 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 				Optional<Kontakt> mandator = KontaktService.INSTANCE
 						.findById(providerRef.getReferenceElement().getIdPart());
 				if (mandator.isPresent()) {
-					if (!behandlung.get().getFall().getId().equals(fall.getId())) {
-						behandlung.get().setFall(fall);
-					}
+					// if
+					// (!behandlung.get().getFall().getId().equals(fall.getId()))
+					// {
+					// behandlung.get().setFall(fall);
+					// }
 					
 					for (Diagnosis diag : diagnose) {
 						BehandlungService.INSTANCE.setDiagnosisOnConsultation(behandlung.get(), diag);
@@ -186,6 +188,9 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 						ret.addAll(billed);
 					}
 				}
+			} else {
+				LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
+						.error("Could not bill items, Behandlung not found. ");
 			}
 			return ret;
 		}
@@ -268,11 +273,12 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 				}
 			}
 			// if not found create
-			Optional<Kontakt> mandator = KontaktService.INSTANCE
-					.findById(providerRef.getReferenceElement().getIdPart());
-			if (mandator.isPresent()) {
-				return Optional.of(BehandlungService.INSTANCE.create(fall, mandator.get()));
-			}
+			// Optional<Kontakt> mandator = KontaktService.INSTANCE
+			// .findById(providerRef.getReferenceElement().getIdPart());
+			// if (mandator.isPresent()) {
+			// return Optional.of(BehandlungService.INSTANCE.create(fall,
+			// mandator.get()));
+			// }
 			return Optional.empty();
 		}
 
