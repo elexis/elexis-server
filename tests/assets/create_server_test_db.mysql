@@ -1,0 +1,25 @@
+-- Copyright (c) 2016 by Niklaus Giger niklaus.giger@member.fsf.org
+--
+-- All rights reserved. This program and the accompanying materials
+-- are made available under the terms of the Eclipse Public License v1.0
+-- which accompanies this distribution, and is available at
+-- http:#www.eclipse.org/legal/epl-v10.html
+--
+-- Small helper to setup a small test database for the elexis server
+-- we assume that this script is run inside a mysql (as root)
+--
+create database if not exists elexis_server_test;
+-- next statement for mysql
+connect elexis_server_test;
+SET autocommit=0;
+source createDB.script
+source dbScripts/BillingVKPreise.sql
+source dbScripts/ArzttarifePhysio.sql
+source dbScripts/User.sql
+source dbScripts/Role.sql
+source dbScripts/LaborTarif2009.sql
+source dbScripts/Tarmed.sql
+source dbScripts/sampleContacts.sql
+source dbScripts/LaborItemsWerteResults.sql
+source dbScripts/ArtikelstammItem.sql
+source dbScripts/TarmedKumulation.sql

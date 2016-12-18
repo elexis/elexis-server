@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--       # this variables also used tests/docker-compose.yaml -->
+<dbConnection hostName="mysql_es" port="3306" databaseName="elexis_server_test"
+              connectionString="jdbc:mysql://mysql_es:3306/elexis_server_test" username="es" password="elexisTest">
+    <rdbmsType>MYSQL</rdbmsType>
+</dbConnection>

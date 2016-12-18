@@ -1,0 +1,20 @@
+#!/bin/bash
+# Copyright 2016 (c) by Niklaus Giger
+# License EPL
+# Small helper to startup the elexis-server inside a docker container
+cd `dirname $0`
+pwd
+export OSGI_CONSOLE=localhost:7234
+export ELS_HOMEDIR=${HOME}/elexis-server/
+./wait-for-it.sh --timeout=90 ${MYSQL_HOST}:3306 -- echo "mysql database server ${MYSQL_HOST} is up"
+cd rsc
+echo Will create test database
+cat ../create_server_test_db.mysql | mysql --host=${MYSQL_HOST} --password=${MYSQL_PASSWORD} --user=${MYSQL_USER}
+cd `dirname $0`
+echo "connect to elexis-server osgi console: telnet ${OSGI_CONSOLE}"
+echo "Currently you must got into the docker using docker-compose exec es /bin/bash"
+echo "Created test database. Will start elexis-server now"
+./elexis-server -console ${OSGI_CONSOLE} > ${ELS_HOMEDIR}/logs/console.log 2>&1
+echo "Going into eternal loop to help you find errors."
+while true; do; sleep 10; done
+

@@ -1,0 +1,48 @@
+# Copyright (c) 2016 by Niklaus Giger niklaus.giger@member.fsf.org
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http:#www.eclipse.org/legal/epl-v10.html
+#
+# This is a setup for running tests
+# Security is not really a concern!
+#
+version: '2.0'
+services:
+  mysql_es:
+    image: mysql:5.7
+    networks:
+      private:
+    volumes:
+      #- assets/mysql_elexis.cnf:/etc/my.cnf
+      # File in this directory must not be world readable or the mysqld will simply ignore it!
+      - ${PWD}/assets:/etc/mysql/conf.d
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: dummy
+      # this variables also used tests/assets/elexis-connection.xml
+      MYSQL_USER: es
+      MYSQL_PASSWORD: elexisTest
+      MYSQL_DATABASE: elexis_server_test
+
+  es: # elexis-server
+    build: .
+    networks:
+      private:
+      public:
+    ports:
+      - 8380:8380
+      - 7234:7234
+    volumes:
+      - ${PWD}/es.core.connector.elexis.jpa.test/rsc:/app/rsc
+      - ${PWD}/logs:/home/es/elexis-server/logs
+    depends_on:
+        - mysql_es
+    environment:
+      MYSQL_USER: es
+      MYSQL_HOST: mysql_es
+      MYSQL_PASSWORD: elexisTest
+      MYSQL_DATABASE: elexis_server_test
+networks:
+  public:
+  private:
