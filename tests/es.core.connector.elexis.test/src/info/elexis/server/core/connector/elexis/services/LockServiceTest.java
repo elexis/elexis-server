@@ -109,7 +109,7 @@ public class LockServiceTest {
 	}
 
 	@Test
-	public void testAcquireLockBlocking() {
+	public void testAcquireLockBlocking() throws InterruptedException {
 		LockInfo lockInfo1 = new LockInfo("objStoreToString::11", LOCK_USER_A, "testUuid1");
 		LockInfo lockInfo2 = new LockInfo("objStoreToString::11", LOCK_USER_B, "testUuid2");
 
@@ -135,7 +135,8 @@ public class LockServiceTest {
 		long start = System.currentTimeMillis();
 		LockResponse lockResponse2 = service.acquireLockBlocking(lockInfo2, 5);
 		long end = System.currentTimeMillis();
-		assertTrue(end - start > 500);
+		thread.join();
+		assertTrue(end - start > 350);
 		assertTrue(lockResponse2.isOk());
 		assertFalse(thread.isAlive());
 	}

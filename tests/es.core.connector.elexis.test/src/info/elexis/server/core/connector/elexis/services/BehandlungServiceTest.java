@@ -7,21 +7,27 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.model.InvoiceState;
+import ch.elexis.core.status.ObjectStatus;
 import ch.rgw.tools.Money;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Invoice;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 
 public class BehandlungServiceTest extends AbstractServiceTest {
 
 	@Before
 	public void initialize() {
+		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
 	}
 
@@ -83,6 +89,43 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertTrue(!chargeBillableZuschlagOnBehandlung.isOK());
 
 		InvoiceService.INSTANCE.remove(invoice);
+	}
+
+	@Test
+	public void testConsultationIsEditable() {
+		Behandlung kons = testBehandlungen.get(1);
+		Kontakt mandator = testContacts.get(1);
+		assertEquals(true, BehandlungService.isEditable(kons, mandator).isOK());
+
+		Fall fall = kons.getFall();
+		fall.setDatumBis(LocalDate.now());
+		FallService.INSTANCE.write(fall);
+
+		MultiStatus ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);
+		assertEquals(false, ms.isOK());
+		assertEquals(1, ms.getChildren().length);
+
+		ms = (MultiStatus) BehandlungService.isEditable(kons, testContacts.get(0));
+		assertEquals(false, ms.isOK());
+		assertEquals(2, ms.getChildren().length);
+
+		Invoice invoice = InvoiceService.INSTANCE.create("26", mandator, kons.getFall(), LocalDate.now().minusWeeks(2),
+				LocalDate.now(), new Money(34.50), InvoiceState.OFFEN);
+		kons.setInvoice(invoice);
+
+		ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);
+		assertEquals(false, ms.isOK());
+		assertEquals(2, ms.getChildren().length);
+
+		ms = (MultiStatus) BehandlungService.isEditable(kons, testContacts.get(0));
+		assertEquals(false, ms.isOK());
+		assertEquals(3, ms.getChildren().length);
+
+		invoice.setState(InvoiceState.STORNIERT);
+
+		ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);
+		assertEquals(false, ms.isOK());
+		assertEquals(1, ms.getChildren().length);
 	}
 
 }
