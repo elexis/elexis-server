@@ -22,6 +22,8 @@ public class KontaktServiceTest extends AbstractServiceTest {
 	@Test
 	public void testCreateAndDeleteKontakt() throws InstantiationException, IllegalAccessException {
 		Kontakt val = KontaktService.INSTANCE.create();
+		assertNotNull(val.getId());
+		assertNotNull(val.getLastupdate());
 		Kontakt findById = KontaktService.INSTANCE.findById(val.getId()).get();
 		assertEquals(val.getId(), findById.getId());
 		KontaktService.INSTANCE.remove(val);

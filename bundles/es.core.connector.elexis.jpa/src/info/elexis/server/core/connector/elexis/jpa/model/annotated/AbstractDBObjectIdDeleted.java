@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -20,6 +21,11 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.Abs
 @MappedSuperclass
 @EntityListeners(AbstractDBObjectEntityListener.class)
 public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
+
+	public AbstractDBObjectIdDeleted() {
+		String randomString = UUID.randomUUID().toString().replaceAll("-", "");
+		id = (randomString.length() <= 24) ? randomString : randomString.substring(0, 24);
+	}
 
 	@Id
 	@GeneratedValue(generator = "system-uuid")

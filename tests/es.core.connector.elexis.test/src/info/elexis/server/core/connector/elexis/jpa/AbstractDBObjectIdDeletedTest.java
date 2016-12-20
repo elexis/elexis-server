@@ -8,16 +8,19 @@ import org.junit.Test;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 public class AbstractDBObjectIdDeletedTest {
 
 	@Test
 	public void testOverrideEqualsAndHashCode() {
 		Kontakt k = new Kontakt();
+		Kontakt k2 = new Kontakt();
+		assertNotEquals(k, k2);
+
 		k.setId("testId");
 		k.setLastupdate(BigInteger.valueOf(1));
 		assertEquals(k, k);
-		Kontakt k2 = new Kontakt();
 		k2.setId("testId");
 		k2.setLastupdate(BigInteger.valueOf(1));
 		Kontakt k3 = new Kontakt();
@@ -50,6 +53,17 @@ public class AbstractDBObjectIdDeletedTest {
 		assertNotEquals(k.hashCode(), f.hashCode());
 		assertNotEquals(k4.hashCode(), k.hashCode());
 		assertNotEquals(k5.hashCode(), k.hashCode());
+		
+		Kontakt kc1 = KontaktService.INSTANCE.create();
+		Kontakt kc2 = new Kontakt();
+		assertNotEquals(kc1, kc2);
+		assertNotEquals(kc1.hashCode(), kc2.hashCode());
+		kc2.setId(kc1.getId());
+		kc2.setLastupdate(kc1.getLastupdate());
+		assertEquals(kc1, kc2);
+		assertEquals(kc1.hashCode(), kc2.hashCode());
+		
+		KontaktService.INSTANCE.remove(kc1);
 	}
 
 }
