@@ -43,7 +43,7 @@ public abstract class AbstractServiceTest {
 
 	public void cleanup() {
 		for (Behandlung cons : testBehandlungen) {
-			List<Verrechnet> verrechnet = cons.getVerrechnet();
+			List<Verrechnet> verrechnet =VerrechnetService.getAllVerrechnetForBehandlung(cons);
 			for (Verrechnet verrechnet2 : verrechnet) {
 				System.out
 						.println("Deleting verrechnet " + verrechnet2.getLabel() + " on behandlung " + cons.getLabel());

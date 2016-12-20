@@ -32,7 +32,7 @@ public class DefaultOptifier implements IOptifier {
 			final Kontakt mandatorContact) {
 		BehandlungService.INSTANCE.refresh(kons);
 		Verrechnet foundVerrechnet = null;
-		for (Verrechnet verrechnet : kons.getVerrechnet()) {
+		for (Verrechnet verrechnet : VerrechnetService.getAllVerrechnetForBehandlung(kons)) {
 			Optional<IBillable> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
 			if (!vrElement.isPresent()) {
 				// #2454 This should not happen, may however if we have to
@@ -83,6 +83,7 @@ public class DefaultOptifier implements IOptifier {
 			vr.setSecondaryScaleFactor(newCount);
 			vr.setLeistungenText(vr.getLeistungenText() + " (" + Double.toString(newCount) + ")");
 		}
+		VerrechnetService.INSTANCE.write(vr);
 
 		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
 		if (verrechenbar.isPresent() && ((verrechenbar.get() instanceof VerrechenbarArtikelstammItem)

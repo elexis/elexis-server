@@ -75,7 +75,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		bOptify = UserconfigService.INSTANCE.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
 
 		TarmedLeistung tc = code.getEntity();
-		List<Verrechnet> lst = kons.getVerrechnet();
+		List<Verrechnet> lst = VerrechnetService.getAllVerrechnetForBehandlung(kons);
 		boolean checkBezug = false;
 		boolean bezugOK = true;
 		/*
@@ -249,6 +249,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 			newVerrechnet.setDetail(AL, Integer.toString(tc.getAL()));
 			newVerrechnet.setDetail(TL, Integer.toString(tc.getTL()));
+			VerrechnetService.INSTANCE.write(newVerrechnet);
 			lst.add(newVerrechnet);
 		}
 
@@ -513,7 +514,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	@SuppressWarnings("rawtypes")
 	public IStatus optify(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 		List<TarmedLeistung> postponed = new LinkedList<TarmedLeistung>();
-		for (Verrechnet vv : kons.getVerrechnet()) {
+		for (Verrechnet vv : VerrechnetService.getAllVerrechnetForBehandlung(kons)) {
 			Optional<IBillable> iv = VerrechnetService.INSTANCE.getVerrechenbar(vv);
 			if (iv.isPresent() && iv.get() instanceof TarmedLeistung) {
 				TarmedLeistung tl = (TarmedLeistung) iv.get();

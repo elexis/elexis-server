@@ -33,6 +33,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistu
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.VKPreis;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.VKPreis_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class VerrechnetService extends AbstractService<Verrechnet> {
 
@@ -167,5 +169,11 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 			}
 		}
 		return Status.OK_STATUS;
+	}
+	
+	public static List<Verrechnet> getAllVerrechnetForBehandlung(Behandlung behandlung) {
+		JPAQuery<Verrechnet> qre = new JPAQuery<Verrechnet>(Verrechnet.class);
+		qre.add(Verrechnet_.behandlung, QUERY.EQUALS, behandlung);
+		return qre.execute();
 	}
 }

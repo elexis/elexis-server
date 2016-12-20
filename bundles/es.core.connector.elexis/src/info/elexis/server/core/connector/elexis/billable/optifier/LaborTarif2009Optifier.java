@@ -93,7 +93,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 				deadline = LocalDate.of(2013, 6, 30);
 			}
 
-			List<Verrechnet> list = kons.getVerrechnet();
+			List<Verrechnet> list = VerrechnetService.getAllVerrechnetForBehandlung(kons);
 			Verrechnet v470710 = null;
 			Verrechnet v470720 = null;
 			Verrechnet v4708 = null;

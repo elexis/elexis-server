@@ -63,7 +63,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 
 		chargeBillableOnBehandlung = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(0), vtl,
 				testContacts.get(0), testContacts.get(0));
-		assertTrue(!chargeBillableOnBehandlung.isOK());
+		assertFalse(chargeBillableOnBehandlung.isOK());
 	}
 
 	@Test

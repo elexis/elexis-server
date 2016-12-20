@@ -5,10 +5,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Consultation
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Invoice;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import java.time.LocalDate;
 import javax.annotation.Generated;
-import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
@@ -18,7 +16,6 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class Behandlung_ { 
 
     public static volatile SingularAttribute<Behandlung, LocalDate> datum;
-    public static volatile ListAttribute<Behandlung, Verrechnet> verrechnet;
     public static volatile SingularAttribute<Behandlung, Fall> fall;
     public static volatile SingularAttribute<Behandlung, Kontakt> mandant;
     public static volatile SingularAttribute<Behandlung, VersionedResource> eintrag;

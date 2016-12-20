@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -46,10 +45,6 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "VersionedResourceConverter")
 	private VersionedResource eintrag;
-
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "BEHANDLUNG", insertable = false, updatable = false)
-	private List<Verrechnet> verrechnet;
 
 	public Fall getFall() {
 		return fall;
@@ -111,13 +106,5 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 
 	public void setEintrag(VersionedResource eintrag) {
 		this.eintrag = eintrag;
-	}
-
-	public List<Verrechnet> getVerrechnet() {
-		return verrechnet;
-	}
-
-	public void setVerrechnet(List<Verrechnet> verrechnet) {
-		this.verrechnet = verrechnet;
 	}
 }

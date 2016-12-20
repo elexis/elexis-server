@@ -47,6 +47,8 @@ public class BillingTest extends AbstractServiceTest {
 
 	private Verrechnet vr;
 
+	private TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
+
 	@BeforeClass
 	public static void init() {
 		JPAQuery<Kontakt> mandantQuery = new JPAQuery<Kontakt>(Kontakt.class);
@@ -62,6 +64,7 @@ public class BillingTest extends AbstractServiceTest {
 	public void before() {
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
+		createTestMandantPatientFallBehandlung();
 	}
 
 	@After
@@ -71,7 +74,6 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testBehandlungResolvesVerrechnet() {
-		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
 		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, null);
 
@@ -81,8 +83,9 @@ public class BillingTest extends AbstractServiceTest {
 		assertNotNull(vr);
 		assertTrue(os.isOK());
 
-		assertTrue(vr.getBehandlung().getVerrechnet().size() > 0);
-		assertTrue(vr.getBehandlung().getVerrechnet().contains(vr));
+		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(vr.getBehandlung());
+		assertTrue(allVerrechnet.size() > 0);
+		assertTrue(allVerrechnet.contains(vr));
 	}
 
 	@Test
@@ -151,7 +154,6 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testAddTarmedBilling() {
-		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
 		TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null).get();
 		TarmedLeistung code_000750 = TarmedLeistungService.findFromCode("00.0750", null).get();
 		assertNotNull(code_000015);
@@ -192,12 +194,14 @@ public class BillingTest extends AbstractServiceTest {
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
+		assertEquals(TarmedOptifier.SIDE_L, vr.getDetail().get(TarmedOptifier.SIDE));
 
 		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.getMessage(), status.isOK());
 		os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
+		assertEquals(TarmedOptifier.SIDE_R, vr.getDetail().get(TarmedOptifier.SIDE));
 
 		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
 		assertFalse(status.getMessage(), status.isOK());
@@ -219,6 +223,30 @@ public class BillingTest extends AbstractServiceTest {
 		assertFalse(status.isOK());
 		status = tlTapingCat1V.add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.isOK());
+	}
+
+	@Test
+	public void testMultipleIncompatibleBillingIfBillingWasDeleted() {
+		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
+
+		IStatus status = vlt_000010.add(testBehandlungen.get(2), userContact, mandator);
+		assertTrue(status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		Verrechnet vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		status = vlt_000010.add(testBehandlungen.get(2), userContact, mandator);
+		assertFalse(status.isOK());
+
+		vr.setDeleted(true);
+		VerrechnetService.INSTANCE.write(vr);
+
+		status = vlt_000010.add(testBehandlungen.get(2), userContact, mandator);
+		assertTrue(status.isOK());
+		os = (ObjectStatus) status;
+		Verrechnet vr2 = (Verrechnet) os.getObject();
+		assertNotNull(vr2);
+		assertNotEquals(vr2, vr);
 	}
 
 	@Test
@@ -336,7 +364,6 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testChangeCountAddOnVerrechnetInvalid() {
-		TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
 
 		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, mandator);
@@ -367,8 +394,9 @@ public class BillingTest extends AbstractServiceTest {
 		IStatus valid = VerrechnetService.changeCountValidated(vr, 3, mandator);
 		assertTrue(valid.isOK());
 
-		assertEquals(1, vr.getBehandlung().getVerrechnet().size());
-		assertEquals(3, vr.getBehandlung().getVerrechnet().get(0).getZahl());
+		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(vr.getBehandlung());
+		assertEquals(1, allVerrechnet.size());
+		assertEquals(3, allVerrechnet.get(0).getZahl());
 		Double ppub = Double.valueOf(artikelstammItem.get().getPpub()) * 100;
 		assertEquals(ppub.intValue(), vr.getVk_tp());
 		assertEquals(ppub.intValue(), vr.getVk_preis());
@@ -391,20 +419,22 @@ public class BillingTest extends AbstractServiceTest {
 		BehandlungService.INSTANCE.refresh(testBehandlungen.get(1));
 		VerrechnetService.INSTANCE.refresh(vr);
 
-		assertEquals(vr.getId(), testBehandlungen.get(1).getVerrechnet().get(0).getId());
-		assertEquals(1, testBehandlungen.get(1).getVerrechnet().size());
-		assertEquals(3, testBehandlungen.get(1).getVerrechnet().get(0).getZahl());
+		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(1));
+		assertEquals(vr.getId(), allVerrechnet.get(0).getId());
+		assertEquals(1, allVerrechnet.size());
+		assertEquals(3, allVerrechnet.get(0).getZahl());
 		Double ppub = Double.valueOf(artikelstammItem.get().getPpub()) * 100;
 		assertEquals(ppub.intValue(), vr.getVk_tp());
 		assertEquals(ppub.intValue(), vr.getVk_preis());
 
-		valid = VerrechnetService.changeCountValidated(testBehandlungen.get(1).getVerrechnet().get(0), 1, mandator);
+		allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(1));
+		valid = VerrechnetService.changeCountValidated(allVerrechnet.get(0), 1, mandator);
 		assertTrue(valid.isOK());
 
 		BehandlungService.INSTANCE.refresh(testBehandlungen.get(1));
 
-		assertEquals(1, testBehandlungen.get(1).getVerrechnet().size());
-		assertEquals(1, testBehandlungen.get(1).getVerrechnet().get(0).getZahl());
+		assertEquals(1, allVerrechnet.size());
+		assertEquals(1, allVerrechnet.get(0).getZahl());
 	}
 
 	@Test

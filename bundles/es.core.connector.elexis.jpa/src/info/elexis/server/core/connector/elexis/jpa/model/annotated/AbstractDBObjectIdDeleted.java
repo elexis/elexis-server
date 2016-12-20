@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -24,7 +25,7 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	@GeneratedValue(generator = "system-uuid")
 	@Column(unique = true, nullable = false, length = 25)
 	private String id;
-	
+
 	@Column
 	@Convert("booleanStringConverter")
 	protected boolean deleted = false;
@@ -33,15 +34,15 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 	@JoinColumn(name = "object", insertable = false, updatable = false)
 	@MapKey(name = "domain")
 	protected Map<String, Xid> xids;
-	
+
 	public String getId() {
 		return id;
 	}
-	
+
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public boolean isDeleted() {
 		return deleted;
 	}
@@ -50,7 +51,7 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 		this.deleted = deleted;
 		// TODO if true, remove all Xids
 	}
-	
+
 	public Map<String, Xid> getXids() {
 		return xids;
 	}
@@ -59,7 +60,24 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 		this.xids = xids;
 	}
 
-	public String getLabel(){
-		return super.getLabel()+(isDeleted() ? " D ": "   ")+" ["+String.format("%25S", getId())+"]";
+	public String getLabel() {
+		return super.getLabel() + (isDeleted() ? " D " : "   ") + " [" + String.format("%25S", getId()) + "]";
 	};
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj == null || !getClass().equals(obj.getClass())) {
+			return false;
+		}
+		AbstractDBObjectIdDeleted other = (AbstractDBObjectIdDeleted) obj;
+		return (Objects.equals(getId(), other.getId()) && Objects.equals(getLastupdate(), other.getLastupdate()));
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getClass().hashCode(), getId(), getLastupdate());
+	}
 }
