@@ -10,11 +10,17 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
+/**
+ * @see https://redmine.medelexis.ch/projects/incomingtickets/time_entries?issue_id=5455
+ * @author marco
+ *
+ */
 public class AbstractDBObjectIdDeletedTest {
 
 	@Test
 	public void testOverrideEqualsAndHashCode() {
 		Kontakt k = new Kontakt();
+		k.setId(null);
 		Kontakt k2 = new Kontakt();
 		assertNotEquals(k, k2);
 

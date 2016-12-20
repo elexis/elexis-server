@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Optional;
 
+import javax.swing.text.StyledEditorKit.ForegroundAction;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.After;
@@ -85,7 +87,16 @@ public class BillingTest extends AbstractServiceTest {
 
 		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(vr.getBehandlung());
 		assertTrue(allVerrechnet.size() > 0);
-		assertTrue(allVerrechnet.contains(vr));
+		boolean contains = false;
+		// https://redmine.medelexis.ch/projects/incomingtickets/time_entries?issue_id=5455
+		// replaced allVerrechnet.contains(vr)
+		for (Verrechnet verrechnet : allVerrechnet) {
+			if (vr.getId().equals(verrechnet.getId())) {
+				contains = true;
+				break;
+			}
+		}
+		assertTrue(contains);
 	}
 
 	@Test
