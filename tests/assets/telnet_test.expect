@@ -1,0 +1,11 @@
+#!/usr/bin/env expect
+spawn telnet localhost 7234
+expect "osgi>"
+send "ls\n"
+expect "osgi>"
+send "ls\n"
+expect "osgi>"
+send "es_p2 features install info.elexis.server.fhir.rest.core.feature.feature.group install the feature\n"
+expect "osgi>"
+send "es system halt\n"
+expect " Connection closed by foreign host"

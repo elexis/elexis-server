@@ -1,0 +1,33 @@
+#!/bin/bash
+# Copyright 2016 (c) by Niklaus Giger
+# License EPL
+# Small helper to startup the elexis-server inside a docker container
+cd `dirname $0`
+pwd
+export MARKER_FILE=${HOME}/marker
+export OSGI_CONSOLE=localhost:7234
+export ELS_HOMEDIR=${HOME}/elexis-server/
+./wait-for-it.sh --timeout=90 ${MYSQL_HOST}:3306 -- echo "mysql database server ${MYSQL_HOST} is up"
+
+echo "Checking whether ${MARKER_FILE} exists"
+if [ -f "${MARKER_FILE}" ]; then
+echo "Skipping creating test database and install FHIR services. Removing elexis-server.lock"
+rm /home/es/elexis-server/elexis-server.lock
+else
+  cd rsc
+  echo Will create test database
+  cat ../create_server_test_db.mysql | mysql --host=${MYSQL_HOST} --password=${MYSQL_PASSWORD} --user=${MYSQL_USER}
+  echo "Created test database"
+  cd `dirname $0`
+
+  /app/install_fhir.sh
+  echo "Creating marker at `date`" | tee ${MARKER_FILE}
+  echo "${MARKER_FILE} created"
+  echo ls -l ${MARKER_FILE}
+fi
+
+echo "Will start elexis-server now"
+./elexis-server -console ${OSGI_CONSOLE} > ${ELS_HOMEDIR}/logs/console.log 2>&1
+echo "Going into eternal loop to help you find errors."
+while true; do sleep 10; done
+
