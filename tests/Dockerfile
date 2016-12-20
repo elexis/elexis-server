@@ -29,16 +29,18 @@ RUN git clone https://github.com/elexis/elexis-server.git /opt/elexis-server
 # RUN cd  /opt/elexis-server &&  mvn --show-version --file releng/es.parent/pom.xml clean verify -Dmaven.test.skip
 # we download and install the generated product from the Jenkins
 RUN mkdir app && cd /app && wget --quiet  http://download.elexis.info/elexis-server/products/master/info.elexis.server.runtime.product-linux.gtk.x86_64.zip
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends expect
 # procs to allow ps for debugging
 RUN cd /app && ls -lh && \
     unzip -q info.elexis.server.runtime.product-linux.gtk.x86_64.zip
 COPY assets/mysql_elexis.cnf /etc/mysql/conf.d/mysql_elexis.cnf
-COPY assets/start_elexis_server_test assets/wait-for-it.sh assets/create_server_test_db.mysql /app/
 RUN adduser  --disabled-password --gecos "" es
 RUN chown -R es:es /app  /home/es/
 USER es
 RUN mkdir -p /home/es/elexis-server/logs
 COPY assets/shiro.ini assets/elexis-connection.xml /home/es/elexis-server/
+COPY assets/start_elexis_server_test assets/wait-for-it.sh assets/create_server_test_db.mysql assets/telnet_test.expect assets/install_fhir.sh /app/
+# RUN /app/install_fhir.sh
 CMD /app/start_elexis_server_test
 WORKDIR /home/es
