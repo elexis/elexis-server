@@ -37,8 +37,6 @@ public class BehandlungHelper extends AbstractHelper {
 					behandlung.setDatum(LocalDate.now());
 				}
 				BehandlungService.INSTANCE.flush();
-				acquireAndReleaseLock(behandlung);
-				
 				ret = Optional.of(behandlung);
 			}
 		}
@@ -50,7 +48,6 @@ public class BehandlungHelper extends AbstractHelper {
 		Fall defaultFall = lookUpDefaultFall(faelle);
 		if (defaultFall == null) {
 			defaultFall = createDefaultFall(kontakt);
-
 			acquireAndReleaseLock(defaultFall);
 		}
 		return defaultFall;
@@ -61,14 +58,20 @@ public class BehandlungHelper extends AbstractHelper {
 	}
 
 	private static Fall lookUpDefaultFall(List<Fall> faelle) {
+		Fall ret = null;
 		if (faelle != null) {
 			for (Fall fall : faelle) {
 				if (fall.getBezeichnung().equals("online")) {
-					return fall;
+					// is the only, or the newest online fall
+					if (ret == null) {
+						ret = fall;
+					} else if (ret != null && (fall.getLastupdate().compareTo(ret.getLastupdate()) == 1)) {
+						ret = fall;
+					}
 				}
 			}
 		}
-		return null;
+		return ret;
 	}
 
 	private static Optional<Behandlung> getBehandlung(IEncounter iEncounter) {

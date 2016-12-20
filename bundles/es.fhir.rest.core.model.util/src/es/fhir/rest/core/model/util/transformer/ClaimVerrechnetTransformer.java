@@ -25,8 +25,10 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.status.ObjectStatus;
 import es.fhir.rest.core.IFhirTransformer;
+import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
@@ -166,20 +168,25 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			List<Diagnosis> diagnose = getDiagnose(diagnosis);
 			Optional<Behandlung> behandlung = getOrCreateBehandlung(claim, fall, providerRef);
 			if (behandlung.isPresent()) {
+				Behandlung cons = behandlung.get();
 				Optional<Kontakt> mandator = KontaktService.INSTANCE
 						.findById(providerRef.getReferenceElement().getIdPart());
 				if (mandator.isPresent()) {
-					// if
-					// (!behandlung.get().getFall().getId().equals(fall.getId()))
-					// {
-					// behandlung.get().setFall(fall);
-					// }
+					if (!cons.getFall().getId().equals(fall.getId())) {
+						Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
+						if (lockInfo.isPresent()) {
+							cons.setFall(fall);
+							BehandlungService.INSTANCE.write(cons);
+							BehandlungService.INSTANCE.flush();
+							AbstractHelper.releaseLock(lockInfo.get());
+						}
+					}
 					
 					for (Diagnosis diag : diagnose) {
-						BehandlungService.INSTANCE.setDiagnosisOnConsultation(behandlung.get(), diag);
+						BehandlungService.INSTANCE.setDiagnosisOnConsultation(cons, diag);
 					}
 					for (BillableContext billable : billables) {
-						List<Verrechnet> billed = billable.bill(behandlung.get(), mandator.get(), mandator.get());
+						List<Verrechnet> billed = billable.bill(cons, mandator.get(), mandator.get());
 						if (billed.size() < billable.getAmount()) {
 							IStatus status = billable.getLastStatus();
 							LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
@@ -190,7 +197,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 				}
 			} else {
 				LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
-						.error("Could not bill items, Behandlung not found. ");
+						.error("Could not bill items, Behandlung not found.");
 			}
 			return ret;
 		}

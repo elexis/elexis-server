@@ -20,6 +20,7 @@ import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.codes.ICodingService;
+import ch.elexis.core.lock.types.LockInfo;
 import ch.rgw.tools.VersionedResource;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
@@ -104,34 +105,37 @@ public class ProcedureRequestIProcedureRequestTransformer
 	private void writeBehandlungSoapText(IEncounter iEncounter, ProcedureRequest procedureRequest) {
 		Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(iEncounter.getConsultationId());
 		behandlung.ifPresent(cons -> {
-			String subjectivText = getSubjectiveText(iEncounter);
-			String assessmentText = getAssessmentText(iEncounter);
-			String procedureText = getProcedureText(behandlung.get());
+			Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
+			if (lockInfo.isPresent()) {
+				String subjectivText = getSubjectiveText(iEncounter);
+				String assessmentText = getAssessmentText(iEncounter);
+				String procedureText = getProcedureText(behandlung.get());
 
-			StringBuilder text = new StringBuilder();
-			if (!subjectivText.isEmpty()) {
-				text.append("A:\n" + subjectivText);
-			}
-			if (!assessmentText.isEmpty()) {
-				if (text.length() > 0) {
-					text.append("\n\n");
+				StringBuilder text = new StringBuilder();
+				if (!subjectivText.isEmpty()) {
+					text.append("A:\n" + subjectivText);
 				}
-				text.append("B:\n" + assessmentText);
-			}
-			if (!procedureText.isEmpty()) {
-				if (text.length() > 0) {
-					text.append("\n\n");
+				if (!assessmentText.isEmpty()) {
+					if (text.length() > 0) {
+						text.append("\n\n");
+					}
+					text.append("B:\n" + assessmentText);
 				}
-				text.append("P:\n" + procedureText);
-			}
+				if (!procedureText.isEmpty()) {
+					if (text.length() > 0) {
+						text.append("\n\n");
+					}
+					text.append("P:\n" + procedureText);
+				}
 
-			logger.debug("Updating SOAP text of cons [" + cons.getId() + "]\n" + text.toString());
-			
-			VersionedResource vResource = VersionedResource.load(null);
-			vResource.update(text.toString(), "From FHIR");
-			cons.setEintrag(vResource);
-			BehandlungService.INSTANCE.flush();
-			AbstractHelper.acquireAndReleaseLock(cons);
+				logger.debug("Updating SOAP text of cons [" + cons.getId() + "]\n" + text.toString());
+
+				VersionedResource vResource = VersionedResource.load(null);
+				vResource.update(text.toString(), "From FHIR");
+				cons.setEintrag(vResource);
+				BehandlungService.INSTANCE.flush();
+				AbstractHelper.releaseLock(lockInfo.get());
+			}
 		});
 	}
 

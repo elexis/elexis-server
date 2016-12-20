@@ -14,6 +14,7 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
+import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
 import es.fhir.rest.core.model.util.transformer.helper.BehandlungHelper;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -70,7 +71,10 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 			patientKontakt.ifPresent(k -> iEncounter.setPatientId(k.getId()));
 			performerKontakt.ifPresent(k -> iEncounter.setMandatorId(k.getId()));
 			Optional<Behandlung> behandlung = BehandlungHelper.createBehandlung(iEncounter);
-			behandlung.ifPresent(b -> iEncounter.setConsultationId(b.getId()));
+			behandlung.ifPresent(cons -> {
+				iEncounter.setConsultationId(cons.getId());
+				AbstractHelper.acquireAndReleaseLock(cons);
+			});
 			findingsService.saveFinding(iEncounter);
 			return Optional.of(iEncounter);
 		} else {

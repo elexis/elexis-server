@@ -27,7 +27,14 @@ public class FallHelper extends AbstractHelper {
 	}
 
 	public void setBin(Fall fall, String bin) {
-		fall.setExtInfoValue("Versicherungsnummer", bin);
+		String billingMethod = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
+		if (billingMethod != null && !billingMethod.isEmpty()) {
+			if (billingMethod.equals("UVG")) {
+				fall.setExtInfoValue("Unfallnummer", bin);
+			} else {
+				fall.setExtInfoValue("Versicherungsnummer", bin);
+			}
+		}
 	}
 
 	public Reference getBeneficiaryReference(Fall fall) {

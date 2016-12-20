@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.model.FallConstants;
 import es.fhir.rest.core.IFhirTransformer;
+import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
 import es.fhir.rest.core.model.util.transformer.helper.FallHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -81,6 +82,9 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 					} else {
 						created.setDatumVon(LocalDate.now());
 					}
+					FallService.INSTANCE.write(created);
+					FallService.INSTANCE.flush();
+					AbstractHelper.acquireAndReleaseLock(created);
 					return Optional.of(created);
 				} else {
 					LoggerFactory.getLogger(CoverageFallTransformer.class)

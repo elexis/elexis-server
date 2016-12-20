@@ -49,7 +49,17 @@ public class AbstractHelper {
 			if (!lrs.isOk()) {
 				logger.warn("Could not release lock for [{}] [{}]", dbObj.getClass().getName(), dbObj.getId());
 			}
+		} else {
+			logger.warn("Could not acquire lock for [{}] [{}]", dbObj.getClass().getName(), dbObj.getId());
 		}
+	}
+
+	public static Optional<LockInfo> acquireLock(AbstractDBObjectIdDeleted dbObj) {
+		return LockServiceInstance.INSTANCE.acquireLockBlocking(dbObj, 5);
+	}
+
+	public static void releaseLock(LockInfo lockInfo) {
+		LockServiceInstance.INSTANCE.releaseLock(lockInfo);
 	}
 
 	public void setText(DomainResource domainResource, String text) {
