@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.ICoding;
@@ -125,13 +128,31 @@ public class ProcedureRequestModelAdapter extends AbstractModelAdapter<Procedure
 
 	@Override
 	public Optional<LocalDateTime> getScheduledTime() {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.ProcedureRequest fhirProcedureRequest = (org.hl7.fhir.dstu3.model.ProcedureRequest) resource
+					.get();
+			try {
+				if (fhirProcedureRequest.hasScheduledDateTimeType()) {
+					return Optional.of(getLocalDateTime(fhirProcedureRequest.getScheduledDateTimeType().getValue()));
+				}
+			} catch (FHIRException e) {
+				LoggerFactory.getLogger(ProcedureRequestModelAdapter.class).error("Could not access scheduled time.",
+						e);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override
 	public void setScheduledTime(LocalDateTime time) {
-		// TODO Auto-generated method stub
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			org.hl7.fhir.dstu3.model.ProcedureRequest fhirProcedureRequest = (org.hl7.fhir.dstu3.model.ProcedureRequest) resource
+					.get();
+			fhirProcedureRequest.setScheduled(new DateTimeType(getDate(time)));
 
+			saveResource(resource.get());
+		}
 	}
 }

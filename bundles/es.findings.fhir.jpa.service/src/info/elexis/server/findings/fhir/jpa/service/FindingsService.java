@@ -2,9 +2,11 @@ package info.elexis.server.findings.fhir.jpa.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -129,7 +131,6 @@ public class FindingsService implements IFindingsService {
 	}
 
 	private List<ProcedureRequestModelAdapter> getProcedureRequests(String patientId, String encounterId) {
-		List<ProcedureRequestModelAdapter> ret = new ArrayList<>();
 		JPAQuery<ProcedureRequest> query = new JPAQuery<>(ProcedureRequest.class);
 		if (patientId != null) {
 			query.add(ProcedureRequest_.patientid, JPAQuery.QUERY.EQUALS, patientId);
@@ -138,8 +139,8 @@ public class FindingsService implements IFindingsService {
 			query.add(ProcedureRequest_.encounterid, JPAQuery.QUERY.EQUALS, encounterId);
 		}
 		List<ProcedureRequest> procedureRequests = query.execute();
-		procedureRequests.parallelStream().forEach(r -> ret.add(new ProcedureRequestModelAdapter(r)));
-		return ret;
+		return procedureRequests.parallelStream().map(r -> new ProcedureRequestModelAdapter(r))
+				.collect(Collectors.toList());
 	}
 	//
 	// private List<ClinicalImpression> getClinicalImpressions(String patientId,
@@ -161,14 +162,12 @@ public class FindingsService implements IFindingsService {
 			ret.addAll((Collection<? extends ConditionModelAdapter>) encounter.getIndication());
 			return ret;
 		}
-		List<ConditionModelAdapter> ret = new ArrayList<>();
 		JPAQuery<Condition> query = new JPAQuery<>(Condition.class);
 		if (patientId != null) {
 			query.add(Condition_.patientid, JPAQuery.QUERY.EQUALS, patientId);
 		}
 		List<Condition> conditions = query.execute();
-		conditions.parallelStream().forEach(e -> ret.add(new ConditionModelAdapter(e)));
-		return ret;
+		return conditions.parallelStream().map(e -> new ConditionModelAdapter(e)).collect(Collectors.toList());
 	}
 
 	// private List<Observation> getObservations(String patientId, String
@@ -184,14 +183,13 @@ public class FindingsService implements IFindingsService {
 	// }
 
 	private List<EncounterModelAdapter> getEncounters(String patientId) {
-		List<EncounterModelAdapter> ret = new ArrayList<>();
 		if (patientId != null) {
 			JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
 			query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
 			List<Encounter> encounters = query.execute();
-			encounters.parallelStream().forEach(e -> ret.add(new EncounterModelAdapter(e)));
+			return encounters.parallelStream().map(e -> new EncounterModelAdapter(e)).collect(Collectors.toList());
 		}
-		return ret;
+		return Collections.emptyList();
 	}
 
 	private Optional<IEncounter> getEncounter(String consultationId) {
