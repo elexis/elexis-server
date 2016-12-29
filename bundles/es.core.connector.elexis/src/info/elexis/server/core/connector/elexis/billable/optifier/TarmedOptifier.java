@@ -249,10 +249,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 			newVerrechnet.setDetail(AL, Integer.toString(tc.getAL()));
 			newVerrechnet.setDetail(TL, Integer.toString(tc.getTL()));
-			VerrechnetService.INSTANCE.write(newVerrechnet);
 			lst.add(newVerrechnet);
 		}
-
+		
 		/*
 		 * Dies führt zu Fehlern bei Codes mit mehreren Master-Möglichkeiten ->
 		 * vorerst raus // "Zusammen mit" - Bedingung nicht erfüllt ->
@@ -502,10 +501,12 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				break;
 
 			}
-
 			// return new Result<IVerrechenbar>(Result.SEVERITY.OK,
 			// PREISAENDERUNG, "Preis", null, false); //$NON-NLS-1$
 		}
+		
+		VerrechnetService.INSTANCE.write(newVerrechnet);
+		
 		return ObjectStatus.OK_STATUS(newVerrechnet);
 		// return new Result<IVerrechenbar>(null);
 	}

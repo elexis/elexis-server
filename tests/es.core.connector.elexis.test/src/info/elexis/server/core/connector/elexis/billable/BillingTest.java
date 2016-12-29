@@ -1,11 +1,13 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
-
-import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -64,6 +66,7 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Before
 	public void before() {
+		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
@@ -446,6 +449,39 @@ public class BillingTest extends AbstractServiceTest {
 
 		assertEquals(1, allVerrechnet.size());
 		assertEquals(1, allVerrechnet.get(0).getZahl());
+	}
+
+	@Test
+	public void testChargeBillableAndChangeCountTicket5484() {
+		TarmedLeistung code_000020 = TarmedLeistungService.findFromCode("00.0020", null).get();
+		VerrechenbarTarmedLeistung vlt_000020 = new VerrechenbarTarmedLeistung(code_000020);
+		IStatus status = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(3), vlt_000020, userContact,
+				null);
+		assertTrue(status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		Verrechnet vr = (Verrechnet) os.getObject();
+		IStatus ccStatus = VerrechnetService.changeCountValidated(vr, 2, null);
+
+		assertTrue(ccStatus.isOK());
+
+		List<Verrechnet> allVerrechnetForBehandlung = VerrechnetService
+				.getAllVerrechnetForBehandlung(testBehandlungen.get(3));
+		assertEquals(1, allVerrechnetForBehandlung.size());
+		assertEquals(2, allVerrechnetForBehandlung.get(0).getZahl());
+
+		TarmedLeistung code_000510 = TarmedLeistungService.findFromCode("00.0510", null).get();
+		VerrechenbarTarmedLeistung vlt_000510 = new VerrechenbarTarmedLeistung(code_000510);
+		status = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(3), vlt_000510, userContact, null);
+		assertTrue(status.isOK());
+		os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		ccStatus = VerrechnetService.changeCountValidated(vr, 3, null);
+
+		assertTrue(ccStatus.isOK());
+
+		allVerrechnetForBehandlung = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(3));
+		assertEquals(2, allVerrechnetForBehandlung.size());
+		assertEquals(3, allVerrechnetForBehandlung.get(1).getZahl());
 	}
 
 	@Test
