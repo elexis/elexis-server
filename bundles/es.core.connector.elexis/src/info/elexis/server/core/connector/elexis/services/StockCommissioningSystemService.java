@@ -328,15 +328,17 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	private IStatus deleteStockEntry(StockEntry se) {
-		log.debug("Removing StockEntry [{}]", ((StockEntry) se).getId());
-		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
-		if (lr.isPresent()) {
-			se.setCurrentStock(0);
-			se.setDeleted(true);
-			StockEntryService.INSTANCE.write((StockEntry) se);
-			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
-			if (!lrs.isOk()) {
-				log.warn("Could not release lock for StockEntry [{}]", se.getId());
+		if (se.getMinimumStock() <= 0 && se.getMaximumStock() <= 0) {
+			log.debug("Removing StockEntry [{}] as MIN and MAX <= 0", ((StockEntry) se).getId());
+			Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
+			if (lr.isPresent()) {
+				se.setCurrentStock(0);
+				se.setDeleted(true);
+				StockEntryService.INSTANCE.write((StockEntry) se);
+				LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+				if (!lrs.isOk()) {
+					log.warn("Could not release lock for StockEntry [{}]", se.getId());
+				}
 			}
 		}
 		return Status.OK_STATUS;
