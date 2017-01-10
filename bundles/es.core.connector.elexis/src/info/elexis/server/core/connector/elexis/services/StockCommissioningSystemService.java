@@ -274,7 +274,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				IStockEntry iStockEntry = inventoryGtinMap.get(gtin);
 				if (seo.isPresent()) {
 					// if in inventory result and stockEntry exists -> update
-					status = updateStockEntry(seo.get(), iStockEntry);
+					status = updateStockEntry(seo.get(), iStockEntry.getCurrentStock());
 				} else {
 					// if in inventory result but stockEntry does not exist ->
 					status = createStockEntry(stock, iStockEntry);
@@ -303,7 +303,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			Optional<StockEntry> seo = currentStockEntries.stream()
 					.filter(s -> (gtin.equalsIgnoreCase(s.getArticle().getGTIN()))).findFirst();
 			if (seo.isPresent()) {
-				status = updateStockEntry(seo.get(), inventoryResultStockEntry);
+				status = updateStockEntry(seo.get(), inventoryResultStockEntry.getCurrentStock());
 				currentStockEntryIds.remove(seo.get().getId());
 			} else {
 				status = createStockEntry(stock, inventoryResultStockEntry);
@@ -328,7 +328,9 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	private IStatus deleteStockEntry(StockEntry se) {
-		if (se.getMinimumStock() <= 0 && se.getMaximumStock() <= 0) {
+		if (StockEntryService.isStockEntryBoundForReorder(se)) {
+			updateStockEntry(se, 0);
+		} else {
 			log.debug("Removing StockEntry [{}] as MIN and MAX <= 0", ((StockEntry) se).getId());
 			Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
 			if (lr.isPresent()) {
@@ -341,6 +343,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				}
 			}
 		}
+
 		return Status.OK_STATUS;
 	}
 
@@ -366,12 +369,15 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		return Status.OK_STATUS;
 	}
 
-	private IStatus updateStockEntry(StockEntry se, IStockEntry tse) {
-		log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), tse.getCurrentStock());
+	private IStatus updateStockEntry(StockEntry se, int currentStock) {
+		log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), currentStock);
+		if (se.getCurrentStock() == currentStock) {
+			return Status.OK_STATUS;
+		}
 		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 10);
 		if (lr.isPresent()) {
 			StockEntryService.INSTANCE.refresh(se);
-			se.setCurrentStock(tse.getCurrentStock());
+			se.setCurrentStock(currentStock);
 			StockEntryService.INSTANCE.write((StockEntry) se);
 			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
 			if (!lrs.isOk()) {
