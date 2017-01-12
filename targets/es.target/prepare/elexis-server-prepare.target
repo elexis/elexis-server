@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1482149704">
+<target name="Elexis-Server" sequenceNumber="1484222980">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.2.0.a20161107-0831"/>
       <unit id="ch.elexis.core" version="3.2.0.a20161125-1127"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.a20160316-1430"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20161024-2042"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.a20170111-1614"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20170107-1517"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.a20161214-0904"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.a20161130-2018"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
@@ -24,7 +24,7 @@
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.elexis.base.ch.ticode" version="3.2.0.a20161116-1732"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.a20160519-0702"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.a20161229-1720"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.a20160519-0702"/>
       <repository location="http://download.elexis.info/elexis.3.base/snapshot/"/>
     </location>
