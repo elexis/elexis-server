@@ -317,7 +317,7 @@ public class TestDatabaseInitializer {
 		}
 
 		if (!isMandantInitialized) {
-			mandant = new KontaktService.PersonBuilder("Mandant", "Test", LocalDate.of(1970, 1, 1), Gender.MALE)
+			mandant = new KontaktService.PersonBuilder("Test", "Mandant", LocalDate.of(1970, 1, 1), Gender.MALE)
 					.mandator().build();
 			mandant.setPhone1("+01555234");
 			mandant.setMobile("+01444234");
@@ -407,6 +407,7 @@ public class TestDatabaseInitializer {
 			fall.setVersNummer("1234-5678");
 			fall.setDatumVon(LocalDate.of(2016, Month.SEPTEMBER, 1));
 			FallService.save(fall);
+			patient = KontaktService.reload(patient);
 			isFallInitialized = true;
 		}
 	}

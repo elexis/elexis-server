@@ -71,6 +71,17 @@ public class KontaktService extends PersistenceService {
 		return PersistenceService.load(Kontakt.class, id).map(v -> (Kontakt) v);
 	}
 
+	/**
+	 * Reload the entity from the database. Convenience method.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Kontakt reload(Kontakt contact) {
+		return PersistenceService.reload(contact).map(v -> (Kontakt) v)
+				.orElseThrow(() -> new IllegalStateException("reload failed"));
+	}
+
 	public static List<Fall> getFaelle(Kontakt k) {
 		JPAQuery<Fall> query = new JPAQuery<Fall>(Fall.class);
 		query.add(Fall_.patientKontakt, QUERY.EQUALS, k);

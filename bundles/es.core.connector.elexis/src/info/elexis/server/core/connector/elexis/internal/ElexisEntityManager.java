@@ -1,6 +1,12 @@
 package info.elexis.server.core.connector.elexis.internal;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_USER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -42,7 +48,9 @@ public class ElexisEntityManager {
 	@Activate
 	protected synchronized void activate() {
 		initializeEntityManager();
-		executeStartupTasksRequiringEntityManager();
+		if (!ElexisDBConnection.isTestMode()) {
+			executeStartupTasksRequiringEntityManager();
+		}
 	}
 
 	protected synchronized void unbind(EntityManagerFactoryBuilder factoryBuilder) {

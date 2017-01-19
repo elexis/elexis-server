@@ -65,19 +65,39 @@ public class PersistenceService {
 			em.close();
 		}
 	}
-	
-	public static void delete(AbstractDBObjectIdDeleted object) {
+
+	/**
+	 * Reload the entity from the database, returns the reloaded instance of the
+	 * entity.
+	 * 
+	 * @param entity
+	 */
+	public static Optional<AbstractDBObjectIdDeleted> reload(AbstractDBObjectIdDeleted entity) {
+		return load(entity.getClass(), entity.getId());
+	}
+
+	/**
+	 * Set the deleted property of the entity to true.
+	 * 
+	 * @param entity
+	 */
+	public static void delete(AbstractDBObjectIdDeleted entity) {
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			object = em.merge(object);
-			object.setDeleted(true);
+			entity = em.merge(entity);
+			entity.setDeleted(true);
 			em.getTransaction().commit();
 		} finally {
 			em.close();
 		}
 	}
 
+	/**
+	 * Remove the entity from the database.
+	 * 
+	 * @param entity
+	 */
 	public static void remove(AbstractDBObjectIdDeleted object) {
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		try {

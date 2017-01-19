@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Cache;
@@ -16,7 +16,7 @@ import org.eclipse.persistence.annotations.CacheType;
 @Cache(type=CacheType.NONE)
 public class Userconfig extends AbstractDBObject {
 
-	@OneToOne
+	@ManyToOne()
 	@JoinColumn(name = "UserID")
 	private Kontakt owner;
 	

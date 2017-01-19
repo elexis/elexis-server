@@ -187,6 +187,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			// a change means we need to stop the current prescription
 			localObject.setDateUntil(LocalDateTime.now());
 			localObject.setExtInfoValue(Constants.FLD_EXT_STOP_REASON, "Geändert durch FHIR Server");
+			PrescriptionService.save(localObject);
 			// and create a new one with the changed properties
 			return createLocalObject(fhirObject);
 		}
@@ -237,7 +238,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		Optional<Kontakt> patient = KontaktService.load(fhirObject.getPatient().getId());
 		if (item.isPresent() && patient.isPresent()) {
 			Prescription localObject = new PrescriptionService.Builder(item.get(), patient.get(),
-					getMedicationOrderDosage(fhirObject)).buildAndSave();
+					getMedicationOrderDosage(fhirObject)).build();
 
 			Optional<LocalDateTime> startDateTime = getMedicationOrderStartDateTime(fhirObject);
 			startDateTime.ifPresent(date -> localObject.setDateFrom(date));
@@ -249,6 +250,8 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 					getMedicationOrderAdditionalInstructions(fhirObject));
 
 			localObject.setBemerkung(getMedicationOrderRemark(fhirObject));
+
+			PrescriptionService.save(localObject);
 
 			return Optional.of(localObject);
 		}

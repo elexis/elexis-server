@@ -1,25 +1,41 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.elexis.core.constants.Preferences;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig;
+import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class UserconfigServiceTest {
 
-	@Test
-	public void testGet() {
-		User dzUser = UserService.load("dz").get();
-		assertNotNull(dzUser);
-		Kontakt kontakt = dzUser.getKontakt();
-		assertNotNull(kontakt);
-
-		UserconfigService.get(kontakt, Preferences.LEISTUNGSCODES_OPTIFY, true);
-		boolean b = UserconfigService.get(kontakt, "NonExistingPrefDefaults", false);
-		assertFalse(b);
+	@BeforeClass
+	public static void beforeClass() {
+		new TestDatabaseInitializer().initializeMandant();
 	}
 
+	@Test
+	public void testGet() {
+		User user = UserService.load("tst").orElseThrow(() -> new IllegalStateException("No User"));
+		assertNotNull(user);
+		Kontakt kontakt = user.getKontakt();
+		assertNotNull(kontakt);
+
+		assertTrue(UserconfigService.get(kontakt, "NonExistingPrefDefaults", true));
+		assertFalse(UserconfigService.get(kontakt, "NonExistingPrefDefaults", false));
+
+		Userconfig userConfig = new UserconfigService.Builder(kontakt, "ExistingPref", "test").buildAndSave();
+
+		kontakt = KontaktService.reload(kontakt);
+		assertEquals(1, kontakt.getUserconfig().size());
+
+		assertEquals(userConfig.getValue(), kontakt.getUserconfig().get(0).getValue());
+		assertEquals(userConfig.getValue(), UserconfigService.get(kontakt, "ExistingPref", (String) null));
+	}
 }

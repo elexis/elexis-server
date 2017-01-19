@@ -19,7 +19,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -191,12 +190,10 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Column(length = 255)
 	protected String website;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "patientID", insertable = false)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patientKontakt")
 	protected List<Fall> faelle;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "UserID", insertable = false)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
 	protected List<Userconfig> userconfig;
 
 	// ---------------------------------------------
