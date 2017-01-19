@@ -1,6 +1,9 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -60,7 +63,7 @@ public class JPAQueryTest {
 
 		assertEquals(qre.size(), qbe.count());
 	}
-	
+
 	@Test
 	public void testJPAQueryFilterGreaterOrEquals() {
 		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
@@ -68,7 +71,7 @@ public class JPAQueryTest {
 		List<Kontakt> execute = qbe.execute();
 		assertEquals(6, execute.size());
 		assertEquals(6, qbe.count());
-		
+
 		JPAQuery<Kontakt> qbe2 = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe2.add(AbstractDBObject_.lastupdate, QUERY.GREATER, 1470809122982l);
 		List<Kontakt> execute2 = qbe2.execute();
@@ -172,13 +175,13 @@ public class JPAQueryTest {
 		}
 		assertEquals(execute.size(), qbe.count());
 		assertTrue(execute.size() > 0);
-		
+
 		JPAQuery<Kontakt> qbeC = new JPAQuery<Kontakt>(Kontakt.class);
 		qbeC.add(Kontakt_.country, QUERY.NOT_EQUALS, null);
 		long count = qbeC.count();
 		assertEquals(2, count);
 	}
-	
+
 	@Test
 	public void testJPAQueryWithOr() {
 		String name = "Vorname";
@@ -198,13 +201,14 @@ public class JPAQueryTest {
 
 	@Test
 	public void testJPAQueryWithNonNull() {
-		Kontakt testPatient = KontaktService.INSTANCE.createPatient("FirstName", null, LocalDate.now(), Gender.MALE);
+		Kontakt testPatient = new KontaktService.PersonBuilder("FirstName", null, LocalDate.now(), Gender.MALE)
+				.patient().buildAndSave();
 
 		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe.add(Kontakt_.description1, QUERY.EQUALS, null);
 		List<Kontakt> execute = qbe.execute();
 		assertEquals(1, execute.size());
 
-		KontaktService.INSTANCE.remove(testPatient);
+		PersistenceService.remove(testPatient);
 	}
 }

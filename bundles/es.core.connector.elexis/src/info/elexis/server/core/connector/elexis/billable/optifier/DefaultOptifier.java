@@ -15,7 +15,6 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstam
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
-import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.StockService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
@@ -30,10 +29,9 @@ public class DefaultOptifier implements IOptifier {
 
 	public IStatus add(final IBillable code, final Behandlung kons, final Kontakt userContact,
 			final Kontakt mandatorContact) {
-		BehandlungService.INSTANCE.refresh(kons);
 		Verrechnet foundVerrechnet = null;
 		for (Verrechnet verrechnet : VerrechnetService.getAllVerrechnetForBehandlung(kons)) {
-			Optional<IBillable> vrElement = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
+			Optional<IBillable> vrElement = VerrechnetService.getVerrechenbar(verrechnet);
 			if (!vrElement.isPresent()) {
 				// #2454 This should not happen, may however if we have to
 				// consider
@@ -57,7 +55,7 @@ public class DefaultOptifier implements IOptifier {
 					foundVerrechnet.getZahl() + 1);
 			return ObjectStatus.OK_STATUS(foundVerrechnet);
 		} else {
-			newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1, userContact);
+			newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).buildAndSave();
 			log.trace("Created new Verrechnet entry ({})", newVerrechnet.getId());
 			return ObjectStatus.OK_STATUS(newVerrechnet);
 		}
@@ -83,17 +81,16 @@ public class DefaultOptifier implements IOptifier {
 			vr.setSecondaryScaleFactor(newCount);
 			vr.setLeistungenText(vr.getLeistungenText() + " (" + Double.toString(newCount) + ")");
 		}
-		VerrechnetService.INSTANCE.write(vr);
+		VerrechnetService.save(vr);
 
-		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
+		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(vr);
 		if (verrechenbar.isPresent() && ((verrechenbar.get() instanceof VerrechenbarArtikelstammItem)
 				|| (verrechenbar.get() instanceof VerrechenbarArtikel))) {
 			int diff = newCount - previous;
 			if (diff < 0) {
-				StockService.INSTANCE.performSingleReturn((IArticle) verrechenbar.get().getEntity(), Math.abs(diff),
-						null);
+				new StockService().performSingleReturn((IArticle) verrechenbar.get().getEntity(), Math.abs(diff), null);
 			} else if (diff > 0) {
-				StockService.INSTANCE.performSingleDisposal((IArticle) verrechenbar.get().getEntity(), diff, null);
+				new StockService().performSingleDisposal((IArticle) verrechenbar.get().getEntity(), diff, null);
 			}
 		}
 	}

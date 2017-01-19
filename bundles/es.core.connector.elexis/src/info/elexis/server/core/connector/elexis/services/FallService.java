@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import ch.elexis.core.constants.Preferences;
@@ -11,38 +12,27 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
-public class FallService extends AbstractService<Fall> {
+public class FallService extends PersistenceService {
 
-	public static FallService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final FallService INSTANCE = new FallService();
-	}
-
-	private FallService() {
-		super(Fall.class);
+	public static class Builder extends AbstractBuilder<Fall> {
+		public Builder(Kontakt patient, String label, String reason, String billingMethod) {
+			object = new Fall();
+			object.setPatientKontakt(patient);
+			object.setBezeichnung(label);
+			object.setGrund(reason);
+			object.setDatumVon(LocalDate.now());
+			object.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
+		}
 	}
 
 	/**
-	 * create a {@link Fall} with the resp. mandatory attributes
+	 * convenience method
 	 * 
-	 * @param patient
-	 * @param label
-	 * @param reason
-	 * @param billingMethod
+	 * @param id
 	 * @return
 	 */
-	public Fall create(Kontakt patient, String label, String reason, String billingMethod) {
-		em.getTransaction().begin();
-		Fall fall = create(false);
-		em.merge(patient);
-		fall.setPatientKontakt(patient);
-		fall.setBezeichnung(label);
-		fall.setGrund(reason);
-		fall.setDatumVon(LocalDate.now());
-		fall.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
-		em.getTransaction().commit();
-		return fall;
+	public static Optional<Fall> load(String id) {
+		return PersistenceService.load(Fall.class, id).map(v -> (Fall) v);
 	}
 
 	public static String getAbrechnungsSystem(Fall fall) {

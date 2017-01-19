@@ -7,15 +7,23 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistun
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class EigenleistungService extends AbstractService<Eigenleistung> {
-	public static EigenleistungService INSTANCE = InstanceHolder.INSTANCE;
+public class EigenleistungService extends PersistenceService {
 
-	private static final class InstanceHolder {
-		static final EigenleistungService INSTANCE = new EigenleistungService();
+	public static class Builder extends AbstractBuilder<Eigenleistung> {
+		public Builder(String code) {
+			object = new Eigenleistung();
+			object.setCode(code);
+		}
 	}
 
-	private EigenleistungService() {
-		super(Eigenleistung.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Eigenleistung> load(String id) {
+		return PersistenceService.load(Eigenleistung.class, id).map(v -> (Eigenleistung) v);
 	}
 
 	public static Optional<? extends AbstractDBObjectIdDeleted> findByCode(String itemCode) {

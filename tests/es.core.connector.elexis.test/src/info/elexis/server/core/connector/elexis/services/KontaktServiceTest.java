@@ -20,23 +20,15 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestEntities;
 public class KontaktServiceTest extends AbstractServiceTest {
 
 	@Test
-	public void testCreateAndDeleteKontakt() throws InstantiationException, IllegalAccessException {
-		Kontakt val = KontaktService.INSTANCE.create();
+	public void testCreateAndRemoveKontakt() throws InstantiationException, IllegalAccessException {
+		Kontakt val = new KontaktService.PersonBuilder("", "", LocalDate.of(2016, 12, 12), Gender.MALE).buildAndSave();
 		assertNotNull(val.getId());
 		assertNotNull(val.getLastupdate());
-		Kontakt findById = KontaktService.INSTANCE.findById(val.getId()).get();
+		Kontakt findById = KontaktService.load(val.getId()).get();
 		assertEquals(val.getId(), findById.getId());
-		KontaktService.INSTANCE.remove(val);
-		Optional<Kontakt> found = KontaktService.INSTANCE.findById(val.getId());
+		KontaktService.remove(val);
+		Optional<Kontakt> found = KontaktService.load(val.getId());
 		assertFalse(found.isPresent());
-	}
-
-	@Test
-	public void testFindByIdStartingWith() {
-		Kontakt val = KontaktService.INSTANCE.create();
-		List<Kontakt> result = KontaktService.INSTANCE.findByIdStartingWith(val.getId().substring(0, 5));
-		assertEquals(1, result.size());
-		KontaktService.INSTANCE.remove(val);
 	}
 
 	@Test
@@ -49,39 +41,35 @@ public class KontaktServiceTest extends AbstractServiceTest {
 	@Ignore
 	public void testCreateAndDeleteKontaktWithStringExceedsLimit()
 			throws InstantiationException, IllegalAccessException {
-		Kontakt val = KontaktService.INSTANCE.create();
-
-		System.out.println(val.getId());
+		Kontakt val = new KontaktService.PersonBuilder("", "", LocalDate.of(2016, 12, 12), Gender.MALE).buildAndSave();
 
 		val.setDescription1(
 				"ThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255CharactersThisIsAVeryLongStringWhichsOnlyPurposeIsToExceedTheBoundaryOf255Characters");
 
-		KontaktService.INSTANCE.flush();
-
-		KontaktService.INSTANCE.remove(val);
-
+		KontaktService.save(val);
 	}
 
 	@Test
 	public void testCreatePatient() {
-		Kontakt patient = KontaktService.INSTANCE.createPatient("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE);
+		Kontakt patient = new KontaktService.PersonBuilder("Vorname", "Nachname", LocalDate.now(), Gender.FEMALE)
+				.patient().buildAndSave();
 		patient.setExtInfoValue(PatientConstants.FLD_EXTINFO_BIRTHNAME, "Birthname");
+		KontaktService.save(patient);
 		String id = patient.getId();
 
 		assertNotNull(id);
 		assertNotNull(patient.getCode());
-		Kontakt findById = KontaktService.INSTANCE.findById(id).get();
+		Kontakt findById = KontaktService.load(id).get();
 		assertNotNull(findById);
-		assertTrue(findById == patient);
-
+		assertEquals(findById, patient);
 		assertEquals("Birthname", findById.getExtInfoAsString(PatientConstants.FLD_EXTINFO_BIRTHNAME));
 
-		KontaktService.INSTANCE.remove(patient);
+		KontaktService.remove(patient);
 	}
 
 	@Test
 	public void testGetAgeInYears() {
-		Optional<Kontakt> male = KontaktService.INSTANCE.findById(TestEntities.PATIENT_MALE_ID);
+		Optional<Kontakt> male = KontaktService.load(TestEntities.PATIENT_MALE_ID);
 		int ageInYears = KontaktService.getAgeInYears(male.get());
 		assertEquals(37, ageInYears);
 	}
@@ -90,7 +78,7 @@ public class KontaktServiceTest extends AbstractServiceTest {
 	public void testFindPatientByPatientNumber() {
 		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
 		assertTrue(patient.isPresent());
-		Optional<Kontakt> findById = KontaktService.INSTANCE.findById(TestEntities.PATIENT_MALE_ID);
+		Optional<Kontakt> findById = KontaktService.load(TestEntities.PATIENT_MALE_ID);
 		assertTrue(findById.isPresent());
 		assertEquals(findById.get().getId(), patient.get().getId());
 
@@ -106,7 +94,7 @@ public class KontaktServiceTest extends AbstractServiceTest {
 
 	@Test
 	public void testLoadMandatorAndExtInfoValues() {
-		Optional<Kontakt> findById = KontaktService.INSTANCE.findById(TestEntities.MANDATOR_ID);
+		Optional<Kontakt> findById = KontaktService.load(TestEntities.MANDATOR_ID);
 		assertTrue(findById.isPresent());
 		assertEquals("Nachname Hauptanwender", findById.get().getExtInfoAsString("Mandant"));
 		assertEquals(ContactType.PERSON, findById.get().getContactType());
@@ -116,7 +104,7 @@ public class KontaktServiceTest extends AbstractServiceTest {
 	public void testFindLaboratory() {
 		Optional<IContact> lab = KontaktService.findLaboratory(TestEntities.LABORATORY_IDENTIFIER);
 		assertTrue(lab.isPresent());
-		Optional<Kontakt> findById = KontaktService.INSTANCE.findById(TestEntities.LABORATORY_ID);
+		Optional<Kontakt> findById = KontaktService.load(TestEntities.LABORATORY_ID);
 		assertTrue(findById.isPresent());
 		assertEquals(findById.get().getId(), lab.get().getId());
 		assertEquals(ContactType.LABORATORY, lab.get().getContactType());

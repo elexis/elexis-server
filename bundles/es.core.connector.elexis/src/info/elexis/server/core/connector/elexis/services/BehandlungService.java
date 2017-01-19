@@ -36,36 +36,25 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistu
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class BehandlungService extends AbstractService<Behandlung> {
+public class BehandlungService extends PersistenceService {
 
-	public static BehandlungService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final BehandlungService INSTANCE = new BehandlungService();
-	}
-
-	private BehandlungService() {
-		super(Behandlung.class);
+	public static class Builder extends AbstractBuilder<Behandlung> {
+		public Builder(Fall fall, Kontakt mandator) {
+			object = new Behandlung();
+			object.setDatum(LocalDate.now());
+			object.setFall(fall);
+			object.setMandant(mandator);
+		}
 	}
 
 	/**
-	 * Create a {@link Behandlung} with mandatory attributes
+	 * convenience method
 	 * 
-	 * @param fall
-	 * @param mandator
+	 * @param id
 	 * @return
 	 */
-	public Behandlung create(Fall fall, Kontakt mandator) {
-		em.getTransaction().begin();
-		Behandlung cons = create(false);
-		em.merge(fall);
-		em.merge(mandator);
-		cons.setDatum(LocalDate.now());
-		cons.setFall(fall);
-		cons.setMandant(mandator);
-		// TODO fall.getPatient().setInfoElement("LetzteBehandlung", getId());
-		em.getTransaction().commit();
-		return cons;
+	public static Optional<Behandlung> load(String id) {
+		return PersistenceService.load(Behandlung.class, id).map(v -> (Behandlung) v);
 	}
 
 	public static Optional<IBillable<?>> findBillableByAbstractDBObjectIdDeleted(
@@ -113,7 +102,7 @@ public class BehandlungService extends AbstractService<Behandlung> {
 			if (mandant.getId().equals(mandator.getId())) {
 				mandatorOk = true;
 			} else {
-				Optional<User> user = UserService.INSTANCE.findByKontakt(mandator);
+				Optional<User> user = UserService.findByKontakt(mandator);
 				if (user.isPresent()) {
 					if (user.get().isActive()) {
 						mandatorOk = true;
@@ -177,7 +166,7 @@ public class BehandlungService extends AbstractService<Behandlung> {
 	 * @param cons
 	 * @param diag
 	 */
-	public void setDiagnosisOnConsultation(Behandlung cons, Diagnosis diag) {
+	public static void setDiagnosisOnConsultation(Behandlung cons, Diagnosis diag) {
 		ConsultationDiagnosis cdj = new ConsultationDiagnosis();
 		cdj.setConsultation(cons);
 		cdj.setDiagnosis(diag);
@@ -192,7 +181,7 @@ public class BehandlungService extends AbstractService<Behandlung> {
 		}
 
 		cons.getDiagnoses().add(cdj);
-		BehandlungService.INSTANCE.flush();
+		BehandlungService.save(cons);
 	}
 
 }

@@ -92,7 +92,7 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 	@Override
 	public double getFactor(TimeTool date, Fall fall) {
 		String billingSystem = FallService.getAbrechnungsSystem(fall);
-		return VerrechnetService.INSTANCE.getVKMultiplikator(date, billingSystem);
+		return VerrechnetService.getVKMultiplikator(date, billingSystem);
 	}
 
 	@Override

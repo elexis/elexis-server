@@ -85,7 +85,7 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 						.getFhirObject((IObservation) observation.get());
 				return fhirObservation.get();
 			}
-			Optional<LabResult> labresult = LabResultService.INSTANCE.findById(idPart);
+			Optional<LabResult> labresult = LabResultService.load(idPart);
 			if (labresult.isPresent()) {
 				Optional<Observation> fhirObservation = getLabTransformer().getFhirObject(labresult.get());
 				return fhirObservation.get();
@@ -100,7 +100,7 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 			@OptionalParam(name = Observation.SP_CODE) CodeType code,
 			@OptionalParam(name = Observation.SP_DATE) DateRangeParam dates) {
 		if (theSubjectId != null && !theSubjectId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(theSubjectId.getIdPart());
+			Optional<Kontakt> patient = KontaktService.load(theSubjectId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<Observation> ret = new ArrayList<Observation>();

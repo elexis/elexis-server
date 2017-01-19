@@ -8,15 +8,15 @@ import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung_;
 
-public class PhysioLeistungService extends AbstractService<PhysioLeistung> {
-	public static PhysioLeistungService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final PhysioLeistungService INSTANCE = new PhysioLeistungService();
-	}
-
-	private PhysioLeistungService() {
-		super(PhysioLeistung.class);
+public class PhysioLeistungService extends PersistenceService {
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<PhysioLeistung> load(String id) {
+		return PersistenceService.load(PhysioLeistung.class, id).map(v -> (PhysioLeistung) v);
 	}
 
 	public static Optional<PhysioLeistung> findFromCode(String code) {

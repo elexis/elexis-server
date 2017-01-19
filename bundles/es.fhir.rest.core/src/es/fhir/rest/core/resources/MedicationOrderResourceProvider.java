@@ -56,7 +56,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	public MedicationOrder getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<Prescription> prescription = PrescriptionService.INSTANCE.findById(idPart);
+			Optional<Prescription> prescription = PrescriptionService.load(idPart);
 			if (prescription.isPresent()) {
 				Optional<MedicationOrder> fhirMedicationOrder = getTransformer().getFhirObject(prescription.get());
 				return fhirMedicationOrder.get();
@@ -69,7 +69,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	public List<MedicationOrder> findMedicationsByPatient(
 			@RequiredParam(name = MedicationOrder.SP_PATIENT) IdType thePatientId) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
+			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					JPAQuery<Prescription> qbe = new JPAQuery<Prescription>(Prescription.class);

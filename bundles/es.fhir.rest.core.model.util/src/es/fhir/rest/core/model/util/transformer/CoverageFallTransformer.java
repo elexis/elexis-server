@@ -48,7 +48,7 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 	@Override
 	public Optional<Fall> getLocalObject(Coverage fhirObject) {
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<Fall> existing = FallService.INSTANCE.findById(fhirObject.getId());
+			Optional<Fall> existing = FallService.load(fhirObject.getId());
 			if (existing.isPresent()) {
 				return Optional.of((Fall) existing.get());
 			}
@@ -66,12 +66,12 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 	public Optional<Fall> createLocalObject(Coverage fhirObject) {
 		if (fhirObject.hasBeneficiaryReference()) {
 			try {
-				Optional<Kontakt> patient = KontaktService.INSTANCE
-						.findById(fhirObject.getBeneficiaryReference().getReferenceElement().getIdPart());
+				Optional<Kontakt> patient = KontaktService
+						.load(fhirObject.getBeneficiaryReference().getReferenceElement().getIdPart());
 				Optional<String> type = fallHelper.getType(fhirObject);
 				if (patient.isPresent() && type.isPresent()) {
-					Fall created = FallService.INSTANCE.create(patient.get(), "online", FallConstants.TYPE_DISEASE,
-							type.get());
+					Fall created = new FallService.Builder(patient.get(), "online", FallConstants.TYPE_DISEASE,
+							type.get()).buildAndSave();
 					String bin = fhirObject.getBin();
 					if (bin != null) {
 						fallHelper.setBin(created, bin);
@@ -82,14 +82,12 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 					} else {
 						created.setDatumVon(LocalDate.now());
 					}
-					FallService.INSTANCE.write(created);
-					FallService.INSTANCE.flush();
+					FallService.save(created);
 					AbstractHelper.acquireAndReleaseLock(created);
 					return Optional.of(created);
 				} else {
 					LoggerFactory.getLogger(CoverageFallTransformer.class)
-					.warn("Could not create fall for patinet [" + patient + "] type ["
-							+ type + "]");
+							.warn("Could not create fall for patinet [" + patient + "] type [" + type + "]");
 				}
 			} catch (FHIRException e) {
 				LoggerFactory.getLogger(CoverageFallTransformer.class).error("Could not create local object.", e);

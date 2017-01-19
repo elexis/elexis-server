@@ -155,6 +155,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<T> execute() {
 		initializeReadAllQuery();
 

@@ -52,7 +52,7 @@ public class OrganizationResourceProvider implements IFhirResourceProvider {
 	public Organization getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<Kontakt> organization = KontaktService.INSTANCE.findById(idPart);
+			Optional<Kontakt> organization = KontaktService.load(idPart);
 			if (organization.isPresent()) {
 				if (organization.get().isOrganisation()) {
 					Optional<Organization> fhirOrganization = getTransformer().getFhirObject(organization.get());

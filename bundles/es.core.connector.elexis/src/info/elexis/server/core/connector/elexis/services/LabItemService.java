@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,11 +14,13 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 import ch.elexis.core.constants.TextContainerConstants;
 import ch.elexis.core.model.IContact;
-import ch.elexis.core.model.ILabItem;
 import ch.elexis.core.types.LabItemTyp;
 import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
@@ -31,18 +34,36 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult_;
 import info.elexis.server.core.connector.elexis.map.PersistentObjectAttributeMapping;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class LabItemService extends AbstractService<LabItem> {
+public class LabItemService extends PersistenceService {
+
+	private static Logger log = LoggerFactory.getLogger(LabItemService.class);
 
 	private static final Pattern varPattern = Pattern.compile(TextContainerConstants.MATCH_TEMPLATE);
 
-	public static LabItemService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final LabItemService INSTANCE = new LabItemService();
+	public static class Builder extends AbstractBuilder<LabItem> {
+		public Builder(String code, String title, IContact laboratory, String refMale, String refFemale, String unit,
+				LabItemTyp type, String group, int seq) {
+			object = new LabItem();
+			object.setCode(code);
+			object.setName(title);
+			object.setLabor((Kontakt) laboratory);
+			object.setReferenceMale(refMale);
+			object.setReferenceFemale(refFemale);
+			object.setUnit(unit);
+			object.setTyp(type);
+			object.setGroup(group);
+			object.setPriority(Integer.toString(seq));
+		}
 	}
 
-	private LabItemService() {
-		super(LabItem.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<LabItem> load(String id) {
+		return PersistenceService.load(LabItem.class, id).map(v -> (LabItem) v);
 	}
 
 	public static List<LabResult> findAllLabResultsForPatientWithType(Kontakt patient, LabItemTyp lit,
@@ -53,37 +74,21 @@ public class LabItemService extends AbstractService<LabItem> {
 			CriteriaQuery<LabResult> criteriaQuery = criteriaBuilder.createQuery(LabResult.class);
 			Root<LabResult> labResult = criteriaQuery.from(LabResult.class);
 			Join<LabResult, LabItem> labResultJoin = labResult.join(LabResult_.item);
-			
-			Predicate predicate = criteriaBuilder.and(criteriaBuilder.equal(labResult.get(LabResult_.patient), patient));
+
+			Predicate predicate = criteriaBuilder
+					.and(criteriaBuilder.equal(labResult.get(LabResult_.patient), patient));
 			predicate = criteriaBuilder.and(predicate,
 					criteriaBuilder.equal(labResultJoin.get(LabItem_.type), Integer.toString(lit.getType())));
 			if (!includeDeleted) {
 				predicate = criteriaBuilder.and(predicate,
 						criteriaBuilder.equal(labResult.get(AbstractDBObjectIdDeleted_.deleted), false));
 			}
-			
+
 			criteriaQuery.where(predicate);
 			return em.createQuery(criteriaQuery).getResultList();
 		} finally {
 			em.close();
 		}
-	}
-
-	public ILabItem create(String code, String title, IContact laboratory, String refMale, String refFemale,
-			String unit, LabItemTyp type, String group, int seq) {
-		em.getTransaction().begin();
-		LabItem labItem = create(false);
-		labItem.setCode(code);
-		labItem.setName(title);
-		labItem.setLabor(KontaktService.INSTANCE.findById(laboratory.getId()).get());
-		labItem.setReferenceMale(refMale);
-		labItem.setReferenceFemale(refFemale);
-		labItem.setUnit(unit);
-		labItem.setTyp(type);
-		labItem.setGroup(group);
-		labItem.setPriority(Integer.toString(seq));
-		em.getTransaction().commit();
-		return labItem;
 	}
 
 	public static String evaluate(LabItem labItem, Kontakt patient, List<LabResult> labresults) {

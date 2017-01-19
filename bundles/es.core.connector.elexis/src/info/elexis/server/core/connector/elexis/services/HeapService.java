@@ -1,22 +1,17 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Optional;
+
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
 
-public class HeapService extends AbstractService<Heap> {
-
-	public static HeapService INSTANCE = InstanceHolder.INSTANCE;
-	
-	private static final class InstanceHolder {
-		static final HeapService INSTANCE = new HeapService();
-	}
-
-	private HeapService() {
-		super(Heap.class);
-	}
-	
-	@Override
-	public void remove(Heap entity) {
-		// TODO Auto-generated method stub
-		super.remove(entity);
+public class HeapService extends PersistenceService {
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Heap> load(String id) {
+		return PersistenceService.load(Heap.class, id).map(v -> (Heap) v);
 	}
 }

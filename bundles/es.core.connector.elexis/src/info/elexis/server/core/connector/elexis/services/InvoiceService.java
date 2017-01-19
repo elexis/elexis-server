@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import ch.elexis.core.model.InvoiceState;
 import ch.rgw.tools.Money;
@@ -14,32 +15,30 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
  * usable; the resp. code has not yet been ported.
  *
  */
-public class InvoiceService extends AbstractService<Invoice> {
-	public static InvoiceService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final InvoiceService INSTANCE = new InvoiceService();
+public class InvoiceService extends PersistenceService {
+	public static class Builder extends AbstractBuilder<Invoice> {
+		public Builder(String invoiceNumber, Kontakt mandator, Fall fall, LocalDate from, final LocalDate to,
+				final Money amount, final InvoiceState state) {
+			object = new Invoice();
+			object.setNumber(invoiceNumber);
+			object.setMandator(mandator);
+			object.setFall(fall);
+			object.setInvoiceDate(LocalDate.now());
+			object.setInvoiceDateFrom(from);
+			object.setInvoiceDateTo(to);
+			object.setAmount(amount.toString());
+			object.setState(state);
+		}
 	}
 
-	private InvoiceService() {
-		super(Invoice.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Invoice> load(String id) {
+		return PersistenceService.load(Invoice.class, id).map(v -> (Invoice) v);
 	}
 
-	public Invoice create(String invoiceNumber, Kontakt mandator, Fall fall, LocalDate from, final LocalDate to,
-			final Money amount, final InvoiceState state) {
-		em.getTransaction().begin();
-		Invoice invoice = create(false);
-		invoice.setNumber(invoiceNumber);
-		em.merge(mandator);
-		invoice.setMandator(mandator);
-		em.merge(fall);
-		invoice.setFall(fall);
-		invoice.setInvoiceDate(LocalDate.now());
-		invoice.setInvoiceDateFrom(from);
-		invoice.setInvoiceDateTo(to);
-		invoice.setAmount(amount.toString());
-		invoice.setState(state);
-		em.getTransaction().commit();
-		return invoice;
-	}
 }

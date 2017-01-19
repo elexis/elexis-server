@@ -40,7 +40,7 @@ public class CodeTypeUtil {
 
 	public static boolean isVitoLabkey(Observation observation, String codeString) {
 		String labresultId = observation.getIdElement().getIdPart();
-		Optional<LabResult> result = LabResultService.INSTANCE.findById(labresultId);
+		Optional<LabResult> result = LabResultService.load(labresultId);
 		if (result.isPresent()) {
 			LabItem item = result.get().getItem();
 			if (item != null) {

@@ -23,46 +23,45 @@ public class BriefServiceTest {
 
 	@Before
 	public void initialize() {
-		patient = KontaktService.INSTANCE.createPatient("FirstName", "LastName", LocalDate.now(), Gender.MALE);
+		patient = new KontaktService.PersonBuilder("FirstName", "LastName", LocalDate.now(), Gender.MALE).patient()
+				.buildAndSave();
 	}
 
 	@After
 	public void cleanup() {
-		KontaktService.INSTANCE.remove(patient);
-		HeapService.INSTANCE.flush();
-		HeapService.INSTANCE.flush();
+		PersistenceService.remove(patient);
 	}
 
 	@Test
 	public void testCreateAndDeleteDocument() {
-		Brief document = BriefService.INSTANCE.create(patient);
+		Brief document = new BriefService.Builder(patient).buildAndSave();
 		document.setSubject("TestSubject");
 		Heap content = document.getContent();
 		assertNotNull(content);
-		BriefService.INSTANCE.flush();
+		BriefService.save(content);
 
-		HeapService.INSTANCE.remove(document.getContent());
-		BriefService.INSTANCE.remove(document);
+		HeapService.remove(document.getContent());
+		BriefService.remove(document);
 
-		Optional<Heap> findDel = HeapService.INSTANCE.findById(document.getId());
+		Optional<Heap> findDel = HeapService.load(document.getId());
 		assertFalse(findDel.isPresent());
 	}
 
 	@Test
 	public void testLoadAndModifyDocument() {
-		Brief document = BriefService.INSTANCE.create(patient);
-		
+		Brief document = new BriefService.Builder(patient).buildAndSave();
+
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		Brief storedDocument = em.find(Brief.class, document.getId());
 		em.close();
 		assertEquals(patient.getId(), storedDocument.getPatient().getId());
 		assertNotNull(storedDocument.getContent());
 		assertEquals(document.getId(), storedDocument.getContent().getId());
-		Optional<Heap> findById = HeapService.INSTANCE.findById(document.getId());
+		Optional<Heap> findById = HeapService.load(document.getId());
 		assertTrue(findById.isPresent());
 		assertEquals(findById.get().getId(), storedDocument.getContent().getId());
 
-		HeapService.INSTANCE.remove(document.getContent());
-		BriefService.INSTANCE.remove(document);
+		HeapService.remove(document.getContent());
+		BriefService.remove(document);
 	}
 }

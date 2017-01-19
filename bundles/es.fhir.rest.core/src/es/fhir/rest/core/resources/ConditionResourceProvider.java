@@ -88,7 +88,7 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId,
 			@OptionalParam(name = Condition.SP_CATEGORY) CodeType categoryCode) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
+			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate diagnose condition first

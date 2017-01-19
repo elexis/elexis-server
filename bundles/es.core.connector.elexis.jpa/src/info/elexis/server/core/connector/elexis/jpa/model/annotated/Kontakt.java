@@ -17,6 +17,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -38,6 +39,7 @@ import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.KontaktEntityListener;
 
 /**
  * The persistent class for the Elexis KONTAKT database table. Valid from DB
@@ -49,6 +51,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.Fu
 @Table(name = "KONTAKT")
 @XmlRootElement(name = "contact")
 @Cache(type = CacheType.NONE)
+@EntityListeners(KontaktEntityListener.class)
 public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Serializable, IPatient {
 	protected static final long serialVersionUID = 1L;
 

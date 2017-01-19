@@ -66,7 +66,7 @@ public class MigratorService implements IMigratorService {
 	 * @param patientId
 	 */
 	private void migratePatientCondition(String patientId) {
-		Optional<Kontakt> patient = KontaktService.INSTANCE.findById(patientId);
+		Optional<Kontakt> patient = KontaktService.load(patientId);
 		patient.ifPresent(p -> {
 			String diagnosis = p.getDiagnosen();
 			if (diagnosis != null && !diagnosis.isEmpty()) {
@@ -91,7 +91,7 @@ public class MigratorService implements IMigratorService {
 	}
 
 	private void migratePatientEncounters(String patientId) {
-		Optional<Kontakt> patient = KontaktService.INSTANCE.findById(patientId);
+		Optional<Kontakt> patient = KontaktService.load(patientId);
 		patient.ifPresent(p -> {
 			List<Behandlung> behandlungen = BehandlungService.findAllConsultationsForPatient(p);
 			behandlungen.stream().forEach(b -> migrateEncounter(b));
@@ -99,7 +99,7 @@ public class MigratorService implements IMigratorService {
 	}
 
 	private void migrateConsultationEncounter(String consultationId) {
-		Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
+		Optional<Behandlung> behandlung = BehandlungService.load(consultationId);
 		behandlung.ifPresent(b -> {
 			migrateEncounter(b);
 		});

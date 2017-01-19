@@ -45,13 +45,13 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		byte[] sampleDocument = new byte[512];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
 
-		DocHandle docHandle = DocHandleService.INSTANCE.create(patient.get(), "Title", "Filename.pdf", "Category",
-				sampleDocument);
+		DocHandle docHandle = new DocHandleService.Builder(patient.get(), "Title", "Filename.pdf", "Category",
+				sampleDocument).buildAndSave();
 		LocalDate now = LocalDate.now();
 		docHandle.setCreationDate(now);
-		DocHandleService.INSTANCE.flush();
+		DocHandleService.save(docHandle);
 
-		Optional<DocHandle> findById = DocHandleService.INSTANCE.findById(docHandle.getId());
+		Optional<DocHandle> findById = DocHandleService.load(docHandle.getId());
 		assertTrue(findById.isPresent());
 		assertEquals("Title", findById.get().getTitle());
 		assertEquals("Filename.pdf", findById.get().getMimetype());
@@ -78,9 +78,9 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		byte[] sampleDocument = new byte[512];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
 
-		DocHandle docHandle = DocHandleService.INSTANCE.create(patient.get(), "Title", "Filename.pdf", "Category",
-				sampleDocument);
-		Optional<DocHandle> findById = DocHandleService.INSTANCE.findById(docHandle.getId());
+		DocHandle docHandle = new DocHandleService.Builder(patient.get(), "Title", "Filename.pdf", "Category",
+				sampleDocument).buildAndSave();
+		Optional<DocHandle> findById = DocHandleService.load(docHandle.getId());
 
 		Path path = Paths.get(patient.get().getPatientNr(), findById.get().getId() + ".pdf");
 		Path createdFile = tempDir.resolve(path);
@@ -101,10 +101,10 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		byte[] sampleDocument = new byte[512];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
 
-		DocHandle docHandle = DocHandleService.INSTANCE.create(patient.get(), "Title", "Filename.pdf", "Category",
-				sampleDocument);
+		DocHandle docHandle = new DocHandleService.Builder(patient.get(), "Title", "Filename.pdf", "Category",
+				sampleDocument).buildAndSave();
 
-		Optional<DocHandle> findById = DocHandleService.INSTANCE.findById(docHandle.getId());
+		Optional<DocHandle> findById = DocHandleService.load(docHandle.getId());
 		assertTrue(findById.isPresent());
 		assertEquals("Title", findById.get().getTitle());
 		assertEquals("Filename.pdf", findById.get().getMimetype());
@@ -129,10 +129,10 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		byte[] sampleDocument = new byte[32835];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
 
-		DocHandle docHandle = DocHandleService.INSTANCE.create(patient.get(), "Title2", "Filename2.pdf", "Category",
-				sampleDocument);
+		DocHandle docHandle = new DocHandleService.Builder(patient.get(), "Title2", "Filename2.pdf", "Category",
+				sampleDocument).buildAndSave();
 
-		long determineByteArrayLength = DocHandleService.INSTANCE.determineByteArrayLength(docHandle);
+		long determineByteArrayLength = DocHandleService.determineByteArrayLength(docHandle);
 		assertEquals(32835, determineByteArrayLength);
 
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_GLOBAL, true);
@@ -143,9 +143,9 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		byte[] sampleDocument2 = new byte[234523];
 		ThreadLocalRandom.current().nextBytes(sampleDocument2);
 
-		DocHandle docHandle2 = DocHandleService.INSTANCE.create(patient.get(), "Title3", "Filename.pdf3", "Category",
-				sampleDocument2);
-		long determineByteArrayLength2 = DocHandleService.INSTANCE.determineByteArrayLength(docHandle2);
+		DocHandle docHandle2 = new DocHandleService.Builder(patient.get(), "Title3", "Filename.pdf3", "Category",
+				sampleDocument2).buildAndSave();
+		long determineByteArrayLength2 = DocHandleService.determineByteArrayLength(docHandle2);
 		assertEquals(234523, determineByteArrayLength2);
 	}
 

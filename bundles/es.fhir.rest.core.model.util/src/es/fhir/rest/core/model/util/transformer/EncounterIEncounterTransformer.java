@@ -61,10 +61,8 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 	@Override
 	public Optional<IEncounter> createLocalObject(Encounter fhirObject) {
 		// patient and performer must be present
-		Optional<Kontakt> performerKontakt = KontaktService.INSTANCE
-				.findById(BehandlungHelper.getMandatorId(fhirObject).get());
-		Optional<Kontakt> patientKontakt = KontaktService.INSTANCE
-				.findById(BehandlungHelper.getPatientId(fhirObject).get());
+		Optional<Kontakt> performerKontakt = KontaktService.load(BehandlungHelper.getMandatorId(fhirObject).get());
+		Optional<Kontakt> patientKontakt = KontaktService.load(BehandlungHelper.getPatientId(fhirObject).get());
 		if (performerKontakt.isPresent() && patientKontakt.isPresent()) {
 			IEncounter iEncounter = findingsService.getFindingsFactory().createEncounter();
 			contentHelper.setResource(fhirObject, iEncounter);

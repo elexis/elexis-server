@@ -14,15 +14,15 @@ public class VerrechenbarTest {
 	 */
 	@Test
 	public void testReturnCorrectCodeSystemCodeForArtikelstammItem() {
-		ArtikelstammItem steristrip = ArtikelstammItemService.INSTANCE.findById("0200069235501108692350008").get();
+		ArtikelstammItem steristrip = ArtikelstammItemService.load("0200069235501108692350008").get();
 		VerrechenbarArtikelstammItem vai = new VerrechenbarArtikelstammItem(steristrip);
 		assertEquals("406", vai.getCodeSystemCode());
 
-		ArtikelstammItem procedurepack = ArtikelstammItemService.INSTANCE.findById("0733243060721831033730008").get();
+		ArtikelstammItem procedurepack = ArtikelstammItemService.load("0733243060721831033730008").get();
 		VerrechenbarArtikelstammItem vai2 = new VerrechenbarArtikelstammItem(procedurepack);
 		assertEquals("406", vai2.getCodeSystemCode());
 		
-		ArtikelstammItem dafalgan = ArtikelstammItemService.INSTANCE.findById("0768047504023220684270008").get();
+		ArtikelstammItem dafalgan = ArtikelstammItemService.load("0768047504023220684270008").get();
 		VerrechenbarArtikelstammItem vai3 = new VerrechenbarArtikelstammItem(dafalgan);
 		assertEquals("402", vai3.getCodeSystemCode());
 	}

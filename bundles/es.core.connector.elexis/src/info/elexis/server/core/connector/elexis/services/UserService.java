@@ -3,25 +3,46 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User_;
 
-public class UserService extends AbstractService<User> {
+public class UserService extends PersistenceService {
 
-	public static UserService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final UserService INSTANCE = new UserService();
+	public static class Builder extends AbstractBuilder<User> {
+		public Builder(String username, Kontakt mandant) {
+			object = new User();
+			object.setId(username);
+			object.setKontakt(mandant);
+			object.setActive(true);
+		}
 	}
 
-	private UserService() {
-		super(User.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<User> load(String id) {
+		return PersistenceService.load(User.class, id).map(v -> (User) v);
 	}
 
-	public boolean userHasRole(User u, String role) {
+	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<User> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(User.class, includeElementsMarkedDeleted).stream().map(v -> (User) v)
+				.collect(Collectors.toList());
+	}
+
+	public static boolean userHasRole(User u, String role) {
 		if (u == null || role == null) {
 			throw new IllegalArgumentException();
 		}
@@ -30,18 +51,18 @@ public class UserService extends AbstractService<User> {
 		return (count > 0l);
 	}
 
-	public Optional<User> findByKontakt(Kontakt kontakt) {
-		if(kontakt==null) {
+	public static Optional<User> findByKontakt(Kontakt kontakt) {
+		if (kontakt == null) {
 			return Optional.empty();
 		}
 		JPAQuery<User> qre = new JPAQuery<User>(User.class);
 		qre.add(User_.kontakt, JPAQuery.QUERY.EQUALS, kontakt);
 		List<User> result = qre.execute();
-		if(result.size()==1) {
+		if (result.size() == 1) {
 			return Optional.of(result.get(0));
 		} else {
 			return Optional.empty();
 		}
-		
+
 	}
 }

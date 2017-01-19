@@ -10,7 +10,6 @@
  ******************************************************************************/
 package info.elexis.server.core.connector.elexis.jpa.model.annotated.id;
 
-import java.util.UUID;
 import java.util.Vector;
 
 import org.eclipse.persistence.config.SessionCustomizer;
@@ -33,11 +32,7 @@ public class UUIDSequence extends Sequence implements SessionCustomizer {
 
 	@Override
 	public Object getGeneratedValue(Accessor accessor, AbstractSession writeSession, String seqName) {
-		String randomString = UUID.randomUUID().toString();
-		String randomStringWithoutDashes = randomString.replaceAll("-", "");
-		if (randomStringWithoutDashes.length() <= 24)
-			return randomStringWithoutDashes;
-		return randomStringWithoutDashes.substring(0, 24);
+		return ElexisIdGenerator.generateId();
 	}
 
 	@Override

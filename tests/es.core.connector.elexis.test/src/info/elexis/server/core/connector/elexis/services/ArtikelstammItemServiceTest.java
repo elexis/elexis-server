@@ -7,13 +7,15 @@ import java.util.Optional;
 
 import org.junit.Test;
 
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 
 public class ArtikelstammItemServiceTest {
 
 	@Test
 	public void testFindAllEntries() {
-		List<ArtikelstammItem> findAll = ArtikelstammItemService.INSTANCE.findAll(true);
+		List<? extends AbstractDBObjectIdDeleted> findAll = ArtikelstammItemService.findAll(ArtikelstammItem.class,
+				true);
 		assertTrue(findAll.size() > 0);
 	}
 

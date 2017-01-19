@@ -169,21 +169,19 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			Optional<Behandlung> behandlung = getOrCreateBehandlung(claim, fall, providerRef);
 			if (behandlung.isPresent()) {
 				Behandlung cons = behandlung.get();
-				Optional<Kontakt> mandator = KontaktService.INSTANCE
-						.findById(providerRef.getReferenceElement().getIdPart());
+				Optional<Kontakt> mandator = KontaktService.load(providerRef.getReferenceElement().getIdPart());
 				if (mandator.isPresent()) {
 					if (!cons.getFall().getId().equals(fall.getId())) {
 						Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 						if (lockInfo.isPresent()) {
 							cons.setFall(fall);
-							BehandlungService.INSTANCE.write(cons);
-							BehandlungService.INSTANCE.flush();
+							BehandlungService.save(cons);
 							AbstractHelper.releaseLock(lockInfo.get());
 						}
 					}
 					
 					for (Diagnosis diag : diagnose) {
-						BehandlungService.INSTANCE.setDiagnosisOnConsultation(cons, diag);
+						BehandlungService.setDiagnosisOnConsultation(cons, diag);
 					}
 					for (BillableContext billable : billables) {
 						List<Verrechnet> billed = billable.bill(cons, mandator.get(), mandator.get());
@@ -257,7 +255,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 		private Fall getFall(CoverageComponent coverageComponent) {
 			Reference reference = (Reference) coverageComponent.getCoverage();
 			if (reference != null && !reference.isEmpty()) {
-				Optional<Fall> fallOpt = FallService.INSTANCE.findById(reference.getReferenceElement().getIdPart());
+				Optional<Fall> fallOpt = FallService.load(reference.getReferenceElement().getIdPart());
 				return fallOpt.orElse(null);
 			}
 			return null;
@@ -300,7 +298,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 		}
 
 		private Optional<Behandlung> getBehandlungForEncounter(IEncounter encounter) {
-			return BehandlungService.INSTANCE.findById((encounter).getConsultationId());
+			return BehandlungService.load((encounter).getConsultationId());
 		}
 	}
 }

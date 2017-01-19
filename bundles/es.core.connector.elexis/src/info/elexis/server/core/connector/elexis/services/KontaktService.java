@@ -5,89 +5,70 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.KontaktEntityListener;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class KontaktService extends AbstractService<Kontakt> {
+public class KontaktService extends PersistenceService {
 
-	public static KontaktService INSTANCE = InstanceHolder.INSTANCE;
+	private static Logger log = LoggerFactory.getLogger(KontaktService.class);
 
-	private static final class InstanceHolder {
-		static final KontaktService INSTANCE = new KontaktService();
+	public static class PersonBuilder extends AbstractBuilder<Kontakt> {
+		public PersonBuilder(String firstName, String lastName, LocalDate dateOfBirth, Gender sex) {
+			object = new Kontakt();
+			object.setDescription1(lastName);
+			object.setDescription2(firstName);
+			object.setDob(dateOfBirth);
+			object.setGender(sex);
+			object.setPerson(true);
+		}
+
+		/**
+		 * This method does not initialize a patient number. The patient number
+		 * is created by the persistence layer in {@link KontaktEntityListener}
+		 * 
+		 * @return
+		 */
+		public PersonBuilder patient() {
+			object.setPatient(true);
+			return this;
+		}
+
+		public PersonBuilder mandator() {
+			object.setMandator(true);
+			return this;
+		}
 	}
 
-	private KontaktService() {
-		super(Kontakt.class);
+	public static class OrganizationBuilder extends AbstractBuilder<Kontakt> {
+		public OrganizationBuilder(String name) {
+			object = new Kontakt();
+			object.setDescription1(name);
+			object.setOrganisation(true);
+		}
+
+		public OrganizationBuilder laboratory() {
+			object.setLaboratory(true);
+			return this;
+		}
 	}
 
 	/**
+	 * convenience method
 	 * 
-	 * @return a managed {@link Kontakt} entity
-	 */
-	public Kontakt createPatient(String firstName, String lastName, LocalDate dateOfBirth, Gender sex) {
-		em.getTransaction().begin();
-		Kontakt pat = create(false);
-		pat.setPatient(true);
-		pat.setPerson(true);
-		pat.setCode(Integer.toString(findAndIncrementPatientNr()));
-		pat.setDescription1(lastName);
-		pat.setDescription2(firstName);
-		pat.setDob(dateOfBirth);
-		pat.setGender(sex);
-		em.getTransaction().commit();
-		return pat;
-	}
-
-	/**
-	 * Finds the current patient number, checks for uniqueness, retrieves it and
-	 * increments by one
-	 * 
+	 * @param id
 	 * @return
 	 */
-	private int findAndIncrementPatientNr() {
-		int ret = 0;
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		try {
-			em.getTransaction().begin();
-			Config patNr = em.find(Config.class, "PatientNummer");
-			if (patNr == null) {
-				Config patNrConfig = new Config();
-				patNrConfig.setParam("PatientNummer");
-				patNrConfig.setWert("1");
-				em.persist(patNrConfig);
-				ret = 1;
-			} else {
-				em.lock(patNr, LockModeType.PESSIMISTIC_WRITE);
-				ret = Integer.parseInt(patNr.getWert());
-				ret += 1;
-
-				while (true) {
-					@SuppressWarnings("rawtypes")
-					List resultList = em.createQuery("SELECT k FROM Kontakt k WHERE k.code=" + ret).getResultList();
-					if (resultList.size() == 0) {
-						break;
-					} else {
-						ret += 1;
-					}
-				}
-
-				patNr.setWert(Integer.toString(ret));
-			}
-			em.getTransaction().commit();
-			return ret;
-		} finally {
-			em.close();
-		}
+	public static Optional<Kontakt> load(String id) {
+		return PersistenceService.load(Kontakt.class, id).map(v -> (Kontakt) v);
 	}
 
 	public static List<Fall> getFaelle(Kontakt k) {

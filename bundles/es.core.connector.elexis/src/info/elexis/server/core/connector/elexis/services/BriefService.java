@@ -1,40 +1,48 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Optional;
+
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
-public class BriefService extends AbstractService<Brief> {
+public class BriefService extends PersistenceService {
 
-	public static BriefService INSTANCE = InstanceHolder.INSTANCE;
+	public static class Builder extends AbstractBuilder<Brief> {
 
-	private static final class InstanceHolder {
-		static final BriefService INSTANCE = new BriefService();
+		private Heap heap;
+
+		/**
+		 * Requires a {@link Heap} object with corresponding id, use
+		 * {@link #buildAndSave()} to ensure proper creation.
+		 * 
+		 * @param patient
+		 */
+		public Builder(Kontakt patient) {
+			object = new Brief();
+			object.setPatient(patient);
+
+			heap = new Heap();
+			heap.setId(object.getId());
+			object.setContent(heap);
+			object.setGeloescht(false);
+		}
+
+		@Override
+		public Brief buildAndSave() {
+			PersistenceService.save(heap);
+			return super.buildAndSave();
+		}
 	}
 
-	private BriefService() {
-		super(Brief.class);
-	}
-
-	@Override
-	public Brief create() {
-		Brief document = super.create();
-		Heap heap = HeapService.INSTANCE.create(document.getId(), true);
-		document.setContent(heap);
-		document.setGeloescht(false);
-		flush();
-		return document;
-	}
-	
-	public Brief create(Kontakt patient) {
-		em.merge(patient);
-		Brief document = super.create();
-		document.setPatient(patient);
-		Heap heap = HeapService.INSTANCE.create(document.getId(), true);
-		document.setContent(heap);
-		document.setGeloescht(false);
-		flush();
-		return document;
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Brief> load(String id) {
+		return PersistenceService.load(Brief.class, id).map(v -> (Brief) v);
 	}
 
 }

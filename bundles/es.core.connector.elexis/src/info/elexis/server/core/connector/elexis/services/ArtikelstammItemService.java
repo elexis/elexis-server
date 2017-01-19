@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.*;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -19,42 +19,55 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikelstamm
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
-
-	public static ArtikelstammItemService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final ArtikelstammItemService INSTANCE = new ArtikelstammItemService();
-	}
-
-	private ArtikelstammItemService() {
-		super(ArtikelstammItem.class);
-	}
+public class ArtikelstammItemService extends PersistenceService {
 
 	private static final String VERSION_ENTRY_ID = "VERSION";
 
-	public int getCurrentVersion() {
-		Optional<ArtikelstammItem> ai = findById(VERSION_ENTRY_ID);
+	public static class Builder extends AbstractBuilder<ArtikelstammItem> {
+		public Builder(int cummulatedVersion, String gtin, BigInteger phar, String dscr) {
+			object = new ArtikelstammItem();
+			String id = ArtikelstammHelper.createUUID(cummulatedVersion, gtin, phar, true);
+			object.setId(id);
+			String pharmacode = (phar != null) ? String.format("%07d", phar) : "0000000";
+			object.setPhar(pharmacode);
+			object.setCummVersion(Integer.toString(cummulatedVersion));
+			object.setGtin(gtin);
+			object.setDscr(dscr);
+			object.setBb(StringConstants.ZERO);
+		}
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<ArtikelstammItem> load(String id) {
+		return PersistenceService.load(ArtikelstammItem.class, id).map(v -> (ArtikelstammItem) v);
+	}
+
+	public static int getCurrentVersion() {
+		Optional<ArtikelstammItem> ai = load(VERSION_ENTRY_ID);
 		if (ai.isPresent()) {
 			return Integer.parseInt(ai.get().getPpub());
 		}
 		return -1;
 	}
 
-	public void setCurrentVersion(Integer version) {
-		Optional<ArtikelstammItem> ai = findById(VERSION_ENTRY_ID);
+	public static void setCurrentVersion(Integer version) {
+		Optional<ArtikelstammItem> ai = load(VERSION_ENTRY_ID);
 		if (ai.isPresent()) {
 			ai.get().setPpub(Integer.toString(version));
 		}
 	}
 
-	public void setImportSetCreationDate(Date creationDate) {
-		Optional<ArtikelstammItem> version = findById(VERSION_ENTRY_ID);
+	public static void setImportSetCreationDate(Date creationDate) {
+		Optional<ArtikelstammItem> version = load(VERSION_ENTRY_ID);
 		if (version.isPresent()) {
 			DateFormat df = new SimpleDateFormat("ddMMyy HH:mm");
 			version.get().setDscr(df.format(creationDate.getTime()));
 		}
-
 	}
 
 	/**
@@ -63,7 +76,7 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 	 * 
 	 * @param importStammType
 	 */
-	public int resetAllBlackboxMarks() {
+	public static int resetAllBlackboxMarks() {
 		EntityManager em = createEntityManager();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -73,21 +86,6 @@ public class ArtikelstammItemService extends AbstractService<ArtikelstammItem> {
 		} finally {
 			em.close();
 		}
-	}
-
-	public ArtikelstammItem create(int cummulatedVersion, String gtin, BigInteger phar, String dscr) {
-		em.getTransaction().begin();
-		String id = ArtikelstammHelper.createUUID(cummulatedVersion, gtin, phar, true);
-		String pharmacode = (phar != null) ? String.format("%07d", phar) : "0000000";
-		ArtikelstammItem ai = create(id, false);
-		ai.setCummVersion(Integer.toString(cummulatedVersion));
-		// ai.setType(type.name());
-		ai.setGtin(gtin);
-		ai.setPhar(pharmacode);
-		ai.setDscr(dscr);
-		ai.setBb(StringConstants.ZERO);
-		em.getTransaction().commit();
-		return ai;
 	}
 
 	/**

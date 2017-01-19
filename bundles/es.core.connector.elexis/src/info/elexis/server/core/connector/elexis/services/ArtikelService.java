@@ -8,34 +8,25 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class ArtikelService extends AbstractService<Artikel> {
+public class ArtikelService extends PersistenceService {
 
-	public static ArtikelService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final ArtikelService INSTANCE = new ArtikelService();
-	}
-
-	private ArtikelService() {
-		super(Artikel.class);
+	public static class Builder extends AbstractBuilder<Artikel> {
+		public Builder(String name, String internalName, String articleType) {
+			object = new Artikel();
+			object.setName(name);
+			object.setNameIntern(internalName);
+			object.setTyp(articleType);
+		}
 	}
 
 	/**
+	 * convenience method
 	 * 
-	 * @param name
-	 * @param internalName
-	 * @param articleType
-	 *            the article type class, e.g. Artikel#TYP_EIGENARTIKEL
+	 * @param id
 	 * @return
 	 */
-	public Artikel create(String name, String internalName, String articleType) {
-		em.getTransaction().begin();
-		Artikel art = create(false);
-		art.setName(name);
-		art.setNameIntern(internalName);
-		art.setTyp(articleType);
-		em.getTransaction().commit();
-		return art;
+	public static Optional<Artikel> load(String id) {
+		return PersistenceService.load(Artikel.class, id).map(v -> (Artikel) v);
 	}
 
 	/**
@@ -66,7 +57,7 @@ public class ArtikelService extends AbstractService<Artikel> {
 		List<Artikel> packagesForEigenartikelProduct = eigenartikelGetPackagesForProduct(eigenartikel);
 		for (Artikel artikel : packagesForEigenartikelProduct) {
 			artikel.setDeleted(true);
-			ArtikelService.INSTANCE.write(artikel);
+			ArtikelService.save(artikel);
 		}
 		eigenartikel.setDeleted(true);
 	}

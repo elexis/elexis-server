@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -75,7 +76,7 @@ public class Stock extends AbstractDBObjectIdDeleted implements IStock {
 	@Column(name = "driver_config")
 	String driverConfig;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "STOCK", insertable = false, updatable = false)
 	protected List<StockEntry> entries;
 

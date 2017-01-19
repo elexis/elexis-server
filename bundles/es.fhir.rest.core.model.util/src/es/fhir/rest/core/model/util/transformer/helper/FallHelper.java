@@ -50,7 +50,7 @@ public class FallHelper extends AbstractHelper {
 		if (kostenTr == null) {
 			String kostenTrId = fall.getExtInfoAsString("Kostenträger");
 			if (kostenTrId != null && !kostenTrId.isEmpty()) {
-				Optional<Kontakt> kostenTrOpt = KontaktService.INSTANCE.findById(kostenTrId);
+				Optional<Kontakt> kostenTrOpt = KontaktService.load(kostenTrId);
 				if (kostenTrOpt.isPresent()) {
 					kostenTr = kostenTrOpt.get();
 				}
@@ -69,18 +69,18 @@ public class FallHelper extends AbstractHelper {
 	public Period getPeriod(Fall fall) {
 		Period period = new Period();
 		LocalDate startDate = fall.getDatumVon();
-		if(startDate != null) {
+		if (startDate != null) {
 			period.setStart(getDate(startDate.atStartOfDay()));
 		}
 		LocalDate endDate = fall.getDatumBis();
-		if(endDate != null) {
+		if (endDate != null) {
 			period.setEnd(getDate(endDate.atStartOfDay()));
 		}
 		return period;
 	}
 
 	public void setPeriod(Fall fall, Period period) {
-		if(period.getStart() != null) {
+		if (period.getStart() != null) {
 			fall.setDatumVon(getLocalDateTime(period.getStart()).toLocalDate());
 		}
 	}

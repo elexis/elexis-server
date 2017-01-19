@@ -101,7 +101,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public void __entities_list_user() {
-		List<User> users = UserService.INSTANCE.findAll(true);
+		List<User> users = UserService.findAll(true);
 		for (User user : users) {
 			String id = user.getId();
 			String isDeleted = Boolean.toString(user.isDeleted());
@@ -127,11 +127,11 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __stock_list() {
-		List<Stock> stocks = StockService.INSTANCE.findAll(true);
+		List<Stock> stocks = StockService.findAll(true);
 		for (Stock stock : stocks) {
 			ci.println(stock.getLabel());
 			if (stock.isCommissioningSystem()) {
-				ICommissioningSystemDriver instance = StockCommissioningSystemService.INSTANCE
+				ICommissioningSystemDriver instance = new StockCommissioningSystemService()
 						.getDriverInstanceForStock(stock);
 				ci.print("\t [  isCommissioningSystem  ] ");
 				if (instance != null) {
@@ -153,24 +153,24 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return missingArgument("stockId (start | stop)");
 		}
 
-		Optional<Stock> findById = StockService.INSTANCE.findById(stockId);
+		Optional<Stock> findById = StockService.load(stockId);
 		if (!findById.isPresent()) {
 			return "Stock not found [" + stockId + "]";
 		}
 		IStatus status;
 		if ("start".equalsIgnoreCase(action)) {
-			status = StockCommissioningSystemService.INSTANCE.initializeStockCommissioningSystem(findById.get());
+			status = new StockCommissioningSystemService().initializeStockCommissioningSystem(findById.get());
 		} else {
-			status = StockCommissioningSystemService.INSTANCE.shutdownStockCommissioningSytem(findById.get());
+			status = new StockCommissioningSystemService().shutdownStockCommissioningSytem(findById.get());
 		}
 		return StatusUtil.printStatus(status);
 	}
 
 	public String __stock_listForStock(Iterator<String> args) {
 		if (args.hasNext()) {
-			Optional<Stock> stock = StockService.INSTANCE.findById(args.next());
+			Optional<Stock> stock = StockService.load(args.next());
 			if (stock.isPresent()) {
-				StockService.INSTANCE.findAllStockEntriesForStock(stock.get()).stream()
+				new StockService().findAllStockEntriesForStock(stock.get()).stream()
 						.forEach(se -> ci.print(se.getLabel() + "\n"));
 				return ok();
 			} else {
@@ -183,10 +183,10 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public String __stock_seCsOut(Iterator<String> args) {
 		if (args.hasNext()) {
-			Optional<StockEntry> se = StockEntryService.INSTANCE.findById(args.next());
+			Optional<StockEntry> se = StockEntryService.load(args.next());
 			if (se.isPresent()) {
-				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.performArticleOutlay(se.get(),
-						1, null);
+				IStatus performArticleOutlay = new StockCommissioningSystemService().performArticleOutlay(se.get(), 1,
+						null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {
 				return "Invalid stock entry id";
@@ -198,9 +198,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public String __stock_stockSyncCs(Iterator<String> args) {
 		if (args.hasNext()) {
-			Optional<Stock> se = StockService.INSTANCE.findById(args.next());
+			Optional<Stock> se = StockService.load(args.next());
 			if (se.isPresent()) {
-				IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE.synchronizeInventory(se.get(),
+				IStatus performArticleOutlay = new StockCommissioningSystemService().synchronizeInventory(se.get(),
 						Collections.emptyList(), null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {

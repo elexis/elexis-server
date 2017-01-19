@@ -95,7 +95,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
 			@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
+			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate encounters first

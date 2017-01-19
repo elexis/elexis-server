@@ -15,28 +15,28 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedKumula
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung_;
 
-public class TarmedLeistungService extends AbstractService<TarmedLeistung> {
+public class TarmedLeistungService extends PersistenceService {
 
 	private static Logger log = LoggerFactory.getLogger(TarmedLeistungService.class);
-	
-	public static TarmedLeistungService INSTANCE = InstanceHolder.INSTANCE;
 
-	private static final class InstanceHolder {
-		static final TarmedLeistungService INSTANCE = new TarmedLeistungService();
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<TarmedLeistung> load(String id) {
+		return PersistenceService.load(TarmedLeistung.class, id).map(v -> (TarmedLeistung) v);
 	}
 
-	private TarmedLeistungService() {
-		super(TarmedLeistung.class);
-	}
-
-	public Optional<IBillable> getVerrechenbarFromCode(String code) {
+	public static Optional<IBillable> getVerrechenbarFromCode(String code) {
 		Optional<TarmedLeistung> tl = findFromCode(code, null);
-		if(tl.isPresent()) {
+		if (tl.isPresent()) {
 			return Optional.of(new VerrechenbarTarmedLeistung(tl.get()));
 		}
-		
-		log.error("TarmedLeistung "+code+" not found!");
-		
+
+		log.error("TarmedLeistung " + code + " not found!");
+
 		return Optional.empty();
 	}
 

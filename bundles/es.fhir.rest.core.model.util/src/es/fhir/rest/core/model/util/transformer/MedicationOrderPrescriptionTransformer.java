@@ -56,7 +56,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 	public Optional<MedicationOrder> getFhirObject(Prescription localObject) {
 		MedicationOrder order = new MedicationOrder();
 		MedicationOrderStatus statusEnum = MedicationOrderStatus.ACTIVE;
-		
+
 		order.setId(new IdDt("MedicationOrder", localObject.getId()));
 		order.addIdentifier(getElexisObjectIdentifier(localObject));
 
@@ -83,7 +83,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 
 		medication.setText(textBuilder.toString());
 		order.setMedication(medication);
-		
+
 		LocalDateTime dateFrom = localObject.getDateFrom();
 		if (dateFrom != null) {
 			Date time = Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant());
@@ -139,23 +139,22 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 		}
 
 		order.setStatus(statusEnum);
-		
+
 		Narrative narrative = new Narrative();
 		narrative.setDivAsString(textBuilder.toString());
 		order.setText(narrative);
-		
+
 		Extension elexisEntryType = new Extension();
 		elexisEntryType.setUrl("www.elexis.info/extensions/prescription/entrytype");
-		elexisEntryType.setValue(
-				new Enumeration<>(entryTypeFactory,
-						EntryType.byNumeric(getNumericEntryType(localObject))));
+		elexisEntryType
+				.setValue(new Enumeration<>(entryTypeFactory, EntryType.byNumeric(getNumericEntryType(localObject))));
 		order.addExtension(elexisEntryType);
 		return Optional.of(order);
 	}
 
 	private int getNumericEntryType(Prescription localObject) {
 		String prescriptionType = localObject.getPrescriptionType();
-		if(prescriptionType != null && !prescriptionType.isEmpty()) {
+		if (prescriptionType != null && !prescriptionType.isEmpty()) {
 			return Integer.parseInt(prescriptionType);
 		}
 		return -1;
@@ -171,7 +170,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 	public Optional<Prescription> getLocalObject(MedicationOrder fhirObject) {
 		String id = fhirObject.getIdElement().getIdPart();
 		if (id != null && !id.isEmpty()) {
-			return PrescriptionService.INSTANCE.findById(id);
+			return PrescriptionService.load(id);
 		}
 		return Optional.empty();
 	}
@@ -235,10 +234,10 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 			getLogger().error("MedicationOrder with no gtin");
 		}
 		// lookup patient
-		Optional<Kontakt> patient = KontaktService.INSTANCE.findById(fhirObject.getPatient().getId());
+		Optional<Kontakt> patient = KontaktService.load(fhirObject.getPatient().getId());
 		if (item.isPresent() && patient.isPresent()) {
-			Prescription localObject = PrescriptionService.INSTANCE.create(item.get(), patient.get(),
-					getMedicationOrderDosage(fhirObject));
+			Prescription localObject = new PrescriptionService.Builder(item.get(), patient.get(),
+					getMedicationOrderDosage(fhirObject)).buildAndSave();
 
 			Optional<LocalDateTime> startDateTime = getMedicationOrderStartDateTime(fhirObject);
 			startDateTime.ifPresent(date -> localObject.setDateFrom(date));

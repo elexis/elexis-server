@@ -1,6 +1,9 @@
 package info.elexis.server.core.connector.elexis.jpa;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 
@@ -8,7 +11,6 @@ import org.junit.Test;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 /**
  * @see https://redmine.medelexis.ch/projects/incomingtickets/time_entries?issue_id=5455
@@ -54,22 +56,11 @@ public class AbstractDBObjectIdDeletedTest {
 		assertFalse(k.equals(null));
 		assertFalse(k4.equals(k));
 		assertFalse(k.equals(k4));
-		assertFalse(k.equals(k5));
-		assertFalse(k5.equals(k));
+		assertTrue(k.equals(k5));
+		assertTrue(k5.equals(k));
 		assertNotEquals(k.hashCode(), f.hashCode());
 		assertNotEquals(k4.hashCode(), k.hashCode());
-		assertNotEquals(k5.hashCode(), k.hashCode());
-		
-		Kontakt kc1 = KontaktService.INSTANCE.create();
-		Kontakt kc2 = new Kontakt();
-		assertNotEquals(kc1, kc2);
-		assertNotEquals(kc1.hashCode(), kc2.hashCode());
-		kc2.setId(kc1.getId());
-		kc2.setLastupdate(kc1.getLastupdate());
-		assertEquals(kc1, kc2);
-		assertEquals(kc1.hashCode(), kc2.hashCode());
-		
-		KontaktService.INSTANCE.remove(kc1);
+		assertEquals(k5.hashCode(), k.hashCode());
 	}
 
 }

@@ -15,7 +15,7 @@ public class LabItemServiceTest {
 
 	@Test
 	public void testFindAllLabResultsForPatientWithType() {
-		Optional<Kontakt> patient = KontaktService.INSTANCE.findById("i46395865ce01d37e0158");
+		Optional<Kontakt> patient = KontaktService.load("i46395865ce01d37e0158");
 		List<LabResult> labResults = LabItemService.findAllLabResultsForPatientWithType(patient.get(),
 				LabItemTyp.FORMULA, false);
 		assertEquals(1, labResults.size());

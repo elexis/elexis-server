@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Optional;
 import java.util.Set;
 
 import ch.elexis.core.model.issue.Priority;
@@ -10,31 +11,29 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Reminder;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ReminderResponsible;
 
-public class ReminderService extends AbstractService<Reminder> {
+public class ReminderService extends PersistenceService {
 
-	public static ReminderService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final ReminderService INSTANCE = new ReminderService();
+	public static class Builder extends AbstractBuilder<Reminder> {
+		public Builder(Kontakt creator, final Visibility visibility, final String subject) {
+			object = new Reminder();
+			object.setCreator(creator);
+			object.setKontakt(creator);
+			object.setVisibility(visibility);
+			object.setSubject(subject);
+			object.setPriority(Priority.MEDIUM);
+			object.setActionType(Type.COMMON);
+			object.setStatus(ProcessStatus.OPEN);
+		}
 	}
 
-	public ReminderService() {
-		super(Reminder.class);
-	}
-
-	public Reminder create(Kontakt creator, final Visibility visibility, final String subject) {
-		em.getTransaction().begin();
-		Reminder reminder = create(false);
-		em.merge(creator);
-		reminder.setCreator(creator);
-		reminder.setKontakt(creator);
-		reminder.setVisibility(visibility);
-		reminder.setSubject(subject);
-		reminder.setPriority(Priority.MEDIUM);
-		reminder.setActionType(Type.COMMON);
-		reminder.setStatus(ProcessStatus.OPEN);
-		em.getTransaction().commit();
-		return reminder;
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Reminder> load(String id) {
+		return PersistenceService.load(Reminder.class, id).map(v -> (Reminder) v);
 	}
 
 	/**

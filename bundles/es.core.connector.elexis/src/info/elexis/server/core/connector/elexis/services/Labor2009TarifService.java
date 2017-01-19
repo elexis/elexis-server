@@ -8,24 +8,24 @@ import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif_;
 
-public class Labor2009TarifService extends AbstractService<Labor2009Tarif> {
+public class Labor2009TarifService extends PersistenceService {
 
-	public static Labor2009TarifService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final Labor2009TarifService INSTANCE = new Labor2009TarifService();
-	}
-
-	private Labor2009TarifService() {
-		super(Labor2009Tarif.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Labor2009Tarif> load(String id) {
+		return PersistenceService.load(Labor2009Tarif.class, id).map(v -> (Labor2009Tarif) v);
 	}
 
 	public static Optional<Labor2009Tarif> findFromCode(String code) {
 		return findFromCode(code, null);
 	}
-	
+
 	public static Optional<Labor2009Tarif> findFromCode(String code, TimeTool date) {
-		if(date==null) {
+		if (date == null) {
 			date = new TimeTool();
 		}
 		JPAQuery<Labor2009Tarif> query = new JPAQuery<Labor2009Tarif>(Labor2009Tarif.class);
@@ -34,7 +34,7 @@ public class Labor2009TarifService extends AbstractService<Labor2009Tarif> {
 		for (Labor2009Tarif laborLeistung : leistungen) {
 			TimeTool validFrom = new TimeTool(laborLeistung.getGueltigVon());
 			LocalDate validToL = laborLeistung.getGueltigBis();
-			TimeTool validTo = new TimeTool((validToL!=null) ? validToL : LocalDate.of(2999, 12, 31));
+			TimeTool validTo = new TimeTool((validToL != null) ? validToL : LocalDate.of(2999, 12, 31));
 			if (date.isAfterOrEqual(validFrom) && date.isBeforeOrEqual(validTo))
 				return Optional.of(laborLeistung);
 		}

@@ -39,7 +39,7 @@ public class PractitionerKontaktTransformer implements IFhirTransformer<Practiti
 		practitioner.setAddress(kontaktHelper.getAddresses(localObject));
 		practitioner.setTelecom(kontaktHelper.getContactPoints(localObject));
 
-		Optional<User> userLocalObject = UserService.INSTANCE.findByKontakt(localObject);
+		Optional<User> userLocalObject = UserService.findByKontakt(localObject);
 		if (userLocalObject.isPresent()) {
 			Collection<Role> roles = userLocalObject.get().getRoles();
 			for (Role role : roles) {

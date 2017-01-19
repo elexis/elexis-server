@@ -17,7 +17,7 @@ public class LabOrderServiceTest {
 
 	@Before
 	public void before() {
-		labresult = LabResultService.INSTANCE.findById("ved209fdb6b421a56077772").get();
+		labresult = LabResultService.load("ved209fdb6b421a56077772").get();
 		assertEquals("101", labresult.getResult());
 		assertNotNull(labresult);
 		

@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.types.LabItemTyp;
-import ch.rgw.tools.TimeTool;
 import ch.rgw.tools.VersionedResource;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
@@ -42,8 +41,10 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.LabItemService;
 import info.elexis.server.core.connector.elexis.services.LabResultService;
+import info.elexis.server.core.connector.elexis.services.PersistenceService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 import info.elexis.server.core.connector.elexis.services.UserService;
+import info.elexis.server.core.connector.elexis.services.XidService;
 
 public class TestDatabaseInitializer {
 
@@ -211,17 +212,16 @@ public class TestDatabaseInitializer {
 		}
 
 		if (!isPatientInitialized) {
-			patient = KontaktService.INSTANCE.createPatient("Test", "Patient", LocalDate.of(1990, 1, 1), Gender.FEMALE);
+			patient = new KontaktService.PersonBuilder("Test", "Patient", LocalDate.of(1990, 1, 1), Gender.FEMALE)
+					.patient().build();
 			patient.setPhone1("+01555123");
 			patient.setMobile("+01444123");
-
 			patient.setCity("City");
 			patient.setZip("123");
 			patient.setStreet("Street 1");
-
 			patient.setDiagnosen("Test Diagnose 1\nTest Diagnose 2");
+			PersistenceService.save(patient);
 
-			KontaktService.INSTANCE.flush();
 			addAHVNumber(patient, 1);
 			isPatientInitialized = true;
 		}
@@ -242,8 +242,7 @@ public class TestDatabaseInitializer {
 		StringBuilder ahvBuilder = new StringBuilder(country + number);
 		ahvBuilder.append(getAHVCheckNumber(ahvBuilder.toString()));
 
-		KontaktService.INSTANCE.setDomainId(kontakt, XidConstants.DOMAIN_AHV, ahvBuilder.toString(),
-				XidQuality.ASSIGNMENT_REGIONAL);
+		XidService.setDomainId(kontakt, XidConstants.DOMAIN_AHV, ahvBuilder.toString(), XidQuality.ASSIGNMENT_REGIONAL);
 	}
 
 	private String getAHVCheckNumber(String string) {
@@ -279,9 +278,7 @@ public class TestDatabaseInitializer {
 		}
 
 		if (!isOrganizationInitialized) {
-			organization = KontaktService.INSTANCE.create();
-			organization.setOrganisation(true);
-			organization.setDescription1("Test Organization");
+			organization = new KontaktService.OrganizationBuilder("Test Organization").build();
 			organization.setPhone1("+01555345");
 			organization.setMobile("+01444345");
 
@@ -289,7 +286,7 @@ public class TestDatabaseInitializer {
 			organization.setZip("123");
 			organization.setStreet("Street 10");
 
-			KontaktService.INSTANCE.flush();
+			PersistenceService.save(organization);
 			isOrganizationInitialized = true;
 		}
 	}
@@ -320,37 +317,26 @@ public class TestDatabaseInitializer {
 		}
 
 		if (!isMandantInitialized) {
-			mandant = KontaktService.INSTANCE.create();
-			mandant.setPerson(true);
-			mandant.setMandator(true);
-			mandant.setDescription1("Mandant");
-			mandant.setDescription2("Test");
-
-			mandant.setGender(Gender.MALE);
-			mandant.setDateOfBirth(new TimeTool("01.01.1970"));
-
+			mandant = new KontaktService.PersonBuilder("Mandant", "Test", LocalDate.of(1970, 1, 1), Gender.MALE)
+					.mandator().build();
 			mandant.setPhone1("+01555234");
 			mandant.setMobile("+01444234");
 
 			mandant.setCity("City");
 			mandant.setZip("123");
 			mandant.setStreet("Street 100");
-			KontaktService.INSTANCE.flush();
+			PersistenceService.save(mandant);
 
-			User user = UserService.INSTANCE.create("tst", true);
-			user.setKontakt(mandant);
-			user.setActive(true);
+			User user = new UserService.Builder("tst", mandant).buildAndSave();
 			Optional<Role> doctorRole = getRoleWithId("doctor");
 			if (doctorRole.isPresent()) {
 				user.setRoles(Collections.singletonList(doctorRole.get()));
 			}
-			UserService.INSTANCE.flush();
+			UserService.save(user);
 
-			KontaktService.INSTANCE.setDomainId(mandant, XidConstants.DOMAIN_EAN, "2000000000002",
-					XidQuality.ASSIGNMENT_GLOBAL);
+			XidService.setDomainId(mandant, XidConstants.DOMAIN_EAN, "2000000000002", XidQuality.ASSIGNMENT_GLOBAL);
 
-			KontaktService.INSTANCE.setDomainId(mandant, "www.xid.ch/id/ksk", "C000002",
-					XidQuality.ASSIGNMENT_REGIONAL);
+			XidService.setDomainId(mandant, "www.xid.ch/id/ksk", "C000002", XidQuality.ASSIGNMENT_REGIONAL);
 			isMandantInitialized = true;
 		}
 	}
@@ -390,7 +376,7 @@ public class TestDatabaseInitializer {
 			initializeArtikelstamm();
 		}
 		if (!isPrescriptionInitialized) {
-			prescription = PrescriptionService.INSTANCE.create(artikelstammitem, patient, "1-1-1-1");
+			prescription = new PrescriptionService.Builder(artikelstammitem, patient, "1-1-1-1").buildAndSave();
 
 			isPrescriptionInitialized = true;
 		}
@@ -416,13 +402,11 @@ public class TestDatabaseInitializer {
 			initializeOrganization();
 		}
 		if (!isFallInitialized) {
-			fall = FallService.INSTANCE.create(patient, "Test Fall", "reason", "method");
+			fall = new FallService.Builder(patient, "Test Fall", "reason", "method").build();
 			fall.setKostentrKontakt(organization);
 			fall.setVersNummer("1234-5678");
 			fall.setDatumVon(LocalDate.of(2016, Month.SEPTEMBER, 1));
-			FallService.INSTANCE.flush();
-
-			KontaktService.INSTANCE.refresh(patient);
+			FallService.save(fall);
 			isFallInitialized = true;
 		}
 	}
@@ -446,14 +430,12 @@ public class TestDatabaseInitializer {
 			initializeFall();
 		}
 		if (!isBehandlungInitialized) {
-			behandlung = BehandlungService.INSTANCE.create(getFall(), getMandant());
+			behandlung = new BehandlungService.Builder(getFall(), getMandant()).buildAndSave();
 			behandlung.setDatum(LocalDate.of(2016, Month.SEPTEMBER, 21));
 			VersionedResource vr = VersionedResource.load(null);
 			vr.update("Test consultation\nWith some test text.", "test remark");
 			behandlung.setEintrag(vr);
-			BehandlungService.INSTANCE.flush();
-
-			KontaktService.INSTANCE.refresh(patient);
+			BehandlungService.save(behandlung);
 			isBehandlungInitialized = true;
 		}
 	}
@@ -471,20 +453,17 @@ public class TestDatabaseInitializer {
 			initializePatient();
 		}
 		if (!isLabResultInitialized) {
-			Kontakt laboratory = KontaktService.INSTANCE.create();
-			laboratory.setLaboratory(true);
-			laboratory.setDescription1("Labor Test");
-			laboratory.setPatientNr("Test");
-			KontaktService.INSTANCE.flush();
-			
-			labItem = (LabItem) LabItemService.INSTANCE.create("TEST", "Test Laboratory", laboratory, ">1", "3-3.5",
-					"unit", LabItemTyp.NUMERIC, "group", 1);
+			Kontakt laboratory = new KontaktService.OrganizationBuilder("Labor Test").laboratory().build();
+			laboratory.setDescription2("Test");
+			PersistenceService.save(laboratory);
+
+			labItem = (LabItem) new LabItemService.Builder("TEST", "Test Laboratory", laboratory, ">1", "3-3.5", "unit",
+					LabItemTyp.NUMERIC, "group", 1).build();
 			labItem.setExport("vitolabkey:1,2");
-			LabItemService.INSTANCE.flush();
-			
-			LabResult labResult = LabResultService.INSTANCE.create();
-			labResult.setItem(labItem);
-			labResult.setPatient(patient);
+			LabItemService.save(labItem);
+
+			LabResult labResult = new LabResultService.Builder(labItem, patient).build();
+
 			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 14, 17, 44, 25));
 			labResult.setUnit("u");
 			labResult.setRefMale("<1");
@@ -492,17 +471,17 @@ public class TestDatabaseInitializer {
 			labResult.setOriginId(laboratory.getId());
 			labResult.setResult("2");
 			labResult.setComment("no comment");
-			LabResultService.INSTANCE.flush();
+			LabResultService.save(labResult);
 			labResults.add(labResult);
 
-			labResult = LabResultService.INSTANCE.create();
+			labResult = new LabResultService.Builder(labItem, patient).build();
 			labResult.setItem(labItem);
 			labResult.setPatient(patient);
 			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 15, 10, 10, 30));
 			labResult.setOriginId(laboratory.getId());
 			labResult.setResult("2");
 			labResult.setComment("no comment");
-			LabResultService.INSTANCE.flush();
+			LabResultService.save(labResult);
 			labResults.add(labResult);
 
 			isLabResultInitialized = true;
@@ -526,8 +505,8 @@ public class TestDatabaseInitializer {
 			initializeDb();
 		}
 		if (!isArtikelstammInitialized) {
-			artikelstammitem = ArtikelstammItemService.INSTANCE.create(0, "7680336700282", BigInteger.valueOf(58985l),
-					"ASPIRIN C Brausetabl 10 Stk");
+			artikelstammitem = new ArtikelstammItemService.Builder(0, "7680336700282", BigInteger.valueOf(58985l),
+					"ASPIRIN C Brausetabl 10 Stk").buildAndSave();
 
 			isArtikelstammInitialized = true;
 		}

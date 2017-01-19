@@ -47,7 +47,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 
 	@Test
 	public void testGetBehandlung() {
-		Optional<Behandlung> findById = BehandlungService.INSTANCE.findById(testBehandlungen.get(0).getId());
+		Optional<Behandlung> findById = BehandlungService.load(testBehandlungen.get(0).getId());
 		assertTrue(findById.isPresent());
 	}
 
@@ -76,8 +76,8 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 				testContacts.get(0), testContacts.get(0));
 		assertTrue(chargeBillableOnBehandlung.isOK());
 
-		Invoice invoice = InvoiceService.INSTANCE.create("15", testContacts.get(0), testBehandlungen.get(0).getFall(),
-				LocalDate.now().minusWeeks(2), LocalDate.now(), new Money(34.50), InvoiceState.OFFEN);
+		Invoice invoice = new InvoiceService.Builder("15", testContacts.get(0), testBehandlungen.get(0).getFall(),
+				LocalDate.now().minusWeeks(2), LocalDate.now(), new Money(34.50), InvoiceState.OFFEN).buildAndSave();
 		testBehandlungen.get(0).setInvoice(invoice);
 
 		Optional<TarmedLeistung> tarmedZuschlag = TarmedLeistungService.findFromCode(TARMED_KONS_ZUSCHLAG);
@@ -88,7 +88,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 				testBehandlungen.get(0), vtlZuschlag, testContacts.get(0), testContacts.get(0));
 		assertTrue(!chargeBillableZuschlagOnBehandlung.isOK());
 
-		InvoiceService.INSTANCE.remove(invoice);
+		InvoiceService.remove(invoice);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 
 		Fall fall = kons.getFall();
 		fall.setDatumBis(LocalDate.now());
-		FallService.INSTANCE.write(fall);
+		FallService.save(fall);
 
 		MultiStatus ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);
 		assertEquals(false, ms.isOK());
@@ -109,8 +109,8 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertEquals(false, ms.isOK());
 		assertEquals(2, ms.getChildren().length);
 
-		Invoice invoice = InvoiceService.INSTANCE.create("26", mandator, kons.getFall(), LocalDate.now().minusWeeks(2),
-				LocalDate.now(), new Money(34.50), InvoiceState.OFFEN);
+		Invoice invoice = new InvoiceService.Builder("26", mandator, kons.getFall(), LocalDate.now().minusWeeks(2),
+				LocalDate.now(), new Money(34.50), InvoiceState.OFFEN).buildAndSave();
 		kons.setInvoice(invoice);
 
 		ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);

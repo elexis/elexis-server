@@ -55,7 +55,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	public Coverage getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<Fall> coverage = FallService.INSTANCE.findById(idPart);
+			Optional<Fall> coverage = FallService.load(idPart);
 			if (coverage.isPresent()) {
 				Optional<Coverage> fhirCoverage = getTransformer().getFhirObject(coverage.get());
 				return fhirCoverage.get();
@@ -68,7 +68,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	public List<Coverage> findCoverageByBeneficiary(
 			@RequiredParam(name = Coverage.SP_BENEFICIARY_REFERENCE) IdType theBeneficiaryId) {
 		if (theBeneficiaryId != null) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(theBeneficiaryId.getIdPart());
+			Optional<Kontakt> patient = KontaktService.load(theBeneficiaryId.getIdPart());
 			if (patient.isPresent()) {
 				List<Fall> faelle = KontaktService.getFaelle(patient.get());
 				if (faelle != null) {

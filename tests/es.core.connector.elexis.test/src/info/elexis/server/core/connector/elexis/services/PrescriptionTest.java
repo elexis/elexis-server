@@ -43,9 +43,6 @@ public class PrescriptionTest {
 		assertTrue(execute.size() > 1);
 		int rand = (int) (Math.random() * 10);
 		prescription.setArtikel(execute.get(rand % execute.size()));
-
-		// only interested in flush()
-		ArtikelstammItemService.INSTANCE.flush();
 	}
 
 }

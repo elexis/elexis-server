@@ -26,17 +26,16 @@ public class BehandlungHelper extends AbstractHelper {
 		if (!ret.isPresent()) {
 			Optional<Kontakt> patient = getPatient(iEncounter);
 			Optional<Kontakt> serviceProvider = getPerformer(iEncounter);
-			if (patient.isPresent()) {
-				Behandlung behandlung = BehandlungService.INSTANCE.create();
-				behandlung.setFall(getOrCreateDefaultFall(patient.get()));
-				serviceProvider.ifPresent(sp -> behandlung.setMandant(sp));
+			if (patient.isPresent() && serviceProvider.isPresent()) {
+				Fall fall = getOrCreateDefaultFall(patient.get());
+				Behandlung behandlung = new BehandlungService.Builder(fall, serviceProvider.get()).buildAndSave();
 				Optional<LocalDateTime> startTime = iEncounter.getStartTime();
 				if (startTime.isPresent()) {
 					behandlung.setDatum(startTime.get().toLocalDate());
 				} else {
 					behandlung.setDatum(LocalDate.now());
 				}
-				BehandlungService.INSTANCE.flush();
+				BehandlungService.save(behandlung);
 				ret = Optional.of(behandlung);
 			}
 		}
@@ -54,7 +53,7 @@ public class BehandlungHelper extends AbstractHelper {
 	}
 
 	private static Fall createDefaultFall(Kontakt kontakt) {
-		return FallService.INSTANCE.create(kontakt, "online", FallConstants.TYPE_DISEASE, "KVG");
+		return new FallService.Builder(kontakt, "online", FallConstants.TYPE_DISEASE, "KVG").buildAndSave();
 	}
 
 	private static Fall lookUpDefaultFall(List<Fall> faelle) {
@@ -77,17 +76,17 @@ public class BehandlungHelper extends AbstractHelper {
 	private static Optional<Behandlung> getBehandlung(IEncounter iEncounter) {
 		String behandlungsId = iEncounter.getConsultationId();
 		if (behandlungsId != null && !behandlungsId.isEmpty()) {
-			return BehandlungService.INSTANCE.findById(behandlungsId);
+			return BehandlungService.load(behandlungsId);
 		}
 		return Optional.empty();
 	}
 
 	public static Optional<Kontakt> getPerformer(IEncounter iEncounter) {
-		return KontaktService.INSTANCE.findById(iEncounter.getMandatorId());
+		return KontaktService.load(iEncounter.getMandatorId());
 	}
 
 	public static Optional<Kontakt> getPatient(IEncounter iEncounter) {
-		return KontaktService.INSTANCE.findById(iEncounter.getPatientId());
+		return KontaktService.load(iEncounter.getPatientId());
 	}
 
 	public static Optional<String> getMandatorId(Encounter fhirObject) {

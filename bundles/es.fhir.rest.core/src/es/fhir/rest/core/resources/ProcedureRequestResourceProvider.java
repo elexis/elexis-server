@@ -80,7 +80,7 @@ public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 			@RequiredParam(name = ProcedureRequest.SP_PATIENT) IdType thePatientId,
 			@OptionalParam(name = ProcedureRequest.SP_ENCOUNTER) IdType theEncounterId) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(thePatientId.getIdPart());
+			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),

@@ -46,15 +46,14 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Patient, Kontakt> getTransformer() {
-		return (IFhirTransformer<Patient, Kontakt>) transformerRegistry.getTransformerFor(Patient.class,
-					Kontakt.class);
+		return (IFhirTransformer<Patient, Kontakt>) transformerRegistry.getTransformerFor(Patient.class, Kontakt.class);
 	}
 
 	@Read
 	public Patient getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
-		if(idPart != null) {
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(idPart);
+		if (idPart != null) {
+			Optional<Kontakt> patient = KontaktService.load(idPart);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());
@@ -66,8 +65,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Patient> findPatientByIndetifier(
-			@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+	public List<Patient> findPatientByIndetifier(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null) {
 			if (identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
 				Optional<Kontakt> patient = KontaktService

@@ -5,38 +5,54 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class TerminService extends AbstractService<Termin> {
-	public static TerminService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final TerminService INSTANCE = new TerminService();
+public class TerminService extends PersistenceService {
+	public static class Builder extends AbstractBuilder<Termin> {
+		public Builder(String agendaMap, LocalDateTime begin, LocalDateTime end) {
+			object = new Termin();
+			object.setBereich(agendaMap);
+			object.setTag(begin.toLocalDate());
+			int beginn = begin.get(ChronoField.CLOCK_HOUR_OF_DAY) * 60 + begin.get(ChronoField.MINUTE_OF_HOUR);
+			object.setBeginn(Integer.toString(beginn));
+			Duration duration = Duration.between(begin, end);
+			object.setDauer(Long.toString(duration.toMinutes()));
+			object.setAngelegt(Long.toString(Instant.now().getEpochSecond() / 60));
+		}
 	}
 
-	private TerminService() {
-		super(Termin.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Termin> load(String id) {
+		return PersistenceService.load(Termin.class, id).map(v -> (Termin) v);
 	}
 
-	public Termin create(String agendaMap, LocalDateTime begin, LocalDateTime end) {
-		em.getTransaction().begin();
-		Termin t = create(false);
-		t.setBereich(agendaMap);
-		t.setTag(begin.toLocalDate());
-		int beginn = begin.get(ChronoField.CLOCK_HOUR_OF_DAY) * 60 + begin.get(ChronoField.MINUTE_OF_HOUR);
-		t.setBeginn(Integer.toString(beginn));
-		Duration duration = Duration.between(begin, end);
-		t.setDauer(Long.toString(duration.toMinutes()));
-		t.setAngelegt(Long.toString(Instant.now().getEpochSecond() / 60));
-		em.getTransaction().commit();
-		return t;
+	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<Termin> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(Termin.class, includeElementsMarkedDeleted).stream().map(v -> (Termin) v)
+				.collect(Collectors.toList());
 	}
 
 	public static List<Termin> findAllAppointments() {
@@ -53,12 +69,18 @@ public class TerminService extends AbstractService<Termin> {
 	 * @return a list of all appointment arease ("Bereiche") used within the
 	 *         Agenda
 	 */
-	public List<String> findAllUsedAppointmentAreas() {
-		CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<Termin> terminRoot = query.from(Termin.class);
-		query.select(terminRoot.get(Termin_.bereich)).distinct(true);
-		query.where(cb.and(cb.not(cb.isNull(terminRoot.get(Termin_.bereich)))));
-		return em.createQuery(query).getResultList();
+	public static List<String> findAllUsedAppointmentAreas() {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> query = cb.createQuery(String.class);
+			Root<Termin> terminRoot = query.from(Termin.class);
+			query.select(terminRoot.get(Termin_.bereich)).distinct(true);
+			query.where(cb.and(cb.not(cb.isNull(terminRoot.get(Termin_.bereich)))));
+			return em.createQuery(query).getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 }

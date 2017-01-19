@@ -12,16 +12,14 @@ public class UserconfigServiceTest {
 
 	@Test
 	public void testGet() {
-		User dzUser = UserService.INSTANCE.findById("dz").get();
+		User dzUser = UserService.load("dz").get();
 		assertNotNull(dzUser);
 		Kontakt kontakt = dzUser.getKontakt();
 		assertNotNull(kontakt);
-		
-		UserconfigService.INSTANCE.get(kontakt, Preferences.LEISTUNGSCODES_OPTIFY, true);
-		boolean b = UserconfigService.INSTANCE.get(kontakt, "NonExistingPrefDefaults", false);
+
+		UserconfigService.get(kontakt, Preferences.LEISTUNGSCODES_OPTIFY, true);
+		boolean b = UserconfigService.get(kontakt, "NonExistingPrefDefaults", false);
 		assertFalse(b);
 	}
-	
-	
 
 }

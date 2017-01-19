@@ -1,6 +1,12 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static ch.elexis.core.common.ElexisEventTopics.*;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_BASE;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_OUTLAY;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_QUANTITY;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCK_ID;
+import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_SYNC_STOCK;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,15 +48,11 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class StockCommissioningSystemService implements IStockCommissioningSystemService {
 
-	public static StockCommissioningSystemService INSTANCE = InstanceHolder.INSTANCE;
-
 	private Logger log = LoggerFactory.getLogger(StockCommissioningSystemService.class);
 
-	private Map<String, ICommissioningSystemDriver> stockCommissioningSystemDriverInstances;
+	private static Map<String, ICommissioningSystemDriver> stockCommissioningSystemDriverInstances = new HashMap<String, ICommissioningSystemDriver>();
 
-	private static final class InstanceHolder {
-		static final StockCommissioningSystemService INSTANCE = new StockCommissioningSystemService();
-	}
+	private StockService stockService = new StockService();
 
 	@Component(property = { EventConstants.EVENT_TOPIC + "=" + TOPIC_BASE + "*" })
 	public static class StockCommissioningSystemServiceEventHandler implements EventHandler {
@@ -59,11 +61,13 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 
 		@Override
 		public void handleEvent(Event event) {
+			StockCommissioningSystemService scss = new StockCommissioningSystemService();
+
 			String topic = event.getTopic();
 			if (topic.endsWith(TOPIC_STOCK_COMMISSIONING_OUTLAY)) {
 				// perform an outlay
 				String stockEntryId = event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID).toString();
-				Optional<StockEntry> se = StockEntryService.INSTANCE.findById(stockEntryId);
+				Optional<StockEntry> se = StockEntryService.load(stockEntryId);
 				int quantity = 0;
 				try {
 					String property = (String) event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_QUANTITY);
@@ -72,8 +76,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 					log.error("Error parsing [{}]", nfe.getMessage());
 				}
 				if (se.isPresent()) {
-					IStatus performArticleOutlay = StockCommissioningSystemService.INSTANCE
-							.performArticleOutlay(se.get(), quantity, null);
+					IStatus performArticleOutlay = scss.performArticleOutlay(se.get(), quantity, null);
 					if (!performArticleOutlay.isOK()) {
 						StatusUtil.logStatus(log, performArticleOutlay, true);
 					} else {
@@ -85,12 +88,11 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			} else if (topic.endsWith(TOPIC_STOCK_COMMISSIONING_SYNC_STOCK)) {
 				// Update stock for article list
 				String stockId = (String) event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCK_ID);
-				Optional<Stock> stock = StockService.INSTANCE.findById(stockId);
+				Optional<Stock> stock = StockService.load(stockId);
 				if (stock.isPresent()) {
 					List<String> articleIds = (List<String>) event
 							.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID);
-					IStatus status = StockCommissioningSystemService.INSTANCE.synchronizeInventory(stock.get(),
-							articleIds, null);
+					IStatus status = scss.synchronizeInventory(stock.get(), articleIds, null);
 					if (!status.isOK()) {
 						StatusUtil.logStatus(log, status, true);
 					}
@@ -99,10 +101,6 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				}
 			}
 		}
-	}
-
-	private StockCommissioningSystemService() {
-		stockCommissioningSystemDriverInstances = new HashMap<String, ICommissioningSystemDriver>();
 	}
 
 	@Override
@@ -269,7 +267,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		scsInventoryResult.stream().forEach(ir -> inventoryGtinMap.put(ir.getArticle().getGTIN(), ir));
 		for (String gtin : gtinsToUpdate) {
 			IStatus status = null;
-			Optional<StockEntry> seo = StockService.INSTANCE.findStockEntryByGTINForStock(stock, gtin);
+			Optional<StockEntry> seo = new StockService().findStockEntryByGTINForStock(stock, gtin);
 			if (inventoryGtinMap.get(gtin) != null) {
 				IStockEntry iStockEntry = inventoryGtinMap.get(gtin);
 				if (seo.isPresent()) {
@@ -293,7 +291,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	private IStatus performFullInventorySynchronization(IStock stock, List<? extends IStockEntry> inventoryResult) {
-		List<StockEntry> currentStockEntries = StockService.INSTANCE.findAllStockEntriesForStock(stock);
+		List<StockEntry> currentStockEntries = stockService.findAllStockEntriesForStock(stock);
 		Set<String> currentStockEntryIds = currentStockEntries.stream().map(cse -> cse.getId())
 				.collect(Collectors.toSet());
 		for (IStockEntry inventoryResultStockEntry : inventoryResult) {
@@ -316,7 +314,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 
 		// remove surplus stock entries
 		for (String stockEntryId : currentStockEntryIds) {
-			Optional<StockEntry> seo = StockEntryService.INSTANCE.findById(stockEntryId);
+			Optional<StockEntry> seo = StockEntryService.load(stockEntryId);
 			if (seo.isPresent()) {
 				deleteStockEntry(seo.get());
 			} else {
@@ -336,7 +334,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			if (lr.isPresent()) {
 				se.setCurrentStock(0);
 				se.setDeleted(true);
-				StockEntryService.INSTANCE.write((StockEntry) se);
+				StockEntryService.save((StockEntry) se);
 				LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
 				if (!lrs.isOk()) {
 					log.warn("Could not release lock for StockEntry [{}]", se.getId());
@@ -353,8 +351,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		if (articleByGTIN.isPresent()) {
 			AbstractDBObjectIdDeleted adid = (AbstractDBObjectIdDeleted) articleByGTIN.get();
 			String storeToString = StoreToStringService.storeToString(adid);
-			StockEntry se = (StockEntry) StockService.INSTANCE.storeArticleInStock(stock, storeToString,
-					tse.getCurrentStock());
+			StockEntry se = (StockEntry) stockService.storeArticleInStock(stock, storeToString, tse.getCurrentStock());
 			log.debug("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
 			Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 5);
 			if (lr.isPresent()) {
@@ -376,9 +373,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(se, 10);
 		if (lr.isPresent()) {
-			StockEntryService.INSTANCE.refresh(se);
 			se.setCurrentStock(currentStock);
-			StockEntryService.INSTANCE.write((StockEntry) se);
+			StockEntryService.save((StockEntry) se);
 			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
 			if (!lrs.isOk()) {
 				log.warn("Could not release lock for StockEntry [{}]", se.getId());

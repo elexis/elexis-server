@@ -104,7 +104,7 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testAddLaborTarif2009Billing() {
-		Labor2009Tarif immunglobulinValid = Labor2009TarifService.INSTANCE.findById("a6e58fc71c723bd54016760").get();
+		Labor2009Tarif immunglobulinValid = Labor2009TarifService.load("a6e58fc71c723bd54016760").get();
 		assertNotNull(immunglobulinValid);
 		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
 
@@ -124,7 +124,7 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(ElexisTypeMap.TYPE_LABOR2009TARIF, vr.getKlasse());
 		assertEquals(1, vr.getZahl());
 
-		Labor2009Tarif immunglobulinInvalid = Labor2009TarifService.INSTANCE.findById("ub49a50af4d3e51e40906").get();
+		Labor2009Tarif immunglobulinInvalid = Labor2009TarifService.load("ub49a50af4d3e51e40906").get();
 		VerrechenbarLabor2009Tarif invalidLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinInvalid);
 
 		status = invalidLabTarif.add(testBehandlungen.get(0), userContact, mandator);
@@ -253,7 +253,7 @@ public class BillingTest extends AbstractServiceTest {
 		assertFalse(status.isOK());
 
 		vr.setDeleted(true);
-		VerrechnetService.INSTANCE.write(vr);
+		VerrechnetService.save(vr);
 
 		status = vlt_000010.add(testBehandlungen.get(2), userContact, mandator);
 		assertTrue(status.isOK());
@@ -325,7 +325,7 @@ public class BillingTest extends AbstractServiceTest {
 		Optional<ArtikelstammItem> artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
 		assertTrue(artikelstammItem.isPresent());
 
-		ArtikelstammItemService.INSTANCE.write(artikelstammItem.get());
+		ArtikelstammItemService.save(artikelstammItem.get());
 
 		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
 
@@ -352,10 +352,10 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testAddEigenartikelBilling() {
-		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
+		Artikel ea1 = new ArtikelService.Builder("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL).build();
 		ea1.setEkPreis("150");
 		ea1.setVkPreis("300");
-		ArtikelService.INSTANCE.write(ea1);
+		ArtikelService.save(ea1);
 
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
 
@@ -373,7 +373,7 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(300, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
 
-		ArtikelService.INSTANCE.remove(ea1);
+		ArtikelService.remove(ea1);
 	}
 
 	@Test
@@ -390,7 +390,6 @@ public class BillingTest extends AbstractServiceTest {
 		assertFalse(invalid.isOK());
 		assertEquals(Status.WARNING, invalid.getSeverity());
 
-		VerrechnetService.INSTANCE.refresh(vr);
 		assertEquals(1, vr.getZahl());
 	}
 
@@ -430,9 +429,6 @@ public class BillingTest extends AbstractServiceTest {
 		IStatus valid = VerrechnetService.changeCountValidated(vr, 3, mandator);
 		assertTrue(valid.isOK());
 
-		BehandlungService.INSTANCE.refresh(testBehandlungen.get(1));
-		VerrechnetService.INSTANCE.refresh(vr);
-
 		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(1));
 		assertEquals(vr.getId(), allVerrechnet.get(0).getId());
 		assertEquals(1, allVerrechnet.size());
@@ -444,8 +440,6 @@ public class BillingTest extends AbstractServiceTest {
 		allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(1));
 		valid = VerrechnetService.changeCountValidated(allVerrechnet.get(0), 1, mandator);
 		assertTrue(valid.isOK());
-
-		BehandlungService.INSTANCE.refresh(testBehandlungen.get(1));
 
 		assertEquals(1, allVerrechnet.size());
 		assertEquals(1, allVerrechnet.get(0).getZahl());
@@ -486,18 +480,18 @@ public class BillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testStockRemovalOnArticleDisposal() {
-		Artikel ea1 = ArtikelService.INSTANCE.create("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL);
+		Artikel ea1 = new ArtikelService.Builder("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL).build();
 		ea1.setEkPreis("150");
 		ea1.setVkPreis("300");
-		ArtikelService.INSTANCE.write(ea1);
+		ArtikelService.save(ea1);
 
-		StockService stockService = StockService.INSTANCE;
-		Stock defaultStock = StockService.INSTANCE.findById("STD").get();
+		StockService stockService = new StockService();
+		Stock defaultStock = StockService.load("STD").get();
 		IStockEntry se = stockService.storeArticleInStock(defaultStock, StoreToStringService.storeToString(ea1));
 		se.setMinimumStock(5);
 		se.setCurrentStock(10);
 		se.setMaximumStock(15);
-		StockEntryService.INSTANCE.write((StockEntry) se);
+		StockEntryService.save((StockEntry) se);
 
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
 
@@ -518,6 +512,6 @@ public class BillingTest extends AbstractServiceTest {
 		Integer stockValue = stockService.getCumulatedStockForArticle(ea1);
 		assertEquals(9, stockValue.intValue());
 
-		ArtikelService.INSTANCE.remove(ea1);
+		ArtikelService.remove(ea1);
 	}
 }

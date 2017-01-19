@@ -13,12 +13,10 @@ public class EigenleistungServiceTest {
 
 	@Test
 	public void testCreateAndDeleteEigenleistung() throws InstantiationException, IllegalAccessException {
-		Eigenleistung el = EigenleistungService.INSTANCE.create();
-		el.setCode("399999");
-		EigenleistungService.INSTANCE.flush();
+		Eigenleistung el = new EigenleistungService.Builder("399999").buildAndSave();
 		Optional<? extends AbstractDBObjectIdDeleted> findByCode = EigenleistungService.findByCode("399999");
 		assertTrue(findByCode.isPresent());
-		EigenleistungService.INSTANCE.remove(el);
+		EigenleistungService.remove(el);
 		Optional<? extends AbstractDBObjectIdDeleted> findByCode2 = EigenleistungService.findByCode("399999");
 		assertTrue(!findByCode2.isPresent());
 	}

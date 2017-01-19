@@ -36,7 +36,7 @@ public class StockCommissioningSystemDriverFactories {
 	@Activate
 	public void activate() {
 		log.trace("Initializing stock commissioning systems.");
-		IStatus status = StockCommissioningSystemService.INSTANCE.initializeAllInstances();
+		IStatus status = new StockCommissioningSystemService().initializeAllInstances();
 		if (!status.isOK()) {
 			StatusUtil.logStatus(log, status, true);
 		}
@@ -47,7 +47,7 @@ public class StockCommissioningSystemDriverFactories {
 
 		log.info("Shutting down stock commissioning systems for driver id [{}]",
 				driverFactory.getIdentification().toString());
-		IStatus status = StockCommissioningSystemService.INSTANCE
+		IStatus status = new StockCommissioningSystemService()
 				.shutdownInstancesUsingDriver(driverFactory.getIdentification());
 		if (!status.isOK()) {
 			StatusUtil.logStatus(log, status, true);

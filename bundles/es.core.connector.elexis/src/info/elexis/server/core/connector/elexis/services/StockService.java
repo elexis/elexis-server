@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -27,39 +28,29 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry_;
 import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class StockService extends AbstractService<Stock> implements IStockService {
+public class StockService extends PersistenceService implements IStockService {
 
-	public static StockService INSTANCE = InstanceHolder.INSTANCE;
-
-	private static final class InstanceHolder {
-		static final StockService INSTANCE = new StockService();
+	public static class Builder extends AbstractBuilder<Stock> {
+		public Builder(String code, int priority) {
+			object = new Stock();
+			object.setCode(code);
+			object.setPriority(priority);
+		}
 	}
 
-	private StockService() {
-		super(Stock.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Stock> load(String id) {
+		return PersistenceService.load(Stock.class, id).map(v -> (Stock) v);
 	}
 
-	public Stock create(String code, int priority) {
-		em.getTransaction().begin();
-		Stock stock = create(false);
-		stock.setCode(code);
-		stock.setPriority(priority);
-		em.getTransaction().commit();
-		return stock;
-	}
-
-	@Override
-	public void delete(Stock entity) {
-		List<StockEntry> entries = entity.getEntries();
-		entries.stream().forEach(e -> StockEntryService.INSTANCE.delete(e));
-		super.delete(entity);
-	}
-
-	@Override
-	public void remove(Stock entity) {
-		List<StockEntry> entries = entity.getEntries();
-		entries.stream().forEachOrdered(e -> StockEntryService.INSTANCE.remove(e));
-		super.remove(entity, true);
+	public static List<Stock> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(Stock.class, includeElementsMarkedDeleted).stream().map(v -> (Stock) v)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -77,7 +68,14 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		if (!article.isPresent()) {
 			return null;
 		}
-		return StockEntryService.INSTANCE.create((Stock) stock, article.get(), currentStock);
+
+		StockEntry se = new StockEntryService.Builder((Stock) stock, article.get()).build();
+		if (currentStock != null) {
+			se.setCurrentStock(currentStock);
+		}
+		StockEntryService.save(se);
+
+		return se;
 	}
 
 	@Override
@@ -86,7 +84,7 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		if (stockEntry == null) {
 			return;
 		}
-		StockEntryService.INSTANCE.remove((StockEntry) stockEntry, true);
+		StockEntryService.remove((StockEntry) stockEntry);
 	}
 
 	@Override
@@ -225,7 +223,7 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 		}
 
 		if (se.getStock().isCommissioningSystem()) {
-			return StockCommissioningSystemService.INSTANCE.performArticleOutlay(se, count, null);
+			return new StockCommissioningSystemService().performArticleOutlay(se, count, null);
 		} else {
 			Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
 			if (li.isPresent()) {
@@ -257,7 +255,7 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 					se.setFractionUnits(rest);
 				}
 
-				StockEntryService.INSTANCE.write((StockEntry) se);
+				StockEntryService.save((StockEntry) se);
 
 				LockServiceInstance.INSTANCE.releaseLock(li.get());
 				return Status.OK_STATUS;
@@ -313,7 +311,7 @@ public class StockService extends AbstractService<Stock> implements IStockServic
 				se.setFractionUnits(rest);
 			}
 
-			StockEntryService.INSTANCE.write((StockEntry) se);
+			StockEntryService.save((StockEntry) se);
 			LockServiceInstance.INSTANCE.releaseLock(li.get());
 			return Status.OK_STATUS;
 		}

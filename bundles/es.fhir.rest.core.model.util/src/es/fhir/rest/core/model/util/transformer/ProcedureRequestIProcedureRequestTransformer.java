@@ -83,7 +83,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 		contentHelper.setResource(fhirObject, iProcedureRequest);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(id);
+			Optional<Kontakt> patient = KontaktService.load(id);
 			patient.ifPresent(k -> iProcedureRequest.setPatientId(id));
 		}
 		IEncounter iEncounter = null;
@@ -103,7 +103,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 	}
 
 	private void writeBehandlungSoapText(IEncounter iEncounter, ProcedureRequest procedureRequest) {
-		Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(iEncounter.getConsultationId());
+		Optional<Behandlung> behandlung = BehandlungService.load(iEncounter.getConsultationId());
 		behandlung.ifPresent(cons -> {
 			Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 			if (lockInfo.isPresent()) {
@@ -133,7 +133,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 				VersionedResource vResource = VersionedResource.load(null);
 				vResource.update(text.toString(), "From FHIR");
 				cons.setEintrag(vResource);
-				BehandlungService.INSTANCE.flush();
+				BehandlungService.save(cons);
 				AbstractHelper.releaseLock(lockInfo.get());
 			}
 		});

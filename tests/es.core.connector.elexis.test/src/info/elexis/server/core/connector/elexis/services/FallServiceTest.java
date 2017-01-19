@@ -25,44 +25,36 @@ public class FallServiceTest {
 
 	@Before
 	public void initialize() {
-		patient = KontaktService.INSTANCE.createPatient("FirstName", "LastName", LocalDate.now(), Gender.MALE);
+		patient = new KontaktService.PersonBuilder("FirstName", "LastName", LocalDate.now(), Gender.MALE).patient()
+				.buildAndSave();
 	}
 
 	@After
 	public void cleanup() {
-		FallService.INSTANCE.remove(fall);
-		KontaktService.INSTANCE.remove(patient);
+		FallService.remove(fall);
+		PersistenceService.remove(patient);
 	}
 
 	@Test
 	public void testCreateKontaktStringStringString() {
-		fall = FallService.INSTANCE.create(patient, "test", FallConstants.TYPE_DISEASE, "UVG");
+		fall = new FallService.Builder(patient, "test", FallConstants.TYPE_DISEASE, "UVG").buildAndSave();
 
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		Fall storedFall = em.find(Fall.class, fall.getId());
+		Fall storedFall = FallService.load(fall.getId()).get();
 		assertEquals(fall.getPatientKontakt().getId(), storedFall.getPatientKontakt().getId());
 		assertEquals(fall.getBezeichnung(), storedFall.getBezeichnung());
 		assertEquals(fall.getGesetz(), storedFall.getGesetz());
 		assertEquals("UVG", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
-		em.close();
 	}
 
 	@Test
 	public void testSetBillingAfterCreation() {
-		fall = FallService.INSTANCE.create();
-		fall.setBezeichnung("description");
-		fall.setPatientKontakt(patient);
+		fall = new FallService.Builder(patient, "description", FallConstants.TYPE_DISEASE, "UVG").buildAndSave();
 		fall.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, "insuranceType");
-		fall.setGrund("reason");
+		FallService.save(fall);
 
-		FallService.INSTANCE.flush();
-
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		Fall storedFall = em.find(Fall.class, fall.getId());
+		Fall storedFall = FallService.load(fall.getId()).get();
 		assertEquals(patient.getId(), storedFall.getPatientKontakt().getId());
 		assertEquals("description", storedFall.getBezeichnung());
 		assertEquals("insuranceType", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
-		em.close();
-
 	}
 }

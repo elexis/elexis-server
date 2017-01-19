@@ -34,10 +34,9 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 	/**
 	 * Add and recalculate the various possible amendments
 	 */
-	public IStatus add(IBillable<Labor2009Tarif> code, Behandlung kons, Kontakt userContact,
-			Kontakt mandatorContact) {
+	public IStatus add(IBillable<Labor2009Tarif> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 
-		boolean bOptify = UserconfigService.INSTANCE.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
+		boolean bOptify = UserconfigService.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
 
 		if (bOptify) {
 			Labor2009Tarif tarif = (Labor2009Tarif) code.getEntity();
@@ -50,10 +49,10 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 			}
 		}
 
-		newVerrechnet = VerrechnetService.INSTANCE.create(code, kons, 1, userContact);
+		newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).buildAndSave();
 		IStatus res = optify(kons, userContact, mandatorContact);
 		if (!res.isOK()) {
-			VerrechnetService.INSTANCE.delete(newVerrechnet);
+			VerrechnetService.delete(newVerrechnet);
 		}
 		return res;
 	}
@@ -103,7 +102,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 			int z470720 = 0;
 
 			for (Verrechnet v : list) {
-				Optional<IBillable> iv = VerrechnetService.INSTANCE.getVerrechenbar(v);
+				Optional<IBillable> iv = VerrechnetService.getVerrechenbar(v);
 				if (iv.isPresent() && iv.get() instanceof Labor2009Tarif) {
 					String cc = iv.get().getCode();
 					if (cc.equals("4708.00")) { // Übergangszuschlag //$NON-NLS-1$
@@ -147,7 +146,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 
 			if (z470710 == 0 || haveKons == false) {
 				if (v470710 != null) {
-					VerrechnetService.INSTANCE.delete(v470710);
+					VerrechnetService.delete(v470710);
 				}
 			} else {
 				if (v470710 == null) {
@@ -158,7 +157,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 
 			if (z470720 == 0 || haveKons == false) {
 				if (v470720 != null) {
-					VerrechnetService.INSTANCE.delete(v470720);
+					VerrechnetService.delete(v470720);
 				}
 			} else {
 				if (v470720 == null) {
@@ -180,7 +179,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 						}
 					} else {
 						if (date.isAfter(deadline) || date.isEqual(deadline)) {
-							VerrechnetService.INSTANCE.delete(v4708);
+							VerrechnetService.delete(v4708);
 							return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
 									"4708.00 only until " + deadline);
 						}
@@ -226,7 +225,8 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 
 		if (tarif != null) {
 			VerrechenbarLabor2009Tarif verrechenbarLabor2009Tarif = new VerrechenbarLabor2009Tarif(tarif);
-			newVerrechnet = VerrechnetService.INSTANCE.create(verrechenbarLabor2009Tarif, kons, 1, userContact);
+			newVerrechnet = new VerrechnetService.Builder(verrechenbarLabor2009Tarif, kons, 1, userContact)
+					.buildAndSave();
 			return newVerrechnet;
 		} else {
 			throw new Exception("Tarif not installed correctly"); //$NON-NLS-1$
@@ -236,7 +236,7 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 
 	@Override
 	public IStatus remove(Verrechnet code) {
-		VerrechnetService.INSTANCE.delete(code);
+		VerrechnetService.delete(code);
 		return optify(code.getBehandlung(), code.getUser(), null);
 	}
 

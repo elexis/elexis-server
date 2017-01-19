@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -13,6 +14,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.rgw.io.FileTool;
 import info.elexis.server.core.common.LocalProperties;
@@ -23,46 +27,47 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
-public class DocHandleService extends AbstractService<DocHandle> {
+public class DocHandleService extends PersistenceService {
 
-	public static DocHandleService INSTANCE = InstanceHolder.INSTANCE;
+	private static Logger log = LoggerFactory.getLogger(DocHandleService.class);
 
-	private static final class InstanceHolder {
-		static final DocHandleService INSTANCE = new DocHandleService();
-	}
+	public static class Builder extends AbstractBuilder<DocHandle> {
+		/**
+		 * Documents might be stored in filesystem not in database, please use
+		 * {@link #buildAndSave()} to consider.
+		 * 
+		 * @param contact
+		 * @param title
+		 * @param filename
+		 * @param category
+		 * @param document
+		 */
+		public Builder(Kontakt contact, String title, String filename, String category, byte[] document) {
+			object = new DocHandle();
 
-	private DocHandleService() {
-		super(DocHandle.class);
+			object.setKontakt(contact);
+			object.setDatum(LocalDate.now());
+			object.setCategory((category != null) ? category : "default");
+			object.setMimetype(filename);
+			object.setTitle(title);
+			object.setDoc(document);
+		}
+
+		@Override
+		public DocHandle buildAndSave() {
+			omnivoreStoreContentConsideringNetworkPathStoreIfRequired(object, object.getDoc());
+			return super.buildAndSave();
+		}
 	}
 
 	/**
+	 * convenience method
 	 * 
-	 * @param contact
-	 * @param title
-	 * @param filename
-	 *            the filename, has to include the resp. ending on mimetype
-	 *            (e.g. <code>.pdf</code>);
-	 * @param category
-	 *            if <code>null</code> defaults to "default"
-	 * @param document
-	 *            <code>null</code> if to be stored on a network file system
-	 *            path
+	 * @param id
 	 * @return
 	 */
-	public DocHandle create(Kontakt contact, String title, String filename, String category, byte[] document) {
-		em.getTransaction().begin();
-		DocHandle docHandle = create(false);
-		em.merge(contact);
-		docHandle.setKontakt(contact);
-		docHandle.setDatum(LocalDate.now());
-		docHandle.setCategory((category != null) ? category : "default");
-		docHandle.setMimetype(filename);
-		docHandle.setTitle(title);
-
-		omnivoreStoreContentConsideringNetworkPathStoreIfRequired(docHandle, document);
-
-		em.getTransaction().commit();
-		return docHandle;
+	public static Optional<DocHandle> load(String id) {
+		return PersistenceService.load(DocHandle.class, id).map(v -> (DocHandle) v);
 	}
 
 	/**

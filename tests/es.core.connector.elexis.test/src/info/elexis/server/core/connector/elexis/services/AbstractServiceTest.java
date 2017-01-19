@@ -18,52 +18,45 @@ public abstract class AbstractServiceTest {
 	public List<Behandlung> testBehandlungen = new ArrayList<Behandlung>();
 
 	public void createTestMandantPatientFallBehandlung() {
-		Kontakt mandator = KontaktService.INSTANCE.create();
 		TimeTool timeTool = new TimeTool();
-		mandator.setDescription1("mandator1 " + timeTool.toString());
-		mandator.setDescription2("description2");
-		mandator.setDescription3("description3");
-		mandator.setMandator(true);
-		mandator.setDateOfBirth(timeTool);
+		Kontakt mandator = new KontaktService.PersonBuilder("mandator1 " + timeTool.toString(),
+				"Anton" + timeTool.toString(), timeTool.toLocalDate(), Gender.MALE).mandator().buildAndSave();
 		testContacts.add(mandator);
-		KontaktService.INSTANCE.flush();
 
-		Kontakt patient = KontaktService.INSTANCE.createPatient("Armer", "Anton" + timeTool.toString(),
-				timeTool.toLocalDate(), Gender.MALE);
+		Kontakt patient = new KontaktService.PersonBuilder("Armer", "Anton" + timeTool.toString(),
+				timeTool.toLocalDate(), Gender.MALE).buildAndSave();
 		testPatients.add(patient);
 
-		Fall testFall = FallService.INSTANCE.create(patient, "Fallbezeichnung", "Fallgrund", "KVG");
-		FallService.INSTANCE.flush();
+		Fall testFall = new FallService.Builder(patient, "Fallbezeichnung", "Fallgrund", "KVG").buildAndSave();
 		testFaelle.add(testFall);
 
-		Behandlung behandlung = BehandlungService.INSTANCE.create(testFall, mandator);
-		BehandlungService.INSTANCE.flush();
+		Behandlung behandlung = new BehandlungService.Builder(testFall, mandator).buildAndSave();
 		testBehandlungen.add(behandlung);
 	}
 
 	public void cleanup() {
 		for (Behandlung cons : testBehandlungen) {
-			List<Verrechnet> verrechnet =VerrechnetService.getAllVerrechnetForBehandlung(cons);
+			List<Verrechnet> verrechnet = VerrechnetService.getAllVerrechnetForBehandlung(cons);
 			for (Verrechnet verrechnet2 : verrechnet) {
 				System.out
 						.println("Deleting verrechnet " + verrechnet2.getLabel() + " on behandlung " + cons.getLabel());
-				VerrechnetService.INSTANCE.remove(verrechnet2);
+				VerrechnetService.remove(verrechnet2);
 			}
 
 			System.out.println("Deleting behandlung " + cons.getLabel());
-			BehandlungService.INSTANCE.remove(cons);
+			BehandlungService.remove(cons);
 		}
 		for (Fall fall : testFaelle) {
-			System.out.println("Deleting fall " + fall.getLabel());
-			FallService.INSTANCE.remove(fall);
+			System.out.println("Removing fall " + fall.getLabel());
+			FallService.remove(fall);
 		}
 		for (Kontakt contact : testPatients) {
-			System.out.println("Deleting patient " + contact.getLabel());
-			KontaktService.INSTANCE.remove(contact);
+			System.out.println("Removing patient " + contact.getLabel());
+			PersistenceService.remove(contact);
 		}
 		for (Kontakt contact : testContacts) {
-			System.out.println("Deleting contact " + contact.getLabel());
-			KontaktService.INSTANCE.remove(contact);
+			System.out.println("Removing contact " + contact.getLabel());
+			PersistenceService.remove(contact);
 		}
 	}
 

@@ -49,15 +49,15 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Practitioner, Kontakt> getTransformer() {
-		return (IFhirTransformer<Practitioner, Kontakt>) transformerRegistry
-					.getTransformerFor(Practitioner.class, Kontakt.class);
+		return (IFhirTransformer<Practitioner, Kontakt>) transformerRegistry.getTransformerFor(Practitioner.class,
+				Kontakt.class);
 	}
 
 	@Read
 	public Practitioner getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<Kontakt> practitioner = KontaktService.INSTANCE.findById(idPart);
+			Optional<Kontakt> practitioner = KontaktService.load(idPart);
 			if (practitioner.isPresent()) {
 				if (practitioner.get().isMandator()) {
 					Optional<Practitioner> fhirPractitioner = getTransformer().getFhirObject(practitioner.get());
@@ -108,10 +108,10 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			for (Coding coding : codings) {
 				boolean matchingSystem = false;
 				boolean matchingCode = false;
-				if(codeSystem.isPresent()) {
+				if (codeSystem.isPresent()) {
 					matchingSystem = coding.getSystem().equals(codeSystem.get());
 				}
-				if(codeCode.isPresent()) {
+				if (codeCode.isPresent()) {
 					matchingCode = coding.getCode().equals(codeCode.get());
 				}
 				if (matchingSystem && matchingCode) {

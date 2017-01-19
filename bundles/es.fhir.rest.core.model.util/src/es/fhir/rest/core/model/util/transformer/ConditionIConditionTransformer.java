@@ -60,7 +60,7 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 		contentHelper.setResource(fhirObject, iCondition);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();
-			Optional<Kontakt> patient = KontaktService.INSTANCE.findById(id);
+			Optional<Kontakt> patient = KontaktService.load(id);
 			patient.ifPresent(k -> iCondition.setPatientId(id));
 		}
 		findingsService.saveFinding(iCondition);

@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -36,21 +37,75 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
-public class VerrechnetService extends AbstractService<Verrechnet> {
+public class VerrechnetService extends PersistenceService {
 
 	private static Logger log = LoggerFactory.getLogger(VerrechnetService.class);
 
-	public static VerrechnetService INSTANCE = InstanceHolder.INSTANCE;
+	public static class Builder extends AbstractBuilder<Verrechnet> {
+		@SuppressWarnings("rawtypes")
+		private final IBillable iv;
 
-	private static final class InstanceHolder {
-		static final VerrechnetService INSTANCE = new VerrechnetService();
+		public Builder(@SuppressWarnings("rawtypes") IBillable iv, Behandlung kons, int count, Kontakt userContact) {
+			object = new Verrechnet();
+
+			this.iv = iv;
+
+			object.setLeistungenText(iv.getText());
+			String keyForObject = ElexisTypeMap.getKeyForObject((AbstractDBObjectIdDeleted) iv.getEntity());
+			object.setKlasse(keyForObject);
+			object.setLeistungenCode(iv.getId());
+			object.setLeistungenText(iv.getText());
+			object.setBehandlung(kons);
+			object.setZahl(count);
+			object.setUser(userContact);
+
+			TimeTool dat = new TimeTool(kons.getDatum());
+			Fall fall = kons.getFall();
+			int tp = iv.getTP(dat, fall);
+			double factor = iv.getFactor(dat, fall);
+			long preis = Math.round(tp * factor);
+
+			object.setEk_kosten(Integer.parseInt(iv.getCost(dat).getCentsAsString()));
+			object.setVk_tp(tp);
+			object.setVk_scale(Double.toString(factor));
+			object.setVk_preis((int) preis);
+			object.setScale(100);
+			object.setScale2(100);
+		}
+
+		@Override
+		public Verrechnet build() {
+			if (iv instanceof VerrechenbarArtikelstammItem || iv instanceof VerrechenbarArtikel) {
+				new StockService().performSingleDisposal((IArticle) iv.getEntity(), object.getZahl(), null);
+			}
+			// call the adjusters
+			new VatVerrechnetAdjuster().adjust(object);
+			return super.build();
+		}
 	}
 
-	private VerrechnetService() {
-		super(Verrechnet.class);
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Optional<Verrechnet> load(String id) {
+		return PersistenceService.load(Verrechnet.class, id).map(v -> (Verrechnet) v);
 	}
 
-	private IBillable<? extends AbstractDBObjectIdDeleted> createVerrechenbarForObject(
+	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<Verrechnet> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(Verrechnet.class, includeElementsMarkedDeleted).stream()
+				.map(v -> (Verrechnet) v).collect(Collectors.toList());
+	}
+
+	private static IBillable<? extends AbstractDBObjectIdDeleted> createVerrechenbarForObject(
 			AbstractDBObjectIdDeleted object) {
 		if (object instanceof TarmedLeistung) {
 			return new VerrechenbarTarmedLeistung((TarmedLeistung) object);
@@ -68,58 +123,30 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		return null;
 	}
 
-	public Verrechnet create(IBillable iv, Behandlung kons, int count, Kontakt userContact) {
-		em.getTransaction().begin();
-
-		Verrechnet v = create(false);
-		em.merge(kons);
-		v.setLeistungenText(iv.getText());
-		String keyForObject = ElexisTypeMap.getKeyForObject((AbstractDBObjectIdDeleted) iv.getEntity());
-		v.setKlasse(keyForObject);
-		v.setLeistungenCode(iv.getId());
-		v.setLeistungenText(iv.getText());
-		v.setBehandlung(kons);
-		v.setZahl(count);
-		v.setUser(userContact);
-
-		TimeTool dat = new TimeTool(kons.getDatum());
-		Fall fall = kons.getFall();
-		int tp = iv.getTP(dat, fall);
-		double factor = iv.getFactor(dat, fall);
-		long preis = Math.round(tp * factor);
-
-		v.setEk_kosten(Integer.parseInt(iv.getCost(dat).getCentsAsString()));
-		v.setVk_tp(tp);
-		v.setVk_scale(Double.toString(factor));
-		v.setVk_preis((int) preis);
-		v.setScale(100);
-		v.setScale2(100);
-
-		em.getTransaction().commit();
-
-		if (iv instanceof VerrechenbarArtikelstammItem || iv instanceof VerrechenbarArtikel) {
-			StockService.INSTANCE.performSingleDisposal((IArticle) iv.getEntity(), count, null);
-		}
-
-		// call the adjusters
-		new VatVerrechnetAdjuster().adjust(v);
-
-		return v;
-	}
-
-	public Optional<IBillable> getVerrechenbar(Verrechnet vr) {
-		String klasse = vr.getKlasse();
+	/**
+	 * The article or service this object was billed out of
+	 * 
+	 * @param vr
+	 * @return
+	 */
+	public static Optional<AbstractDBObjectIdDeleted> getOriginService(Verrechnet vr) {
+		String clazz = vr.getKlasse();
 		String leistungenCode = vr.getLeistungenCode();
 
-		Optional<AbstractDBObjectIdDeleted> object = StoreToStringService.INSTANCE
-				.createDetachedFromString(klasse + StringConstants.DOUBLECOLON + leistungenCode);
+		return StoreToStringService.INSTANCE
+				.createDetachedFromString(clazz + StringConstants.DOUBLECOLON + leistungenCode);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Optional<IBillable> getVerrechenbar(Verrechnet vr) {
+		Optional<AbstractDBObjectIdDeleted> object = getOriginService(vr);
 		if (object.isPresent()) {
 			return Optional.ofNullable(createVerrechenbarForObject(object.get()));
 		}
 		return Optional.empty();
 	}
 
-	public double getVKMultiplikator(TimeTool date, String billingSystem) {
+	public static double getVKMultiplikator(TimeTool date, String billingSystem) {
 		JPAQuery<VKPreis> vkPreise = new JPAQuery<VKPreis>(VKPreis.class);
 		vkPreise.add(VKPreis_.typ, JPAQuery.QUERY.EQUALS, billingSystem);
 		List<VKPreis> list = vkPreise.execute();
@@ -151,7 +178,8 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		}
 
 		int difference = newCount - previous;
-		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(vr);
+		@SuppressWarnings("rawtypes")
+		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(vr);
 		if (difference > 0) {
 			for (int i = 0; i < difference; i++) {
 				IStatus ret = verrechenbar.get().add(vr.getBehandlung(), vr.getUser(), mandatorContact);
@@ -170,7 +198,7 @@ public class VerrechnetService extends AbstractService<Verrechnet> {
 		}
 		return Status.OK_STATUS;
 	}
-	
+
 	public static List<Verrechnet> getAllVerrechnetForBehandlung(Behandlung behandlung) {
 		JPAQuery<Verrechnet> qre = new JPAQuery<Verrechnet>(Verrechnet.class);
 		qre.add(Verrechnet_.behandlung, QUERY.EQUALS, behandlung);

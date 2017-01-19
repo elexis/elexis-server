@@ -34,7 +34,7 @@ public class VatVerrechnetAdjuster implements IBillableAdjuster {
 
 	@Override
 	public void adjust(Verrechnet verrechnet) {
-		Optional<IBillable> verrechenbar = VerrechnetService.INSTANCE.getVerrechenbar(verrechnet);
+		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(verrechnet);
 
 		if (!verrechenbar.isPresent()) {
 			log.warn("IBillable could not be found for Verrechnet " + verrechnet.getId() + ", returning.");

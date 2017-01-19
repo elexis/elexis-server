@@ -51,7 +51,7 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 	public Optional<Kontakt> getLocalObject(Patient fhirObject) {
 		String id = fhirObject.getIdElement().getIdPart();
 		if (id != null && !id.isEmpty()) {
-			return KontaktService.INSTANCE.findById(id);
+			return KontaktService.load(id);
 		}
 		return Optional.empty();
 	}

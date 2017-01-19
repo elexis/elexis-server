@@ -131,7 +131,7 @@ public class ProcedureRequestTest {
 			}
 		}
 		assertNotNull(consultationId);
-		Optional<Behandlung> behandlung = BehandlungService.INSTANCE.findById(consultationId);
+		Optional<Behandlung> behandlung = BehandlungService.load(consultationId);
 		assertTrue(behandlung.isPresent());
 		assertTrue(behandlung.get().getEintrag().getHead().contains("Procedure"));
 	}
