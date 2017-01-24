@@ -35,6 +35,7 @@ Export-Package: info.elexis.server.core.console,
  info.elexis.server.core.constants,
  info.elexis.server.core.contrib,
  info.elexis.server.core.scheduler,
+ info.elexis.server.core.service,
  it.sauronsoftware.cron4j
 Bundle-ClassPath: .,
  lib/cron4j-2.2.5.jar

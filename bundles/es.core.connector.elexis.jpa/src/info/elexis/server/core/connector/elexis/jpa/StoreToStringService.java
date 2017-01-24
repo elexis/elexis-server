@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.jpa;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -33,7 +32,7 @@ public enum StoreToStringService {
 			return Optional.empty();
 		}
 
-		String[] split = splitIntoTypeAndId(storeToString);
+		String[] split = info.elexis.server.core.service.StoreToStringService.splitIntoTypeAndId(storeToString);
 
 		// map string to classname
 		String className = split[0];
@@ -69,17 +68,4 @@ public enum StoreToStringService {
 
 		return classKey + StringConstants.DOUBLECOLON + adbo.getId();
 	}
-
-	/**
-	 * Split a storeToString into an array containing the type and the id
-	 * 
-	 * @param storeToString
-	 * @return a size 2 array with article type [0] and article id [1] or
-	 *         <code>null</code> in either [0] or [1]
-	 */
-	public static String[] splitIntoTypeAndId(String storeToString) {
-		String[] split = storeToString.split(StringConstants.DOUBLECOLON);
-		return Arrays.copyOf(split, 2);
-	}
-
 }

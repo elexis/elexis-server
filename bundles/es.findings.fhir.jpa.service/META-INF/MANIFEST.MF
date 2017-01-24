@@ -16,6 +16,7 @@ Require-Bundle: ch.elexis.core.findings;bundle-version="1.0.0",
  org.postgresql,
  com.mysql.jdbc
 Import-Package: ch.elexis.base.ch.ticode;resolution:=optional,
+ info.elexis.server.core.service,
  javax.persistence.metamodel,
  org.eclipse.persistence.config;version="2.5.0",
  org.osgi.service.component.annotations;version="1.2.0",
@@ -25,5 +26,6 @@ Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.Finding
  OSGI-INF/info.elexis.server.findings.fhir.jpa.service.MigratorService.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CodingService.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.TessinerCodeContribution.xml,
- OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.service.StoreToStringContribution.xml
 Export-Package: info.elexis.server.findings.fhir.jpa.service

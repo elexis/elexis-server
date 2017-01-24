@@ -90,7 +90,7 @@ public class StockService extends PersistenceService implements IStockService {
 	@Override
 	public Integer getCumulatedStockForArticle(IArticle article) {
 		String storeToString = StoreToStringService.storeToString((AbstractDBObjectIdDeleted) article);
-		String[] typeId = StoreToStringService.splitIntoTypeAndId(storeToString);
+		String[] typeId = info.elexis.server.core.service.StoreToStringService.splitIntoTypeAndId(storeToString);
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		try {
 			Query stockCount = em.createNamedQuery(QueryConstants.QUERY_STOCK_ENTRY_findCummulatedStockSumOfArticle);
@@ -109,7 +109,7 @@ public class StockService extends PersistenceService implements IStockService {
 	@Override
 	public Availability getCumulatedAvailabilityForArticle(IArticle article) {
 		String storeToString = StoreToStringService.storeToString((AbstractDBObjectIdDeleted) article);
-		String[] typeId = StoreToStringService.splitIntoTypeAndId(storeToString);
+		String[] typeId = info.elexis.server.core.service.StoreToStringService.splitIntoTypeAndId(storeToString);
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		try {
 			Query stockCount = em

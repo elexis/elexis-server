@@ -22,6 +22,7 @@ import info.elexis.server.core.connector.elexis.services.LabResultServiceTest;
 import info.elexis.server.core.connector.elexis.services.LockServiceTest;
 import info.elexis.server.core.connector.elexis.services.PrescriptionServiceTest;
 import info.elexis.server.core.connector.elexis.services.StockServiceTest;
+import info.elexis.server.core.connector.elexis.services.StoreToStringTest;
 import info.elexis.server.core.connector.elexis.services.UserconfigServiceTest;
 
 @RunWith(Suite.class)
@@ -29,7 +30,7 @@ import info.elexis.server.core.connector.elexis.services.UserconfigServiceTest;
 		BehandlungServiceTest.class, BillingTest.class, DocHandleServiceTest.class, EigenleistungServiceTest.class,
 		InvoiceServiceTest.class, JPAQueryTest.class, KontaktServiceTest.class, LabOrderServiceTest.class, LabResultServiceTest.class,
 		LockServiceTest.class, PrescriptionServiceTest.class, VerrechenbarTest.class, StockServiceTest.class,
-		UserconfigServiceTest.class })
+		UserconfigServiceTest.class, StoreToStringTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();
