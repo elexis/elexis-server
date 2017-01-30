@@ -107,6 +107,8 @@ public class TestDatabaseInitializer {
 						// ignore
 					}
 				}
+			} else {
+				logger.error("No connection available!");
 			}
 		}
 	}
@@ -173,7 +175,18 @@ public class TestDatabaseInitializer {
 		}
 	}
 
-	private Optional<Connection> getJdbcConnection(DBConnection connection) {
+	/**
+	 * 
+	 * @param connection
+	 *            may be <code>null</code> in which case refers to
+	 *            {@link TestDatabase#getDBConnection()}
+	 * @return
+	 */
+	public Optional<Connection> getJdbcConnection(DBConnection connection) {
+		if (connection == null) {
+			connection = TestDatabase.getDBConnection();
+		}
+
 		try {
 			Driver driver = (Driver) Class.forName(connection.rdbmsType.driverName).newInstance();
 

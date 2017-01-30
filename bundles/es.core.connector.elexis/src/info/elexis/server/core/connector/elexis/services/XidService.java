@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +12,11 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 
-public class XidService {
+public class XidService extends PersistenceService {
 
 	private static Logger log = LoggerFactory.getLogger(XidService.class);
 
-	public static class Builder extends AbstractBuilder<Xid> {
+	private static class Builder extends AbstractBuilder<Xid> {
 		public Builder(String domain, String domainId, AbstractDBObjectIdDeleted obj, XidQuality quality) {
 			object = new Xid();
 
@@ -61,6 +62,22 @@ public class XidService {
 	 *         {@link Xid} or <code>null</code>, if not found
 	 */
 	public static String getDomainId(AbstractDBObjectIdDeleted object, String domain) {
+		Optional<Xid> domainId = findByObjectAndDomain(object, domain);
+		if (domainId.isPresent()) {
+			return domainId.get().getDomainId();
+		}
+		return null;
+	}
+
+	public static void unsetDomainId(AbstractDBObjectIdDeleted object, String domain) {
+		Optional<Xid> domainId = findByObjectAndDomain(object, domain);
+		if (domainId.isPresent()) {
+			Xid xid = domainId.get();
+			delete(xid);
+		}
+	}
+
+	public static Optional<Xid> findByObjectAndDomain(AbstractDBObjectIdDeleted object, String domain) {
 		JPAQuery<Xid> qre = new JPAQuery<Xid>(Xid.class);
 		qre.add(Xid_.domain, JPAQuery.QUERY.LIKE, domain);
 		qre.add(Xid_.object, JPAQuery.QUERY.LIKE, object.getId());
@@ -68,14 +85,13 @@ public class XidService {
 		List<Xid> results = qre.execute();
 
 		if (results.size() == 1) {
-			return results.get(0).getDomainId();
+			return Optional.of(results.get(0));
 		}
 		if (results.size() == 0) {
-			return null;
+			return Optional.empty();
 		}
-
 		log.warn("Multiple domainId entries for {} in domain {} found.", object.getId(), domain);
-		return null;
+		return Optional.empty();
 	}
 
 }

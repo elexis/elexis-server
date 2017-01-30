@@ -9,28 +9,10 @@ import info.elexis.server.core.connector.elexis.billable.BillingTest;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTest;
 import info.elexis.server.core.connector.elexis.jpa.AbstractDBObjectIdDeletedTest;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
-import info.elexis.server.core.connector.elexis.services.ArtikelServiceTest;
-import info.elexis.server.core.connector.elexis.services.ArtikelstammItemServiceTest;
-import info.elexis.server.core.connector.elexis.services.BehandlungServiceTest;
-import info.elexis.server.core.connector.elexis.services.DocHandleServiceTest;
-import info.elexis.server.core.connector.elexis.services.EigenleistungServiceTest;
-import info.elexis.server.core.connector.elexis.services.InvoiceServiceTest;
-import info.elexis.server.core.connector.elexis.services.JPAQueryTest;
-import info.elexis.server.core.connector.elexis.services.KontaktServiceTest;
-import info.elexis.server.core.connector.elexis.services.LabOrderServiceTest;
-import info.elexis.server.core.connector.elexis.services.LabResultServiceTest;
-import info.elexis.server.core.connector.elexis.services.LockServiceTest;
-import info.elexis.server.core.connector.elexis.services.PrescriptionServiceTest;
-import info.elexis.server.core.connector.elexis.services.StockServiceTest;
-import info.elexis.server.core.connector.elexis.services.StoreToStringTest;
-import info.elexis.server.core.connector.elexis.services.UserconfigServiceTest;
+import info.elexis.server.core.connector.elexis.services.AllServiceTests;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AbstractDBObjectIdDeletedTest.class, ArtikelServiceTest.class, ArtikelstammItemServiceTest.class,
-		BehandlungServiceTest.class, BillingTest.class, DocHandleServiceTest.class, EigenleistungServiceTest.class,
-		InvoiceServiceTest.class, JPAQueryTest.class, KontaktServiceTest.class, LabOrderServiceTest.class, LabResultServiceTest.class,
-		LockServiceTest.class, PrescriptionServiceTest.class, VerrechenbarTest.class, StockServiceTest.class,
-		UserconfigServiceTest.class, StoreToStringTest.class })
+@SuiteClasses({ AbstractDBObjectIdDeletedTest.class, AllServiceTests.class, BillingTest.class, VerrechenbarTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();

@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.elexis.core.types.LabItemTyp;
 import ch.rgw.tools.TimeTool;
@@ -29,6 +30,17 @@ public class LabResultService extends PersistenceService {
 	 */
 	public static Optional<LabResult> load(String id) {
 		return PersistenceService.load(LabResult.class, id).map(v -> (LabResult) v);
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<LabResult> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(LabResult.class, includeElementsMarkedDeleted).stream()
+				.map(v -> (LabResult) v).collect(Collectors.toList());
 	}
 
 	/**

@@ -3,7 +3,6 @@ package info.elexis.server.core.connector.elexis.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
@@ -23,7 +22,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ConsultationDiagnosis;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -55,6 +53,17 @@ public class BehandlungService extends PersistenceService {
 	 */
 	public static Optional<Behandlung> load(String id) {
 		return PersistenceService.load(Behandlung.class, id).map(v -> (Behandlung) v);
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<Behandlung> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(Behandlung.class, includeElementsMarkedDeleted).stream()
+				.map(v -> (Behandlung) v).collect(Collectors.toList());
 	}
 
 	public static Optional<IBillable<?>> findBillableByAbstractDBObjectIdDeleted(
@@ -167,20 +176,8 @@ public class BehandlungService extends PersistenceService {
 	 * @param diag
 	 */
 	public static void setDiagnosisOnConsultation(Behandlung cons, Diagnosis diag) {
-		ConsultationDiagnosis cdj = new ConsultationDiagnosis();
-		cdj.setConsultation(cons);
-		cdj.setDiagnosis(diag);
-
-		Set<ConsultationDiagnosis> diagnoses = cons.getDiagnoses();
-		for (ConsultationDiagnosis cd : diagnoses) {
-			Diagnosis diagnosis = cd.getDiagnosis();
-			if (diagnosis.getCode().equals(diag.getCode())
-					&& diagnosis.getDiagnosisClass().equals(diag.getDiagnosisClass())) {
-				return;
-			}
-		}
-
-		cons.getDiagnoses().add(cdj);
+		diag = new DiagnosisService().findExistingOrCreate(diag);
+		cons.getDiagnoses().add(diag);
 		BehandlungService.save(cons);
 	}
 

@@ -1,18 +1,20 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
-
-import javax.persistence.EntityManager;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -36,32 +38,25 @@ public class BriefServiceTest {
 	public void testCreateAndDeleteDocument() {
 		Brief document = new BriefService.Builder(patient).buildAndSave();
 		document.setSubject("TestSubject");
-		Heap content = document.getContent();
-		assertNotNull(content);
-		BriefService.save(content);
 
-		HeapService.remove(document.getContent());
+		byte[] b = new byte[120];
+		new Random().nextBytes(b);
+		document.getContent().setInhalt(b);
+		BriefService.save(document);
+
+		document = BriefService.load(document.getId()).get();
+		assertNotNull(document.getContent());
+		assertEquals(document.getId(), document.getContent().getId());
+		assertEquals(patient.getId(), document.getPatient().getId());
+		
+		Optional<Heap> findById = HeapService.load(document.getId());
+		assertTrue(findById.isPresent());
+		assertEquals(findById.get().getId(), document.getContent().getId());
+		assertTrue(Arrays.equals(b, findById.get().getInhalt()));
+
 		BriefService.remove(document);
 
 		Optional<Heap> findDel = HeapService.load(document.getId());
 		assertFalse(findDel.isPresent());
-	}
-
-	@Test
-	public void testLoadAndModifyDocument() {
-		Brief document = new BriefService.Builder(patient).buildAndSave();
-
-		EntityManager em = ElexisEntityManager.createEntityManager();
-		Brief storedDocument = em.find(Brief.class, document.getId());
-		em.close();
-		assertEquals(patient.getId(), storedDocument.getPatient().getId());
-		assertNotNull(storedDocument.getContent());
-		assertEquals(document.getId(), storedDocument.getContent().getId());
-		Optional<Heap> findById = HeapService.load(document.getId());
-		assertTrue(findById.isPresent());
-		assertEquals(findById.get().getId(), storedDocument.getContent().getId());
-
-		HeapService.remove(document.getContent());
-		BriefService.remove(document);
 	}
 }

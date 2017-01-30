@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -61,7 +62,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column(length = 80)
 	protected String mimetype;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	protected Heap content;
 
@@ -76,6 +77,12 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column
 	@Convert("booleanStringConverter")
 	protected boolean geloescht = false;
+	
+	public Brief() {
+		super();
+		content = new Heap();
+		content.setId(getId());
+	}
 
 	public String getSubject() {
 		return subject;
@@ -88,7 +95,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	public LocalDateTime getCreationDate() {
 		return creationDate;
 	}
-	
+
 	public void setCreationDate(LocalDateTime creationDate) {
 		this.creationDate = creationDate;
 	}
@@ -96,7 +103,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	public LocalDateTime getModifiedDate() {
 		return modifiedDate;
 	}
-	
+
 	public void setModifiedDate(LocalDateTime modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}

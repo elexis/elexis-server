@@ -34,6 +34,17 @@ public class PrescriptionService extends PersistenceService {
 	}
 
 	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<Prescription> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(Prescription.class, includeElementsMarkedDeleted).stream()
+				.map(v -> (Prescription) v).collect(Collectors.toList());
+	}
+
+	/**
 	 * Find all active, medical relevant prescriptions, for patient. This only
 	 * includes entries of {@link EntryType#FIXED_MEDICATION},
 	 * {@link EntryType#RESERVE_MEDICATION} and

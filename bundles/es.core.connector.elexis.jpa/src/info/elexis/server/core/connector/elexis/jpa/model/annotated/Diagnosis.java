@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -42,15 +44,29 @@ public class Diagnosis extends AbstractDBObjectIdDeleted {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Diagnosis)) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		Diagnosis other = (Diagnosis) obj;
+	public int hashCode() {
+		return Objects.hash(code, diagnosisClass);
+	}
 
-		return (this.code.equals(other.code) && this.diagnosisClass.equals(other.diagnosisClass));
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Diagnosis other = (Diagnosis) obj;
+		if (code == null) {
+			if (other.code != null)
+				return false;
+		} else if (!code.equals(other.code))
+			return false;
+		if (diagnosisClass == null) {
+			if (other.diagnosisClass != null)
+				return false;
+		} else if (!diagnosisClass.equals(other.diagnosisClass))
+			return false;
+		return true;
 	}
 }

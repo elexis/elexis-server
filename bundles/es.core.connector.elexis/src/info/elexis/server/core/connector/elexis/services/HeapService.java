@@ -5,6 +5,14 @@ import java.util.Optional;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
 
 public class HeapService extends PersistenceService {
+
+	public static class Builder extends AbstractBuilder<Heap> {
+		public Builder(String id) {
+			object = new Heap();
+			object.setId(id);
+		}
+	}
+
 	/**
 	 * convenience method
 	 * 

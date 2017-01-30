@@ -9,9 +9,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 public class BriefService extends PersistenceService {
 
 	public static class Builder extends AbstractBuilder<Brief> {
-
-		private Heap heap;
-
 		/**
 		 * Requires a {@link Heap} object with corresponding id, use
 		 * {@link #buildAndSave()} to ensure proper creation.
@@ -21,17 +18,6 @@ public class BriefService extends PersistenceService {
 		public Builder(Kontakt patient) {
 			object = new Brief();
 			object.setPatient(patient);
-
-			heap = new Heap();
-			heap.setId(object.getId());
-			object.setContent(heap);
-			object.setGeloescht(false);
-		}
-
-		@Override
-		public Brief buildAndSave() {
-			PersistenceService.save(heap);
-			return super.buildAndSave();
 		}
 	}
 
@@ -45,4 +31,6 @@ public class BriefService extends PersistenceService {
 		return PersistenceService.load(Brief.class, id).map(v -> (Brief) v);
 	}
 
+	
+	
 }
