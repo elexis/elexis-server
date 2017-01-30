@@ -45,7 +45,7 @@ public class CodeTypeUtil {
 			LabItem item = result.get().getItem();
 			if (item != null) {
 				String export = item.getExport();
-				if (export.startsWith("vitolabkey:")) {
+				if (export != null && export.startsWith("vitolabkey:")) {
 					String[] parts = export.split(":");
 					if (parts.length == 2) {
 						parts = parts[1].split(",");
