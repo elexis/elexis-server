@@ -195,7 +195,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 
 		// Ausschliessende Kriterien prüfen ("Nicht zusammen mit")
 		if (newVerrechnet == null) {
-			newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).buildAndSave();
+			newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).build();
 			// make sure side is initialized
 			if (tc.requiresSide()) {
 				newVerrechnet.setDetail(SIDE, newVerrechnetSide);
@@ -503,7 +503,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			// PREISAENDERUNG, "Preis", null, false); //$NON-NLS-1$
 		}
 
-		VerrechnetService.save(newVerrechnet);
+		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
 
 		return ObjectStatus.OK_STATUS(newVerrechnet);
 		// return new Result<IVerrechenbar>(null);

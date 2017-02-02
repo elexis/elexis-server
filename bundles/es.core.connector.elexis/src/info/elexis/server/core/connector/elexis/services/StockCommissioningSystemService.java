@@ -1,12 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_BASE;
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_OUTLAY;
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID;
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_QUANTITY;
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID;
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCK_ID;
-import static ch.elexis.core.common.ElexisEventTopics.TOPIC_STOCK_COMMISSIONING_SYNC_STOCK;
+import static ch.elexis.core.common.ElexisEventTopics.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,7 +48,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 
 	private StockService stockService = new StockService();
 
-	@Component(property = { EventConstants.EVENT_TOPIC + "=" + TOPIC_BASE + "*" })
+	@Component(property = { EventConstants.EVENT_TOPIC + "=" + BASE + "*" })
 	public static class StockCommissioningSystemServiceEventHandler implements EventHandler {
 
 		private Logger log = LoggerFactory.getLogger(StockCommissioningSystemServiceEventHandler.class);
@@ -64,13 +58,13 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			StockCommissioningSystemService scss = new StockCommissioningSystemService();
 
 			String topic = event.getTopic();
-			if (topic.endsWith(TOPIC_STOCK_COMMISSIONING_OUTLAY)) {
+			if (topic.endsWith(STOCK_COMMISSIONING_OUTLAY)) {
 				// perform an outlay
-				String stockEntryId = event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID).toString();
+				String stockEntryId = event.getProperty(STOCK_COMMISSIONING_PROPKEY_STOCKENTRY_ID).toString();
 				Optional<StockEntry> se = StockEntryService.load(stockEntryId);
 				int quantity = 0;
 				try {
-					String property = (String) event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_QUANTITY);
+					String property = (String) event.getProperty(STOCK_COMMISSIONING_PROPKEY_QUANTITY);
 					quantity = Integer.parseInt(property);
 				} catch (NumberFormatException nfe) {
 					log.error("Error parsing [{}]", nfe.getMessage());
@@ -85,13 +79,13 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				} else {
 					log.error("Could not find StockEntry [{}]", stockEntryId);
 				}
-			} else if (topic.endsWith(TOPIC_STOCK_COMMISSIONING_SYNC_STOCK)) {
+			} else if (topic.endsWith(STOCK_COMMISSIONING_SYNC_STOCK)) {
 				// Update stock for article list
-				String stockId = (String) event.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_STOCK_ID);
+				String stockId = (String) event.getProperty(STOCK_COMMISSIONING_PROPKEY_STOCK_ID);
 				Optional<Stock> stock = StockService.load(stockId);
 				if (stock.isPresent()) {
 					List<String> articleIds = (List<String>) event
-							.getProperty(TOPIC_STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID);
+							.getProperty(STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID);
 					IStatus status = scss.synchronizeInventory(stock.get(), articleIds, null);
 					if (!status.isOK()) {
 						StatusUtil.logStatus(log, status, true);

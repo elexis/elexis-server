@@ -6,8 +6,12 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: elexis.info
 Require-Bundle: org.junit,
  org.h2,
- info.elexis.server.core.connector.elexis
+ info.elexis.server.core.connector.elexis,
+ org.eclipse.osgi.services
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: info.elexis.server.core.connector.elexis.jpa.test
+Export-Package: info.elexis.server.core.connector.elexis.jpa.test,
+ info.elexis.server.core.connector.elexis.jpa.test.eventHandler
 Import-Package: org.eclipse.persistence.expressions;version="2.5.0",
  org.slf4j;version="1.7.2"
+Service-Component: OSGI-INF/info.elexis.server.core.connector.elexis.jpa.test.eventHandler.TestEventHandler.xml
+Bundle-ActivationPolicy: lazy

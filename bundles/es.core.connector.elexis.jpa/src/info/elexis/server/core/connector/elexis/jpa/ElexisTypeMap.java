@@ -20,6 +20,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
 public class ElexisTypeMap {
 	
@@ -52,6 +53,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_TERMIN = "ch.elexis.agenda.data.Termin";
 	public static final String TYPE_TESSINER_CODE = "ch.elexis.data.TICode";
 	public static final String TYPE_USER = "ch.elexis.data.User";
+	public static final String TYPE_VERRECHNET = "ch.elexis.data.Verrechnet"; 
 	
 	static {
 		stsToClassMap = new HashMap<String, Class<? extends AbstractDBObjectIdDeleted>>();
@@ -88,6 +90,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(Termin.class, TYPE_TERMIN);
 		stsToClassMap.put(TYPE_USER, User.class);
 		classToStsMap.put(User.class, TYPE_USER);
+		stsToClassMap.put(TYPE_VERRECHNET, Verrechnet.class);
+		classToStsMap.put(Verrechnet.class, TYPE_VERRECHNET);
 
 		// uni-directional mappable
 		stsToClassMap.put(TYPE_MEDIKAMENT, Artikel.class);

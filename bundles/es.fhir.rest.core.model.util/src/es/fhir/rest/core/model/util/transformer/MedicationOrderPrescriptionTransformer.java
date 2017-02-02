@@ -251,9 +251,7 @@ public class MedicationOrderPrescriptionTransformer implements IFhirTransformer<
 
 			localObject.setBemerkung(getMedicationOrderRemark(fhirObject));
 
-			PrescriptionService.save(localObject);
-
-			return Optional.of(localObject);
+			return Optional.of( (Prescription) PrescriptionService.save(localObject));
 		}
 		return Optional.empty();
 	}

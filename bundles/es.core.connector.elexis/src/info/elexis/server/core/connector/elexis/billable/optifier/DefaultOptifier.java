@@ -81,7 +81,7 @@ public class DefaultOptifier implements IOptifier {
 			vr.setSecondaryScaleFactor(newCount);
 			vr.setLeistungenText(vr.getLeistungenText() + " (" + Double.toString(newCount) + ")");
 		}
-		VerrechnetService.save(vr);
+		vr = (Verrechnet) VerrechnetService.save(vr);
 
 		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(vr);
 		if (verrechenbar.isPresent() && ((verrechenbar.get() instanceof VerrechenbarArtikelstammItem)

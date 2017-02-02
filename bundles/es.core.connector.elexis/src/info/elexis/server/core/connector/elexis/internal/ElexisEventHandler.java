@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.ElexisEventTopics;
 
-@Component(property = { EventConstants.EVENT_TOPIC + "=" + ElexisEventTopics.TOPIC_BASE + "*" })
+@Component(property = { EventConstants.EVENT_TOPIC + "=" + ElexisEventTopics.BASE + "*" })
 public class ElexisEventHandler implements EventHandler {
 
 	private Logger log = LoggerFactory.getLogger(ElexisEventHandler.class);

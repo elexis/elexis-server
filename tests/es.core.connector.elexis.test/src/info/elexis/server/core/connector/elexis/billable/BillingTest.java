@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -15,10 +16,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.service.event.Event;
 
+import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
+
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
@@ -31,6 +35,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.jpa.test.eventHandler.TestEventHandler;
 import info.elexis.server.core.connector.elexis.services.AbstractServiceTest;
 import info.elexis.server.core.connector.elexis.services.ArtikelService;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
@@ -38,6 +43,7 @@ import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.Labor2009TarifService;
+import info.elexis.server.core.connector.elexis.services.PersistenceService;
 import info.elexis.server.core.connector.elexis.services.PhysioLeistungService;
 import info.elexis.server.core.connector.elexis.services.StockEntryService;
 import info.elexis.server.core.connector.elexis.services.StockService;
@@ -62,6 +68,8 @@ public class BillingTest extends AbstractServiceTest {
 		assertTrue(!mandants.isEmpty());
 		mandator = mandants.get(0);
 		userContact = mandator;
+		
+		PersistenceService.setThreadLocalUserId("testUserId");
 	}
 
 	@Before
@@ -80,14 +88,18 @@ public class BillingTest extends AbstractServiceTest {
 	@Test
 	public void testBehandlungResolvesVerrechnet() {
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
-		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, null);
 
+		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, null);
+		Event event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 		assertTrue(os.isOK());
-
+		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
+		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
+		assertEquals("testUserId", event.getProperty(ElexisEventTopics.PROPKEY_USER));
+		
 		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(vr.getBehandlung());
 		assertTrue(allVerrechnet.size() > 0);
 		boolean contains = false;
@@ -113,6 +125,9 @@ public class BillingTest extends AbstractServiceTest {
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
+		Event event = TestEventHandler.waitforEvent();
+		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
+		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
 
 		assertEquals(immunglobulinValid.getName(), vr.getLeistungenText());
 		assertEquals(12000, vr.getVk_tp());
@@ -128,7 +143,9 @@ public class BillingTest extends AbstractServiceTest {
 		VerrechenbarLabor2009Tarif invalidLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinInvalid);
 
 		status = invalidLabTarif.add(testBehandlungen.get(0), userContact, mandator);
+		event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), !status.isOK());
+		assertNull(event);
 	}
 
 	@Test
@@ -149,10 +166,13 @@ public class BillingTest extends AbstractServiceTest {
 		assertNotNull(validDefault);
 		VerrechenbarPhysioLeistung validPhysTarif = new VerrechenbarPhysioLeistung(validDefault);
 		IStatus status = validPhysTarif.add(testBehandlungen.get(0), userContact, mandator);
+		Event event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
+		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
+		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
 
 		assertEquals(validDefault.getTitel(), vr.getLeistungenText());
 		assertEquals("0.89", vr.getVk_scale());
@@ -330,10 +350,13 @@ public class BillingTest extends AbstractServiceTest {
 		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
 
 		IStatus status = verrechenbar.add(testBehandlungen.get(0), userContact, mandator);
+		Event event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
+		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
+		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
 
 		assertEquals(ElexisTypeMap.TYPE_ARTIKELSTAMM, vr.getKlasse());
 		assertEquals(artikelstammItem.get().getDscr(), vr.getLeistungenText());
@@ -360,11 +383,14 @@ public class BillingTest extends AbstractServiceTest {
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
 
 		IStatus status = verrechenbar.add(testBehandlungen.get(0), userContact, mandator);
+		Event event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
 		assertTrue(os.isOK());
+		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
+		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
 
 		assertEquals(ElexisTypeMap.TYPE_EIGENARTIKEL, vr.getKlasse());
 		assertEquals(ea1.getLabel(), vr.getLeistungenText());

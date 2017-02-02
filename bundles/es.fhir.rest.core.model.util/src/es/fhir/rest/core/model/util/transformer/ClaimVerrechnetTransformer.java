@@ -175,7 +175,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 						Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 						if (lockInfo.isPresent()) {
 							cons.setFall(fall);
-							BehandlungService.save(cons);
+							cons = (Behandlung) BehandlungService.save(cons);
 							AbstractHelper.releaseLock(lockInfo.get());
 						}
 					}

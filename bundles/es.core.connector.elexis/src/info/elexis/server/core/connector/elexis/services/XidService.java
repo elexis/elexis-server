@@ -48,7 +48,7 @@ public class XidService extends PersistenceService {
 		} else if (result.size() == 1) {
 			Xid xid = result.get(0);
 			xid.setDomainId(domainId);
-			PersistenceService.save(xid);
+			xid = (Xid) XidService.save(xid);
 			return xid;
 		}
 		log.error("Multiple XID entries for {}, {}", domain, obj.getId());

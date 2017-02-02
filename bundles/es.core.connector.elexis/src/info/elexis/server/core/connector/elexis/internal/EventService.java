@@ -1,6 +1,4 @@
-package info.elexis.server.core.connector.elexis.jaxrs;
-
-import javax.ws.rs.core.Response;
+package info.elexis.server.core.connector.elexis.internal;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -13,10 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.ElexisEvent;
 import ch.elexis.core.common.ElexisEventTopics;
-import ch.elexis.core.server.IEventService;
+import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component
-public class EventService implements IEventService {
+public class EventService {
 
 	private static Logger log = LoggerFactory.getLogger(EventService.class);
 
@@ -31,10 +31,9 @@ public class EventService implements IEventService {
 		EventService.eventAdmin = null;
 	}
 
-	@Override
-	public Response postEvent(ElexisEvent elexisEvent) {
+	public static void postEvent(ElexisEvent elexisEvent) {
 		if (elexisEvent == null || elexisEvent.getTopic() == null) {
-			return Response.serverError().build();
+			return;
 		}
 		String topic = elexisEvent.getTopic();
 		if (!topic.startsWith(ElexisEventTopics.BASE)) {
@@ -42,11 +41,22 @@ public class EventService implements IEventService {
 		}
 		Event event = new Event(topic, elexisEvent.getProperties());
 		if (EventService.eventAdmin != null) {
-			EventService.eventAdmin.postEvent(event);
+			EventService.eventAdmin.sendEvent(event);
 		} else {
 			log.warn("Received post event, but EventAdmin is null");
 		}
-		return Response.ok().build();
+	}
+
+	public static void postCreationEvent(AbstractDBObjectIdDeleted entity, String userId) {
+		ElexisEvent ee = new ElexisEvent();
+		ee.setTopic(ElexisEventTopics.PERSISTENCE_EVENT_CREATE);
+		ee.getProperties().put(ElexisEventTopics.PROPKEY_ID, entity.getId());
+		ee.getProperties().put(ElexisEventTopics.PROPKEY_CLASS, ElexisTypeMap.getKeyForObject(entity));
+		if (userId == null) {
+			userId = LockService.elexisServerAgentUser;
+		}
+		ee.getProperties().put(ElexisEventTopics.PROPKEY_USER, userId);
+		postEvent(ee);
 	}
 
 }

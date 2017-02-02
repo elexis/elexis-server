@@ -73,9 +73,7 @@ public class StockService extends PersistenceService implements IStockService {
 		if (currentStock != null) {
 			se.setCurrentStock(currentStock);
 		}
-		StockEntryService.save(se);
-
-		return se;
+		return (IStockEntry) StockEntryService.save(se);
 	}
 
 	@Override
@@ -255,7 +253,7 @@ public class StockService extends PersistenceService implements IStockService {
 					se.setFractionUnits(rest);
 				}
 
-				StockEntryService.save((StockEntry) se);
+				se = (IStockEntry) StockEntryService.save((StockEntry) se);
 
 				LockServiceInstance.INSTANCE.releaseLock(li.get());
 				return Status.OK_STATUS;
@@ -311,7 +309,7 @@ public class StockService extends PersistenceService implements IStockService {
 				se.setFractionUnits(rest);
 			}
 
-			StockEntryService.save((StockEntry) se);
+			se = (IStockEntry) StockEntryService.save((StockEntry) se);
 			LockServiceInstance.INSTANCE.releaseLock(li.get());
 			return Status.OK_STATUS;
 		}

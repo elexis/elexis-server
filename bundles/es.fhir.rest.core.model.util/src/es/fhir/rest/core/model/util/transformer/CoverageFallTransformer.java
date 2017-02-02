@@ -82,7 +82,7 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 					} else {
 						created.setDatumVon(LocalDate.now());
 					}
-					FallService.save(created);
+					created = (Fall) FallService.save(created);
 					AbstractHelper.acquireAndReleaseLock(created);
 					return Optional.of(created);
 				} else {

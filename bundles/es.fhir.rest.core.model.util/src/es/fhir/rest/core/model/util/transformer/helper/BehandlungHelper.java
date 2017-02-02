@@ -35,7 +35,7 @@ public class BehandlungHelper extends AbstractHelper {
 				} else {
 					behandlung.setDatum(LocalDate.now());
 				}
-				BehandlungService.save(behandlung);
+				behandlung = (Behandlung) BehandlungService.save(behandlung);
 				ret = Optional.of(behandlung);
 			}
 		}

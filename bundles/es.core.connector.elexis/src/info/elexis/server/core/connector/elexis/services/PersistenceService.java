@@ -15,10 +15,13 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.internal.EventService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 
 public class PersistenceService {
+
+	private static ThreadLocal<String> threadLocalUserId = new ThreadLocal<>();
 
 	/**
 	 * Return all elements of a given type
@@ -111,20 +114,33 @@ public class PersistenceService {
 	}
 
 	/**
-	 * Saves the entity (create or overwrite) in the database.
+	 * Saves the entity (create or overwrite) in the database.<br>
+	 * <b>Important</b> After each save, one has to continue work on the
+	 * returned object. (Otherwise the entity attributes might not be
+	 * up-to-date).
 	 * 
-	 * @param entity
+	 * @param entity 
+	 * @return detached entity with current database state
 	 */
 	public static AbstractDBObjectIdDeleted save(AbstractDBObjectIdDeleted entity) {
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			entity = em.merge(entity);
+			boolean newlyCreatedObject = (entity.getLastupdate() == null);
+			AbstractDBObjectIdDeleted savedEntity = em.merge(entity);
 			em.getTransaction().commit();
-			return entity;
+
+			if (newlyCreatedObject) {
+				EventService.postCreationEvent(savedEntity, PersistenceService.threadLocalUserId.get());
+			}
+			return savedEntity;
 		} finally {
 			em.close();
 		}
+	}
+
+	public static void setThreadLocalUserId(String userId) {
+		PersistenceService.threadLocalUserId.set(userId);
 	};
 
 }
