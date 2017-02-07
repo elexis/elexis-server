@@ -93,6 +93,9 @@ public class FallHelper extends AbstractHelper {
 		LocalDate dateTo = fall.getDatumBis();
 		String billingSystem = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
 
+		if (dateFrom == null) {
+			dateFrom = LocalDate.of(1970, 1, 1);
+		}
 		StringBuilder ret = new StringBuilder();
 		if (dateTo != null) {
 			ret.append("-GESCHLOSSEN-");
