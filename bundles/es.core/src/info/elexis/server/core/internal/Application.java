@@ -101,7 +101,7 @@ public class Application implements IApplication {
 	 */
 	public String restart(boolean force) {
 		String veto = checkVeto();
-		if (veto != null) {
+		if (veto != null && !force) {
 			return veto;
 		}
 		restart = true;
@@ -118,7 +118,7 @@ public class Application implements IApplication {
 	 */
 	public String shutdown(boolean force) {
 		String veto = checkVeto();
-		if (veto != null) {
+		if (veto != null && !force) {
 			return veto;
 		}
 		shutdown = true;
