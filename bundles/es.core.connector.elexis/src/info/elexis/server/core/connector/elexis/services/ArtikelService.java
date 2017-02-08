@@ -30,6 +30,14 @@ public class ArtikelService extends PersistenceService {
 	}
 
 	/**
+	 * @param article
+	 * @return whether this article is an Eigenartikel
+	 */
+	public static boolean isEigenartikel(Artikel article) {
+		return Artikel.TYP_EIGENARTIKEL.equals(article.getTyp());
+	}
+
+	/**
 	 * 
 	 * @param eigenartikel
 	 *            an Artikel of {@link Artikel#TYP_EIGENARTIKEL}
@@ -37,7 +45,7 @@ public class ArtikelService extends PersistenceService {
 	 *         or an empty list of not applicable
 	 */
 	public static List<Artikel> eigenartikelGetPackagesForProduct(Artikel eigenartikel) {
-		if (!Artikel.TYP_EIGENARTIKEL.equals(eigenartikel.getTyp())) {
+		if (!isEigenartikel(eigenartikel)) {
 			// not an "Eigenartikel"
 			return Collections.emptyList();
 		}
@@ -69,7 +77,7 @@ public class ArtikelService extends PersistenceService {
 	 * @return
 	 */
 	public static boolean eigenartikelDetermineIfProduct(Artikel article) {
-		if (article != null && Artikel.TYP_EIGENARTIKEL.equals(article.getTyp())) {
+		if (article != null && isEigenartikel(article)) {
 			return (article.getExtId() == null || article.getExtId().length() == 0);
 		}
 		return false;
