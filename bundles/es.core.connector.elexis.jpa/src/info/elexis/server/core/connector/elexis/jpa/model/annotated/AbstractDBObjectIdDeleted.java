@@ -86,6 +86,6 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 
 	@Override
 	public String toString() {
-		return "AbstractDBObjectIdDeleted [id=" + id + ", deleted=" + deleted + "]";
-	};
+		return this.getClass().getSimpleName() + " [id=" + id + ", deleted=" + deleted + "]";
+	}
 }
