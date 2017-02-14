@@ -29,8 +29,8 @@ public class TestEventHandler implements EventHandler {
 			failure = "Event with topic [null]";
 		}
 		if (ElexisEventTopics.PERSISTENCE_EVENT_CREATE.equals(topic)) {
-			String key = event.getProperty(ElexisEventTopics.PROPKEY_CLASS).toString() + StringConstants.DOUBLECOLON
-					+ event.getProperty(ElexisEventTopics.PROPKEY_ID).toString();
+			String key = event.getProperty(ElexisEventTopics.PROPKEY_CLASS) + StringConstants.DOUBLECOLON
+					+ event.getProperty(ElexisEventTopics.PROPKEY_ID);
 			if (singleOccurenceSet.contains(key)) {
 				failure = "Double event occurence of key [" + key + "]";
 			}
@@ -49,8 +49,8 @@ public class TestEventHandler implements EventHandler {
 			try {
 				Thread.sleep(10);
 				count++;
-				if (count > 10) {
-					return null;
+				if (count > 100) {
+					throw new IllegalStateException("Did not receive event");
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

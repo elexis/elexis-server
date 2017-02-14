@@ -121,11 +121,11 @@ public class BillingTest extends AbstractServiceTest {
 		VerrechenbarLabor2009Tarif validLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinValid);
 
 		IStatus status = validLabTarif.add(testBehandlungen.get(0), userContact, mandator);
+		Event event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		assertNotNull(vr);
-		Event event = TestEventHandler.waitforEvent();
 		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
 		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
 
@@ -143,9 +143,7 @@ public class BillingTest extends AbstractServiceTest {
 		VerrechenbarLabor2009Tarif invalidLabTarif = new VerrechenbarLabor2009Tarif(immunglobulinInvalid);
 
 		status = invalidLabTarif.add(testBehandlungen.get(0), userContact, mandator);
-		event = TestEventHandler.waitforEvent();
 		assertTrue(status.getMessage(), !status.isOK());
-		assertNull(event);
 	}
 
 	@Test
