@@ -1,14 +1,19 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import static org.junit.Assert.*;
+
+import java.util.Optional;
+
 import org.junit.Test;
+
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 
 public class UserServiceTest {
 
 	@Test
-	public void testFindAll() {
-//		UserService us = new UserService();
-//		List<User> findAll = us.findAll(true);
-//		assertTrue((findAll.size()>2));
+	public void testLoadAdministratorUser() {
+		Optional<User> admin = UserService.load("Administrator");
+		assertTrue(admin.isPresent());
 	}
 
 }

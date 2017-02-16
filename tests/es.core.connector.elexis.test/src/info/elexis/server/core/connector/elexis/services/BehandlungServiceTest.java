@@ -27,8 +27,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistu
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class BehandlungServiceTest extends AbstractServiceTest {
-
-	private BehandlungService bs = new BehandlungService();
 	
 	@Before
 	public void initialize() {
@@ -146,12 +144,12 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		diagI48_2.setDiagnosisClass("ch.elexis.data.ICD10");
 
 		Behandlung kons = testBehandlungen.get(1);
-		bs.setDiagnosisOnConsultation(kons, diagI48);
+		BehandlungService.setDiagnosisOnConsultation(kons, diagI48);
 
 		assertEquals(1, kons.getDiagnoses().size());
 
 		Behandlung kons2 = testBehandlungen.get(0);
-		bs.setDiagnosisOnConsultation(kons2, diagI48_2);
+		BehandlungService.setDiagnosisOnConsultation(kons2, diagI48_2);
 		assertEquals(1, kons2.getDiagnoses().size());
 
 		assertEquals(kons.getDiagnoses().get(0).getId(), kons2.getDiagnoses().get(0).getId());

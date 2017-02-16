@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import org.junit.AfterClass;
@@ -22,7 +24,7 @@ public class StoreToStringTest {
 	private static ServiceReference<StoreToStringService> serviceRef;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException, SQLException {
 		new TestDatabaseInitializer().initializePatient();
 
 		context = FrameworkUtil.getBundle(KontaktService.class).getBundleContext();

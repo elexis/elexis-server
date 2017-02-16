@@ -1,5 +1,8 @@
 package info.elexis.server.core.connector.elexis;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -18,7 +21,7 @@ public class AllTestsSuite {
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 
 	@BeforeClass
-	public static void setupClass() {
+	public static void setupClass() throws IOException, SQLException {
 		initializer.initializeDb();
 
 		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();

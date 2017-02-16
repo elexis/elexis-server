@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,7 +19,7 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer
 public class UserconfigServiceTest {
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException, SQLException {
 		new TestDatabaseInitializer().initializeMandant();
 	}
 

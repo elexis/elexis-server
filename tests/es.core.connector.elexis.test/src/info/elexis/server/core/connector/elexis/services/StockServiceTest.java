@@ -2,6 +2,8 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -27,7 +29,7 @@ public class StockServiceTest extends AbstractServiceTest {
 	private static String artikel_item2, artikel_item3;
 
 	@BeforeClass
-	public static void init() {
+	public static void init() throws IOException, SQLException {
 		AllTestsSuite.getInitializer().initializeArtikelstamm();
 
 		article_A = ArtikelstammItemService.load(TestEntities.ARTIKELSTAMM_ITEM_PHARMA_ID).get();
