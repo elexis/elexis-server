@@ -15,12 +15,15 @@ import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
+import info.elexis.server.findings.fhir.jpa.model.annotated.Observation;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
+import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestService;
 
@@ -34,10 +37,13 @@ public class FindingsFactory implements IFindingsFactory {
 
 	private ProcedureRequestService procedureRequestService;
 
+	private ObservationService observationService;
+
 	public FindingsFactory() {
 		encounterService = new EncounterService();
 		conditionService = new ConditionService();
 		procedureRequestService = new ProcedureRequestService();
+		observationService = new ObservationService();
 	}
 
 	@Override
@@ -52,8 +58,12 @@ public class FindingsFactory implements IFindingsFactory {
 
 	@Override
 	public IObservation createObservation() {
-		// TODO Auto-generated method stub
-		return null;
+		ObservationModelAdapter ret = new ObservationModelAdapter(observationService.create());
+		org.hl7.fhir.dstu3.model.Observation fhirObservation = new org.hl7.fhir.dstu3.model.Observation();
+		fhirObservation.setId(new IdType(fhirObservation.getClass().getSimpleName(), ret.getId()));
+		ModelUtil.saveResource(fhirObservation, ret);
+		saveFinding(ret);
+		return ret;
 	}
 
 	@Override
@@ -94,6 +104,9 @@ public class FindingsFactory implements IFindingsFactory {
 		} else if (model instanceof ProcedureRequest) {
 			procedureRequestService.write((ProcedureRequest) model);
 			return;
+		} else if (model instanceof Observation) {
+			observationService.write((Observation) model);
+			return;
 		}
 		logger.error("Could not save unknown finding type [" + finding + "]");
 	}
@@ -107,6 +120,9 @@ public class FindingsFactory implements IFindingsFactory {
 			conditionService.delete((Condition) model);
 		} else if (model instanceof ProcedureRequest) {
 			procedureRequestService.delete((ProcedureRequest) model);
+			return;
+		} else if (model instanceof Observation) {
+			observationService.delete((Observation) model);
 			return;
 		}
 		logger.error("Could not delete unknown finding type [" + finding + "]");

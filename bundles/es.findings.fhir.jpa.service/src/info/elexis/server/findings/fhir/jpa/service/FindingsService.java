@@ -18,6 +18,7 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
 import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
@@ -25,6 +26,8 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
+import info.elexis.server.findings.fhir.jpa.model.annotated.Observation;
+import info.elexis.server.findings.fhir.jpa.model.annotated.Observation_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest_;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
@@ -33,6 +36,8 @@ import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
+import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestService;
 import info.elexis.server.findings.fhir.jpa.model.service.internal.DbInitializer;
@@ -53,6 +58,8 @@ public class FindingsService implements IFindingsService {
 	private ConditionService conditionService;
 
 	private ProcedureRequestService procedureRequestService;
+
+	private ObservationService observationService;
 
 	public FindingsService() {
 		factory = new FindingsFactory();
@@ -96,9 +103,9 @@ public class FindingsService implements IFindingsService {
 			// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 			// ret.addAll(getClinicalImpressions(patientId, null));
 			// }
-			// if (filter.isAssignableFrom(IObservation.class)) {
-			// ret.addAll(getObservations(patientId, null));
-			// }
+			if (filter.isAssignableFrom(IObservation.class)) {
+				ret.addAll(getObservations(patientId, null));
+			}
 		}
 		return ret;
 	}
@@ -121,9 +128,9 @@ public class FindingsService implements IFindingsService {
 				// if (filter.isAssignableFrom(IClinicalImpression.class)) {
 				// ret.addAll(getClinicalImpressions(patientId, null));
 				// }
-				// if (filter.isAssignableFrom(IObservation.class)) {
-				// ret.addAll(getObservations(patientId, null));
-				// }
+				if (filter.isAssignableFrom(IObservation.class)) {
+					ret.addAll(getObservations(null, encounter.get().getId()));
+				}
 
 			}
 		}
@@ -170,17 +177,17 @@ public class FindingsService implements IFindingsService {
 		return conditions.parallelStream().map(e -> new ConditionModelAdapter(e)).collect(Collectors.toList());
 	}
 
-	// private List<Observation> getObservations(String patientId, String
-	// encounterId) {
-	// Query<Observation> query = new Query<>(Observation.class);
-	// if (patientId != null) {
-	// query.add(Observation.FLD_PATIENTID, Query.EQUALS, patientId);
-	// }
-	// if (encounterId != null) {
-	// query.add(Observation.FLD_ENCOUNTERID, Query.EQUALS, encounterId);
-	// }
-	// return query.execute();
-	// }
+	private List<ObservationModelAdapter> getObservations(String patientId, String encounterId) {
+		JPAQuery<Observation> query = new JPAQuery<>(Observation.class);
+		if (patientId != null) {
+			query.add(Observation_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+		}
+		if (encounterId != null) {
+			query.add(Observation_.encounterid, JPAQuery.QUERY.EQUALS, encounterId);
+		}
+		List<Observation> observations = query.execute();
+		return observations.parallelStream().map(e -> new ObservationModelAdapter(e)).collect(Collectors.toList());
+	}
 
 	private List<EncounterModelAdapter> getEncounters(String patientId) {
 		if (patientId != null) {
@@ -235,6 +242,10 @@ public class FindingsService implements IFindingsService {
 		if (procedureRequest.isPresent()) {
 			return Optional.of(new ProcedureRequestModelAdapter(procedureRequest.get()));
 		}
+		Optional<Observation> observation = observationService.findById(id);
+		if (observation.isPresent()) {
+			return Optional.of(new ObservationModelAdapter(observation.get()));
+		}
 		return Optional.empty();
 	}
 
@@ -256,6 +267,12 @@ public class FindingsService implements IFindingsService {
 			Optional<ProcedureRequest> procedureRequest = procedureRequestService.findById(id);
 			if (procedureRequest.isPresent()) {
 				return Optional.of(new ProcedureRequestModelAdapter(procedureRequest.get()));
+			}
+		}
+		if (clazz.isAssignableFrom(IObservation.class)) {
+			Optional<Observation> observation = observationService.findById(id);
+			if (observation.isPresent()) {
+				return Optional.of(new ObservationModelAdapter(observation.get()));
 			}
 		}
 		return Optional.empty();
