@@ -83,6 +83,8 @@ public class TestDatabaseInitializer {
 	private static boolean isTarmedInitialized = false;
 	private static boolean isPhysioLeistungInitialized = false;
 
+	private static boolean isAgendaInitialized = false;
+
 	public synchronized void initializeDb() throws IOException, SQLException {
 		if (!isDbInitialized) {
 			// initialize
@@ -107,6 +109,13 @@ public class TestDatabaseInitializer {
 			} else {
 				logger.error("No connection available!");
 			}
+		}
+	}
+
+	public synchronized void initializeAgendaTable() throws IOException, SQLException {
+		initializeDb();
+		if (!isAgendaInitialized) {
+			isAgendaInitialized = initializeDbScript("/rsc/dbScripts/Agenda.sql");
 		}
 	}
 
@@ -135,8 +144,9 @@ public class TestDatabaseInitializer {
 	/**
 	 * Initializes an intrinsic consistent set of LabItems, LabResults and
 	 * LabOrders
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 */
 	public synchronized void initializeLaborItemsOrdersResults() throws IOException, SQLException {
 		initializeDb();
@@ -216,8 +226,9 @@ public class TestDatabaseInitializer {
 	 * <li>Street: Street 1</li>
 	 * <li>Xid AHV: 756...</li>
 	 * <li>Diagnosen: Test Diagnose 1\nTest Diagnose 2</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 * 
 	 */
 	public synchronized void initializePatient() throws IOException, SQLException {
@@ -284,8 +295,9 @@ public class TestDatabaseInitializer {
 	 * <li>City: City</li>
 	 * <li>Zip: 123</li>
 	 * <li>Street: Street 10</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 * 
 	 */
 	public synchronized void initializeOrganization() throws IOException, SQLException {
@@ -325,8 +337,9 @@ public class TestDatabaseInitializer {
 	 * <li>Street: Street 100</li>
 	 * <li>EAN: 2000000000002</li>
 	 * <li>KSK: C000002</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 * 
 	 */
 	public synchronized void initializeMandant() throws IOException, SQLException {
@@ -381,8 +394,9 @@ public class TestDatabaseInitializer {
 	 * </li>
 	 * <li>Patient: see {@link TestDatabaseInitializer#initializePatient()}</li>
 	 * <li>Dosage: 1-1-1-1</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 * 
 	 */
 	public synchronized void initializePrescription() throws IOException, SQLException {
@@ -413,8 +427,9 @@ public class TestDatabaseInitializer {
 	 * </li>
 	 * <li>VersNummer: 1234-5678</li>
 	 * <li>DatumVon: 1.9.2016</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 */
 	public synchronized void initializeFall() throws IOException, SQLException {
 		if (!isPatientInitialized) {
@@ -444,8 +459,9 @@ public class TestDatabaseInitializer {
 	 * <li>Patient: {@link TestDatabaseInitializer#getPatient()}</li>
 	 * <li>ServiceProvider: {@link TestDatabaseInitializer#getMandant()}</li>
 	 * <li>Datum: 21.9.2016</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 */
 	public void initializeBehandlung() throws IOException, SQLException {
 		if (!isMandantInitialized) {
@@ -471,8 +487,9 @@ public class TestDatabaseInitializer {
 
 	/**
 	 * Initialize a test LabResults.
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 * 
 	 */
 	public synchronized void initializeLabResult() throws IOException, SQLException {
@@ -525,8 +542,9 @@ public class TestDatabaseInitializer {
 	 * <li>GTIN: 7680336700282</li>
 	 * <li>Pharm: 58985</li>
 	 * <li>Desc: ASPIRIN C Brausetabl 10 Stk</li>
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * 
+	 * @throws SQLException
+	 * @throws IOException
 	 * 
 	 */
 	public synchronized void initializeArtikelstamm() throws IOException, SQLException {

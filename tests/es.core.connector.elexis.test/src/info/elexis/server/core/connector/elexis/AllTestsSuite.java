@@ -25,6 +25,7 @@ public class AllTestsSuite {
 		initializer.initializeDb();
 
 		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();
+		AllTestsSuite.getInitializer().initializeAgendaTable();
 		AllTestsSuite.getInitializer().initializeArzttarifePhysioLeistungTables();
 		AllTestsSuite.getInitializer().initializeTarmedTables();
 		AllTestsSuite.getInitializer().initializeLaborItemsOrdersResults();
