@@ -6,6 +6,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +31,7 @@ public class MedicationOrderTest {
 	private static Patient patient;
 
 	@BeforeClass
-	public static void setupClass() {
+	public static void setupClass() throws IOException, SQLException {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializePrescription();
 

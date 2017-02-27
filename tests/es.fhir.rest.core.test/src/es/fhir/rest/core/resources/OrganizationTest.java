@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Address;
@@ -24,7 +26,7 @@ public class OrganizationTest {
 	private static IGenericClient client;
 
 	@BeforeClass
-	public static void setupClass() {
+	public static void setupClass() throws IOException, SQLException {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeOrganization();
 

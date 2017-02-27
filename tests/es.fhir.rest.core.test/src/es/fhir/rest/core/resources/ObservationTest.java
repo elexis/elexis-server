@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -29,7 +31,7 @@ public class ObservationTest {
 	private static IGenericClient client;
 
 	@BeforeClass
-	public static void setupClass() {
+	public static void setupClass() throws IOException, SQLException {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeLabResult();
 
