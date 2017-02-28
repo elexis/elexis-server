@@ -54,7 +54,7 @@ public class LabResultHelper extends AbstractHelper {
 	}
 
 	public boolean isLongText(LabResult localObject) {
-		String resultValue = localObject.getResult();
+		String resultValue = localObject.getResult().trim().replaceAll("[()]", "");
 		String resultComment = localObject.getComment();
 		if (resultValue != null && localObject.getItem().getTyp() == LabItemTyp.TEXT
 				&& resultValue.equalsIgnoreCase("text")
@@ -92,8 +92,14 @@ public class LabResultHelper extends AbstractHelper {
 		String localRef = null;
 		if (localObject.getPatient().getGender() == Gender.FEMALE) {
 			localRef = localObject.getRefFemale();
+			if (localRef == null) {
+				localRef = localObject.getItem().getReferenceFemale();
+			}
 		} else {
 			localRef = localObject.getRefMale();
+			if (localRef == null) {
+				localRef = localObject.getItem().getReferenceMale();
+			}
 		}
 		if (localRef != null) {
 			ObservationReferenceRangeComponent comp = new ObservationReferenceRangeComponent();

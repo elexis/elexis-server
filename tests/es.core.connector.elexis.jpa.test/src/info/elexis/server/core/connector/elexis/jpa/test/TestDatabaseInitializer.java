@@ -501,9 +501,14 @@ public class TestDatabaseInitializer {
 			laboratory.setDescription2("Test");
 			PersistenceService.save(laboratory);
 
-			labItem = (LabItem) new LabItemService.Builder("TEST", "Test Laboratory", laboratory, ">1", "3-3.5", "unit",
+			labItem = (LabItem) new LabItemService.Builder("TEST NUMERIC", "Test Laboratory", laboratory, ">1", "3-3.5",
+					"unit",
 					LabItemTyp.NUMERIC, "group", 1).build();
 			labItem.setExport("vitolabkey:1,2");
+			LabItemService.save(labItem);
+
+			LabItem textLabItem = (LabItem) new LabItemService.Builder("TEST TEXT", "Test Laboratory", laboratory, null,
+					null, "unit", LabItemTyp.TEXT, "group", 2).build();
 			LabItemService.save(labItem);
 
 			LabResult labResult = new LabResultService.Builder(labItem, patient).build();
@@ -519,12 +524,18 @@ public class TestDatabaseInitializer {
 			labResults.add(labResult);
 
 			labResult = new LabResultService.Builder(labItem, patient).build();
-			labResult.setItem(labItem);
-			labResult.setPatient(patient);
 			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 15, 10, 10, 30));
 			labResult.setOriginId(laboratory.getId());
 			labResult.setResult("2");
 			labResult.setComment("no comment");
+			LabResultService.save(labResult);
+			labResults.add(labResult);
+
+			labResult = new LabResultService.Builder(textLabItem, patient).build();
+			labResult.setObservationtime(LocalDateTime.of(2017, Month.FEBRUARY, 28, 10, 02, 23));
+			labResult.setOriginId(laboratory.getId());
+			labResult.setResult("(Text)");
+			labResult.setComment("The Text Result ...");
 			LabResultService.save(labResult);
 			labResults.add(labResult);
 

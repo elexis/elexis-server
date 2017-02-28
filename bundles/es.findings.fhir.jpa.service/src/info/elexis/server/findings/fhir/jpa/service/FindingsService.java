@@ -66,6 +66,7 @@ public class FindingsService implements IFindingsService {
 		encounterService = new EncounterService();
 		conditionService = new ConditionService();
 		procedureRequestService = new ProcedureRequestService();
+		observationService = new ObservationService();
 	}
 
 	@Activate

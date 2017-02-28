@@ -10,12 +10,17 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Observation.ObservationReferenceRangeComponent;
+import org.hl7.fhir.dstu3.model.Quantity;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -98,30 +103,33 @@ public class ObservationTest {
 	}
 
 	@Test
-	public void createObservation() {
-
-	}
-
-	/**
-	 * Test all properties set by
-	 * {@link TestDatabaseInitializer#initializeBehandlung()}.
-	 */
-	@Test
-	public void getObservationProperties() {
-		List<LabResult> labResults = TestDatabaseInitializer.getLabResults();
-
-		Observation readObservation = client.read().resource(Observation.class)
-				.withId(labResults.get(0).getId()).execute();
-		assertNotNull(readObservation);
-		
-		List<ObservationReferenceRangeComponent> refs = readObservation.getReferenceRange();
-		assertFalse(refs.isEmpty());
-
-		// readObservation =
-		// client.read().resource(Observation.class).withId(labResults.get(1).getId()).execute();
-		// assertNotNull(readObservation);
-		//
-		// refs = readObservation.getReferenceRange();
-		// assertFalse(refs.isEmpty());
+	public void lobaratoryObservations() throws FHIRException {
+		// search by patient and category
+		Bundle results = client.search().forResource(Observation.class)
+				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.and(Condition.CATEGORY.exactly().code("laboratory")).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		assertFalse(results.getEntry().isEmpty());
+		@SuppressWarnings("unchecked")
+		List<Observation> observations = (List<Observation>) ((List<?>) results.getEntry().parallelStream()
+				.map(be -> be.getResource()).collect(Collectors.toList()));
+		for (Observation observation : observations) {
+			assertTrue(observation.hasEffectiveDateTimeType());
+			assertTrue(observation.hasValue());
+			assertNotNull(observation.getCode());
+			List<Coding> coding = observation.getCode().getCoding();
+			assertFalse(coding.isEmpty());
+			for (Coding code : coding) {
+				if (code.getCode().contains("NUMERIC")) {
+					Quantity quantityValue = observation.getValueQuantity();
+					assertNotNull(quantityValue);
+					List<ObservationReferenceRangeComponent> refs = observation.getReferenceRange();
+					assertFalse(refs.isEmpty());
+				} else if (code.getCode().contains("TEXT")) {
+					StringType stringValue = observation.getValueStringType();
+					assertNotNull(stringValue);
+				}
+			}
+		}
 	}
 }
