@@ -38,7 +38,7 @@ public class LabResultHelper extends AbstractHelper {
 				getComparator(result).ifPresent(comp -> qty.setComparator(comp));
 				return qty;
 			} else {
-				return new StringType(result + " " + Optional.ofNullable(localObject.getUnit()).orElse(""));
+				return new StringType(result + " " + localObject.getUnit() != null ? localObject.getUnit() : "");
 			}
 		} else {
 			if (localObject.getItem().getTyp() == LabItemTyp.TEXT) {
@@ -147,5 +147,12 @@ public class LabResultHelper extends AbstractHelper {
 		LabItem item = localObject.getItem();
 		ret.addCoding(new Coding(CodingSystem.ELEXIS_LOCAL_LABORATORY.getSystem(), item.getKuerzel(), item.getName()));
 		return ret;
+	}
+
+	public String getComment(LabResult localObject) {
+		if (!isLongText(localObject)) {
+			return localObject.getComment();
+		}
+		return "";
 	}
 }

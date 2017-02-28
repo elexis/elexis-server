@@ -42,6 +42,8 @@ public class ObservationLabResultTransformer implements IFhirTransformer<Observa
 
 		observation.setCode(labResultHelper.getCodeableConcept(localObject));
 
+		observation.setComment(labResultHelper.getComment(localObject));
+
 		return Optional.of(observation);
 	}
 
