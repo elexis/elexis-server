@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -50,7 +51,7 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
                 inverseJoinColumns=
                      @JoinColumn(name="ID")
     )
-	protected Collection<Role> roles;
+	protected Collection<Role> roles = new HashSet<>();
 
 	public Kontakt getKontakt() {
 		return kontakt;
