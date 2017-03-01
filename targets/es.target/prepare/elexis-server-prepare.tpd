@@ -74,6 +74,8 @@ location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/" {
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
 	com.eclipsesource.jaxrs.provider.gson.feature.feature.group
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group
+	com.eclipsesource.jaxrs.provider.swagger.feature.feature.group
+	com.eclipsesource.jaxrs.provider.multipart.feature.feature.group
 }
 
 // RAP e4 target https://wiki.eclipse.org/RAP/E4
@@ -150,6 +152,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	ognl
 	org.attoparser
 	org.unbescape
+	com.auth0.java-jwt
 }
 
 // RestFuse
