@@ -30,6 +30,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
+import info.elexis.server.core.connector.elexis.services.UserService;
 
 @Component(immediate = true)
 public class PractitionerResourceProvider implements IFhirResourceProvider {
@@ -123,11 +124,15 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	}
 
 	private List<Practitioner> getAllPractitioners() {
+		// all Kontakt marked as user
 		JPAQuery<Kontakt> query = new JPAQuery<>(Kontakt.class);
-		query.add(Kontakt_.mandator, QUERY.EQUALS, true);
+		query.add(Kontakt_.user, QUERY.EQUALS, true);
 		List<Kontakt> practitioners = query.execute();
 		List<Practitioner> ret = new ArrayList<Practitioner>();
 		if (!practitioners.isEmpty()) {
+			// only Kontakt with existing user entry
+			practitioners = practitioners.stream().filter(kontakt -> UserService.findByKontakt(kontakt).isPresent())
+					.collect(Collectors.toList());
 			for (Kontakt practitioner : practitioners) {
 				Optional<Practitioner> fhirPractitioner = getTransformer().getFhirObject(practitioner);
 				fhirPractitioner.ifPresent(fp -> ret.add(fp));
