@@ -36,7 +36,7 @@ public class KontaktHelper extends AbstractHelper {
 			humanName.setUse(NameUse.OFFICIAL);
 			ret.add(humanName);
 		}
-		if (kontakt.isMandator()) {
+		if (kontakt.isUser()) {
 			Optional<User> userLocalObject = UserService.findByKontakt(kontakt);
 			if (userLocalObject.isPresent()) {
 				HumanName sysName = new HumanName();
