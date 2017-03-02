@@ -39,7 +39,7 @@ public enum StoreToStringService {
 		String id = split[1];
 		Class<? extends AbstractDBObjectIdDeleted> clazz = ElexisTypeMap.get(className);
 		if (clazz == null) {
-			log.warn("Could not resolve class {}", className);
+			log.warn("Could not resolve class [{}] from [{}]", className, storeToString);
 			return Optional.empty();
 		}
 
