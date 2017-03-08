@@ -142,11 +142,16 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		diagI48_2.setCode("I48");
 		diagI48_2.setText("Vorhofflattern und Vorhofflimmern");
 		diagI48_2.setDiagnosisClass("ch.elexis.data.ICD10");
+		
+		Diagnosis diagTCE7 = new Diagnosis();
+		diagTCE7.setCode("E7");
+		diagTCE7.setText("Hernien");
+		diagTCE7.setDiagnosisClass("ch.elexis.data.TICode");
 
 		Behandlung kons = testBehandlungen.get(1);
 		BehandlungService.setDiagnosisOnConsultation(kons, diagI48);
-
-		assertEquals(1, kons.getDiagnoses().size());
+		BehandlungService.setDiagnosisOnConsultation(kons, diagTCE7);
+		assertEquals(2, kons.getDiagnoses().size());
 
 		Behandlung kons2 = testBehandlungen.get(0);
 		BehandlungService.setDiagnosisOnConsultation(kons2, diagI48_2);
