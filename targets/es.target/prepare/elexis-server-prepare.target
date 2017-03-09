@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1488459646">
+<target name="Elexis-Server" sequenceNumber="1489064733">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.2.0.a20170210-1542"/>
-      <unit id="ch.elexis.core" version="3.2.0.a20170224-1402"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.a20170111-1614"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20170107-1517"/>
-      <unit id="ch.elexis.core.findings" version="1.0.0.a20161214-0904"/>
-      <unit id="ch.elexis.core.findings.util" version="1.0.0.a20161130-2018"/>
+      <unit id="ch.rgw.utility" version="3.2.0.b20170210-1542"/>
+      <unit id="ch.elexis.core" version="3.2.0.b20170224-1402"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.b20170111-1614"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.b20170107-1517"/>
+      <unit id="ch.elexis.core.findings" version="1.0.0.b20161214-0904"/>
+      <unit id="ch.elexis.core.findings.util" version="1.0.0.b20161130-2018"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.0"/>
@@ -20,13 +20,13 @@
       <unit id="ca.uhn.hapi.osgi-base" version="1.2.0"/>
       <unit id="org.apache.poi" version="3.0.2.FINAL"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
-      <repository location="http://download.elexis.info/elexis.3.core/snapshot/"/>
+      <repository location="http://download.elexis.info/elexis.3.core/beta/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.a20161116-1732"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.a20161229-1720"/>
-      <unit id="at.medevit.atc_codes" version="3.1.0.a20160519-0702"/>
-      <repository location="http://download.elexis.info/elexis.3.base/snapshot/"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.b20161116-1732"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.b20161229-1720"/>
+      <unit id="at.medevit.atc_codes" version="3.1.0.b20160519-0702"/>
+      <repository location="http://download.elexis.info/elexis.3.base/beta/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
