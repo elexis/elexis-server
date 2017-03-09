@@ -153,6 +153,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.attoparser
 	org.unbescape
 	com.auth0.java-jwt
+	org.slf4j.osgi-over-slf4j
 }
 
 // RestFuse
