@@ -150,6 +150,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 
 		Behandlung kons = testBehandlungen.get(1);
 		BehandlungService.setDiagnosisOnConsultation(kons, diagI48);
+		BehandlungService.setDiagnosisOnConsultation(kons, diagI48);
 		BehandlungService.setDiagnosisOnConsultation(kons, diagTCE7);
 		assertEquals(2, kons.getDiagnoses().size());
 
@@ -157,7 +158,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		BehandlungService.setDiagnosisOnConsultation(kons2, diagI48_2);
 		assertEquals(1, kons2.getDiagnoses().size());
 
-		assertEquals(kons.getDiagnoses().get(0).getId(), kons2.getDiagnoses().get(0).getId());
+		assertTrue(kons.getDiagnoses().contains(kons2.getDiagnoses().toArray(new Diagnosis[0])[0]));
 
 		JPAQuery<Diagnosis> qre = new JPAQuery<>(Diagnosis.class);
 		qre.add(Diagnosis_.code, QUERY.EQUALS, diagI48.getCode());

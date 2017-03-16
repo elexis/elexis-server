@@ -1,7 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -38,7 +38,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 
 	@OneToMany
 	@JoinTable(name = "behdl_dg_joint", joinColumns = @JoinColumn(name = "BehandlungsID"), inverseJoinColumns = @JoinColumn(name = "DiagnoseID"))
-	private List<Diagnosis> diagnoses;
+	private Set<Diagnosis> diagnoses;
 
 	@Column(length = 25, name = "leistungen")
 	private String leistungenId;
@@ -82,11 +82,11 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 		this.datum = datum;
 	}
 
-	public List<Diagnosis> getDiagnoses() {
+	public Set<Diagnosis> getDiagnoses() {
 		return diagnoses;
 	}
 
-	public void setDiagnoses(List<Diagnosis> diagnoses) {
+	public void setDiagnoses(Set<Diagnosis> diagnoses) {
 		this.diagnoses = diagnoses;
 	}
 
