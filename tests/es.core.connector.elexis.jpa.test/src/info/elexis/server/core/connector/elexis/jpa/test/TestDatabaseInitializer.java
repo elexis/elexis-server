@@ -356,6 +356,7 @@ public class TestDatabaseInitializer {
 			mandant.setCity("City");
 			mandant.setZip("123");
 			mandant.setStreet("Street 100");
+			mandant.setUser(true);
 			PersistenceService.save(mandant);
 
 			User user = new UserService.Builder("tst", mandant).buildAndSave();
@@ -528,6 +529,14 @@ public class TestDatabaseInitializer {
 			labResult.setOriginId(laboratory.getId());
 			labResult.setResult("2");
 			labResult.setComment("no comment");
+			LabResultService.save(labResult);
+			labResults.add(labResult);
+
+			labResult = new LabResultService.Builder(labItem, patient).build();
+			labResult.setObservationtime(LocalDateTime.of(2017, Month.FEBRUARY, 28, 12, 59, 23));
+			labResult.setOriginId(laboratory.getId());
+			labResult.setResult("124/79");
+			labResult.setUnit("Bloodpressure");
 			LabResultService.save(labResult);
 			labResults.add(labResult);
 
