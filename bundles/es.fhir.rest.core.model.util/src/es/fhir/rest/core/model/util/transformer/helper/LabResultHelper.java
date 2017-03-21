@@ -38,7 +38,7 @@ public class LabResultHelper extends AbstractHelper {
 				getComparator(result).ifPresent(comp -> qty.setComparator(comp));
 				return qty;
 			} else {
-				return new StringType(result + " " + localObject.getUnit() != null ? localObject.getUnit() : "");
+				return new StringType(result + " " + (localObject.getUnit() != null ? localObject.getUnit() : ""));
 			}
 		} else {
 			if (localObject.getItem().getTyp() == LabItemTyp.TEXT) {

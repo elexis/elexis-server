@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -121,8 +122,16 @@ public class ObservationTest {
 			assertFalse(coding.isEmpty());
 			for (Coding code : coding) {
 				if (code.getCode().contains("NUMERIC")) {
-					Quantity quantityValue = observation.getValueQuantity();
-					assertNotNull(quantityValue);
+					if (observation.hasValueQuantity()) {
+						Quantity quantityValue = observation.getValueQuantity();
+						assertNotNull(quantityValue);
+					} else if (observation.hasValueStringType()) {
+						StringType stringValue = observation.getValueStringType();
+						assertNotNull(stringValue);
+						assertTrue(Character.isDigit(stringValue.toString().charAt(0)));
+					} else {
+						fail("Unexpected vaue type" + observation.getValue());
+					}
 					List<ObservationReferenceRangeComponent> refs = observation.getReferenceRange();
 					assertFalse(refs.isEmpty());
 				} else if (code.getCode().contains("TEXT")) {
