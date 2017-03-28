@@ -47,7 +47,13 @@ public class ElexisEntityManager {
 
 	@Activate
 	protected synchronized void activate() {
-		initializeEntityManager();
+		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
+		if (!connection.isPresent()) {
+			log.error("No elexis-connection available, not initialization EntityManager");
+			return;
+		}
+		
+		initializeEntityManager(connection.get());
 		if (!ElexisDBConnection.isTestMode()) {
 			executeStartupTasksRequiringEntityManager();
 		}
@@ -58,19 +64,13 @@ public class ElexisEntityManager {
 		ElexisEntityManager.factoryBuilder = null;
 	}
 
-	private void initializeEntityManager() {
-		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
-		if (!connection.isPresent()) {
-			log.error("No elexis-connection available, not initialization EntityManager");
-			return;
-		}
-
+	private void initializeEntityManager(DBConnection connection) {
 		HashMap<String, Object> props = new HashMap<String, Object>();
 		try {
-			props.put(JDBC_DRIVER, connection.get().rdbmsType.driverName);
-			props.put(JDBC_URL, connection.get().connectionString);
-			props.put(JDBC_USER, connection.get().username);
-			props.put(JDBC_PASSWORD, connection.get().password);
+			props.put(JDBC_DRIVER, connection.rdbmsType.driverName);
+			props.put(JDBC_URL, connection.connectionString);
+			props.put(JDBC_USER, connection.username);
+			props.put(JDBC_PASSWORD, connection.password);
 			props.put(DDL_GENERATION, NONE);
 			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=379397
 			props.put(CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, Boolean.TRUE.toString());
@@ -97,9 +97,9 @@ public class ElexisEntityManager {
 		Locale locale = Locale.getDefault();
 		String dbStoredLocale = ConfigService.INSTANCE.get(Preferences.CFG_LOCALE, null);
 		if (dbStoredLocale == null || !locale.toString().equals(dbStoredLocale)) {
+			System.out.println("System locale does not match required database locale!");
 			log.error("System locale [{}] does not match required database locale [{}].", locale.toString(),
 					dbStoredLocale);
-			System.out.println("System locale does not match required database locale!");
 		}
 	}
 

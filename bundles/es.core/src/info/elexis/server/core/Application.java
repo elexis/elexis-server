@@ -1,4 +1,4 @@
-package info.elexis.server.core.internal;
+package info.elexis.server.core;
 
 import java.io.File;
 import java.util.Date;
@@ -22,11 +22,10 @@ public class Application implements IApplication {
 
 	private static Logger log = LoggerFactory.getLogger(Application.class);
 
-	private boolean restart;
-	private boolean shutdown;
-	private boolean force;
+	private static boolean restart;
+	private static boolean shutdown;
+	private static boolean force;
 
-	private static Application instance;
 	private static final Date startTime = new Date();
 
 	private File singleInstanceLockFile;
@@ -34,7 +33,6 @@ public class Application implements IApplication {
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		log.info("Starting " + Application.class.getName() + "...");
-		instance = this;
 
 		TimeZone tzone = TimeZone.getTimeZone("CET");
 		TimeZone.setDefault(tzone);
@@ -65,7 +63,7 @@ public class Application implements IApplication {
 		return IApplication.EXIT_OK;
 	}
 
-	private String checkVeto() {
+	private static String checkVeto() {
 		Set<IApplicationShutdownListener> shutdownListeners = ApplicationShutdownRegistrar
 				.getApplicationShutdownListeners();
 		for (IApplicationShutdownListener ias : shutdownListeners) {
@@ -88,10 +86,6 @@ public class Application implements IApplication {
 	public void stop() {
 	}
 
-	public static Application getInstance() {
-		return instance;
-	}
-
 	/**
 	 * Restart the server
 	 * 
@@ -99,13 +93,13 @@ public class Application implements IApplication {
 	 * @return <code>null</code> if restart initiated, or a veto reason denying
 	 *         the request
 	 */
-	public String restart(boolean force) {
+	public static String restart(boolean force) {
 		String veto = checkVeto();
 		if (veto != null && !force) {
 			return veto;
 		}
 		restart = true;
-		this.force = force;
+		Application.force = force;
 		return null;
 	}
 
@@ -116,13 +110,13 @@ public class Application implements IApplication {
 	 * @return <code>null</code> if shutdown initiated, or a veto reason denying
 	 *         the request
 	 */
-	public String shutdown(boolean force) {
+	public static String shutdown(boolean force) {
 		String veto = checkVeto();
 		if (veto != null && !force) {
 			return veto;
 		}
 		shutdown = true;
-		this.force = force;
+		Application.force = force;
 		return null;
 	}
 

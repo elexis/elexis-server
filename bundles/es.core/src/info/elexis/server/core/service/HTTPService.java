@@ -21,7 +21,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.internal.Application;
+import info.elexis.server.core.Application;
 import info.elexis.server.core.scheduler.SchedulerService;
 import info.elexis.server.core.scheduler.SchedulerStatus;
 import info.elexis.server.core.security.HTTPAuthHandler;
@@ -63,7 +63,7 @@ public class HTTPService {
 	@Path(HALT)
 	@RolesAllowed("admin")
 	public Response haltApplication() {
-		Application.getInstance().shutdown(false);
+		Application.shutdown(false);
 		return Response.ok().build();
 	}
 
@@ -71,7 +71,7 @@ public class HTTPService {
 	@Path(RESTART)
 	@RolesAllowed("admin")
 	public Response restartApplication() {
-		Application.getInstance().restart(false);
+		Application.restart(false);
 		return Response.ok().build();
 	}
 

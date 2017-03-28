@@ -13,6 +13,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+import info.elexis.server.core.Application;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 import info.elexis.server.core.scheduler.SchedulerService;
 
@@ -32,7 +33,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		if (args.hasNext()) {
 			force = "force".equals(args.next());
 		}
-		String vetoReason = Application.getInstance().shutdown(force);
+		String vetoReason = Application.shutdown(force);
 		return (vetoReason != null) ? vetoReason : ok();
 	}
 
@@ -41,7 +42,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		if (args.hasNext()) {
 			force = "force".equals(args.next());
 		}
-		String vetoReason = Application.getInstance().restart(force);
+		String vetoReason = Application.restart(force);
 		return (vetoReason != null) ? vetoReason : ok();
 	}
 

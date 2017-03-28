@@ -16,6 +16,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-BundleShape: dir
 Meta-Persistence: META-INF/persistence.xml
 JPA-PersistenceUnits: elexis
+Require-Capability: osgi.extender;
+ filter:="(&(osgi.extender=osgi.jpa)(version>=1.0))"
 Export-Package: info.elexis.server.core.connector.elexis.jpa,
  info.elexis.server.core.connector.elexis.jpa.model.annotated,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.converter,
