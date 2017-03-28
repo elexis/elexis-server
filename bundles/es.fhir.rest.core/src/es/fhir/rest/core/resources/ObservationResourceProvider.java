@@ -2,11 +2,15 @@ package es.fhir.rest.core.resources;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.eclipse.persistence.queries.ScrollableCursor;
 import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.CodeType;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -109,13 +113,17 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 							.equalsIgnoreCase(CodeTypeUtil.getCode(categoryCode).orElse(""))) {
 						JPAQuery<LabResult> resultQuery = new JPAQuery<>(LabResult.class);
 						resultQuery.add(LabResult_.patient, QUERY.EQUALS, patient.get());
-						List<LabResult> results = resultQuery.execute();
-						for (LabResult labResult : results) {
+						ScrollableCursor cursor = resultQuery.executeAsStream();
+						while (cursor.hasNext()) {
+							LabResult labResult = (LabResult) cursor.next();
 							Optional<Observation> fhirObservation = getLabTransformer().getFhirObject(labResult);
 							if (fhirObservation.isPresent()) {
 								ret.add(fhirObservation.get());
 							}
+							cursor.clear();
 						}
+						cursor.close();
+						ret = sortLaboratory(ret);
 					}
 					// all other observations
 					List<IFinding> findings = findingsService.getPatientsFindings(theSubjectId.getIdPart(),
@@ -143,6 +151,23 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	private List<Observation> sortLaboratory(List<Observation> ret) {
+	    Comparator<Observation> byGroup = (o1, o2) -> 
+	    	getElexisGroupCodingString(o1).compareTo(getElexisGroupCodingString(o2));
+
+	    return ret.stream().sorted(byGroup).collect(Collectors.toList());
+	}
+
+	private String getElexisGroupCodingString(Observation observation) {
+		List<Coding> codings = observation.getCode().getCoding();
+		for (Coding coding : codings) {
+			if (coding.getSystem().equals(CodingSystem.ELEXIS_LOCAL_LABORATORY_GROUP.getSystem())) {
+				return coding.getCode();
+			}
+		}
+		return "";
 	}
 
 	private List<Observation> filterCode(List<Observation> observations, CodeType code) {
