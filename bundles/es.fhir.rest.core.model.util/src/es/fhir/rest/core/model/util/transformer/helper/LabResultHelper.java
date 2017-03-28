@@ -57,8 +57,7 @@ public class LabResultHelper extends AbstractHelper {
 		String resultValue = localObject.getResult().trim().replaceAll("[()]", "");
 		String resultComment = localObject.getComment();
 		if (resultValue != null && localObject.getItem().getTyp() == LabItemTyp.TEXT
-				&& resultValue.equalsIgnoreCase("text")
-				&& resultComment != null && !resultComment.isEmpty()) {
+				&& resultValue.equalsIgnoreCase("text") && resultComment != null && !resultComment.isEmpty()) {
 			return true;
 		}
 		return false;
@@ -146,6 +145,8 @@ public class LabResultHelper extends AbstractHelper {
 		CodeableConcept ret = new CodeableConcept();
 		LabItem item = localObject.getItem();
 		ret.addCoding(new Coding(CodingSystem.ELEXIS_LOCAL_LABORATORY.getSystem(), item.getKuerzel(), item.getName()));
+		ret.addCoding(new Coding(CodingSystem.ELEXIS_LOCAL_LABORATORY_GROUP.getSystem(),
+				item.getGroup() + "/" + item.getPriority(), item.getGroup()));
 		return ret;
 	}
 
