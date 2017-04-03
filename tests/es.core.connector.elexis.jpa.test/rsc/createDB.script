@@ -484,6 +484,8 @@ CREATE INDEX laborder2 ON LABORDER (mandant);
 CREATE INDEX laborder3 ON LABORDER (patient);
 CREATE INDEX laborder4 ON LABORDER (orderid);
 	
+INSERT INTO LABORDER (ID, userid) VALUES ('VERSION', '1.3.0');
+	
 CREATE INDEX labit1 on LABORITEMS(kuerzel);
 CREATE INDEX labit2 on LABORITEMS(laborID);
 

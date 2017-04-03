@@ -13,11 +13,13 @@ import org.eclipse.persistence.queries.ScrollableCursor;
 import org.junit.Test;
 
 import ch.elexis.core.types.Gender;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
@@ -180,6 +182,11 @@ public class JPAQueryTest {
 		qbeC.add(Kontakt_.country, QUERY.NOT_EQUALS, null);
 		long count = qbeC.count();
 		assertEquals(2, count);
+
+		JPAQuery<LabOrder> qbeO = new JPAQuery<LabOrder>(LabOrder.class);
+		count = qbeO.count();
+		qbeO.add(AbstractDBObjectIdDeleted_.id, QUERY.NOT_EQUALS, "VERSION");
+		assertEquals(count - 1, qbeO.count());
 	}
 
 	@Test
