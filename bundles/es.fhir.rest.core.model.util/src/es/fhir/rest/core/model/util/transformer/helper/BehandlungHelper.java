@@ -11,6 +11,7 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 
 import ch.elexis.core.findings.IEncounter;
+import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.FallConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -53,7 +54,18 @@ public class BehandlungHelper extends AbstractHelper {
 	}
 
 	private static Fall createDefaultFall(Kontakt kontakt) {
-		return new FallService.Builder(kontakt, "online", FallConstants.TYPE_DISEASE, "KVG").buildAndSave();
+		Fall ret = new FallService.Builder(kontakt, "online", FallConstants.TYPE_DISEASE, "KVG").buildAndSave();
+		closeFall(ret);
+		return ret;
+	}
+
+	private static void closeFall(Fall fall) {
+		Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(fall);
+		if (lockInfo.isPresent()) {
+			fall.setDatumBis(fall.getDatumVon());
+			FallService.save(fall);
+			AbstractHelper.releaseLock(lockInfo.get());
+		}
 	}
 
 	private static Fall lookUpDefaultFall(List<Fall> faelle) {
@@ -68,6 +80,12 @@ public class BehandlungHelper extends AbstractHelper {
 						ret = fall;
 					}
 				}
+			}
+		}
+		if (ret != null) {
+			// make sure default fall is closed
+			if (ret.getDatumBis() == null) {
+				closeFall(ret);
 			}
 		}
 		return ret;
