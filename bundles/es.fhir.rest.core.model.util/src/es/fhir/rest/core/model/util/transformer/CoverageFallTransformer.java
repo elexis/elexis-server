@@ -70,7 +70,7 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 						.load(fhirObject.getBeneficiaryReference().getReferenceElement().getIdPart());
 				Optional<String> type = fallHelper.getType(fhirObject);
 				if (patient.isPresent() && type.isPresent()) {
-					Fall created = new FallService.Builder(patient.get(), "online", FallConstants.TYPE_DISEASE,
+					Fall created = new FallService.Builder(patient.get(), "online created", FallConstants.TYPE_DISEASE,
 							type.get()).buildAndSave();
 					String bin = fhirObject.getBin();
 					if (bin != null) {
