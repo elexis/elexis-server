@@ -4,12 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.After;
@@ -22,11 +28,11 @@ import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
-
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
@@ -35,6 +41,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet_;
 import info.elexis.server.core.connector.elexis.jpa.test.eventHandler.TestEventHandler;
 import info.elexis.server.core.connector.elexis.services.AbstractServiceTest;
 import info.elexis.server.core.connector.elexis.services.ArtikelService;
@@ -58,6 +65,9 @@ public class BillingTest extends AbstractServiceTest {
 	private Verrechnet vr;
 
 	private TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
+	private TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null).get();
+	private TarmedLeistung code_000140 = TarmedLeistungService.findFromCode("00.0140", null).get();
+	private TarmedLeistung code_000510 = TarmedLeistungService.findFromCode("00.0510", null).get();
 
 	@BeforeClass
 	public static void init() {
@@ -68,12 +78,13 @@ public class BillingTest extends AbstractServiceTest {
 		assertTrue(!mandants.isEmpty());
 		mandator = mandants.get(0);
 		userContact = mandator;
-		
+
 		PersistenceService.setThreadLocalUserId("testUserId");
 	}
 
 	@Before
 	public void before() {
+		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
@@ -99,7 +110,7 @@ public class BillingTest extends AbstractServiceTest {
 		TestEventHandler.assertCreateEvent(event, ElexisTypeMap.TYPE_VERRECHNET);
 		assertEquals(vr.getId(), event.getProperty(ElexisEventTopics.PROPKEY_ID));
 		assertEquals("testUserId", event.getProperty(ElexisEventTopics.PROPKEY_USER));
-		
+
 		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(vr.getBehandlung());
 		assertTrue(allVerrechnet.size() > 0);
 		boolean contains = false;
@@ -537,5 +548,56 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(9, stockValue.intValue());
 
 		ArtikelService.remove(ea1);
+	}
+
+	@Test
+	public void testMultipleAddsTicket5865() {
+		Behandlung behandlung = testBehandlungen.get(4);
+		Kontakt myMandator = testContacts.get(4);
+
+		IStatus os;
+		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000010, userContact, myMandator);
+		assertTrue(os.isOK());
+		VerrechenbarTarmedLeistung vlt_000015 = new VerrechenbarTarmedLeistung(code_000015);
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000015, userContact, myMandator);
+		assertTrue(os.isOK());
+		VerrechenbarTarmedLeistung vlt_000140 = new VerrechenbarTarmedLeistung(code_000140);
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000140, userContact, myMandator);
+		assertTrue(os.isOK());
+		VerrechenbarTarmedLeistung vlt_000510 = new VerrechenbarTarmedLeistung(code_000510);
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000510, userContact, myMandator);
+		assertTrue(os.isOK());
+		Verrechnet vr = (Verrechnet) ((ObjectStatus) os).getObject();
+		os = VerrechnetService.changeCountValidated(vr, 3, null);
+		assertTrue(os.isOK());
+
+		List<VerrechnetMatch> matches = new ArrayList<>();
+		matches.add(new VerrechnetMatch("00.0010-20010101", 1));
+		matches.add(new VerrechnetMatch("00.0015-20141001", 1));
+		matches.add(new VerrechnetMatch("00.0140-20010101", 1));
+		matches.add(new VerrechnetMatch("00.0510-20010101", 3));
+		VerrechnetMatch.assertVerrechnetMatch(behandlung, matches);
+
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000010, userContact, myMandator);
+		assertFalse(os.isOK());
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000015, userContact, myMandator);
+		assertFalse(os.isOK());
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000140, userContact, myMandator);
+		assertTrue(os.isOK());
+		vr = (Verrechnet) ((ObjectStatus) os).getObject();
+		os = VerrechnetService.changeCountValidated(vr, 1, null);
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000510, userContact, myMandator);
+		assertTrue(os.isOK());
+		vr = (Verrechnet) ((ObjectStatus) os).getObject();
+		os = VerrechnetService.changeCountValidated(vr, 2, null);
+		assertTrue(os.isOK());
+
+		matches = new ArrayList<>();
+		matches.add(new VerrechnetMatch("00.0010-20010101", 1));
+		matches.add(new VerrechnetMatch("00.0015-20141001", 1));
+		matches.add(new VerrechnetMatch("00.0140-20010101", 1));
+		matches.add(new VerrechnetMatch("00.0510-20010101", 2));
+		VerrechnetMatch.assertVerrechnetMatch(behandlung, matches);
 	}
 }
