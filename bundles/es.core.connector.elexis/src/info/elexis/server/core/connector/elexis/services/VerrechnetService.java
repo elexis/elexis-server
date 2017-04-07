@@ -171,30 +171,35 @@ public class VerrechnetService extends PersistenceService {
 		return 1.0;
 	}
 
-	public static IStatus changeCountValidated(Verrechnet vr, int newCount, Kontakt mandatorContact) {
-		int previous = vr.getZahl();
+	public static IStatus changeCountValidated(Verrechnet verrechnet, int newCount, Kontakt mandatorContact) {
+		int previous = verrechnet.getZahl();
 		if (newCount == previous) {
 			return Status.OK_STATUS;
 		}
 
-		int difference = newCount - previous;
 		@SuppressWarnings("rawtypes")
-		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(vr);
+		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(verrechnet);
+		if (newCount == 0) {
+			log.trace("Removing Verrechnet [{}] as count == 0", verrechnet.getId());
+			IStatus ret = verrechenbar.get().removeFromConsultation(verrechnet, mandatorContact);
+			if (!ret.isOK()) {
+				return ret;
+			}
+		}
+
+		int difference = newCount - previous;
 		if (difference > 0) {
+			// addition
 			for (int i = 0; i < difference; i++) {
-				IStatus ret = verrechenbar.get().add(vr.getBehandlung(), vr.getUser(), mandatorContact);
+				IStatus ret = verrechenbar.get().add(verrechnet.getBehandlung(), verrechnet.getUser(), mandatorContact);
 				if (!ret.isOK()) {
 					return ret;
 				}
 			}
 		} else {
-			int abs = Math.abs(difference);
-			for (int i = 0; i < abs; i++) {
-				IStatus ret = verrechenbar.get().removeFromConsultation(vr, mandatorContact);
-				if (!ret.isOK()) {
-					return ret;
-				}
-			}
+			// subtraction, we assume that this will never fail
+			verrechnet.setZahl(newCount);
+			VerrechnetService.save(verrechnet);
 		}
 		return Status.OK_STATUS;
 	}
