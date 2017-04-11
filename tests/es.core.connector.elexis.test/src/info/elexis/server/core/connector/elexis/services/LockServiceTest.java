@@ -34,7 +34,7 @@ public class LockServiceTest {
 		assertFalse(denied.isOk());
 		LockResponse error = LockResponse.ERROR;
 		assertFalse(error.isOk());
-		LockResponse ok = LockResponse.OK();
+		LockResponse ok = LockResponse.OK(null);
 		assertTrue(ok.isOk());
 	}
 
