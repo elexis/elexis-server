@@ -158,6 +158,10 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		BehandlungService.setDiagnosisOnConsultation(kons2, diagI48_2);
 		assertEquals(1, kons2.getDiagnoses().size());
 
+		JPAQuery<Diagnosis> query = new JPAQuery<>(Diagnosis.class);
+		query.add(Diagnosis_.code, QUERY.EQUALS, "I48");
+		assertEquals(1, query.count());
+		
 		assertTrue(kons.getDiagnoses().contains(kons2.getDiagnoses().toArray(new Diagnosis[0])[0]));
 
 		JPAQuery<Diagnosis> qre = new JPAQuery<>(Diagnosis.class);

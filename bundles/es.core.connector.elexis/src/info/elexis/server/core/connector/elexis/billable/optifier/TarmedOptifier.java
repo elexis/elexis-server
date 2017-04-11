@@ -83,7 +83,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		 * Fachspezialisierung des aktuellen Mandanten usw. vereinbar ist
 		 */
 
-		Map<Object, Object> ext;
+		Map<String, String> ext;
 
 		TarmedExtension extension = tc.getExtension();
 		if (extension == null) {
