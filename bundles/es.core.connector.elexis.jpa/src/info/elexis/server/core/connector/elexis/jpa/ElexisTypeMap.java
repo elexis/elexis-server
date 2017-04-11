@@ -10,6 +10,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Invoice;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif;
@@ -45,6 +46,7 @@ public class ElexisTypeMap {
 	public static final String TYPE_ORGANISATION = "ch.elexis.data.Organisation";
 	public static final String TYPE_PATIENT = "ch.elexis.data.Patient";
 	public static final String TYPE_PERSON = "ch.elexis.data.Person";
+	public static final String TYPE_RECHNUNG = "ch.elexis.data.Rechnung";
 	public static final String TYPE_REMINDER = "ch.elexis.data.Reminder";
 	public static final String TYPE_PHYSIOLEISTUNG = "ch.elexis.data.PhysioLeistung";
 	public static final String TYPE_PRESCRIPTION = "ch.elexis.data.Prescription";
@@ -80,6 +82,8 @@ public class ElexisTypeMap {
 		classToStsMap.put(PhysioLeistung.class, TYPE_PHYSIOLEISTUNG);
 		stsToClassMap.put(TYPE_PRESCRIPTION, Prescription.class);
 		classToStsMap.put(Prescription.class, TYPE_PRESCRIPTION);
+		stsToClassMap.put(TYPE_RECHNUNG, Invoice.class);
+		classToStsMap.put(Invoice.class, TYPE_RECHNUNG);
 		stsToClassMap.put(TYPE_REMINDER, Reminder.class);
 		classToStsMap.put(Reminder.class, TYPE_REMINDER);
 		stsToClassMap.put(TYPE_STOCK_ENTRY, StockEntry.class);
