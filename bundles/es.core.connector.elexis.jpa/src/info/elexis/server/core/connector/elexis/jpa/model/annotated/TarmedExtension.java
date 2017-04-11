@@ -23,7 +23,7 @@ public class TarmedExtension {
 
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "ElexisExtInfoMapConverter")
-	private Map<Object, Object> limits;
+	private Map<String, String> limits = new Hashtable<String, String>();
 
 	@Lob
 	private String med_interpret;
@@ -39,14 +39,11 @@ public class TarmedExtension {
 		this.code = code;
 	}
 
-	public Map<Object, Object> getLimits() {
-		if (limits == null) {
-			limits = new Hashtable<Object, Object>();
-		}
+	public Map<String, String> getLimits() {
 		return limits;
 	}
 
-	public void setLimits(Map<Object, Object> limits) {
+	public void setLimits(Map<String, String> limits) {
 		this.limits = limits;
 	}
 

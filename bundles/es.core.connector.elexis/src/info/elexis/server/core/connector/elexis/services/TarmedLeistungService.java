@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedKumulation;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedKumulation_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
@@ -113,5 +114,23 @@ public class TarmedLeistungService extends PersistenceService {
 				return Optional.of(tarmedLeistung);
 		}
 		return Optional.empty();
+	}
+
+	/**
+	 * 
+	 * @param tarmedLeistung
+	 * @return the cummulated minutes required to perform a {@link TarmedLeistung}.
+	 */
+	public static int getMinutesForTarmedLeistung(TarmedLeistung tarmedLeistung) {
+		TarmedExtension extension = tarmedLeistung.getExtension();
+		if (extension != null) {
+			double min = 0d;
+			min += ServiceUtil.checkZeroDouble(extension.getLimits().get("LSTGIMES_MIN"));
+			min += ServiceUtil.checkZeroDouble(extension.getLimits().get("VBNB_MIN"));
+			min += ServiceUtil.checkZeroDouble(extension.getLimits().get("BEFUND_MIN"));
+			min += ServiceUtil.checkZeroDouble(extension.getLimits().get("WECHSEL_MIN"));
+			return (int) Math.round(min);
+		}
+		return 0;
 	}
 }
