@@ -109,7 +109,7 @@ public class LockService implements ILockService {
 							&& lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
 						// its the requesters lock (username and systemUuid
 						// match)
-						return LockResponse.OK;
+						return LockResponse.OK(lie);
 					} else {
 						return LockResponse.DENIED(lie);
 					}
@@ -120,7 +120,7 @@ public class LockService implements ILockService {
 					if (!contributors.keySet().containsAll(requiredContributors)) {
 						log.warn(
 								"System defined to require a lock service contributor. None available, denying locks!");
-						return new LockResponse(Status.ERROR, null);
+						return new LockResponse(Status.ERROR, lockInfo);
 					}
 
 					for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
@@ -137,7 +137,7 @@ public class LockService implements ILockService {
 
 				locks.put(lockInfo.getElementId(), lockInfo);
 
-				return LockResponse.OK;
+				return LockResponse.OK(lockInfo);
 			} else {
 				log.warn("Could not acquire locksLock in acquireLock method on thread {}. ", Thread.currentThread());
 				return LockResponse.DENIED(lockInfo);
@@ -187,7 +187,7 @@ public class LockService implements ILockService {
 					if (lie.getUser().equals(lockInfo.getUser())
 							&& lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
 						locks.remove(lockInfo.getElementId());
-						return LockResponse.OK;
+						return LockResponse.OK(lockInfo);
 					}
 				}
 
