@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1490874437">
+<target name="Elexis-Server" sequenceNumber="1492519112">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -43,7 +43,7 @@
       <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="ch.rgw.utility" version="3.2.0.b20170210-1542"/>
-      <unit id="ch.elexis.core" version="3.2.0.b20170317-1028"/>
+      <unit id="ch.elexis.core" version="3.2.0.b20170413-1533"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.b20170111-1614"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.b20170107-1517"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.b20170328-1247"/>
