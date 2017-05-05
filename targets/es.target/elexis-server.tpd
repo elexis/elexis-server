@@ -36,6 +36,8 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.hamcrest.library
 	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
 	
+	org.eclipse.jetty.servlets
+	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
@@ -62,14 +64,6 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	at.medevit.ch.artikelstamm
 	ch.elexis.base.ch.ticode
 	at.medevit.atc_codes
-	
-	org.eclipse.e4.ui.workbench.addons.swt
-	org.eclipse.e4.ui.workbench.renderers.swt
-	org.eclipse.e4.ui.workbench.swt
-	org.eclipse.rap.e4
-	org.eclipse.rap.jface
-	org.eclipse.rap.rwt
-	org.eclipse.rap.rwt.osgi
 	
 	org.tukaani.xz
 	osgi.enterprise
