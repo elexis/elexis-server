@@ -1,14 +1,14 @@
 package info.elexis.server.core.service;
 
-import static info.elexis.server.core.constants.RestPathConstants.*;
-
-import java.io.Serializable;
-import java.util.Optional;
+import static info.elexis.server.core.constants.RestPathConstants.BASE_URL_CORE;
+import static info.elexis.server.core.constants.RestPathConstants.HALT;
+import static info.elexis.server.core.constants.RestPathConstants.RESTART;
+import static info.elexis.server.core.constants.RestPathConstants.SCHEDULER;
+import static info.elexis.server.core.constants.RestPathConstants.SCHEDULER_LAUNCH;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import info.elexis.server.core.Application;
 import info.elexis.server.core.scheduler.SchedulerService;
 import info.elexis.server.core.scheduler.SchedulerStatus;
-import info.elexis.server.core.security.HTTPAuthHandler;
 
 @Component(service = HTTPService.class, immediate = true)
 @Path(BASE_URL_CORE)
@@ -40,23 +39,6 @@ public class HTTPService {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getStatus() {
 		return Response.ok(Application.getStatus()).build();
-	}
-
-	@GET
-	@Path(LOGIN + "/{userid}")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getSessionId(@PathParam("userid") String userid, @HeaderParam("encoded") String oPassword) {
-		// TODO we should encode the IP into the session
-		Optional<String> password = Optional.ofNullable(oPassword);
-		if (password.isPresent()) {
-			Optional<Serializable> sessionId = HTTPAuthHandler.getSessionId(userid, password.get());
-			if (sessionId.isPresent()) {
-				return Response.ok(sessionId.get().toString()).build();
-			} else {
-				return Response.status(Response.Status.UNAUTHORIZED).build();
-			}
-		}
-		return Response.status(Response.Status.BAD_REQUEST).build();
 	}
 
 	@GET

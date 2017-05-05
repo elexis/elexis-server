@@ -2,7 +2,6 @@ package info.elexis.server.core.p2.internal;
 
 import java.util.Optional;
 
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,7 +13,6 @@ import org.osgi.service.component.annotations.Component;
 
 @Component(service = HTTPService.class, immediate = true)
 @Path("/p2")
-@RolesAllowed("admin")
 public class HTTPService {
 	@Context
 	private HttpServletRequest req;
