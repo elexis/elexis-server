@@ -48,9 +48,12 @@ location "http://download.eclipse.org/eclipse/updates/4.6/" {
 	org.eclipse.core.net.linux.x86_64
 	org.eclipse.core.net.win32.x86
 	org.eclipse.core.net.win32.x86_64
+	org.junit
 	javax.annotation
 	javax.xml
 	javax.inject
+	org.apache.commons.codec
+	org.apache.commons.io
 }
 
 location "http://download.eclipse.org/releases/neon" {
@@ -58,11 +61,8 @@ location "http://download.eclipse.org/releases/neon" {
 	ch.qos.logback.core
 	ch.qos.logback.slf4j
 	org.apache.commons.lang
-	org.apache.commons.codec
 	org.apache.commons.exec
-	org.apache.commons.io 
 	org.apache.commons.beanutils
-	org.junit [4.12.0.v201504281640,4.12.0.v201504281640]
 	org.hamcrest.core [1.3.0.v201303031735,1.3.0.v201303031735]
 	org.hamcrest.library [1.3.0.v201505072020,1.3.0.v201505072020]
 	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
@@ -71,6 +71,16 @@ location "http://download.eclipse.org/releases/neon" {
 // Jetty p2 repo for Neon.3 included version
 location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.3.9.v20160517/" {
 	org.eclipse.jetty.servlets
+	org.eclipse.jetty.webapp
+	org.eclipse.jetty.xml
+	org.eclipse.jetty.util.ajax
+	org.eclipse.jetty.websocket.common
+	org.eclipse.jetty.websocket.api
+	org.eclipse.jetty.websocket.server
+	org.eclipse.jetty.websocket.servlet
+	org.eclipse.jetty.websocket.javax.websocket
+	org.eclipse.jetty.websocket.javax.websocket.server
+	org.eclipse.jetty.websocket.client
 }
 
 location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/" {
@@ -91,6 +101,8 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2017030718063
 	javax.transaction // required by org.eclipse.persistence.jpars
 	javax.xml.rpc // required by org.eclipse.persistence.jpars
 	javax.xml.soap // required by org.eclipse.persistence.jpars
+	com.google.guava [18.0.0.v20161115-1643,18.0.0.v20161115-1643]
+	org.apache.commons.collections
 }
 
 // for es.core.connector.elexis.jpa
@@ -118,8 +130,10 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.json
 	org.apache.shiro.core
 	org.apache.shiro.web
+	org.apache.shiro.ehcache
+	org.apache.shiro.aspectj
+	org.secnod.shiro.jersey
 	org.apache.commons.collections4
-	com.google.guava
 	se.ugli.bigqueue
 	// weird problems with com.mysql.jdbc >= 5.1.39
 	// SELECT * FROM SEQUENCE WHERE SEQ_NAME = 'SEQ_GEN'

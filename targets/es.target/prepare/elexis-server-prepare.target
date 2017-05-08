@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1493972452">
+<target name="Elexis-Server" sequenceNumber="1494233540">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.2.0.a20170210-1542"/>
-      <unit id="ch.elexis.core" version="3.2.0.a20170504-1717"/>
+      <unit id="ch.elexis.core" version="3.2.0.a20170505-1306"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.a20170111-1614"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20170107-1517"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.a20170328-1247"/>
@@ -47,9 +47,12 @@
       <unit id="org.eclipse.core.net.linux.x86_64" version="1.2.0.v20160323-1650"/>
       <unit id="org.eclipse.core.net.win32.x86" version="1.1.0.v20160323-1650"/>
       <unit id="org.eclipse.core.net.win32.x86_64" version="1.1.0.v20160323-1650"/>
+      <unit id="org.junit" version="4.12.0.v201504281640"/>
       <unit id="javax.annotation" version="1.2.0.v201602091430"/>
       <unit id="javax.xml" version="1.3.4.v201005080400"/>
       <unit id="javax.inject" version="1.0.0.v20091030"/>
+      <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+      <unit id="org.apache.commons.io" version="2.2.0.v201405211200"/>
       <repository location="http://download.eclipse.org/eclipse/updates/4.6/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -57,11 +60,8 @@
       <unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
       <unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
       <unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-      <unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
       <unit id="org.apache.commons.exec" version="1.1.0.v201301240602"/>
-      <unit id="org.apache.commons.io" version="2.2.0.v201405211200"/>
       <unit id="org.apache.commons.beanutils" version="1.8.0.v201205091237"/>
-      <unit id="org.junit" version="4.12.0.v201504281640"/>
       <unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
       <unit id="org.hamcrest.library" version="1.3.0.v201505072020"/>
       <unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.13.2.v20160823-2221"/>
@@ -69,6 +69,16 @@
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.jetty.servlets" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.webapp" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.xml" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.util.ajax" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.common" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.api" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.server" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.servlet" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.javax.websocket" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.javax.websocket.server" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.websocket.client" version="9.3.9.v20160517"/>
       <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.3.9.v20160517/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -88,6 +98,8 @@
       <unit id="javax.transaction" version="1.1.1.v201105210645"/>
       <unit id="javax.xml.rpc" version="1.1.0.v201209140446"/>
       <unit id="javax.xml.soap" version="1.3.0.v201105210645"/>
+      <unit id="com.google.guava" version="18.0.0.v20161115-1643"/>
+      <unit id="org.apache.commons.collections" version="3.2.2.v201511171945"/>
       <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -113,8 +125,10 @@
       <unit id="org.json" version="20140107.0.0"/>
       <unit id="org.apache.shiro.core" version="1.3.2"/>
       <unit id="org.apache.shiro.web" version="1.3.2"/>
+      <unit id="org.apache.shiro.ehcache" version="1.3.2"/>
+      <unit id="org.apache.shiro.aspectj" version="1.3.2"/>
+      <unit id="org.secnod.shiro.jersey" version="0.2.0"/>
       <unit id="org.apache.commons.collections4" version="4.1.0"/>
-      <unit id="com.google.guava" version="18.0.0"/>
       <unit id="se.ugli.bigqueue" version="1.6.0.0"/>
       <unit id="com.mysql.jdbc" version="5.1.38"/>
       <unit id="org.apache.commons.lang3" version="3.3.2"/>
