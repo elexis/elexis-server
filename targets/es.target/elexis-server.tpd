@@ -37,6 +37,16 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
 	
 	org.eclipse.jetty.servlets
+	org.eclipse.jetty.webapp
+	org.eclipse.jetty.xml
+	org.eclipse.jetty.util.ajax
+	org.eclipse.jetty.websocket.common
+	org.eclipse.jetty.websocket.api
+	org.eclipse.jetty.websocket.server
+	org.eclipse.jetty.websocket.servlet
+	org.eclipse.jetty.websocket.javax.websocket
+	org.eclipse.jetty.websocket.javax.websocket.server
+	org.eclipse.jetty.websocket.client
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
@@ -90,6 +100,9 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.json
 	org.apache.shiro.core
 	org.apache.shiro.web
+	org.apache.shiro.ehcache
+	org.apache.shiro.aspectj
+	org.secnod.shiro.jersey
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
