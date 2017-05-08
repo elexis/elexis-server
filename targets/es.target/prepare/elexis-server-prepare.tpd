@@ -52,7 +52,6 @@ location "http://download.eclipse.org/eclipse/updates/4.6/" {
 	javax.annotation
 	javax.xml
 	javax.inject
-	org.apache.commons.codec
 	org.apache.commons.io
 }
 
@@ -103,6 +102,7 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2017030718063
 	javax.xml.soap // required by org.eclipse.persistence.jpars
 	com.google.guava [18.0.0.v20161115-1643,18.0.0.v20161115-1643]
 	org.apache.commons.collections
+	org.apache.commons.codec [1.9.0.v20170208-1614,1.9.0.v20170208-1614]
 }
 
 // for es.core.connector.elexis.jpa
