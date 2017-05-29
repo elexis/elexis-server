@@ -17,7 +17,7 @@ public class InvoiceStateConverter implements AttributeConverter<InvoiceState, S
 	@Override
 	public String convertToDatabaseColumn(InvoiceState attribute) {
 		if (attribute == null) {
-			return Integer.toString(InvoiceState.UNBEKANNT.numericValue());
+			return Integer.toString(InvoiceState.UNKNOWN.numericValue());
 		}
 		return Integer.toString(attribute.getState());
 	}
@@ -25,14 +25,14 @@ public class InvoiceStateConverter implements AttributeConverter<InvoiceState, S
 	@Override
 	public InvoiceState convertToEntityAttribute(String dbData) {
 		if (StringTool.isNothing(dbData)) {
-			return InvoiceState.UNBEKANNT;
+			return InvoiceState.UNKNOWN;
 		}
 		try {
 			int value = Integer.parseInt(dbData.trim());
 			return InvoiceState.fromState(value);
 		} catch (NumberFormatException ex) {
 			log.warn("Number format exception " + dbData, ex);
-			return InvoiceState.UNBEKANNT;
+			return InvoiceState.UNKNOWN;
 		}
 	}
 
