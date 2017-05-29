@@ -32,9 +32,6 @@
         filter=""/>
     <requirement
         name="org.eclipse.mylyn.wikitext_feature.feature.group"/>
-    <requirement
-        name="name.schedenig.eclipse.grepconsole.feature.group"
-        filter=""/>
     <repository
         url="http://mbarbero.github.io/fr.obeo.releng.targetplatform/p2/latest/"/>
     <repository
@@ -43,8 +40,6 @@
         url="http://download.eclipse.org/rt/rap/incubator/nightly/e4/tooling/site/"/>
     <repository
         url="http://eclipse.jeeeyul.net/update/"/>
-    <repository
-        url="http://eclipse.schedenig.name/"/>
     <description>Install the tools needed in the IDE to work with the source code for ${scope.project.label}</description>
   </setupTask>
   <setupTask
