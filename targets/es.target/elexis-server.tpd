@@ -47,6 +47,10 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.eclipse.jetty.websocket.javax.websocket
 	org.eclipse.jetty.websocket.javax.websocket.server
 	org.eclipse.jetty.websocket.client
+	org.eclipse.jetty.osgi.boot
+	org.eclipse.jetty.deploy
+	org.eclipse.jetty.osgi-servlet-api
+	org.eclipse.jetty.osgi.httpservice
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group

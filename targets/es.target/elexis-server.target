@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1494247134">
+<target name="Elexis-Server" sequenceNumber="1496067576">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -48,14 +48,18 @@
       <unit id="org.eclipse.jetty.websocket.javax.websocket" version="9.3.9.v20160517"/>
       <unit id="org.eclipse.jetty.websocket.javax.websocket.server" version="9.3.9.v20160517"/>
       <unit id="org.eclipse.jetty.websocket.client" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.osgi.boot" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.deploy" version="9.3.9.v20160517"/>
+      <unit id="org.eclipse.jetty.osgi-servlet-api" version="3.1.0.M3"/>
+      <unit id="org.eclipse.jetty.osgi.httpservice" version="9.3.9.v20160517"/>
       <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="ch.rgw.utility" version="3.2.0.a20170210-1542"/>
-      <unit id="ch.elexis.core" version="3.2.0.a20170505-1306"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.a20170111-1614"/>
+      <unit id="ch.elexis.core" version="3.2.0.a20170529-1351"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.a20170512-1102"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20170107-1517"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.a20170328-1247"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.a20161130-2018"/>
