@@ -80,6 +80,10 @@ location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.3.9.v201
 	org.eclipse.jetty.websocket.javax.websocket
 	org.eclipse.jetty.websocket.javax.websocket.server
 	org.eclipse.jetty.websocket.client
+	org.eclipse.jetty.osgi.boot
+	org.eclipse.jetty.deploy
+	org.eclipse.jetty.osgi-servlet-api
+	org.eclipse.jetty.osgi.httpservice
 }
 
 location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/" {
@@ -142,6 +146,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.commons.configuration
 	org.joda.money
 	com.github.pukkaone.logback-gelf
+	ch.qos.logback.access
 	com.googlecode.json-simple
 	com.rabbitmq.client
 	com.fasterxml.jackson.core.jackson-core
