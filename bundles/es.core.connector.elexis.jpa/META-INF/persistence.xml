@@ -34,6 +34,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Reminder</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Right</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Role</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension</class>
