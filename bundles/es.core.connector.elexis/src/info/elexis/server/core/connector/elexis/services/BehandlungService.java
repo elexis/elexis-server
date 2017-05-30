@@ -129,7 +129,7 @@ public class BehandlungService extends PersistenceService {
 			billOk = true;
 		} else {
 			InvoiceState state = invoice.getState();
-			if (state == InvoiceState.STORNIERT) {
+			if (state == InvoiceState.DEPRECIATED) {
 				billOk = true;
 			}
 		}
