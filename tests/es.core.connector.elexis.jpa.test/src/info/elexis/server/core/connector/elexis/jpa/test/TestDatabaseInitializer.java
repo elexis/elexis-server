@@ -19,11 +19,11 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.types.LabItemTyp;
 import ch.rgw.tools.VersionedResource;
-import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;

@@ -1,7 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.test;
 
-import info.elexis.server.core.connector.elexis.common.DBConnection;
-import info.elexis.server.core.connector.elexis.common.DBConnection.DBType;
+import ch.elexis.core.common.DBConnection;
+import ch.elexis.core.common.DBConnection.DBType;
 
 public class TestDatabase {
 

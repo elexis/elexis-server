@@ -29,7 +29,7 @@ public class InvoiceServiceTest extends AbstractServiceTest {
 	public void testBuilder() {
 		LocalDate fromDate = LocalDate.now().minusWeeks(2);
 		Invoice invoice = new InvoiceService.Builder("26", testContacts.get(0), testFaelle.get(0), fromDate,
-				LocalDate.now(), new Money(34.50), InvoiceState.OFFEN).buildAndSave();
+				LocalDate.now(), new Money(34.50), InvoiceState.OPEN).buildAndSave();
 		Optional<Invoice> load = InvoiceService.load(invoice.getId());
 		assertTrue(load.isPresent());
 		Invoice loaded = load.get();
@@ -38,7 +38,7 @@ public class InvoiceServiceTest extends AbstractServiceTest {
 		assertEquals(testFaelle.get(0), loaded.getFall());
 		assertEquals(fromDate, loaded.getInvoiceDateFrom());
 		assertEquals(new Money(34.50).toString(), loaded.getAmount());
-		assertEquals(InvoiceState.OFFEN, loaded.getState());
+		assertEquals(InvoiceState.OPEN, loaded.getState());
 	}
 
 }

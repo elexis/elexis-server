@@ -80,7 +80,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertTrue(chargeBillableOnBehandlung.isOK());
 
 		Invoice invoice = new InvoiceService.Builder("15", testContacts.get(0), testBehandlungen.get(0).getFall(),
-				LocalDate.now().minusWeeks(2), LocalDate.now(), new Money(34.50), InvoiceState.OFFEN).buildAndSave();
+				LocalDate.now().minusWeeks(2), LocalDate.now(), new Money(34.50), InvoiceState.OPEN).buildAndSave();
 		testBehandlungen.get(0).setInvoice(invoice);
 
 		Optional<TarmedLeistung> tarmedZuschlag = TarmedLeistungService.findFromCode(TARMED_KONS_ZUSCHLAG);
@@ -113,7 +113,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertEquals(2, ms.getChildren().length);
 
 		Invoice invoice = new InvoiceService.Builder("26", mandator, kons.getFall(), LocalDate.now().minusWeeks(2),
-				LocalDate.now(), new Money(34.50), InvoiceState.OFFEN).buildAndSave();
+				LocalDate.now(), new Money(34.50), InvoiceState.OPEN).buildAndSave();
 		kons.setInvoice(invoice);
 
 		ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);
@@ -124,7 +124,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertEquals(false, ms.isOK());
 		assertEquals(3, ms.getChildren().length);
 
-		invoice.setState(InvoiceState.STORNIERT);
+		invoice.setState(InvoiceState.DEPRECIATED);
 
 		ms = (MultiStatus) BehandlungService.isEditable(kons, mandator);
 		assertEquals(false, ms.isOK());
