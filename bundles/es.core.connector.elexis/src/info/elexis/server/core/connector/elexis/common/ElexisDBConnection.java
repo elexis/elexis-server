@@ -16,8 +16,10 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.common.DBConnection;
+import ch.elexis.core.common.DBConnection.DBType;
 import info.elexis.server.core.common.util.CoreUtil;
-import info.elexis.server.core.connector.elexis.common.DBConnection.DBType;
+
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;

@@ -25,8 +25,8 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.constants.Preferences;
-import info.elexis.server.core.connector.elexis.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 import info.elexis.server.core.connector.elexis.services.ConfigService;
