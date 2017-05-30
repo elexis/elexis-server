@@ -8,7 +8,7 @@
 
    <launcherArgs>
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
--Dorg.osgi.service.http.port=8380 
+-Djetty.home.bundle=info.elexis.server.core.jetty.homebundle
 -Djava.awt.headless=true
 -Duser.language=de
 -Duser.region=CH
@@ -43,6 +43,7 @@
    </features>
 
    <configurations>
+       <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="0" />
       <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="0" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="0" />
       <plugin id="info.elexis.server.core.connector.elexis.jpa" autoStart="true" startLevel="3" />
@@ -52,9 +53,10 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
-      <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.jetty.osgi.boot" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.jetty.osgi.httpservice" autoStart="false" startLevel="0" />
       <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
    </configurations>
 
