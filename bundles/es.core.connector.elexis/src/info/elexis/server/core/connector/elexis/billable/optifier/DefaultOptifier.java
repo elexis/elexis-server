@@ -12,6 +12,7 @@ import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
+import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
@@ -53,10 +54,24 @@ public class DefaultOptifier implements IOptifier {
 			DefaultOptifier.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
 			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
 					foundVerrechnet.getZahl() + 1);
+			
+			int sellingPrice = foundVerrechnet.getVk_tp();
+			if (sellingPrice == 0) {
+				log.info("Verrechnet entry ({}) sell-price is 0", foundVerrechnet.getId());
+				return new ObjectStatus(Status.INFO, BundleConstants.BUNDLE_ID, "Leistungs bzw. Artikelpreis ist 0", foundVerrechnet);
+			}
+			
 			return ObjectStatus.OK_STATUS(foundVerrechnet);
 		} else {
 			newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).buildAndSave();
 			log.trace("Created new Verrechnet entry ({})", newVerrechnet.getId());
+
+			int sellingPrice = newVerrechnet.getVk_tp();
+			if (sellingPrice == 0) {
+				log.info("Verrechnet entry ({}) sell-price is 0", newVerrechnet.getId());
+				return new ObjectStatus(Status.INFO, BundleConstants.BUNDLE_ID, "Leistungs bzw. Artikelpreis ist 0", newVerrechnet);
+			}
+
 			return ObjectStatus.OK_STATUS(newVerrechnet);
 		}
 	}
