@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" name="info.elexis.server.core.security.ElexisServerRealm">
+   <reference bind="bind" cardinality="1..n" interface="info.elexis.server.core.common.security.ESAuthorizingRealm" policy="dynamic" policy-option="greedy" unbind="unbind"/>
+   <implementation class="info.elexis.server.core.security.ElexisServerRealm"/>
+</scr:component>
