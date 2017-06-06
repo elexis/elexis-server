@@ -117,6 +117,10 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 	public String ok() {
 		return "OK";
 	}
+	
+	public String ok(Object object) {
+		return "OK ["+object+"]";
+	}
 
 	public String missingArgument(String string) {
 		return "Missing argument: " + string;

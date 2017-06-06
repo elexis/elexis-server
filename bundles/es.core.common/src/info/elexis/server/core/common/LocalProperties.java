@@ -50,8 +50,27 @@ public class LocalProperties {
 		properties.setProperty(key, value);
 	}
 
+	public static void setProperty(String key, boolean value) {
+		setProperty(key, Boolean.toString(value));
+	}
+
 	public static String getProperty(String key, String defaultValue) {
 		return properties.getProperty(key, defaultValue);
+	}
+
+	/**
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 *            if invalidValue or no key entry found
+	 * @return
+	 */
+	public static boolean getPropertyAsBoolean(String key, boolean defaultValue) {
+		String property = properties.getProperty(key);
+		if (property != null) {
+			return Boolean.valueOf(property);
+		}
+		return defaultValue;
 	}
 
 	public static Set<String> getPropertyAsSet(String key) {
