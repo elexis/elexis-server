@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Artikel;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker;
@@ -107,5 +108,28 @@ public class StickerServiceTest extends AbstractServiceTest {
 		StickerService.delete(StickerService.load(sticker.getId()).get());
 		assertEquals(0, StickerService.findAll(Sticker.class, false).size());
 		assertEquals(1, StickerService.findAll(Sticker.class, true).size());
+	}
+
+	@Test
+	public void testFindStickersApplicableToPatients() {
+		Sticker sticker = new Sticker();
+		sticker.setBackground("0");
+		sticker.setForeground("0");
+		sticker.setName("Sticker 2");
+
+		StickerClassLink stickerClassLink = new StickerClassLink();
+		stickerClassLink.setObjclass(ElexisTypeMap.TYPE_PATIENT);
+		stickerClassLink.setSticker(sticker);
+		List<StickerClassLink> stickerClassLinks = new ArrayList<>();
+		stickerClassLinks.add(stickerClassLink);
+		sticker.setStickerClassLinks(stickerClassLinks);
+
+		sticker = StickerService.save(sticker);
+
+		List<Sticker> patientApplicableStickers = StickerService
+				.findStickersApplicableToClass(ElexisTypeMap.TYPE_PATIENT);
+		assertEquals(1, patientApplicableStickers.size());
+
+		StickerService.remove(sticker);
 	}
 }
