@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.*;
+import static info.elexis.server.core.connector.elexis.internal.ElexisEntityManager.createEntityManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +62,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 		readAllQuery = new ReadAllQuery(clazz);
 		readAllQuery.setIsReadOnly(true);
 	}
-
+	
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
 		Expression predIn = derivePredicate(attribute, qt, object);
 
@@ -104,21 +104,22 @@ public class JPAQuery<T extends AbstractDBObject> {
 
 	private Expression derivePredicate(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt,
 			Object value) {
+		Expression exp = emp.get(attribute.getName());
 		switch (qt) {
 		case LIKE:
-			return emp.get(attribute.getName()).like(value.toString());
+			return exp.like(value.toString());
 		case EQUALS:
-			return emp.get(attribute.getName()).equal(value);
+			return exp.equal(value);
 		case LESS_OR_EQUAL:
-			return emp.get(attribute.getName()).lessThanEqual(value);
+			return exp.lessThanEqual(value);
 		case GREATER:
-			return emp.get(attribute.getName()).greaterThan(value);
+			return exp.greaterThan(value);
 		case GREATER_OR_EQUAL:
-			return emp.get(attribute.getName()).greaterThanEqual(value);
+			return exp.greaterThanEqual(value);
 		case NOT_LIKE:
-			return  emp.get(attribute.getName()).like(value.toString()).not();
+			return exp.like(value.toString()).not();
 		case NOT_EQUALS:
-			return emp.get(attribute.getName()).equal(value).not();
+			return exp.equal(value).not();
 		default:
 			throw new IllegalArgumentException();
 		}
