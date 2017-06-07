@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class StickerObjectLink {
 	
-	@Column(length = 80)
+	@Column(length = 80, nullable = false)
 	private String obj;
 	
 	@ManyToOne

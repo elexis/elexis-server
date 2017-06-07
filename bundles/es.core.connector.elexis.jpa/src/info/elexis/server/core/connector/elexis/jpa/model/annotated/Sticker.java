@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -33,11 +34,11 @@ public class Sticker extends AbstractDBObjectIdDeleted {
 	
 	@ElementCollection
 	@CollectionTable(name = "ETIKETTEN_OBJCLASS_LINK", joinColumns = @JoinColumn(name = "sticker"))
-	private List<StickerClassLink> stickerClassLinks;
+	private Set<StickerClassLink> stickerClassLinks = new HashSet<>();
 	
 	@ElementCollection
 	@CollectionTable(name = "ETIKETTEN_OBJECT_LINK", joinColumns = @JoinColumn(name = "etikette"))
-	private List<StickerObjectLink> stickerObjectLinks;
+	private Set<StickerObjectLink> stickerObjectLinks = new HashSet<>();
 	
 	public String getImage(){
 		return image;
@@ -87,19 +88,19 @@ public class Sticker extends AbstractDBObjectIdDeleted {
 		this.classes = classes;
 	}
 	
-	public List<StickerClassLink> getStickerClassLinks(){
+	public Set<StickerClassLink> getStickerClassLinks(){
 		return stickerClassLinks;
 	}
 	
-	public List<StickerObjectLink> getStickerObjectLinks(){
+	public Set<StickerObjectLink> getStickerObjectLinks(){
 		return stickerObjectLinks;
 	}
 	
-	public void setStickerClassLinks(List<StickerClassLink> stickerClassLinks){
+	public void setStickerClassLinks(Set<StickerClassLink> stickerClassLinks){
 		this.stickerClassLinks = stickerClassLinks;
 	}
 	
-	public void setStickerObjectLinks(List<StickerObjectLink> stickerObjectLinks){
+	public void setStickerObjectLinks(Set<StickerObjectLink> stickerObjectLinks){
 		this.stickerObjectLinks = stickerObjectLinks;
 	}
 }
