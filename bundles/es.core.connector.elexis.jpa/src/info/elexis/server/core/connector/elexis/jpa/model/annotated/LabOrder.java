@@ -133,5 +133,19 @@ public class LabOrder extends AbstractDBObjectIdDeleted {
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+
+	@Override
+	public String getLabel() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[" + getOrderid() + "] - ");
+		sb.append(getState());
+		sb.append(" - "); //$NON-NLS-1$
+		sb.append(getItem().getLabel());
+		if (getResult() != null) {
+			sb.append(" - "); //$NON-NLS-1$
+			sb.append(getResult().getResult());
+		}
+		return sb.toString();
+	}
+
 }

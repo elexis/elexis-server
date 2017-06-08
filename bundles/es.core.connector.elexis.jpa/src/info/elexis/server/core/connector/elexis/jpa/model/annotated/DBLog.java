@@ -30,4 +30,9 @@ public class DBLog extends AbstractDBObjectIdDeletedExtInfo {
 	
 	@Column(length = 255)
 	protected String station;
+
+	@Override
+	public String getLabel() {
+		return "DB-Log";
+	}
 }

@@ -20,24 +20,35 @@ public class Heap extends AbstractDBObjectIdDeleted {
 	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
 	@Convert("ElexisDBStringDateConverter")
 	protected LocalDate datum;
-	
+
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected byte[] inhalt;
-	
+
 	public LocalDate getDatum() {
 		return datum;
 	}
-	
+
 	public void setDatum(LocalDate datum) {
 		this.datum = datum;
 	}
-	
+
 	public byte[] getInhalt() {
 		return inhalt;
 	}
-	
+
 	public void setInhalt(byte[] inhalt) {
 		this.inhalt = inhalt;
 	}
+
+	@Override
+	public String getLabel() {
+		return getDatum() + "";
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " datum=[" + datum + "]";
+	}
+
 }

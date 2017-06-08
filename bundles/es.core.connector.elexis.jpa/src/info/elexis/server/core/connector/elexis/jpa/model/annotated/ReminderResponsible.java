@@ -66,4 +66,10 @@ public class ReminderResponsible extends AbstractDBObjectIdDeleted {
 
 		return reminderHash + reponsibleHash;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

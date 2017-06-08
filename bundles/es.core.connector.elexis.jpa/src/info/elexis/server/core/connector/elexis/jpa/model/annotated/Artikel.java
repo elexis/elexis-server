@@ -75,6 +75,10 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 	private String atcCode;
 
 	@Override
+	public String toString() {
+		return super.toString() + "name=["+getName()+"]";
+	}
+	
 	public String getLabel() {
 		String ret = getNameIntern();
 		if (StringTool.isNothing(ret)) {

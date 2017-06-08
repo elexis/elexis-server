@@ -74,4 +74,15 @@ public class KontaktAdressJoint extends AbstractDBObjectIdDeleted {
 	public void setOtherRType(Integer otherRType) {
 		this.otherRType = otherRType;
 	}
+
+	@Override
+	public String getLabel() {
+		return getMyKontakt() + " (" + getBezug() + ") " + getOtherKontakt();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " bezug=[" + bezug + "] myKontakt=[" + myKontakt + "] otherKontakt=[" + otherKontakt
+				+ "] myRType=[" + myRType + "] otherRType=[" + otherRType + "]";
+	}
 }

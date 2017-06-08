@@ -200,10 +200,8 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	public Kontakt() {
 	}
 
-	@Override
 	public String getLabel() {
-		String label = super.getLabel();
-		return label + " - " + getDescription1() + "," + getDescription2() + "," + getDescription3();
+		return getDescription1() + "," + getDescription2() + "," + getDescription3();
 	}
 
 	public String getAnschrift() {
@@ -501,7 +499,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	public void setPersonalAnamnese(String personalAnamnese) {
 		this.personalAnamnese = personalAnamnese;
 	}
-
+	
 	@Override
 	@Transient
 	public void setContactType(ContactType value) {

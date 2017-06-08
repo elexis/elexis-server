@@ -1,6 +1,9 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
@@ -10,10 +13,10 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.Abs
 @MappedSuperclass
 @EntityListeners(AbstractDBObjectEntityListener.class)
 public abstract class AbstractDBObject {
-	
+
 	// Transparently updated by the EntityListener
 	protected BigInteger lastupdate;
-	
+
 	public BigInteger getLastupdate() {
 		return lastupdate;
 	}
@@ -21,8 +24,12 @@ public abstract class AbstractDBObject {
 	public void setLastupdate(BigInteger lastupdate) {
 		this.lastupdate = lastupdate;
 	}
-	
-	public String getLabel(){
-		return getClass().getSimpleName();
-	};
+
+	@Override
+	public String toString() {
+		LocalDateTime date = (getLastupdate() != null)
+				? Instant.ofEpochMilli(getLastupdate().longValue()).atZone(ZoneId.systemDefault()).toLocalDateTime()
+				: null;
+		return getClass().getSimpleName() + " lastUpdate=[" + date + "]";
+	}
 }

@@ -6,9 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.eclipse.persistence.queries.ScrollableCursor;
 import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.InstanceStatus;
@@ -17,16 +19,16 @@ import ch.elexis.core.model.stock.ICommissioningSystemDriver;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
-import info.elexis.server.core.connector.elexis.services.ConfigService;
+import info.elexis.server.core.connector.elexis.services.JPAQuery;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.LockService;
 import info.elexis.server.core.connector.elexis.services.StockCommissioningSystemService;
 import info.elexis.server.core.connector.elexis.services.StockEntryService;
 import info.elexis.server.core.connector.elexis.services.StockService;
-import info.elexis.server.core.connector.elexis.services.UserService;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 
 @Component(service = CommandProvider.class, immediate = true)
@@ -96,29 +98,45 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return getHelp(1);
 	}
 
-	public String __entities_list() {
-		return getHelp(2);
-	}
-
-	public void __entities_list_user() {
-		List<User> users = UserService.findAll(true);
-		for (User user : users) {
-			String id = user.getId();
-			String isDeleted = Boolean.toString(user.isDeleted());
-			Date date = (user.getLastupdate() != null) ? new Date(user.getLastupdate().longValue()) : null;
-			ci.println("id [" + id + "]" + getRelativeFixedLengthSeparator(id, 26, " ") + "deleted [" + isDeleted + "]"
-					+ getRelativeFixedLengthSeparator(isDeleted, 2, " ") + "lastUpdate [" + date + "]");
+	@SuppressWarnings("unchecked")
+	public String __entities_list(Iterator<String> args) {
+		String entity = args.next();
+		String includeDeletedString = args.next();
+		boolean includeDeleted = true;
+		if (!StringUtils.isAlpha(entity)) {
+			return getHelp(2);
 		}
-	}
+		if (StringUtils.isNotEmpty(includeDeletedString)) {
+			includeDeleted = Boolean.valueOf(includeDeletedString);
+		}
 
-	public void __entities_list_config(Iterator<String> args) {
-		List<Config> allConfigValues = ConfigService.INSTANCE.getNodes(args.next());
-		for (Config config : allConfigValues) {
-			String key = config.getParam();
-			String value = config.getWert();
-			Date date = (config.getLastupdate() != null) ? new Date(config.getLastupdate().longValue()) : null;
-			ci.println("key [" + key + "]" + getRelativeFixedLengthSeparator(key, 40, " ") + "value [" + value + "]"
-					+ getRelativeFixedLengthSeparator(value, 40, " ") + "lastUpdate [" + date + "]");
+		entity = StringUtils.capitalize(entity);
+
+		Class<?> clazz;
+		try {
+			String PREFIX = "info.elexis.server.core.connector.elexis.jpa.model.annotated";
+			clazz = ConsoleCommandProvider.class.getClassLoader().loadClass(PREFIX + "." + entity);
+			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+				// replace with JPAQuery cursor, honor CTRL+C??
+
+				@SuppressWarnings("rawtypes")
+				JPAQuery<? extends AbstractDBObjectIdDeleted> query = new JPAQuery(clazz);
+				if (!includeDeleted) {
+					query.add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+				}
+				long count = query.count();
+				ScrollableCursor cursor = query.executeAsStream();
+				while (cursor.hasNext()) {
+					ci.println(cursor.next());
+					cursor.clear();
+				}
+				cursor.close();
+				return "-- " + count + " entries found, including deleted = " + Boolean.toString(includeDeleted);
+			} else {
+				return "Not instance of AbstractDBObjectIdDeleted";
+			}
+		} catch (ClassNotFoundException e) {
+			return e.getMessage();
 		}
 	}
 

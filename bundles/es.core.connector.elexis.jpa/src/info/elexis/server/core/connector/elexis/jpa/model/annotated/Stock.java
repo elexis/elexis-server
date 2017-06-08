@@ -82,7 +82,12 @@ public class Stock extends AbstractDBObjectIdDeleted implements IStock {
 
 	@Override
 	public String getLabel() {
-		return super.getLabel() + " code [" + getCode() + "] / driverUuid [" + getDriverUuid() + "] / driverConfig ["
+		return getCode();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " code=[" + getCode() + "] driverUuid=[" + getDriverUuid() + "] driverConfig=["
 				+ getDriverConfig() + "]";
 	}
 

@@ -146,4 +146,10 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

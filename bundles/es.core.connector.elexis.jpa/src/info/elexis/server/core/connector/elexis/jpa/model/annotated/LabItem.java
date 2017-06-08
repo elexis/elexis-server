@@ -253,4 +253,18 @@ public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 		setCode(value);
 	}
 
+	@Override
+	public String getLabel() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getCode()).append(", ").append(getName());
+		if (LabItemTyp.NUMERIC == getTyp()) {
+			sb.append(" (").append(getReferenceMale()).append("/").append(getReferenceFemale()).append(" ")
+					.append(getUnit()).append(")");
+		} else {
+			sb.append(" (").append(getReferenceFemale()).append(")");
+		}
+		sb.append("[").append(getGroup()).append(", ").append(getPriority()).append("]");
+		return sb.toString();
+	}
+
 }

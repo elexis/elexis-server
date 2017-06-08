@@ -40,4 +40,14 @@ public class Heap2 extends AbstractDBObjectIdDeleted {
 	public void setContents(byte[] contents) {
 		this.contents = contents;
 	}
+	
+	@Override
+	public String getLabel() {
+		return getDatum() + "";
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " datum=[" + datum + "]";
+	}
 }

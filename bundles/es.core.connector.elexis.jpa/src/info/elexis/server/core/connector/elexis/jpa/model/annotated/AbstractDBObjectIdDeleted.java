@@ -14,10 +14,11 @@ import javax.persistence.OneToMany;
 
 import org.eclipse.persistence.annotations.Convert;
 
+import ch.elexis.core.model.Identifiable;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.id.ElexisIdGenerator;
 
 @MappedSuperclass
-public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
+public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject implements Identifiable{
 
 	@Id
 	@GeneratedValue(generator = "system-uuid")
@@ -58,10 +59,6 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 		this.xids = xids;
 	}
 
-	public String getLabel() {
-		return super.getLabel() + (isDeleted() ? " D " : "   ") + " [" + String.format("%25S", getId()) + "]";
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -86,6 +83,6 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject {
 
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " [id=" + id + ", deleted=" + deleted + "]";
+		return super.toString() + (isDeleted() ? " D " : "   ") + "id=[" + String.format("%25S", getId()) + "]";
 	}
 }

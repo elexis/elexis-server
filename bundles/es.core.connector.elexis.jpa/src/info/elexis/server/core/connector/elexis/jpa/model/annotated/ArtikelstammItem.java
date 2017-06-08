@@ -302,8 +302,12 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	public void setProdno(String prodno) {
 		this.prodno = prodno;
 	}
-
+	
 	@Override
+	public String toString() {
+		return super.toString() + "name=["+getName()+"]";
+	}
+
 	public String getLabel() {
 		return (getAdddscr() != null && getAdddscr().length() > 0) ? getDscr() + " (" + getAdddscr() + ")" : getDscr();
 	}

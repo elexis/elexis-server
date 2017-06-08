@@ -57,4 +57,10 @@ public class Right extends AbstractDBObjectIdDeleted {
 	public void setI18nName(String i18nName) {
 		this.i18nName = i18nName;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

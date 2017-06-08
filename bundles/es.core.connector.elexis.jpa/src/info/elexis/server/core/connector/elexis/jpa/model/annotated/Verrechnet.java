@@ -192,4 +192,10 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 	public void setUser(Kontakt user) {
 		this.user = user;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

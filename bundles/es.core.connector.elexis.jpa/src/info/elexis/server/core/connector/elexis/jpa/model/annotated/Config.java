@@ -11,9 +11,9 @@ import org.eclipse.persistence.annotations.CacheType;
 
 @Entity
 @Table(name = "config")
-@Cache(type=CacheType.NONE)
+@Cache(type = CacheType.NONE)
 public class Config extends AbstractDBObject {
-	
+
 	@Id
 	@Column(unique = true, nullable = false, length = 80)
 	private String param;
@@ -35,5 +35,10 @@ public class Config extends AbstractDBObject {
 
 	public void setWert(String wert) {
 		this.wert = wert;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "param=[" + getParam() + "] wert=[" + getWert() + "]";
 	}
 }

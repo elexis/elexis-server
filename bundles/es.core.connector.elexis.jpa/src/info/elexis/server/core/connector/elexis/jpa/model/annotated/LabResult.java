@@ -77,10 +77,10 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	private String originId;
 
 	@Transient
-	public boolean isFlagged(final int flag){
+	public boolean isFlagged(final int flag) {
 		return (getFlags() & flag) != 0;
 	}
-	
+
 	public Kontakt getPatient() {
 		return patient;
 	}
@@ -191,6 +191,14 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setFlags(int flags) {
 		this.flags = flags;
+	}
+
+	@Override
+	public String getLabel() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getItem().getLabel()).append(", ").append(getAnalysetime()).append(": ") //$NON-NLS-1$ //$NON-NLS-2$
+				.append(getResult());
+		return sb.toString();
 	}
 
 }

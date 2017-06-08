@@ -195,4 +195,14 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	public void setNote(String note) {
 		this.note = note;
 	}
+
+	@Override
+	public String getLabel() {
+		return getSubject()+" "+getCreationDate();
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + "subject=["+getSubject()+"] date=["+getCreationDate()+"]";
+	}
 }

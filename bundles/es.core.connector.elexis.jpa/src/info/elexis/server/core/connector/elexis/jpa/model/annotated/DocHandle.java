@@ -126,4 +126,15 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 	public void setDoc(byte[] doc) {
 		this.doc = doc;
 	}
+
+	@Override
+	public String getLabel() {
+		return getDatum() + " - " + getTitle();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "title=[" + getTitle() + "] category=[" + getCategory() + "] datum=[" + getDatum()
+				+ "]";
+	}
 }

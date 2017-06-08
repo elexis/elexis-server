@@ -241,4 +241,10 @@ public class Termin extends AbstractDBObjectIdDeleted {
 	public void setCaseType(int caseType) {
 		this.caseType = caseType;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -69,4 +69,14 @@ public class Diagnosis extends AbstractDBObjectIdDeleted {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String getLabel() {
+		return getText() + " (" + getCode() + ")";
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "text=[" + getText() + "] code=[" + getCode() + "]";
+	}
 }

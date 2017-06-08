@@ -10,6 +10,8 @@ import javax.persistence.Table;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 
+import ch.rgw.tools.StringTool;
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
@@ -115,6 +117,39 @@ public class Labor2009Tarif extends AbstractDBObjectIdDeleted {
 
 	public void setPraxistyp(String praxistyp) {
 		this.praxistyp = praxistyp;
+	}
+
+	@Override
+	public String getLabel() {
+		String code = getCode();
+		String text = StringTool.getFirstLine(getName(), 80);
+
+		if (!StringTool.isNothing(code)) {
+			StringBuilder sb = new StringBuilder(code).append(" ").append(text) //$NON-NLS-1$
+					.append(" (").append(getFachbereich()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+
+			TimeTool validFrom = null;
+			TimeTool validTo = null;
+			if (getGueltigVon() != null) {
+				validFrom = new TimeTool(getGueltigVon());
+			}
+			if (getGueltigBis() != null) {
+				validTo = new TimeTool(getGueltigBis());
+			}
+
+			if (validFrom != null) {
+				sb.append(" (").append(validFrom.toString(TimeTool.DATE_GER));
+				if (validTo != null) {
+					sb.append("-").append(validTo.toString(TimeTool.DATE_GER)).append(")");
+				} else {
+					sb.append("-").append(" ").append(")");
+				}
+			}
+
+			return sb.toString();
+		} else {
+			return "?"; //$NON-NLS-1$
+		}
 	}
 
 }

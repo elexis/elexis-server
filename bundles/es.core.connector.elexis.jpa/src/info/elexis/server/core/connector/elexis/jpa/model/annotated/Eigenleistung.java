@@ -62,4 +62,14 @@ public class Eigenleistung extends AbstractDBObjectIdDeleted {
 	public void setTime(String time) {
 		this.time = time;
 	}
+
+	@Override
+	public String getLabel() {
+		return getDescription() + " (" + getCode() + ")";
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "description=[" + getDescription() + "] code=[" + getCode() + "]";
+	}
 }

@@ -43,5 +43,11 @@ public class Role extends AbstractDBObjectIdDeletedExtInfo {
 	public void setRights(Collection<Right> rights) {
 		this.rights = rights;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -31,26 +31,21 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 64)
 	protected String salt;
-	
+
 	@Convert("booleanStringConverter")
 	@Column(name = "is_active")
 	protected boolean active;
-	
+
 	@Convert("booleanStringConverter")
 	@Column(name = "is_administrator")
 	protected boolean administrator;
-	
+
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected String keystore;
-	
+
 	@ManyToMany
-    @JoinTable(name="USER_ROLE_JOINT",
-                joinColumns=
-                     @JoinColumn(name="USER_ID"),
-                inverseJoinColumns=
-                     @JoinColumn(name="ID")
-    )
+	@JoinTable(name = "USER_ROLE_JOINT", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
 	protected Collection<Role> roles = new HashSet<>();
 
 	public Kontakt getKontakt() {
@@ -100,12 +95,25 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 	public void setKeystore(String keystore) {
 		this.keystore = keystore;
 	}
-	
+
 	public Collection<Role> getRoles() {
 		return roles;
 	}
-	
+
 	public void setRoles(Collection<Role> roles) {
 		this.roles = roles;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " kontakt=[" + kontakt + "] active=[" + active + "] administrator=[" + administrator
+				+ "]";
+	}
+
 }

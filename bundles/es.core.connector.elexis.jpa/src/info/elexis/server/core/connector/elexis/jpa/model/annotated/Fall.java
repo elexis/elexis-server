@@ -182,4 +182,15 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 		this.consultations = consultations;
 	}
 
+	@Override
+	public String getLabel() {
+		return getGrund() + " " + getBezeichnung() + " " + getDatumVon() + " " + getDatumBis();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "bezeichnung=[" + bezeichnung + "] datumVon=[" + datumVon + "] grund=[" + grund
+				+ "] patientKontakt=[" + patientKontakt + "]";
+	}
+
 }

@@ -119,4 +119,10 @@ public class TarmedKumulation extends AbstractDBObjectIdDeleted {
 	public void setValidTo(LocalDate validTo) {
 		this.validTo = validTo;
 	}
+
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

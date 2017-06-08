@@ -82,4 +82,9 @@ public class PhysioLeistung extends AbstractDBObjectIdDeleted {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	@Override
+	public String getLabel() {
+		return getZiffer() + " " + getTitel();
+	}
 }

@@ -93,4 +93,10 @@ public class Xid extends AbstractDBObjectIdDeleted {
 		this.quality = quality;
 	}
 
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

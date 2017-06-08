@@ -156,4 +156,9 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	public void setRezeptID(String rezeptID) {
 		this.rezeptID = rezeptID;
 	}
+
+	@Override
+	public String getLabel() {
+		return (getArtikel() != null ? getArtikel().getLabel() : "FEHLER") + " " + getDosis();
+	}
 }

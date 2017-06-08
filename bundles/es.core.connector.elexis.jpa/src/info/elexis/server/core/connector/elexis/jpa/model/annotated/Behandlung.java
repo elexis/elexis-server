@@ -108,4 +108,14 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	public void setEintrag(VersionedResource eintrag) {
 		this.eintrag = eintrag;
 	}
+
+	@Override
+	public String getLabel() {
+		return getDatum() + " " + getMandant() != null ? getMandant().getLabel() : "";
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "datum=[" + getDatum() + "] mandant=[" + getMandant() + "]";
+	}
 }

@@ -96,7 +96,13 @@ public class StockEntry extends AbstractDBObjectIdDeleted implements IStockEntry
 	
 	@Override
 	public String getLabel() {
-		return super.getLabel() + " articleId ["+getArticleId() + "] / min ["+getMinimumStock()+"] / current ["+getCurrentStock()+"]";
+		return "";
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString()+ " articleId=["+getArticleId() + "]  min=["+getMinimumStock()+"] current=["+getCurrentStock()+"]";
 	}
 
 	public Stock getStock() {

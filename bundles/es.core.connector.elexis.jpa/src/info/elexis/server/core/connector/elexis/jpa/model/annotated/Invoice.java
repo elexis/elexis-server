@@ -121,4 +121,15 @@ public class Invoice extends AbstractDBObjectIdDeletedExtInfo {
 		this.amount = amount;
 	}
 
+	@Override
+	public String getLabel() {
+		return getFall() + " " + getNumber() + " " + getInvoiceDate() + getAmount();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " number=[" + number + "] fall=[" + fall + "] invoiceDate=[" + invoiceDate
+				+ "] amount=[" + amount + "]";
+	}
+
 }
