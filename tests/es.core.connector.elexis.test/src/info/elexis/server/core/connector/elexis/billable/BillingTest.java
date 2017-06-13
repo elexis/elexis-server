@@ -82,6 +82,7 @@ public class BillingTest extends AbstractServiceTest {
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
 		createTestMandantPatientFallBehandlung();
+		createTestMandantPatientFallBehandlung();
 	}
 
 	@After
@@ -400,6 +401,7 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(1, vr.getZahl());
 		assertEquals(300, vr.getVk_preis());
 		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
 
 		ArtikelService.remove(ea1);
 	}
@@ -434,6 +436,10 @@ public class BillingTest extends AbstractServiceTest {
 
 		IStatus valid = VerrechnetService.changeCountValidated(vr, 3, mandator);
 		assertTrue(valid.isOK());
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertEquals(3, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
 
 		List<Verrechnet> allVerrechnet = VerrechnetService.getAllVerrechnetForBehandlung(vr.getBehandlung());
 		assertEquals(1, allVerrechnet.size());
@@ -483,8 +489,11 @@ public class BillingTest extends AbstractServiceTest {
 		ObjectStatus os = (ObjectStatus) status;
 		Verrechnet vr = (Verrechnet) os.getObject();
 		IStatus ccStatus = VerrechnetService.changeCountValidated(vr, 2, null);
-
 		assertTrue(ccStatus.isOK());
+		vr = (Verrechnet) ((ObjectStatus) ccStatus).getObject();
+		assertEquals(2, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
 
 		List<Verrechnet> allVerrechnetForBehandlung = VerrechnetService
 				.getAllVerrechnetForBehandlung(testBehandlungen.get(3));
@@ -592,5 +601,59 @@ public class BillingTest extends AbstractServiceTest {
 		matches.add(new VerrechnetMatch("00.0140-20010101", 1));
 		matches.add(new VerrechnetMatch("00.0510-20010101", 2));
 		VerrechnetMatch.assertVerrechnetMatch(behandlung, matches);
+	}
+
+	@Test
+	public void testChangeCountToFractionalOnVerrechnetValid() {
+		Optional<ArtikelstammItem> artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264");
+		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem.get());
+
+		IStatus status = verrechenbar.add(testBehandlungen.get(5), userContact, mandator);
+		assertTrue(status.getMessage(), status.isOK());
+		ObjectStatus os = (ObjectStatus) status;
+		vr = (Verrechnet) os.getObject();
+		assertNotNull(vr);
+
+		IStatus valid = VerrechnetService.changeCountValidated(vr, 0.2f, mandator);
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertTrue(valid.isOK());
+		assertEquals(1, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(20, vr.getScale2());
+		
+		valid = VerrechnetService.changeCountValidated(vr, 2, mandator);
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertTrue(valid.isOK());
+		assertEquals(2, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
+
+		valid = VerrechnetService.changeCountValidated(vr, 1.6f, mandator);
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertTrue(valid.isOK());
+		assertEquals(1, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(160, vr.getScale2());
+		
+		valid = VerrechnetService.changeCountValidated(vr, 1, mandator);
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertTrue(valid.isOK());
+		assertEquals(1, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
+		
+		valid = VerrechnetService.changeCountValidated(vr, 3, mandator);
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertTrue(valid.isOK());
+		assertEquals(3, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(100, vr.getScale2());
+		
+		valid = VerrechnetService.changeCountValidated(vr, 0.5f, mandator);
+		vr = (Verrechnet) ((ObjectStatus) valid).getObject();
+		assertTrue(valid.isOK());
+		assertEquals(1, vr.getZahl());
+		assertEquals(100, vr.getScale());
+		assertEquals(50, vr.getScale2());
 	}
 }
