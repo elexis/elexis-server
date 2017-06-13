@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.model.article.IArticle;
+import ch.elexis.core.status.ObjectStatus;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
@@ -171,9 +172,33 @@ public class VerrechnetService extends PersistenceService {
 		return 1.0;
 	}
 
+	/**
+	 * Perform a validated (returns Status error on fail) change on the count of
+	 * the {@link Verrechnet}
+	 * 
+	 * @param verrechnet
+	 * @param newCount
+	 * @param mandatorContact
+	 * @return {@link ObjectStatus} containing the refreshed {@link Verrechnet}
+	 *         if {@link Status#OK_STATUS}, else an {@link IStatus}
+	 */
 	public static IStatus changeCountValidated(Verrechnet verrechnet, int newCount, Kontakt mandatorContact) {
+		return changeCountValidated(verrechnet, (float) newCount, mandatorContact);
+	}
+
+	/**
+	 * Perform a validated (returns Status error on fail) change on the count of
+	 * the {@link Verrechnet}
+	 * 
+	 * @param verrechnet
+	 * @param newCount
+	 * @param mandatorContact
+	 * @return {@link ObjectStatus} containing the refreshed {@link Verrechnet}
+	 *         if {@link Status#OK_STATUS}, else an {@link IStatus}
+	 */
+	public static IStatus changeCountValidated(Verrechnet verrechnet, float newCount, Kontakt mandatorContact) {
 		int previous = verrechnet.getZahl();
-		if (newCount == previous) {
+		if (newCount == previous && verrechnet.getScale() == 100 && verrechnet.getScale2() == 100) {
 			return Status.OK_STATUS;
 		}
 
@@ -187,21 +212,35 @@ public class VerrechnetService extends PersistenceService {
 			}
 		}
 
-		int difference = newCount - previous;
-		if (difference > 0) {
-			// addition
-			for (int i = 0; i < difference; i++) {
-				IStatus ret = verrechenbar.get().add(verrechnet.getBehandlung(), verrechnet.getUser(), mandatorContact);
-				if (!ret.isOK()) {
-					return ret;
+		if (newCount % 1 == 0) {
+			// integer -> full package
+			int difference = (int) newCount - previous;
+			if (difference > 0) {
+				// addition
+				for (int i = 0; i < difference; i++) {
+					IStatus ret = verrechenbar.get().add(verrechnet.getBehandlung(), verrechnet.getUser(),
+							mandatorContact);
+					if (!ret.isOK()) {
+						return ret;
+					}
 				}
+				return ObjectStatus.OK_STATUS(VerrechnetService.reload(verrechnet).get());
+			} else {
+				// subtraction, we assume that this will never fail
+				verrechnet.setZahl((int) newCount);
+				verrechnet.setScale(100);
+				verrechnet.setScale2(100);
+				return ObjectStatus.OK_STATUS(VerrechnetService.save(verrechnet));
 			}
 		} else {
-			// subtraction, we assume that this will never fail
-			verrechnet.setZahl(newCount);
-			VerrechnetService.save(verrechnet);
+			// float -> fractional package
+			verrechnet.setZahl(1);
+
+			verrechnet.setScale(100);
+			int scale2 = Math.round(newCount * 100);
+			verrechnet.setScale2(scale2);
+			return ObjectStatus.OK_STATUS(VerrechnetService.save(verrechnet));
 		}
-		return Status.OK_STATUS;
 	}
 
 	public static List<Verrechnet> getAllVerrechnetForBehandlung(Behandlung behandlung) {
