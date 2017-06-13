@@ -39,8 +39,16 @@ public class LabOrderService extends PersistenceService {
 		return query.execute();
 	}
 
+	/**
+	 * Find all {@link LabResult} entries for a given {@link LabOrder} id group.
+	 * Excludes {@link LabResult} marked as deleted.
+	 * 
+	 * @param labOrder
+	 * @return
+	 */
 	public static List<LabResult> findAllLabResultsForLabOrderIdGroup(LabOrder labOrder) {
 		List<LabOrder> ordersWithResult = findAllLabOrdersInSameOrderIdGroupWithResults(labOrder);
-		return ordersWithResult.stream().map(owr -> owr.getResult()).collect(Collectors.toList());
+		return ordersWithResult.stream().map(owr -> owr.getResult()).filter(result -> !result.isDeleted())
+				.collect(Collectors.toList());
 	}
 }
