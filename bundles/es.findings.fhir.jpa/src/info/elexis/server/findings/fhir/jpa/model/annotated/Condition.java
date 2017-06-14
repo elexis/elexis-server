@@ -32,4 +32,9 @@ public class Condition extends AbstractDBObjectIdDeleted {
 	public void setContent(String content) {
 		this.content = content;
 	}
+
+	@Override
+	public String getLabel() {
+		return toString();
+	}
 }

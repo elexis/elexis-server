@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
@@ -13,11 +13,13 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IObservation;
-import ch.elexis.core.findings.util.ModelUtil;
+import ch.elexis.core.findings.util.fhir.accessor.ObservationAccessor;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Observation;
 
 public class ObservationModelAdapter extends AbstractModelAdapter<Observation> implements IObservation {
+
+	private ObservationAccessor accessor = new ObservationAccessor();
 
 	public ObservationModelAdapter(Observation model) {
 		super(model);
@@ -37,9 +39,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 	public void setPatientId(String patientId) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Observation fhirObservation = (org.hl7.fhir.dstu3.model.Observation) resource
-					.get();
-			fhirObservation.setSubject(new Reference(new IdDt("Patient", patientId)));
+			accessor.setPatientId((DomainResource) resource.get(), patientId);
 			saveResource(resource.get());
 		}
 
@@ -50,12 +50,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 	public List<ICoding> getCoding() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Observation fhirObservation = (org.hl7.fhir.dstu3.model.Observation) resource
-					.get();
-			CodeableConcept codeableConcept = fhirObservation.getCode();
-			if (codeableConcept != null) {
-				return ModelUtil.getCodingsFromConcept(codeableConcept);
-			}
+			return accessor.getCoding((DomainResource) resource.get());
 		}
 		return Collections.emptyList();
 	}
@@ -64,14 +59,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 	public void setCoding(List<ICoding> coding) {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent()) {
-			org.hl7.fhir.dstu3.model.Observation fhirObservation = (org.hl7.fhir.dstu3.model.Observation) resource
-					.get();
-			CodeableConcept codeableConcept = fhirObservation.getCode();
-			if (codeableConcept == null) {
-				codeableConcept = new CodeableConcept();
-			}
-			ModelUtil.setCodingsToConcept(codeableConcept, coding);
-			fhirObservation.setCode(codeableConcept);
+			accessor.setCoding((DomainResource) resource.get(), coding);
 			saveResource(resource.get());
 		}
 	}
@@ -110,7 +98,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.Observation fhirObservation = (org.hl7.fhir.dstu3.model.Observation) resource
 					.get();
-			fhirObservation.setEncounter(new Reference(new IdDt("Encounter", encounter.getId())));
+			fhirObservation.setContext(new Reference(new IdDt("Encounter", encounter.getId())));
 
 			saveResource(resource.get());
 		}
@@ -149,25 +137,37 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 
 	@Override
 	public Optional<LocalDateTime> getEffectiveTime() {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			return accessor.getEffectiveTime((DomainResource) resource.get());
+		}
+		return Optional.empty();
 	}
 
 	@Override
 	public void setEffectiveTime(LocalDateTime time) {
-		// TODO Auto-generated method stub
-
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			accessor.setEffectiveTime((DomainResource) resource.get(), time);
+			saveResource(resource.get());
+		}
 	}
 
 	@Override
 	public ObservationCategory getCategory() {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			return accessor.getCategory((DomainResource) resource.get());
+		}
+		return ObservationCategory.UNKNOWN;
 	}
 
 	@Override
 	public void setCategory(ObservationCategory category) {
-		// TODO Auto-generated method stub
-
+		Optional<IBaseResource> resource = loadResource();
+		if (resource.isPresent()) {
+			accessor.setCategory((DomainResource) resource.get(), category);
+			saveResource(resource.get());
+		}
 	}
 }

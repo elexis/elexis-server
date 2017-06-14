@@ -71,7 +71,7 @@ public class FindingsFactory implements IFindingsFactory {
 		ConditionModelAdapter ret = new ConditionModelAdapter(conditionService.create());
 		org.hl7.fhir.dstu3.model.Condition fhirCondition = new org.hl7.fhir.dstu3.model.Condition();
 		fhirCondition.setId(new IdType(fhirCondition.getClass().getSimpleName(), ret.getId()));
-		fhirCondition.setDateRecorded(new Date());
+		fhirCondition.setAssertedDate(new Date());
 		ModelUtil.saveResource(fhirCondition, ret);
 		saveFinding(ret);
 		return ret;

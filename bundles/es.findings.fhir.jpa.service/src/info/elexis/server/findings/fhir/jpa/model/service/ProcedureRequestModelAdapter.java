@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +113,7 @@ public class ProcedureRequestModelAdapter extends AbstractModelAdapter<Procedure
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.ProcedureRequest fhirProcedureRequest = (org.hl7.fhir.dstu3.model.ProcedureRequest) resource
 					.get();
-			fhirProcedureRequest.setEncounter(new Reference(new IdDt("Encounter", encounter.getId())));
+			fhirProcedureRequest.setContext(new Reference(new IdDt("Encounter", encounter.getId())));
 
 			saveResource(resource.get());
 		}
@@ -133,8 +133,8 @@ public class ProcedureRequestModelAdapter extends AbstractModelAdapter<Procedure
 			org.hl7.fhir.dstu3.model.ProcedureRequest fhirProcedureRequest = (org.hl7.fhir.dstu3.model.ProcedureRequest) resource
 					.get();
 			try {
-				if (fhirProcedureRequest.hasScheduledDateTimeType()) {
-					return Optional.of(getLocalDateTime(fhirProcedureRequest.getScheduledDateTimeType().getValue()));
+				if (fhirProcedureRequest.hasOccurrence()) {
+					return Optional.of(getLocalDateTime(fhirProcedureRequest.getOccurrenceDateTimeType().getValue()));
 				}
 			} catch (FHIRException e) {
 				LoggerFactory.getLogger(ProcedureRequestModelAdapter.class).error("Could not access scheduled time.",
@@ -150,7 +150,7 @@ public class ProcedureRequestModelAdapter extends AbstractModelAdapter<Procedure
 		if (resource.isPresent()) {
 			org.hl7.fhir.dstu3.model.ProcedureRequest fhirProcedureRequest = (org.hl7.fhir.dstu3.model.ProcedureRequest) resource
 					.get();
-			fhirProcedureRequest.setScheduled(new DateTimeType(getDate(time)));
+			fhirProcedureRequest.setOccurrence(new DateTimeType(getDate(time)));
 
 			saveResource(resource.get());
 		}

@@ -78,7 +78,7 @@ public class MigratorService implements IMigratorService {
 					ICondition condition = findingsService.getFindingsFactory()
 							.createCondition();
 					condition.setPatientId(patientId);
-					condition.setCategory(ConditionCategory.DIAGNOSIS);
+					condition.setCategory(ConditionCategory.PROBLEMLISTITEM);
 					condition.setText(diagnosis);
 					findingsService.saveFinding(condition);
 				}
@@ -87,7 +87,8 @@ public class MigratorService implements IMigratorService {
 	}
 
 	private boolean isDiagnose(IFinding iFinding) {
-		return iFinding instanceof ICondition && ((ICondition) iFinding).getCategory() == ConditionCategory.DIAGNOSIS;
+		return iFinding instanceof ICondition
+				&& ((ICondition) iFinding).getCategory() == ConditionCategory.PROBLEMLISTITEM;
 	}
 
 	private void migratePatientEncounters(String patientId) {
