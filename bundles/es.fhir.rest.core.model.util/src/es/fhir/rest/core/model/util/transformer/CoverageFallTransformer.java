@@ -1,9 +1,9 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.Period;
 import org.osgi.service.component.annotations.Component;
@@ -31,9 +31,9 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 		coverage.setId(new IdDt("Coverage", localObject.getId()));
 		coverage.addIdentifier(getElexisObjectIdentifier(localObject));
 
-		coverage.setBin(fallHelper.getBin(localObject));
+		coverage.setDependent(fallHelper.getDependent(localObject));
 		coverage.setBeneficiary(fallHelper.getBeneficiaryReference(localObject));
-		coverage.setIssuer(fallHelper.getIssuerReference(localObject));
+		coverage.setPayor(Collections.singletonList(fallHelper.getIssuerReference(localObject)));
 		coverage.setPeriod(fallHelper.getPeriod(localObject));
 
 		fallHelper.getType(localObject).ifPresent(coding -> {
@@ -64,33 +64,29 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 
 	@Override
 	public Optional<Fall> createLocalObject(Coverage fhirObject) {
-		if (fhirObject.hasBeneficiaryReference()) {
-			try {
-				Optional<Kontakt> patient = KontaktService
-						.load(fhirObject.getBeneficiaryReference().getReferenceElement().getIdPart());
-				Optional<String> type = fallHelper.getType(fhirObject);
-				if (patient.isPresent() && type.isPresent()) {
-					Fall created = new FallService.Builder(patient.get(), "online created", FallConstants.TYPE_DISEASE,
-							type.get()).buildAndSave();
-					String bin = fhirObject.getBin();
-					if (bin != null) {
-						fallHelper.setBin(created, bin);
-					}
-					Period period = fhirObject.getPeriod();
-					if (period != null && period.getStart() != null) {
-						fallHelper.setPeriod(created, fhirObject.getPeriod());
-					} else {
-						created.setDatumVon(LocalDate.now());
-					}
-					created = (Fall) FallService.save(created);
-					AbstractHelper.acquireAndReleaseLock(created);
-					return Optional.of(created);
-				} else {
-					LoggerFactory.getLogger(CoverageFallTransformer.class)
-							.warn("Could not create fall for patinet [" + patient + "] type [" + type + "]");
+		if (fhirObject.hasBeneficiary()) {
+			Optional<Kontakt> patient = KontaktService
+					.load(fhirObject.getBeneficiary().getReferenceElement().getIdPart());
+			Optional<String> type = fallHelper.getType(fhirObject);
+			if (patient.isPresent() && type.isPresent()) {
+				Fall created = new FallService.Builder(patient.get(), "online created", FallConstants.TYPE_DISEASE,
+						type.get()).buildAndSave();
+				String dependent = fhirObject.getDependent();
+				if (dependent != null) {
+					fallHelper.setBin(created, dependent);
 				}
-			} catch (FHIRException e) {
-				LoggerFactory.getLogger(CoverageFallTransformer.class).error("Could not create local object.", e);
+				Period period = fhirObject.getPeriod();
+				if (period != null && period.getStart() != null) {
+					fallHelper.setPeriod(created, fhirObject.getPeriod());
+				} else {
+					created.setDatumVon(LocalDate.now());
+				}
+				created = (Fall) FallService.save(created);
+				AbstractHelper.acquireAndReleaseLock(created);
+				return Optional.of(created);
+			} else {
+				LoggerFactory.getLogger(CoverageFallTransformer.class)
+						.warn("Could not create fall for patinet [" + patient + "] type [" + type + "]");
 			}
 		}
 		return Optional.empty();

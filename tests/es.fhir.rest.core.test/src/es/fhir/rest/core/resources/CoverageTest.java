@@ -11,15 +11,16 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -54,7 +55,7 @@ public class CoverageTest {
 				.execute();
 		// search by BENEFICIARY
 		Bundle results = client.search().forResource(Coverage.class)
-				.where(Coverage.BENEFICIARY_REFERENCE.hasId(readPatient.getId()))
+				.where(Coverage.BENEFICIARY.hasId(readPatient.getId()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
@@ -72,7 +73,8 @@ public class CoverageTest {
 		Coverage coverage = new Coverage();
 		// minimal coverage information
 		coverage.setBeneficiary(new Reference(new IdDt("Patient", TestDatabaseInitializer.getPatient().getId())));
-		coverage.setType(new Coding(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "KVG", ""));
+		coverage.setType(
+				new CodeableConcept().addCoding(new Coding(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "KVG", "")));
 		
 		MethodOutcome outcome = client.create().resource(coverage).execute();
 		assertNotNull(outcome);
@@ -97,20 +99,21 @@ public class CoverageTest {
 				.withId(TestDatabaseInitializer.getFall().getId()).execute();
 		assertNotNull(readCoverage);
 
-		Reference beneficiary = readCoverage.getBeneficiaryReference();
+		Reference beneficiary = readCoverage.getBeneficiary();
 		assertNotNull(beneficiary);
 		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(),
 				beneficiary.getReference());
-		Reference issuer = readCoverage.getIssuerReference();
-		assertNotNull(issuer);
+		List<Reference> payors = readCoverage.getPayor();
+		assertNotNull(payors);
+		assertFalse(payors.isEmpty());
 		assertEquals("Organization/" + TestDatabaseInitializer.getOrganization().getId(),
-				issuer.getReference());
+				payors.get(0).getReference());
 		Period period = readCoverage.getPeriod();
 		assertNotNull(period);
 		assertEquals(LocalDate.of(2016, Month.SEPTEMBER, 1),
 				AllTests.getLocalDateTime(period.getStart()).toLocalDate());
 		assertTrue(period.getEnd() == null);
-		assertEquals("1234-5678", readCoverage.getBin());
+		assertEquals("1234-5678", readCoverage.getDependent());
 
 		Narrative narrative = readCoverage.getText();
 		assertNotNull(narrative);

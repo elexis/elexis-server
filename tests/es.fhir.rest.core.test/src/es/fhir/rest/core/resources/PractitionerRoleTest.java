@@ -11,10 +11,12 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
@@ -22,9 +24,8 @@ import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Organization;
 import org.hl7.fhir.dstu3.model.Practitioner;
-import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
+import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,9 +34,11 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.findings.util.ModelUtil;
 import es.fhir.rest.core.test.AllTests;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.core.connector.elexis.services.UserService;
 
-public class PractitionerTest {
+public class PractitionerRoleTest {
 
 	private static IGenericClient client;
 
@@ -49,33 +52,20 @@ public class PractitionerTest {
 	}
 
 	@Test
-	public void getPractitioner() {
-		// search by name
-		Bundle results = client.search().forResource(Practitioner.class)
-				.where(Organization.NAME.matches().value("Test")).returnBundle(Bundle.class).execute();
-		assertNotNull(results);
-		List<BundleEntryComponent> entries = results.getEntry();
-		assertFalse(entries.isEmpty());
-		Practitioner practitioner = (Practitioner) entries.get(0).getResource();
-		// read with by id
-		Practitioner readPractitioner = client.read().resource(Practitioner.class).withId(practitioner.getId())
-				.execute();
-		assertNotNull(readPractitioner);
-		assertEquals(practitioner.getId(), readPractitioner.getId());
-
+	public void getPractitionerRole() {
 		// search by role
-		results = client.search()
-				.forResource(Practitioner.class).where(Practitioner.ROLE.exactly()
+		Bundle results = client.search()
+				.forResource(PractitionerRole.class).where(PractitionerRole.ROLE.exactly()
 						.systemAndCode(PractitionerRoleEnum.DOCTOR.getSystem(), PractitionerRoleEnum.DOCTOR.getCode()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
-		entries = results.getEntry();
+		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
-		practitioner = (Practitioner) entries.get(0).getResource();
-		List<PractitionerRoleComponent> roles = practitioner.getRole();
+		PractitionerRole practitionerRole = (PractitionerRole) entries.get(0).getResource();
+		List<CodeableConcept> roles = practitionerRole.getCode();
 		boolean doctorRoleFound = false;
-		for (PractitionerRoleComponent practitionerRoleComponent : roles) {
-			List<Coding> codings = practitionerRoleComponent.getCode().getCoding();
+		for (CodeableConcept role : roles) {
+			List<Coding> codings = role.getCoding();
 			for (Coding coding : codings) {
 				if (coding.getSystem().equals(PractitionerRoleEnum.DOCTOR.getSystem())
 						&& coding.getCode().equals(PractitionerRoleEnum.DOCTOR.getCode())) {
@@ -92,8 +82,15 @@ public class PractitionerTest {
 	 */
 	@Test
 	public void getPractitionerProperties() {
+		Optional<User> user = UserService.findByKontakt(TestDatabaseInitializer.getMandant());
+		assertTrue(user.isPresent());
+		PractitionerRole readPractitionerRole = client.read().resource(PractitionerRole.class)
+				.withId(user.get().getId()).execute();
+		assertNotNull(readPractitionerRole);
+		assertNotNull(readPractitionerRole.getPractitioner());
+
 		Practitioner readPractitioner = client.read().resource(Practitioner.class)
-				.withId(TestDatabaseInitializer.getMandant().getId()).execute();
+				.withId(readPractitionerRole.getPractitioner().getReferenceElement().getIdPart()).execute();
 		assertNotNull(readPractitioner);
 
 		List<HumanName> names = readPractitioner.getName();
@@ -104,7 +101,7 @@ public class PractitionerTest {
 		HumanName name = names.get(0);
 		assertNotNull(name);
 		assertEquals(NameUse.OFFICIAL, name.getUse());
-		assertEquals("Mandant", name.getFamilyAsSingleString());
+		assertEquals("Mandant", name.getFamily());
 		assertEquals("Test", name.getGivenAsSingleString());
 
 		HumanName sysName = names.get(1);

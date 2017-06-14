@@ -52,7 +52,6 @@ location "http://download.eclipse.org/eclipse/updates/4.6/" {
 	javax.annotation
 	javax.xml
 	javax.inject
-	org.apache.commons.io
 }
 
 location "http://download.eclipse.org/releases/neon" {
@@ -167,6 +166,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.unbescape
 	com.auth0.java-jwt
 	org.slf4j.osgi-over-slf4j
+	org.springframework.spring-web
+	org.apache.commons.io
 }
 
 // RestFuse

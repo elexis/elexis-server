@@ -136,6 +136,7 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 		Optional<String> codeCode = CodeTypeUtil.getCode(categoryCode);
 
 		ConditionCategory category = iCondition.getCategory();
-		return category.name().equalsIgnoreCase(codeCode.orElse(""));
+		return category.name().equalsIgnoreCase(codeCode.orElse(""))
+				|| category.getCode().equalsIgnoreCase(codeCode.orElse(""));
 	}
 }

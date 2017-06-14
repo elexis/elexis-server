@@ -2,15 +2,13 @@ package es.fhir.rest.core.model.util.transformer.helper;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Practitioner.PractitionerRoleComponent;
 
 import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ch.elexis.core.findings.codes.CodingSystem;
 
 public class MandantHelper extends AbstractHelper {
 
-	public PractitionerRoleComponent getPractitionerRoleComponent(String roleId) {
-		PractitionerRoleComponent component = new PractitionerRoleComponent();
+	public CodeableConcept getPractitionerRoleCode(String roleId) {
 		CodeableConcept code = new CodeableConcept();
 		if ("assistant".equals(roleId)) {
 			code.addCoding(
@@ -24,8 +22,6 @@ public class MandantHelper extends AbstractHelper {
 		} else {
 			code.addCoding(new Coding(CodingSystem.ELEXIS_PRACTITIONER_ROLE.getSystem(), roleId, roleId));
 		}
-		component.setCode(code);
-		return component;
+		return code;
 	}
-
 }

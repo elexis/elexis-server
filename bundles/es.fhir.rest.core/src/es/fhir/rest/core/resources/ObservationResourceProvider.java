@@ -8,23 +8,27 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.persistence.queries.ScrollableCursor;
-import org.hl7.fhir.dstu3.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Observation;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
@@ -190,8 +194,14 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 		ArrayList<Observation> ret = new ArrayList<>();
 		try {
 			for (Observation observation : observations) {
-				if (DateRangeParamUtil.isDateInRange(observation.getEffectiveDateTimeType(), dates)) {
-					ret.add(observation);
+				if (observation.hasEffectiveDateTimeType()) {
+					if (DateRangeParamUtil.isDateInRange(observation.getEffectiveDateTimeType(), dates)) {
+						ret.add(observation);
+					}
+				} else if (observation.hasEffectivePeriod()) {
+					if (DateRangeParamUtil.isPeriodInRange(observation.getEffectivePeriod(), dates)) {
+						ret.add(observation);
+					}
 				}
 			}
 		} catch (FHIRException fe) {
@@ -204,6 +214,28 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 		Optional<String> codeCode = CodeTypeUtil.getCode(observationCode);
 
 		ObservationCategory category = iObservation.getCategory();
+		if (category == null) {
+			return false;
+		}
 		return category.name().equalsIgnoreCase(codeCode.orElse("").replaceAll("-", ""));
+	}
+
+	@Create
+	public MethodOutcome createObservation(@ResourceParam Observation observation) {
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<IObservation> exists = getTransformer().getLocalObject(observation);
+		if (exists.isPresent()) {
+			outcome.setCreated(false);
+			outcome.setId(new IdType(observation.getId()));
+		} else {
+			Optional<IObservation> created = getTransformer().createLocalObject(observation);
+			if (created.isPresent()) {
+				outcome.setCreated(true);
+				outcome.setId(new IdType(created.get().getId()));
+			} else {
+				throw new InternalErrorException("Creation failed");
+			}
+		}
+		return outcome;
 	}
 }

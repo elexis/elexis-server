@@ -82,7 +82,7 @@ public class PatientTest {
 		assertFalse(names.isEmpty());
 		HumanName name = names.get(0);
 		assertNotNull(name);
-		assertEquals("Patient", name.getFamilyAsSingleString());
+		assertEquals("Patient", name.getFamily());
 		assertEquals("Test", name.getGivenAsSingleString());
 		Date dob = readPatient.getBirthDate();
 		assertNotNull(dob);

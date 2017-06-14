@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="es.fhir.rest.core.model.util.transformer.ObservationIObservationTransformer">
+   <service>
+      <provide interface="es.fhir.rest.core.IFhirTransformer"/>
+   </service>
+   <reference bind="bindICodingService" cardinality="1..1" interface="ch.elexis.core.findings.codes.ICodingService" name="ICodingService" policy="static"/>
+   <reference bind="bindIFindingsService" cardinality="1..1" interface="ch.elexis.core.findings.IFindingsService" name="IFindingsService" policy="static"/>
+   <implementation class="es.fhir.rest.core.model.util.transformer.ObservationIObservationTransformer"/>
+</scr:component>

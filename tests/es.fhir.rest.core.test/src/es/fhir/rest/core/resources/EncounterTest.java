@@ -20,16 +20,19 @@ import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.instance.model.valuesets.ConditionCategory;
+import org.hl7.fhir.dstu3.model.codesystems.ConditionCategory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ch.elexis.core.findings.IObservation.ObservationCategory;
+import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.findings.util.ModelUtil;
 import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
@@ -93,22 +96,12 @@ public class EncounterTest {
 
 	@Test
 	public void createEncounter() {
-		Condition subjective = new Condition();
-		Narrative narrative = new Narrative();
-		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
-		narrative.setDivAsString(divEncodedText);
-		subjective.setText(narrative);
-		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		subjective.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
-				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
-		MethodOutcome subjectiveOutcome = client.create().resource(subjective).execute();
-
 		Condition problem = new Condition();
 		problem.setCode(
 				new CodeableConcept().addCoding(new Coding("http://hl7.org/fhir/sid/icpc-2", "A04", "Müdigkeit")));
 		problem.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		problem.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.DIAGNOSIS.getSystem(),
-				ConditionCategory.DIAGNOSIS.toCode(), ConditionCategory.DIAGNOSIS.getDisplay())));
+		problem.addCategory().addCoding(new Coding(ConditionCategory.PROBLEMLISTITEM.getSystem(),
+				ConditionCategory.PROBLEMLISTITEM.toCode(), ConditionCategory.PROBLEMLISTITEM.getDisplay()));
 		MethodOutcome problemOutcome = client.create().resource(problem).execute();
 
 		Encounter encounter = new Encounter();
@@ -117,11 +110,9 @@ public class EncounterTest {
 		encounter.addParticipant(participant);
 		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
 				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
-		encounter.setPatient(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		encounter.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
 
-		encounter.addIndication(
-				new Reference(new IdType(subjective.getResourceType().name(), subjectiveOutcome.getId().getIdPart())));
-		encounter.addIndication(
+		encounter.addDiagnosis().setCondition(
 				new Reference(new IdType(problem.getResourceType().name(), problemOutcome.getId().getIdPart())));
 
 		encounter.addType(new CodeableConcept()
@@ -132,6 +123,19 @@ public class EncounterTest {
 		assertTrue(outcome.getCreated());
 		assertNotNull(outcome.getId());
 
+		// add subjective to the encounter
+		Observation subjective = new Observation();
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		subjective.setText(narrative);
+		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		subjective.addCategory().addCoding(new Coding(IdentifierSystem.ELEXIS_SOAP.getSystem(),
+				ObservationCategory.SOAP_SUBJECTIVE.getCode(), ObservationCategory.SOAP_SUBJECTIVE.getLocalized()));
+		subjective.setContext(new Reference(new IdType(encounter.getResourceType().name(), encounter.getId())));
+		MethodOutcome subjectiveOutcome = client.create().resource(subjective).execute();
+		assertTrue(subjectiveOutcome.getCreated());
+		
 		Encounter readEncounter = client.read().resource(Encounter.class).withId(outcome.getId()).execute();
 		assertNotNull(readEncounter);
 		assertEquals(outcome.getId().getIdPart(), readEncounter.getIdElement().getIdPart());
@@ -152,7 +156,7 @@ public class EncounterTest {
 		Encounter encounter = (Encounter) entries.get(0).getResource();
 
 		assertEquals(TestDatabaseInitializer.getMandant().getId(), getMandatorId(encounter));
-		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), encounter.getPatient().getReference());
+		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), encounter.getSubject().getReference());
 		List<CodeableConcept> typeConcepts = encounter.getType();
 		assertNotNull(typeConcepts);
 		assertFalse(typeConcepts.isEmpty());

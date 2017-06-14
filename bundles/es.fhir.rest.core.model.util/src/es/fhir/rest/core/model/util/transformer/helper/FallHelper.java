@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.Period;
@@ -18,7 +19,7 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 public class FallHelper extends AbstractHelper {
 
-	public String getBin(Fall fall) {
+	public String getDependent(Fall fall) {
 		String ret = fall.getVersNummer();
 		if (ret == null) {
 			ret = fall.getExtInfoAsString("Versicherungsnummer");
@@ -112,21 +113,24 @@ public class FallHelper extends AbstractHelper {
 		return ret.toString();
 	}
 
-	public Optional<Coding> getType(Fall fall) {
+	public Optional<CodeableConcept> getType(Fall fall) {
+		CodeableConcept ret = new CodeableConcept();
 		String billingSystem = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
 		if (billingSystem != null) {
-			Coding ret = new Coding();
-			ret.setSystem(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem());
-			ret.setCode(billingSystem);
-			return Optional.of(ret);
+			Coding coding = new Coding();
+			coding.setSystem(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem());
+			coding.setCode(billingSystem);
+			ret.addCoding(coding);
 		}
-		return null;
+		return Optional.of(ret);
 	}
 
 	public Optional<String> getType(Coverage fhirObject) {
-		Coding fhirType = fhirObject.getType();
-		if (fhirType.getSystem().equals(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem())) {
-			return Optional.ofNullable(fhirType.getCode());
+		CodeableConcept fhirType = fhirObject.getType();
+		for (Coding coding : fhirType.getCoding()) {
+			if (coding.getSystem().equals(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem())) {
+				return Optional.ofNullable(coding.getCode());
+			}
 		}
 		return Optional.empty();
 	}

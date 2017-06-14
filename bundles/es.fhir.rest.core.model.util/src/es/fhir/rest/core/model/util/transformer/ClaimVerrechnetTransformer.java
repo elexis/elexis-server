@@ -6,10 +6,11 @@ import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.Claim.CoverageComponent;
 import org.hl7.fhir.dstu3.model.Claim.DiagnosisComponent;
+import org.hl7.fhir.dstu3.model.Claim.InsuranceComponent;
 import org.hl7.fhir.dstu3.model.Claim.ItemComponent;
 import org.hl7.fhir.dstu3.model.Claim.SpecialConditionComponent;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Reference;
@@ -79,9 +80,8 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return Optional.of(claimContext.bill());
 		} else {
 			LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
-					.warn("Could not create claim for coverrage [" + fhirObject.getCoverage() + "] item ["
-							+ fhirObject.getItem() + "] diagnosis [" + fhirObject.getDiagnosis() + "] provider ["
-							+ fhirObject.getProvider() + "]");
+					.warn("Could not create claim for item [" + fhirObject.getItem() + "] diagnosis ["
+							+ fhirObject.getDiagnosis() + "] provider [" + fhirObject.getProvider() + "]");
 		}
 		return Optional.empty();
 	}
@@ -143,14 +143,14 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 	private class ClaimContext {
 
 		private Claim claim;
-		private List<CoverageComponent> coverages;
+		private List<InsuranceComponent> coverages;
 		private List<ItemComponent> items;
 		private List<DiagnosisComponent> diagnosis;
 		private Reference providerRef;
 
 		public ClaimContext(Claim fhirObject) {
 			this.claim = fhirObject;
-			this.coverages = fhirObject.getCoverage();
+			this.coverages = fhirObject.getInsurance();
 			this.items = fhirObject.getItem();
 			this.diagnosis = fhirObject.getDiagnosis();
 			this.providerRef = (Reference) fhirObject.getProvider();
@@ -179,7 +179,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 							AbstractHelper.releaseLock(lockInfo.get());
 						}
 					}
-					
+
 					for (Diagnosis diag : diagnose) {
 						BehandlungService.setDiagnosisOnConsultation(cons, diag);
 					}
@@ -203,12 +203,15 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 		private List<BillableContext> getBillableContexts(List<ItemComponent> items) {
 			List<BillableContext> ret = new ArrayList<>();
 			for (ItemComponent itemComponent : items) {
-				Coding serviceCoding = itemComponent.getService();
+				CodeableConcept serviceCoding = itemComponent.getService();
 				if (serviceCoding != null) {
-					Optional<IBillable<?>> billable = getBillable(serviceCoding.getSystem(), serviceCoding.getCode());
-					Optional<Integer> amount = getAmount(itemComponent);
-					if(billable.isPresent() && amount.isPresent()) {
-						ret.add(new BillableContext(billable.get(), amount.get()));
+					for (Coding coding : serviceCoding.getCoding()) {
+						Optional<IBillable<?>> billable = getBillable(coding.getSystem(), coding.getCode());
+						Optional<Integer> amount = getAmount(itemComponent);
+						if (billable.isPresent() && amount.isPresent()) {
+							ret.add(new BillableContext(billable.get(), amount.get()));
+							break;
+						}
 					}
 				}
 			}
@@ -238,22 +241,26 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 		private List<Diagnosis> getDiagnose(List<DiagnosisComponent> diagnosis) {
 			List<Diagnosis> ret = new ArrayList<>();
 			for (DiagnosisComponent diagnosisComponent : diagnosis) {
-				Coding coding = diagnosisComponent.getDiagnosis();
-				if (coding != null) {
-					Diagnosis diag = new Diagnosis();
-					diag.setCode(coding.getCode());
-					diag.setText((coding.getDisplay() != null) ? coding.getDisplay() : "MISSING");
-					if (CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem().equals(coding.getSystem())) {
-						diag.setDiagnosisClass(ElexisTypeMap.TYPE_TESSINER_CODE);
+				if (diagnosisComponent.hasDiagnosisCodeableConcept()) {
+					CodeableConcept diagnoseCoding = (CodeableConcept) diagnosisComponent.getDiagnosis();
+					if (diagnoseCoding != null) {
+						for (Coding coding : diagnoseCoding.getCoding()) {
+							Diagnosis diag = new Diagnosis();
+							diag.setCode(coding.getCode());
+							diag.setText((coding.getDisplay() != null) ? coding.getDisplay() : "MISSING");
+							if (CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem().equals(coding.getSystem())) {
+								diag.setDiagnosisClass(ElexisTypeMap.TYPE_TESSINER_CODE);
+							}
+							ret.add(diag);
+						}
 					}
-					ret.add(diag);
 				}
 			}
 			return ret;
 		}
 
-		private Fall getFall(CoverageComponent coverageComponent) {
-			Reference reference = (Reference) coverageComponent.getCoverage();
+		private Fall getFall(InsuranceComponent insuranceComponent) {
+			Reference reference = (Reference) insuranceComponent.getCoverage();
 			if (reference != null && !reference.isEmpty()) {
 				Optional<Fall> fallOpt = FallService.load(reference.getReferenceElement().getIdPart());
 				return fallOpt.orElse(null);

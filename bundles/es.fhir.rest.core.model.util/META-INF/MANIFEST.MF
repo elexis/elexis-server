@@ -13,7 +13,6 @@ Require-Bundle: info.elexis.server.fhir.rest.core;bundle-version="1.0.0",
 Service-Component: OSGI-INF/es.fhir.rest.core.model.util.transformer.CoverageFallTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.EncounterIEncounterTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.PractitionerKontaktTransformer.xml,
- OSGI-INF/es.fhir.rest.core.model.util.transformer.MedicationOrderPrescriptionTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.FhirTransformerRegistry.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.OrganizationKontaktTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.PatientKontaktTransformer.xml,
@@ -21,7 +20,10 @@ Service-Component: OSGI-INF/es.fhir.rest.core.model.util.transformer.CoverageFal
  OSGI-INF/es.fhir.rest.core.model.util.transformer.CodeSystemStringTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.ProcedureRequestIProcedureRequestTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.ClaimVerrechnetTransformer.xml,
- OSGI-INF/es.fhir.rest.core.model.util.transformer.ObservationLabResultTransformer.xml
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.ObservationLabResultTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.PractitionerRoleUserTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.MedicationRequestPrescriptionTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.ObservationIObservationTransformer.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.model,

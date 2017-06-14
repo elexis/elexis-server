@@ -18,6 +18,8 @@ import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.findings.IObservation;
+import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.codes.ICodingService;
 import ch.elexis.core.lock.types.LockInfo;
@@ -87,8 +89,8 @@ public class ProcedureRequestIProcedureRequestTransformer
 			patient.ifPresent(k -> iProcedureRequest.setPatientId(id));
 		}
 		IEncounter iEncounter = null;
-		if (fhirObject.getEncounter() != null && fhirObject.getEncounter().hasReference()) {
-			String id = fhirObject.getEncounter().getReferenceElement().getIdPart();
+		if (fhirObject.getContext() != null && fhirObject.getContext().hasReference()) {
+			String id = fhirObject.getContext().getReferenceElement().getIdPart();
 			Optional<IFinding> encounter = findingsService.findById(id, IEncounter.class);
 			if (encounter.isPresent()) {
 				iEncounter = (IEncounter) encounter.get();
@@ -165,7 +167,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 			List<ICoding> coding = iCondition.getCoding();
 			Optional<String> text = iCondition.getText();
 			ConditionCategory category = iCondition.getCategory();
-			if (category == ConditionCategory.DIAGNOSIS) {
+			if (category == ConditionCategory.PROBLEMLISTITEM) {
 				boolean hasText = text.isPresent() && !text.get().isEmpty();
 				if (ret.length() > 0) {
 					ret.append("\n");
@@ -187,12 +189,13 @@ public class ProcedureRequestIProcedureRequestTransformer
 	}
 
 	private String getSubjectiveText(IEncounter iEncounter) {
-		List<ICondition> indication = iEncounter.getIndication();
+		List<IFinding> observations = findingsService.getConsultationsFindings(iEncounter.getConsultationId(),
+				IObservation.class);
 		StringBuilder ret = new StringBuilder();
-		for (ICondition iCondition : indication) {
-			Optional<String> text = iCondition.getText();
-			ConditionCategory category = iCondition.getCategory();
-			if (category == ConditionCategory.COMPLAINT) {
+		for (IFinding iFinding : observations) {
+			IObservation iObservation = (IObservation) iFinding;
+			if (iObservation.getCategory() == ObservationCategory.SOAP_SUBJECTIVE) {
+				Optional<String> text = iObservation.getText();
 				if (ret.length() > 0) {
 					ret.append("\n");
 				}

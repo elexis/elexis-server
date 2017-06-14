@@ -22,15 +22,17 @@ import org.hl7.fhir.dstu3.model.Encounter.EncounterParticipantComponent;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.instance.model.valuesets.ConditionCategory;
+import org.hl7.fhir.dstu3.model.codesystems.ConditionCategory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.findings.util.ModelUtil;
 import es.fhir.rest.core.test.AllTests;
@@ -53,49 +55,58 @@ public class ProcedureRequestTest {
 
 	@Test
 	public void createProcedureRequest() {
-		Condition subjective = new Condition();
-		Narrative narrative = new Narrative();
-		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
-		narrative.setDivAsString(divEncodedText);
-		subjective.setText(narrative);
-		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		subjective.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
-				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
-		MethodOutcome subjectiveOutcome = client.create().resource(subjective).execute();
-
 		Condition problem = new Condition();
 		problem.setCode(
 				new CodeableConcept().addCoding(new Coding("http://hl7.org/fhir/sid/icpc-2", "A04", "Müdigkeit")));
 		problem.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		problem.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.DIAGNOSIS.getSystem(),
-				ConditionCategory.DIAGNOSIS.toCode(), ConditionCategory.DIAGNOSIS.getDisplay())));
+		problem.addCategory().addCoding(new Coding(ConditionCategory.PROBLEMLISTITEM.getSystem(),
+				ConditionCategory.PROBLEMLISTITEM.toCode(), ConditionCategory.PROBLEMLISTITEM.getDisplay()));
 		MethodOutcome problemOutcome = client.create().resource(problem).execute();
 
 		Encounter encounter = new Encounter();
 		EncounterParticipantComponent participant = new EncounterParticipantComponent();
 		participant.setIndividual(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
 		encounter.addParticipant(participant);
-		encounter.setPeriod(
-				new Period().setStart(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atStartOfDay()))
+		encounter
+				.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atStartOfDay()))
 						.setEnd(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atTime(23, 59, 59))));
-		encounter.setPatient(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		encounter.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
 
-		encounter.addIndication(
-				new Reference(new IdType(subjective.getResourceType().name(), subjectiveOutcome.getId().getIdPart())));
-		encounter.addIndication(
+		encounter.addDiagnosis().setCondition(
 				new Reference(new IdType(problem.getResourceType().name(), problemOutcome.getId().getIdPart())));
 
 		encounter.addType(new CodeableConcept()
 				.addCoding(new Coding("www.elexis.info/encounter/type", "struct", "structured enconter")));
+
 		MethodOutcome encounterOutcome = client.create().resource(encounter).execute();
-		
+		assertNotNull(encounterOutcome);
+		assertTrue(encounterOutcome.getCreated());
+		assertNotNull(encounterOutcome.getId());
+
+		// add subjective to the encounter
+		Observation subjective = new Observation();
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		subjective.setText(narrative);
+		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		subjective.addCategory().addCoding(new Coding(IdentifierSystem.ELEXIS_SOAP.getSystem(),
+				ObservationCategory.SOAP_SUBJECTIVE.getCode(), ObservationCategory.SOAP_SUBJECTIVE.getLocalized()));
+		subjective.setContext(
+				new Reference(new IdType(encounter.getResourceType().name(), encounterOutcome.getId().getIdPart())));
+		MethodOutcome subjectiveOutcome = client.create().resource(subjective).execute();
+		assertTrue(subjectiveOutcome.getCreated());
+
+		// add procedure request to encounter
 		ProcedureRequest procedureRequest = new ProcedureRequest();
 		narrative = new Narrative();
 		divEncodedText = "Procedure\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
 		procedureRequest.setText(narrative);
 		procedureRequest.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		procedureRequest.setEncounter(new Reference("Encounter/" + encounterOutcome.getId().getIdPart()));
+		procedureRequest
+				.setContext(new Reference(
+						new IdType(encounter.getResourceType().name(), encounterOutcome.getId().getIdPart())));
 
 		MethodOutcome outcome = client.create().resource(procedureRequest).execute();
 		assertNotNull(outcome);
@@ -108,10 +119,10 @@ public class ProcedureRequestTest {
 		assertEquals(outcome.getId().getIdPart(), readProcedureRequest.getIdElement().getIdPart());
 		assertEquals(procedureRequest.getSubject().getReferenceElement().getIdPart(),
 				readProcedureRequest.getSubject().getReferenceElement().getIdPart());
-		assertEquals(procedureRequest.getEncounter().getReferenceElement().getIdPart(),
-				readProcedureRequest.getEncounter().getReferenceElement().getIdPart());
+		assertEquals(procedureRequest.getContext().getReferenceElement().getIdPart(),
+				readProcedureRequest.getContext().getReferenceElement().getIdPart());
 		assertTrue(readProcedureRequest.getText().getDivAsString().contains("Test"));
-		
+
 		// check if the consultation text has been updated
 		// search by patient and date
 		Bundle results = client.search().forResource(Encounter.class)

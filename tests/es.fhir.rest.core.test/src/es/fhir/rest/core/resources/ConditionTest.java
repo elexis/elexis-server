@@ -60,7 +60,7 @@ public class ConditionTest {
 
 		// search by patient and category
 		results = client.search().forResource(Condition.class).where(Condition.SUBJECT.hasId(readPatient.getId()))
-				.and(Condition.CATEGORY.exactly().code("diagnosis")).returnBundle(Bundle.class).execute();
+				.and(Condition.CATEGORY.exactly().code("problem-list-item")).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
@@ -82,7 +82,7 @@ public class ConditionTest {
 		narrative.setDivAsString(divEncodedText);
 		condition.setText(narrative);
 		condition.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
-		condition.setCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
+		condition.addCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
 				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
 
 		MethodOutcome outcome = client.create().resource(condition).execute();
@@ -93,8 +93,8 @@ public class ConditionTest {
 		Condition readCondition = client.read().resource(Condition.class).withId(outcome.getId()).execute();
 		assertNotNull(readCondition);
 		assertEquals(outcome.getId().getIdPart(), readCondition.getIdElement().getIdPart());
-		assertEquals(condition.getCategory().getCoding().get(0).getCode(),
-				readCondition.getCategory().getCoding().get(0).getCode());
+		assertEquals(condition.getCategory().get(0).getCoding().get(0).getCode(),
+				readCondition.getCategory().get(0).getCoding().get(0).getCode());
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class ConditionTest {
 		// search by patient and category
 		Bundle results = client.search().forResource(Condition.class)
 				.where(Condition.SUBJECT.hasId(readPatient.getId()))
-				.and(Condition.CATEGORY.exactly().code("diagnosis")).returnBundle(Bundle.class).execute();
+				.and(Condition.CATEGORY.exactly().code("problem-list-item")).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
@@ -118,8 +118,8 @@ public class ConditionTest {
 
 		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), condition.getSubject().getReference());
 		assertNotNull(condition.getCategory());
-		assertNotNull(condition.getCategory().getCoding());
-		assertFalse(condition.getCategory().getCoding().isEmpty());
-		assertEquals("diagnosis", condition.getCategory().getCoding().get(0).getCode());
+		assertNotNull(condition.getCategory().get(0).getCoding());
+		assertFalse(condition.getCategory().get(0).getCoding().isEmpty());
+		assertEquals("problem-list-item", condition.getCategory().get(0).getCoding().get(0).getCode());
 	}
 }

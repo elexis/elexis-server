@@ -29,7 +29,7 @@ public class KontaktHelper extends AbstractHelper {
 		List<HumanName> ret = new ArrayList<>();
 		if (kontakt.isPerson()) {
 			HumanName humanName = new HumanName();
-			humanName.addFamily(kontakt.getFamilyName());
+			humanName.setFamily(kontakt.getFamilyName());
 			humanName.addGiven(kontakt.getFirstName());
 			humanName.addPrefix(kontakt.getTitel());
 			humanName.addSuffix(kontakt.getTitelSuffix());

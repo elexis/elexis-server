@@ -121,8 +121,8 @@ public class BehandlungHelper extends AbstractHelper {
 	}
 
 	public static Optional<String> getPatientId(Encounter fhirObject) {
-		if (fhirObject.getPatient() != null && fhirObject.getPatient().hasReference()) {
-			return Optional.of(fhirObject.getPatient().getReferenceElement().getIdPart());
+		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
+			return Optional.of(fhirObject.getSubject().getReferenceElement().getIdPart());
 		}
 		return Optional.empty();
 	}

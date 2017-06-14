@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.MedicationOrder;
+import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
@@ -31,11 +31,11 @@ import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
 @Component(immediate = true)
-public class MedicationOrderResourceProvider implements IFhirResourceProvider {
+public class MedicationRequestResourceProvider implements IFhirResourceProvider {
 
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
-		return MedicationOrder.class;
+		return MedicationRequest.class;
 	}
 
 	private IFhirTransformerRegistry transformerRegistry;
@@ -47,18 +47,18 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<MedicationOrder, Prescription> getTransformer() {
-		return (IFhirTransformer<MedicationOrder, Prescription>) transformerRegistry
-				.getTransformerFor(MedicationOrder.class, Prescription.class);
+	public IFhirTransformer<MedicationRequest, Prescription> getTransformer() {
+		return (IFhirTransformer<MedicationRequest, Prescription>) transformerRegistry
+				.getTransformerFor(MedicationRequest.class, Prescription.class);
 	}
 
 	@Read
-	public MedicationOrder getResourceById(@IdParam IdType theId) {
+	public MedicationRequest getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<Prescription> prescription = PrescriptionService.load(idPart);
 			if (prescription.isPresent()) {
-				Optional<MedicationOrder> fhirMedicationOrder = getTransformer().getFhirObject(prescription.get());
+				Optional<MedicationRequest> fhirMedicationOrder = getTransformer().getFhirObject(prescription.get());
 				return fhirMedicationOrder.get();
 			}
 		}
@@ -66,8 +66,8 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<MedicationOrder> findMedicationsByPatient(
-			@RequiredParam(name = MedicationOrder.SP_PATIENT) IdType thePatientId) {
+	public List<MedicationRequest> findMedicationsByPatient(
+			@RequiredParam(name = MedicationRequest.SP_PATIENT) IdType thePatientId) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
 			if (patient.isPresent()) {
@@ -77,9 +77,9 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 					qbe.add(Prescription_.rezeptID, JPAQuery.QUERY.EQUALS, null);
 					List<Prescription> prescriptions = qbe.execute();
 					if (prescriptions != null && !prescriptions.isEmpty()) {
-						List<MedicationOrder> ret = new ArrayList<MedicationOrder>();
+						List<MedicationRequest> ret = new ArrayList<MedicationRequest>();
 						for (Prescription prescription : prescriptions) {
-							Optional<MedicationOrder> fhirMedicationOrder = getTransformer()
+							Optional<MedicationRequest> fhirMedicationOrder = getTransformer()
 									.getFhirObject(prescription);
 							fhirMedicationOrder.ifPresent(fmo -> ret.add(fmo));
 						}
@@ -92,7 +92,7 @@ public class MedicationOrderResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Update
-	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationOrder updateOrder) {
+	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationRequest updateOrder) {
 		Optional<Prescription> localObject = getTransformer().getLocalObject(updateOrder);
 		MethodOutcome outcome = new MethodOutcome();
 		outcome.setCreated(false);

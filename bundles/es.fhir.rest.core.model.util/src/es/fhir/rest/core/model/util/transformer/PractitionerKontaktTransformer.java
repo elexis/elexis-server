@@ -1,6 +1,5 @@
 package es.fhir.rest.core.model.util.transformer;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +10,7 @@ import org.osgi.service.component.annotations.Component;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.KontaktHelper;
-import es.fhir.rest.core.model.util.transformer.helper.MandantHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.services.UserService;
 
@@ -21,7 +18,6 @@ import info.elexis.server.core.connector.elexis.services.UserService;
 public class PractitionerKontaktTransformer implements IFhirTransformer<Practitioner, Kontakt> {
 
 	private KontaktHelper kontaktHelper = new KontaktHelper();
-	private MandantHelper mandantHelper = new MandantHelper();
 
 	@Override
 	public Optional<Practitioner> getFhirObject(Kontakt localObject) {
@@ -41,13 +37,6 @@ public class PractitionerKontaktTransformer implements IFhirTransformer<Practiti
 
 		Optional<User> userLocalObject = UserService.findByKontakt(localObject);
 		if (userLocalObject.isPresent()) {
-			Collection<Role> roles = userLocalObject.get().getRoles();
-			for (Role role : roles) {
-				String roleId = role.getId();
-				if (roleId != null) {
-					practitioner.addRole(mandantHelper.getPractitionerRoleComponent(roleId));
-				}
-			}
 			practitioner.setActive(userLocalObject.get().isActive());
 		}
 
