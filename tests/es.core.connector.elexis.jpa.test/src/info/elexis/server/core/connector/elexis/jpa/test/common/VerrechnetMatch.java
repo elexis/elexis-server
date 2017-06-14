@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.billable;
+package info.elexis.server.core.connector.elexis.jpa.test.common;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +16,8 @@ public class VerrechnetMatch {
 
 	public String code;
 	public int count;
+	public int scale1;
+	public int scale2;
 	public boolean deleted = false;
 
 	public VerrechnetMatch(String code, int count) {
@@ -23,8 +25,14 @@ public class VerrechnetMatch {
 	}
 
 	public VerrechnetMatch(String code, int count, boolean deleted) {
+		this(code, count, 100, 100, deleted);
+	}
+
+	public VerrechnetMatch(String code, int count, int scale1, int scale2, boolean deleted) {
 		super();
 		this.code = code;
+		this.scale1 = scale1;
+		this.scale2 = scale2;
 		this.count = count;
 		this.deleted = deleted;
 	}
@@ -60,18 +68,21 @@ public class VerrechnetMatch {
 		return true;
 	}
 
+
 	@Override
 	public String toString() {
-		return "VerrechnetMatch [code=" + code + ", count=" + count + ", deleted=" + deleted + "]";
+		return "VerrechnetMatch [code=" + code + ", count=" + count + ", scale1=" + scale1 + ", scale2=" + scale2
+				+ ", deleted=" + deleted + "]";
 	}
-	
+
 	public static void assertVerrechnetMatch(Behandlung behandlung, List<VerrechnetMatch> matches) {
 		JPAQuery<Verrechnet> qre = new JPAQuery<>(Verrechnet.class, true);
 		qre.add(Verrechnet_.behandlung, QUERY.EQUALS, behandlung);
 		List<Verrechnet> verrechnet = qre.execute();
 
 		List<VerrechnetMatch> existingVerrechnet = verrechnet.stream()
-				.map(v -> new VerrechnetMatch(v.getLeistungenCode(), v.getZahl(), v.isDeleted()))
+				.map(v -> new VerrechnetMatch(v.getLeistungenCode(), v.getZahl(), v.getScale(), v.getScale2(),
+						v.isDeleted()))
 				.collect(Collectors.toList());
 		Collection<VerrechnetMatch> disjunction = CollectionUtils.disjunction(existingVerrechnet, matches);
 		if (disjunction.size() > 0) {

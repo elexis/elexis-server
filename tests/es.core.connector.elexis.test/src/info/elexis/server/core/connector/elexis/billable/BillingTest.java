@@ -35,6 +35,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.jpa.test.common.VerrechnetMatch;
 import info.elexis.server.core.connector.elexis.jpa.test.eventHandler.TestEventHandler;
 import info.elexis.server.core.connector.elexis.services.AbstractServiceTest;
 import info.elexis.server.core.connector.elexis.services.ArtikelService;
