@@ -70,7 +70,7 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 		int sca = (int) Math.round(scale * 100);
 		setScale(sca);
 	}
-	
+
 	@Transient
 	public void setSecondaryScaleFactor(double scale) {
 		int sca = (int) Math.round(scale * 100);
@@ -80,6 +80,11 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 	@Transient
 	public String getText() {
 		return getLeistungenText();
+	}
+
+	@Transient
+	public float getScaledCount() {
+		return getZahl() * (getScale2() / 100f);
 	}
 
 	public Map<Object, Object> getDetail() {
