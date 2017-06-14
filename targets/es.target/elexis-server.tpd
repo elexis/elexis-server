@@ -128,6 +128,7 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	ognl
 	org.attoparser
 	org.unbescape
+	org.springframework.spring-web
 	
 	com.eclipsesource.restfuse
 }
