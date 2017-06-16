@@ -19,7 +19,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
 public class VerrechenbarArtikel implements IBillable<Artikel> {
 
-	private Logger log = LoggerFactory.getLogger(VerrechenbarArtikel.class);
+	protected Logger log = LoggerFactory.getLogger(VerrechenbarArtikel.class);
 
 	private final Artikel article;
 
