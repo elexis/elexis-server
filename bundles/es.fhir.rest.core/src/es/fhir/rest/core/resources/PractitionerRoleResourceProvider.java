@@ -32,7 +32,7 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.UserService;
 
-@Component(immediate = true)
+@Component
 public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 
 	@Override

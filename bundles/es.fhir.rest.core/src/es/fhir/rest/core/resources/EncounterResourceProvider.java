@@ -34,7 +34,7 @@ import es.fhir.rest.core.resources.util.DateRangeParamUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
-@Component(immediate = true)
+@Component
 public class EncounterResourceProvider implements IFhirResourceProvider {
 
 	private IMigratorService migratorService;

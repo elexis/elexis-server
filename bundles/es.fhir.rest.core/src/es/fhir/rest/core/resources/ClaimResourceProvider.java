@@ -19,7 +19,7 @@ import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
-@Component(immediate = true)
+@Component
 public class ClaimResourceProvider implements IFhirResourceProvider {
 
 	@Override

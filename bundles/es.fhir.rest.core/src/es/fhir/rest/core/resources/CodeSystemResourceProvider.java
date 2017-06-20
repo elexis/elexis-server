@@ -20,7 +20,7 @@ import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 
-@Component(immediate = true)
+@Component
 public class CodeSystemResourceProvider implements IFhirResourceProvider {
 
 	@Override

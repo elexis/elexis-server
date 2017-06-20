@@ -47,7 +47,7 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.LabResultService;
 
-@Component(immediate = true)
+@Component
 public class ObservationResourceProvider implements IFhirResourceProvider {
 
 	@Override

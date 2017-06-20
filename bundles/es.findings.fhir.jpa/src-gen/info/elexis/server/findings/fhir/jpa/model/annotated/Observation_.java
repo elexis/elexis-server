@@ -6,7 +6,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 
 @Generated(value="EclipseLink-2.7.0.v20160725-rNA")
 @StaticMetamodel(Observation.class)
-public class Observation_ { 
+public class Observation_ extends AbstractDBObjectIdDeleted_ {
 
     public static volatile SingularAttribute<Observation, String> patientid;
     public static volatile SingularAttribute<Observation, String> encounterid;

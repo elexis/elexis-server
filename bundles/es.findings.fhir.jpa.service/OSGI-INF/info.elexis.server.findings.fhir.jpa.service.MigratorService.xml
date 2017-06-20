@@ -3,5 +3,6 @@
    <service>
       <provide interface="ch.elexis.core.findings.migration.IMigratorService"/>
    </service>
+   <reference bind="bindIFindingsService" cardinality="1..1" interface="ch.elexis.core.findings.IFindingsService" name="IFindingsService" policy="static"/>
    <implementation class="info.elexis.server.findings.fhir.jpa.service.MigratorService"/>
 </scr:component>

@@ -118,6 +118,7 @@ public class FindingsFactory implements IFindingsFactory {
 			return;
 		} else if (model instanceof Condition) {
 			conditionService.delete((Condition) model);
+			return;
 		} else if (model instanceof ProcedureRequest) {
 			procedureRequestService.delete((ProcedureRequest) model);
 			return;

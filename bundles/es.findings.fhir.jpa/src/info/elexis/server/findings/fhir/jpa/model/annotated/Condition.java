@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
-
 @Entity
 @Table(name = "CH_ELEXIS_CORE_FINDINGS_CONDITION")
 public class Condition extends AbstractDBObjectIdDeleted {

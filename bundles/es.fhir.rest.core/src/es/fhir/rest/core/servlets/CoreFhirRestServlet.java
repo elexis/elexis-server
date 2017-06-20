@@ -22,7 +22,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
 
-@Component(service = CoreFhirRestServlet.class, immediate = true)
+@Component(service = CoreFhirRestServlet.class)
 public class CoreFhirRestServlet extends RestfulServer {
 
 	private static Logger logger = LoggerFactory.getLogger(CoreFhirRestServlet.class);

@@ -5,15 +5,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
@@ -21,7 +20,6 @@ import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
-import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
@@ -40,16 +38,13 @@ import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapte
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestService;
-import info.elexis.server.findings.fhir.jpa.model.service.internal.DbInitializer;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager;
+import info.elexis.server.findings.fhir.jpa.model.service.internal.InitializationRunner;
 
 @Component
 public class FindingsService implements IFindingsService {
 
 	private Logger logger;
-
-	private static boolean dbInitialized;
-
-	private static ReentrantLock dbInitializedLock = new ReentrantLock();
 
 	private FindingsFactory factory;
 
@@ -61,31 +56,33 @@ public class FindingsService implements IFindingsService {
 
 	private ObservationService observationService;
 
+	private InitializationRunner initializationRunner;
+
 	public FindingsService() {
 		factory = new FindingsFactory();
 		encounterService = new EncounterService();
 		conditionService = new ConditionService();
 		procedureRequestService = new ProcedureRequestService();
 		observationService = new ObservationService();
+
+		initializationRunner = new InitializationRunner();
 	}
 
 	@Activate
 	protected void activate() {
-		LoggerFactory.getLogger(FindingsService.class).debug("New IFindingsService " + this);
-		try {
-			dbInitializedLock.lock();
-			if (!dbInitialized) {
-				Optional<DBConnection> connectionOpt = ElexisDBConnection.getConnection();
-				if (connectionOpt.isPresent()) {
-					DbInitializer initializer = new DbInitializer(connectionOpt.get());
-					initializer.init();
-				}
-			}
-		} catch (Exception e) {
-			LoggerFactory.getLogger(FindingsService.class).debug("Error activating IFindingsService " + this, e);
-		} finally {
-			dbInitializedLock.unlock();
+		// make sure entities are available
+		if (FindingsEntityManager.getEntityManager() == null) {
+			LoggerFactory.getLogger(FindingsService.class).error("No findings entity manager available " + this);
 		}
+		LoggerFactory.getLogger(FindingsService.class).debug("New IFindingsService " + this);
+		if (initializationRunner.shouldRun()) {
+			initializationRunner.run();
+		}
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		initializationRunner.cancel();
 	}
 
 	@Override

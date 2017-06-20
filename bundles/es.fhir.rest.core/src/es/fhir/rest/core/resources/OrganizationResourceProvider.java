@@ -26,7 +26,7 @@ import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
-@Component(immediate = true)
+@Component
 public class OrganizationResourceProvider implements IFhirResourceProvider {
 
 	@Override

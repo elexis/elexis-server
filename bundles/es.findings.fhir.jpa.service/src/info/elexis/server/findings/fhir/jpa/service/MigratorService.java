@@ -6,12 +6,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
+import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.migration.IMigratorService;
 import ch.elexis.core.findings.util.ModelUtil;
@@ -30,11 +34,11 @@ import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 @Component
 public class MigratorService implements IMigratorService {
 
-	private FindingsService findingsService;
+	private IFindingsService findingsService;
 
-	public MigratorService() {
-		findingsService = new FindingsService();
-		findingsService.activate();
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFindingsService(IFindingsService findingsService) {
+		this.findingsService = findingsService;
 	}
 
 	@Override

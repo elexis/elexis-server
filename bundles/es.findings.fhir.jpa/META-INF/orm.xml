@@ -8,19 +8,6 @@
 			<access>FIELD</access>
 		</persistence-unit-defaults>
 	</persistence-unit-metadata>
-	<converter name="ElexisExtInfoMapConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisExtInfoMapConverter" />
-	<converter name="ElexisDBCompressedStringConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBCompressedStringConverter" />
-	<converter name="ElexisDBStringDateConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter" />
-	<converter name="ElexisDBStoreToStringConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStoreToStringConverter" />
-	<converter name="IntegerStringConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.IntegerStringConverter" />
-	<converter name="VersionedResourceConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.VersionedResourceConverter" />
 	<converter name="booleanStringConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.BooleanCharacterConverterSafe" />
-	<sequence-generator name="system-uuid"></sequence-generator>
+		class="info.elexis.server.findings.fhir.jpa.model.annotated.converter.BooleanCharacterConverterSafe" />
 </entity-mappings>
