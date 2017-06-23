@@ -42,7 +42,8 @@ public class MigratorService implements IMigratorService {
 	}
 
 	@Override
-	public void migratePatientsFindings(String patientId, Class<? extends IFinding> filter) {
+	public void migratePatientsFindings(String patientId, Class<? extends IFinding> filter,
+		ICoding iCoding){
 		if (patientId != null && !patientId.isEmpty()) {
 			if (filter.isAssignableFrom(IEncounter.class)) {
 				migratePatientEncounters(patientId);

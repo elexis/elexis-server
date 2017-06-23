@@ -11,7 +11,11 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
+import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.resources.ClaimTest;
 import es.fhir.rest.core.resources.CodesySystemTest;
 import es.fhir.rest.core.resources.ConditionTest;
@@ -25,10 +29,14 @@ import es.fhir.rest.core.resources.PractitionerRoleTest;
 import es.fhir.rest.core.resources.ProcedureRequestTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
-		PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
-		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class })
+@SuiteClasses({
+	MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
+	PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
+	ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class
+})
 public class AllTests {
+	
+	private static IFindingsService iFindingsService;
 
 	public static Date getDate(LocalDateTime localDateTime) {
 		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
@@ -60,5 +68,18 @@ public class AllTests {
 			}
 		}
 		return false;
+	}
+	
+	public static IFindingsService getFindingsService(){
+		if (iFindingsService != null) {
+			return iFindingsService;
+		}
+		BundleContext bundleContext = FrameworkUtil.getBundle(AllTests.class).getBundleContext();
+		ServiceReference<IFindingsService> serviceReference =
+			bundleContext.getServiceReference(IFindingsService.class);
+		if (serviceReference != null) {
+			iFindingsService = bundleContext.getService(serviceReference);
+		}
+		return iFindingsService;
 	}
 }

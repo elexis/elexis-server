@@ -99,7 +99,8 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate encounters first
-					migratorService.migratePatientsFindings(thePatientId.getIdPart(), IEncounter.class);
+					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
+						IEncounter.class, null);
 
 					List<IFinding> findings = findingsService.getPatientsFindings(patient.get().getId(),
 							IEncounter.class);

@@ -92,7 +92,8 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate diagnose condition first
-					migratorService.migratePatientsFindings(thePatientId.getIdPart(), ICondition.class);
+					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
+						ICondition.class, null);
 
 					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),
 							ICondition.class);
