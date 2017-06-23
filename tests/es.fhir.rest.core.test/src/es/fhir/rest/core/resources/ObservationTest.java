@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ch.elexis.core.findings.IFindingsFactory;
+import ch.elexis.core.findings.IObservation;
+import ch.elexis.core.findings.IObservation.ObservationCategory;
+import ch.elexis.core.findings.IObservation.ObservationCode;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
+import ch.elexis.core.findings.util.model.TransientCoding;
 import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
@@ -43,6 +49,24 @@ public class ObservationTest {
 
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
+		
+	
+		IFindingsFactory iFindingsFactory = AllTests.getFindingsService().getFindingsFactory();
+		IObservation persAnam = iFindingsFactory.createObservation();
+		persAnam.setCategory(ObservationCategory.SOCIALHISTORY);
+		persAnam.setCoding(
+			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
+		persAnam.setText("Pers Anamnese 1");
+		persAnam.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		AllTests.getFindingsService().saveFinding(persAnam);
+		
+		IObservation risk = iFindingsFactory.createObservation();
+		risk.setCategory(ObservationCategory.SOCIALHISTORY);
+		risk.setCoding(
+			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
+		risk.setText("Risiken 1");
+		risk.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		AllTests.getFindingsService().saveFinding(risk);
 	}
 
 	@Test
@@ -101,6 +125,36 @@ public class ObservationTest {
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
+		
+		// search for pers anamnesis
+		results =
+			client.search().forResource(Observation.class)
+				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.and(Observation.CODE.exactly()
+					.systemAndCode(ObservationCode.ANAM_PERSONAL.getIdentifierSystem().getSystem(),
+						ObservationCode.ANAM_PERSONAL.getCode()))
+				.and(Observation.CATEGORY.exactly()
+					.code(ObservationCategory.SOCIALHISTORY.getCode()))
+				.returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+		assertTrue(((Observation) entries.get(0).getResource()).getText().getDivAsString()
+			.contains("Pers Anamnese 1"));
+		
+		// search for risk factors
+		results = client.search().forResource(Observation.class)
+			.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+			.and(Observation.CODE.exactly().systemAndCode(
+				ObservationCode.ANAM_RISK.getIdentifierSystem().getSystem(),
+				ObservationCode.ANAM_RISK.getCode()))
+			.and(Observation.CATEGORY.exactly().code(ObservationCategory.SOCIALHISTORY.getCode()))
+			.returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+		assertTrue(((Observation) entries.get(0).getResource()).getText().getDivAsString()
+			.contains("Risiken 1"));
 	}
 
 	@Test
