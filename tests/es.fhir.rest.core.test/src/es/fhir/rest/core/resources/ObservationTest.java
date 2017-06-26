@@ -98,24 +98,6 @@ public class ObservationTest {
 			Assert.assertNotNull(iFinding.getId());
 			AllTests.getFindingsService().deleteFinding(iFinding);
 		}
-
-	
-		IFindingsFactory iFindingsFactory = AllTests.getFindingsService().getFindingsFactory();
-		IObservation persAnam = iFindingsFactory.createObservation();
-		persAnam.setCategory(ObservationCategory.SOCIALHISTORY);
-		persAnam.setCoding(
-			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
-		persAnam.setText("Pers Anamnese 1");
-		persAnam.setPatientId(TestDatabaseInitializer.getPatient().getId());
-		AllTests.getFindingsService().saveFinding(persAnam);
-		
-		IObservation risk = iFindingsFactory.createObservation();
-		risk.setCategory(ObservationCategory.SOCIALHISTORY);
-		risk.setCoding(
-			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
-		risk.setText("Risiken 1");
-		risk.setPatientId(TestDatabaseInitializer.getPatient().getId());
-		AllTests.getFindingsService().saveFinding(risk);
 	}
 
 	@Test
