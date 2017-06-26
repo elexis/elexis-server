@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +24,14 @@ import org.hl7.fhir.dstu3.model.Observation.ObservationReferenceRangeComponent;
 import org.hl7.fhir.dstu3.model.Quantity;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ch.elexis.core.findings.IEncounter;
+import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
@@ -41,6 +46,8 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer
 public class ObservationTest {
 
 	private static IGenericClient client;
+	
+	private static List<IFinding> findingsCreated = new ArrayList<>();
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
@@ -50,7 +57,6 @@ public class ObservationTest {
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 		
-	
 		IFindingsFactory iFindingsFactory = AllTests.getFindingsService().getFindingsFactory();
 		IObservation persAnam = iFindingsFactory.createObservation();
 		persAnam.setCategory(ObservationCategory.SOCIALHISTORY);
@@ -58,15 +64,40 @@ public class ObservationTest {
 			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
 		persAnam.setText("Pers Anamnese 1");
 		persAnam.setPatientId(TestDatabaseInitializer.getPatient().getId());
-		AllTests.getFindingsService().saveFinding(persAnam);
-		
 		IObservation risk = iFindingsFactory.createObservation();
 		risk.setCategory(ObservationCategory.SOCIALHISTORY);
 		risk.setCoding(
 			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
 		risk.setText("Risiken 1");
 		risk.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		
+		IEncounter encounter = iFindingsFactory.createEncounter();
+		encounter.setConsultationId(TestDatabaseInitializer.getBehandlung().getId());
+		encounter.setPatientId(TestDatabaseInitializer.getPatient().getId());
+
+		IObservation iObservation = iFindingsFactory.createObservation();
+		iObservation.setCategory(ObservationCategory.SOAP_SUBJECTIVE);
+		iObservation.setText("Encounter test 1");
+		iObservation.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		iObservation.setEncounter(encounter);
+		
+		AllTests.getFindingsService().saveFinding(persAnam);
 		AllTests.getFindingsService().saveFinding(risk);
+		AllTests.getFindingsService().saveFinding(encounter);
+		AllTests.getFindingsService().saveFinding(iObservation);
+		findingsCreated.add(persAnam);
+		findingsCreated.add(risk);
+		findingsCreated.add(encounter);
+		findingsCreated.add(iObservation);
+		
+	}
+	
+	@AfterClass
+	public static void afterClass() throws IOException, SQLException{
+		for (IFinding iFinding : findingsCreated) {
+			Assert.assertNotNull(iFinding.getId());
+			AllTests.getFindingsService().deleteFinding(iFinding);
+		}
 	}
 
 	@Test
@@ -155,6 +186,15 @@ public class ObservationTest {
 		assertFalse(entries.isEmpty());
 		assertTrue(((Observation) entries.get(0).getResource()).getText().getDivAsString()
 			.contains("Risiken 1"));
+		
+		// search for encounter
+		results = client.search().forResource(Observation.class)
+			.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+			.and(Observation.CONTEXT.hasId(findingsCreated.get(2).getId()))
+			.returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
 	}
 
 	@Test

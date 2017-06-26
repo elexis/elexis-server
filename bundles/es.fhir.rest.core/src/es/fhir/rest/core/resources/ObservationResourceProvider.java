@@ -106,7 +106,8 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	public List<Observation> findObservation(@RequiredParam(name = Observation.SP_SUBJECT) IdType theSubjectId,
 			@OptionalParam(name = Observation.SP_CATEGORY) CodeType categoryCode,
 			@OptionalParam(name = Observation.SP_CODE) CodeType code,
-			@OptionalParam(name = Observation.SP_DATE) DateRangeParam dates) {
+		@OptionalParam(name = Observation.SP_DATE) DateRangeParam dates,
+		@OptionalParam(name = Observation.SP_CONTEXT) IdType contextId){
 		if (theSubjectId != null && !theSubjectId.isEmpty()) {
 			Optional<Kontakt> patient = KontaktService.load(theSubjectId.getIdPart());
 			if (patient.isPresent()) {
@@ -149,6 +150,9 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 					}
 					if(code != null) {
 						ret = filterCode(ret, code);
+					}
+					if (contextId != null) {
+						ret = filterContext(ret, contextId);
 					}
 					return ret;
 				}
@@ -209,7 +213,22 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 		}
 		return ret;
 	}
-
+	
+	private List<Observation> filterContext(List<Observation> observations, IdType idType){
+		ArrayList<Observation> ret = new ArrayList<>();
+		if (idType.getValue() != null)
+		{
+			for (Observation observation : observations) {
+				if (observation.getContext() != null
+					&& observation.getContext().hasReferenceElement() && idType.getValue()
+						.equals(observation.getContext().getReferenceElement().getIdPart())) {
+					ret.add(observation);
+				}
+			}
+		}
+		return ret;
+	}
+	
 	private boolean isObservationCategory(IObservation iObservation, CodeType observationCode) {
 		Optional<String> codeCode = CodeTypeUtil.getCode(observationCode);
 
