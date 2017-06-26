@@ -53,6 +53,8 @@ public class ObservationTest {
 	public static void setupClass() throws IOException, SQLException {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeLabResult();
+		initializer.initializeBehandlung();
+		initializer.initializeMandant();
 
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
