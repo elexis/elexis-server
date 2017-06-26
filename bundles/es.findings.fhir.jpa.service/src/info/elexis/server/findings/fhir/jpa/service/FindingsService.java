@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
+import ch.elexis.core.findings.IFamilyMemberHistory;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IFindingsService;
@@ -24,6 +25,7 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
+import info.elexis.server.findings.fhir.jpa.model.annotated.FamilyMemberHistory;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Observation;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Observation_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
@@ -33,6 +35,7 @@ import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
+import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
@@ -103,6 +106,9 @@ public class FindingsService implements IFindingsService {
 			// }
 			if (filter.isAssignableFrom(IObservation.class)) {
 				ret.addAll(getObservations(patientId, null));
+			}
+			if (filter.isAssignableFrom(IFamilyMemberHistory.class)) {
+				ret.addAll(getFamilyMemberHistory(patientId));
 			}
 		}
 		return ret;
@@ -209,6 +215,17 @@ public class FindingsService implements IFindingsService {
 			return Optional.of(new EncounterModelAdapter(encounters.get(0)));
 		}
 		return Optional.empty();
+	}
+	
+	private List<FamilyMemberHistoryModelAdapter> getFamilyMemberHistory(String patientId){
+		JPAQuery<FamilyMemberHistory> query = new JPAQuery<>(FamilyMemberHistory.class);
+		if (patientId != null) {
+			query.add(Observation_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+		}
+		List<FamilyMemberHistory> familyMemberHistories = query.execute();
+		return familyMemberHistories.parallelStream()
+			.map(e -> new FamilyMemberHistoryModelAdapter(e))
+			.collect(Collectors.toList());
 	}
 
 	@Override

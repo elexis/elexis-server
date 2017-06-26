@@ -25,7 +25,6 @@ import org.hl7.fhir.dstu3.model.Quantity;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -95,11 +94,8 @@ public class ObservationTest {
 	}
 	
 	@AfterClass
-	public static void afterClass() throws IOException, SQLException{
-		for (IFinding iFinding : findingsCreated) {
-			Assert.assertNotNull(iFinding.getId());
-			AllTests.getFindingsService().deleteFinding(iFinding);
-		}
+	public static void afterClass(){
+		AllTests.deleteAllFindings();
 	}
 
 	@Test
