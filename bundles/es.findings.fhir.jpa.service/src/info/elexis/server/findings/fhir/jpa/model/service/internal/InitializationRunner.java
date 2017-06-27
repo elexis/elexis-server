@@ -27,7 +27,10 @@ public class InitializationRunner {
 
 	private ExecutorService executor;
 
-	public InitializationRunner() {
+	private final FindingsService findingsService;
+	
+	public InitializationRunner(FindingsService findingsService){
+		this.findingsService = findingsService;
 		addRunnables();
 
 		executor = Executors.newSingleThreadExecutor();
@@ -118,7 +121,8 @@ public class InitializationRunner {
 
 			private void fhirFormatUpdate() {
 				if (FindingsFormatUtil.HAPI_FHIR_CURRENT_VERSION.equals("24")) {
-					InitializationUpdate24 update = new InitializationUpdate24(this);
+					InitializationUpdate24 update =
+						new InitializationUpdate24(this, findingsService);
 					update.update();
 				}
 			}

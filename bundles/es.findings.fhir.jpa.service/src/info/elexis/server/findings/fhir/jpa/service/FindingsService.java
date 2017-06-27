@@ -71,8 +71,6 @@ public class FindingsService implements IFindingsService {
 		procedureRequestService = new ProcedureRequestService();
 		observationService = new ObservationService();
 		familyMemberHistoryService = new FamilyMemberHistoryService();
-
-		initializationRunner = new InitializationRunner();
 	}
 
 	@Activate
@@ -82,6 +80,7 @@ public class FindingsService implements IFindingsService {
 			LoggerFactory.getLogger(FindingsService.class).error("No findings entity manager available " + this);
 		}
 		LoggerFactory.getLogger(FindingsService.class).debug("New IFindingsService " + this);
+		initializationRunner = new InitializationRunner(this);
 		if (initializationRunner.shouldRun()) {
 			initializationRunner.run();
 		}
@@ -89,7 +88,9 @@ public class FindingsService implements IFindingsService {
 
 	@Deactivate
 	protected void deactivate() {
-		initializationRunner.cancel();
+		if (initializationRunner != null) {
+			initializationRunner.cancel();
+		}
 	}
 
 	@Override

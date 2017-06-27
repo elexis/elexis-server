@@ -31,14 +31,16 @@ import info.elexis.server.findings.fhir.jpa.service.FindingsService;
 public class InitializationUpdate24 {
 
 	private InitializationRunnable initializationRunnable;
+	private FindingsService findingsService;
 
-	public InitializationUpdate24(InitializationRunnable initializationRunnable) {
+	public InitializationUpdate24(InitializationRunnable initializationRunnable,
+		FindingsService findingsService){
 		this.initializationRunnable = initializationRunnable;
+		this.findingsService = findingsService;
 	}
 
 	public void update() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		FindingsService findingsService = new FindingsService();
 		EncounterService encounterService = new EncounterService();
 		ConditionService conditionService = new ConditionService();
 		ProcedureRequestService procedureRequestService = new ProcedureRequestService();
