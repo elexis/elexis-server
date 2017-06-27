@@ -59,15 +59,15 @@ public class AllergyIntoleranceIAllergyIntoleranceTransformer
 
 	@Override
 	public Optional<IAllergyIntolerance> createLocalObject(AllergyIntolerance fhirObject){
-		IAllergyIntolerance IAllergyIntolerance = findingsService.create(IAllergyIntolerance.class);
-		contentHelper.setResource(fhirObject, IAllergyIntolerance);
+		IAllergyIntolerance IallergyIntolerance = findingsService.create(IAllergyIntolerance.class);
+		contentHelper.setResource(fhirObject, IallergyIntolerance);
 		if (fhirObject.getPatient() != null && fhirObject.getPatient().hasReference()) {
 			String id = fhirObject.getPatient().getReferenceElement().getIdPart();
 			Optional<Kontakt> patient = KontaktService.load(id);
-			patient.ifPresent(k -> IAllergyIntolerance.setPatientId(id));
+			patient.ifPresent(k -> IallergyIntolerance.setPatientId(id));
 		}
-		findingsService.saveFinding(IAllergyIntolerance);
-		return Optional.of(IAllergyIntolerance);
+		findingsService.saveFinding(IallergyIntolerance);
+		return Optional.of(IallergyIntolerance);
 	}
 
 	@Override
