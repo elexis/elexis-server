@@ -33,7 +33,8 @@ Service-Component: OSGI-INF/es.fhir.rest.core.servlets.CoreFhirRestServlet.xml,
  OSGI-INF/es.fhir.rest.core.resources.ClaimResourceProvider.xml,
  OSGI-INF/es.fhir.rest.core.resources.ObservationResourceProvider.xml,
  OSGI-INF/es.fhir.rest.core.resources.PractitionerRoleResourceProvider.xml,
- OSGI-INF/es.fhir.rest.core.resources.MedicationRequestResourceProvider.xml
+ OSGI-INF/es.fhir.rest.core.resources.MedicationRequestResourceProvider.xml,
+ OSGI-INF/es.fhir.rest.core.resources.FamilyMemberHistoryResourceProvider.xml
 Require-Bundle: hapi-fhir-osgi-core;bundle-version="2.4.0",
  info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
  com.google.gson;bundle-version="2.5.0",

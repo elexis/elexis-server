@@ -2,14 +2,14 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.Condition;
+import org.hl7.fhir.dstu3.model.FamilyMemberHistory;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import ch.elexis.core.findings.ICondition;
+import ch.elexis.core.findings.IFamilyMemberHistory;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -18,7 +18,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component(immediate = true)
-public class ConditionIConditionTransformer implements IFhirTransformer<Condition, ICondition> {
+public class FamilyMemberHistoryIFamilyMemberHistoryTransformer
+		implements IFhirTransformer<FamilyMemberHistory, IFamilyMemberHistory> {
 
 	private FindingsContentHelper contentHelper = new FindingsContentHelper();
 
@@ -30,46 +31,50 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 	}
 
 	@Override
-	public Optional<Condition> getFhirObject(ICondition localObject) {
+	public Optional<FamilyMemberHistory> getFhirObject(IFamilyMemberHistory localObject){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
-			return Optional.of((Condition) resource.get());
+			return Optional.of((FamilyMemberHistory) resource.get());
 		}
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<ICondition> getLocalObject(Condition fhirObject) {
+	public Optional<IFamilyMemberHistory> getLocalObject(FamilyMemberHistory fhirObject){
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing = findingsService.findById(fhirObject.getId(), ICondition.class);
+			Optional<IFinding> existing =
+				findingsService.findById(fhirObject.getId(), IFamilyMemberHistory.class);
 			if (existing.isPresent()) {
-				return Optional.of((ICondition) existing.get());
+				return Optional.of((IFamilyMemberHistory) existing.get());
 			}
 		}
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<ICondition> updateLocalObject(Condition fhirObject, ICondition localObject) {
+	public Optional<IFamilyMemberHistory> updateLocalObject(FamilyMemberHistory fhirObject,
+		IFamilyMemberHistory localObject){
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<ICondition> createLocalObject(Condition fhirObject) {
-		ICondition iCondition = findingsService.create(ICondition.class);
-		contentHelper.setResource(fhirObject, iCondition);
-		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
-			String id = fhirObject.getSubject().getReferenceElement().getIdPart();
+	public Optional<IFamilyMemberHistory> createLocalObject(FamilyMemberHistory fhirObject){
+		IFamilyMemberHistory IFamilyMemberHistory =
+			findingsService.create(IFamilyMemberHistory.class);
+		contentHelper.setResource(fhirObject, IFamilyMemberHistory);
+		if (fhirObject.getPatient() != null && fhirObject.getPatient().hasReference()) {
+			String id = fhirObject.getPatient().getReferenceElement().getIdPart();
 			Optional<Kontakt> patient = KontaktService.load(id);
-			patient.ifPresent(k -> iCondition.setPatientId(id));
+			patient.ifPresent(k -> IFamilyMemberHistory.setPatientId(id));
 		}
-		findingsService.saveFinding(iCondition);
-		return Optional.of(iCondition);
+		findingsService.saveFinding(IFamilyMemberHistory);
+		return Optional.of(IFamilyMemberHistory);
 	}
 
 	@Override
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
-		return Condition.class.equals(fhirClazz) && ICondition.class.equals(localClazz);
+		return FamilyMemberHistory.class.equals(fhirClazz)
+			&& IFamilyMemberHistory.class.equals(localClazz);
 	}
 
 }

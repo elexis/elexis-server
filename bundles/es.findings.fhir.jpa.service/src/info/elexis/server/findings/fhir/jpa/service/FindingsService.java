@@ -3,27 +3,32 @@ package info.elexis.server.findings.fhir.jpa.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hl7.fhir.dstu3.model.IdType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.findings.IClinicalImpression;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
+import ch.elexis.core.findings.IFamilyMemberHistory;
 import ch.elexis.core.findings.IFinding;
-import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
+import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
+import info.elexis.server.findings.fhir.jpa.model.annotated.FamilyMemberHistory;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Observation;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Observation_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
@@ -33,6 +38,8 @@ import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
+import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
@@ -46,8 +53,6 @@ public class FindingsService implements IFindingsService {
 
 	private Logger logger;
 
-	private FindingsFactory factory;
-
 	private EncounterService encounterService;
 
 	private ConditionService conditionService;
@@ -55,17 +60,17 @@ public class FindingsService implements IFindingsService {
 	private ProcedureRequestService procedureRequestService;
 
 	private ObservationService observationService;
+	
+	private FamilyMemberHistoryService familyMemberHistoryService;
 
 	private InitializationRunner initializationRunner;
 
 	public FindingsService() {
-		factory = new FindingsFactory();
 		encounterService = new EncounterService();
 		conditionService = new ConditionService();
 		procedureRequestService = new ProcedureRequestService();
 		observationService = new ObservationService();
-
-		initializationRunner = new InitializationRunner();
+		familyMemberHistoryService = new FamilyMemberHistoryService();
 	}
 
 	@Activate
@@ -75,6 +80,7 @@ public class FindingsService implements IFindingsService {
 			LoggerFactory.getLogger(FindingsService.class).error("No findings entity manager available " + this);
 		}
 		LoggerFactory.getLogger(FindingsService.class).debug("New IFindingsService " + this);
+		initializationRunner = new InitializationRunner(this);
 		if (initializationRunner.shouldRun()) {
 			initializationRunner.run();
 		}
@@ -82,7 +88,9 @@ public class FindingsService implements IFindingsService {
 
 	@Deactivate
 	protected void deactivate() {
-		initializationRunner.cancel();
+		if (initializationRunner != null) {
+			initializationRunner.cancel();
+		}
 	}
 
 	@Override
@@ -103,6 +111,9 @@ public class FindingsService implements IFindingsService {
 			// }
 			if (filter.isAssignableFrom(IObservation.class)) {
 				ret.addAll(getObservations(patientId, null));
+			}
+			if (filter.isAssignableFrom(IFamilyMemberHistory.class)) {
+				ret.addAll(getFamilyMemberHistory(patientId));
 			}
 		}
 		return ret;
@@ -210,20 +221,61 @@ public class FindingsService implements IFindingsService {
 		}
 		return Optional.empty();
 	}
+	
+	private List<FamilyMemberHistoryModelAdapter> getFamilyMemberHistory(String patientId){
+		JPAQuery<FamilyMemberHistory> query = new JPAQuery<>(FamilyMemberHistory.class);
+		if (patientId != null) {
+			query.add(Observation_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+		}
+		List<FamilyMemberHistory> familyMemberHistories = query.execute();
+		return familyMemberHistories.parallelStream()
+			.map(e -> new FamilyMemberHistoryModelAdapter(e))
+			.collect(Collectors.toList());
+	}
 
 	@Override
 	public void saveFinding(IFinding finding) {
-		factory.saveFinding((AbstractModelAdapter<?>) finding);
+		Object model = ((AbstractModelAdapter<?>) finding).getModel();
+		if (model instanceof Encounter) {
+			encounterService.write((Encounter) model);
+			return;
+		} else if (model instanceof Condition) {
+			conditionService.write((Condition) model);
+			return;
+		} else if (model instanceof ProcedureRequest) {
+			procedureRequestService.write((ProcedureRequest) model);
+			return;
+		} else if (model instanceof Observation) {
+			observationService.write((Observation) model);
+			return;
+		} else if (model instanceof FamilyMemberHistory) {
+			familyMemberHistoryService.write((FamilyMemberHistory) model);
+			return;
+		}
+		
+		logger.error("Could not save unknown finding type [" + finding + "]");
 	}
 
 	@Override
 	public void deleteFinding(IFinding finding) {
-		factory.deleteFinding((AbstractModelAdapter<?>) finding);
-	}
-
-	@Override
-	public IFindingsFactory getFindingsFactory() {
-		return factory;
+		Object model = ((AbstractModelAdapter<?>) finding).getModel();
+		if (model instanceof Encounter) {
+			encounterService.delete((Encounter) model);
+			return;
+		} else if (model instanceof Condition) {
+			conditionService.delete((Condition) model);
+			return;
+		} else if (model instanceof ProcedureRequest) {
+			procedureRequestService.delete((ProcedureRequest) model);
+			return;
+		} else if (model instanceof Observation) {
+			observationService.delete((Observation) model);
+			return;
+		} else if (model instanceof FamilyMemberHistory) {
+			familyMemberHistoryService.delete((FamilyMemberHistory) model);
+			return;
+		}
+		logger.error("Could not delete unknown finding type [" + finding + "]");
 	}
 
 	@Override
@@ -243,6 +295,10 @@ public class FindingsService implements IFindingsService {
 		Optional<Observation> observation = observationService.findById(id);
 		if (observation.isPresent()) {
 			return Optional.of(new ObservationModelAdapter(observation.get()));
+		}
+		Optional<FamilyMemberHistory> familyMemberHistory = familyMemberHistoryService.findById(id);
+		if (familyMemberHistory.isPresent()) {
+			return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
 		}
 		return Optional.empty();
 	}
@@ -273,6 +329,68 @@ public class FindingsService implements IFindingsService {
 				return Optional.of(new ObservationModelAdapter(observation.get()));
 			}
 		}
+		if (clazz.isAssignableFrom(IFamilyMemberHistory.class)) {
+			Optional<FamilyMemberHistory> familyMemberHistory =
+				familyMemberHistoryService.findById(id);
+			if (familyMemberHistory.isPresent()) {
+				return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
+			}
+		}
 		return Optional.empty();
+	}
+	
+	@Override
+	public <T extends IFinding> T create(Class<T> type){
+		if (type.equals(IEncounter.class)) {
+			EncounterModelAdapter ret = new EncounterModelAdapter(encounterService.create());
+			org.hl7.fhir.dstu3.model.Encounter fhirEncounter =
+				new org.hl7.fhir.dstu3.model.Encounter();
+			fhirEncounter.setId(new IdType(fhirEncounter.getClass().getSimpleName(), ret.getId()));
+			ModelUtil.saveResource(fhirEncounter, ret);
+			saveFinding(ret);
+			return type.cast(ret);
+		} else if (type.equals(IObservation.class)) {
+			ObservationModelAdapter ret = new ObservationModelAdapter(observationService.create());
+			org.hl7.fhir.dstu3.model.Observation fhirObservation =
+				new org.hl7.fhir.dstu3.model.Observation();
+			fhirObservation
+				.setId(new IdType(fhirObservation.getClass().getSimpleName(), ret.getId()));
+			ModelUtil.saveResource(fhirObservation, ret);
+			saveFinding(ret);
+			return type.cast(ret);
+		} else if (type.equals(ICondition.class)) {
+			ConditionModelAdapter ret = new ConditionModelAdapter(conditionService.create());
+			org.hl7.fhir.dstu3.model.Condition fhirCondition =
+				new org.hl7.fhir.dstu3.model.Condition();
+			fhirCondition.setId(new IdType(fhirCondition.getClass().getSimpleName(), ret.getId()));
+			fhirCondition.setAssertedDate(new Date());
+			ModelUtil.saveResource(fhirCondition, ret);
+			saveFinding(ret);
+			return type.cast(ret);
+		} else if (type.equals(IClinicalImpression.class)) {
+			//TODO ????
+			return null;
+		} else if (type.equals(IProcedureRequest.class)) {
+			ProcedureRequestModelAdapter ret =
+				new ProcedureRequestModelAdapter(procedureRequestService.create());
+			org.hl7.fhir.dstu3.model.ProcedureRequest fhirProcedureRequest =
+				new org.hl7.fhir.dstu3.model.ProcedureRequest();
+			fhirProcedureRequest
+				.setId(new IdType(fhirProcedureRequest.getClass().getSimpleName(), ret.getId()));
+			ModelUtil.saveResource(fhirProcedureRequest, ret);
+			saveFinding(ret);
+			return type.cast(ret);
+		} else if (type.equals(IFamilyMemberHistory.class)) {
+			FamilyMemberHistoryModelAdapter ret =
+				new FamilyMemberHistoryModelAdapter(familyMemberHistoryService.create());
+			org.hl7.fhir.dstu3.model.FamilyMemberHistory fhirFamilyMemberHistory =
+				new org.hl7.fhir.dstu3.model.FamilyMemberHistory();
+			fhirFamilyMemberHistory
+				.setId(new IdType(fhirFamilyMemberHistory.getClass().getSimpleName(), ret.getId()));
+			ModelUtil.saveResource(fhirFamilyMemberHistory, ret);
+			saveFinding(ret);
+			return type.cast(ret);
+		}
+		return null;
 	}
 }

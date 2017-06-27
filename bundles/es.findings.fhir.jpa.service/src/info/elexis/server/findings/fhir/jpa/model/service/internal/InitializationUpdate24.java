@@ -26,19 +26,21 @@ import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestService;
-import info.elexis.server.findings.fhir.jpa.service.FindingsFactory;
+import info.elexis.server.findings.fhir.jpa.service.FindingsService;
 
 public class InitializationUpdate24 {
 
 	private InitializationRunnable initializationRunnable;
+	private FindingsService findingsService;
 
-	public InitializationUpdate24(InitializationRunnable initializationRunnable) {
+	public InitializationUpdate24(InitializationRunnable initializationRunnable,
+		FindingsService findingsService){
 		this.initializationRunnable = initializationRunnable;
+		this.findingsService = findingsService;
 	}
 
 	public void update() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		FindingsFactory findingsFactory = new FindingsFactory();
 		EncounterService encounterService = new EncounterService();
 		ConditionService conditionService = new ConditionService();
 		ProcedureRequestService procedureRequestService = new ProcedureRequestService();
@@ -62,7 +64,7 @@ public class InitializationUpdate24 {
 				JsonObject jsonCondition = gson.fromJson(origContent, JsonObject.class);
 				if (isConditionComplaint(jsonCondition)) {
 					ConditionModelAdapter conditionModel = new ConditionModelAdapter(condition);
-					IObservation observation = findingsFactory.createObservation();
+					IObservation observation = findingsService.create(IObservation.class);
 					observation.setPatientId(condition.getPatientId());
 					observation.setText(conditionModel.getText().orElse(""));
 					observation.setCategory(ch.elexis.core.findings.IObservation.ObservationCategory.SOAP_SUBJECTIVE);
@@ -81,7 +83,7 @@ public class InitializationUpdate24 {
 					}
 					condition.setDeleted(true);
 					conditionService.write(condition);
-					findingsFactory.saveFinding((AbstractModelAdapter<?>) observation);
+					findingsService.saveFinding((AbstractModelAdapter<?>) observation);
 				}
 			}
 			if (progress % 1000 == 0) {

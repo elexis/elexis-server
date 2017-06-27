@@ -64,7 +64,7 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 		Optional<Kontakt> performerKontakt = KontaktService.load(BehandlungHelper.getMandatorId(fhirObject).get());
 		Optional<Kontakt> patientKontakt = KontaktService.load(BehandlungHelper.getPatientId(fhirObject).get());
 		if (performerKontakt.isPresent() && patientKontakt.isPresent()) {
-			IEncounter iEncounter = findingsService.getFindingsFactory().createEncounter();
+			IEncounter iEncounter = findingsService.create(IEncounter.class);
 			contentHelper.setResource(fhirObject, iEncounter);
 			patientKontakt.ifPresent(k -> iEncounter.setPatientId(k.getId()));
 			performerKontakt.ifPresent(k -> iEncounter.setMandatorId(k.getId()));

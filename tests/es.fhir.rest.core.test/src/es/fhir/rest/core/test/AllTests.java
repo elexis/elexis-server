@@ -15,24 +15,28 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.resources.ClaimTest;
 import es.fhir.rest.core.resources.CodesySystemTest;
 import es.fhir.rest.core.resources.ConditionTest;
 import es.fhir.rest.core.resources.CoverageTest;
 import es.fhir.rest.core.resources.EncounterTest;
+import es.fhir.rest.core.resources.FamilyMemberHistoryTest;
 import es.fhir.rest.core.resources.MedicationRequestTest;
 import es.fhir.rest.core.resources.ObservationTest;
 import es.fhir.rest.core.resources.OrganizationTest;
 import es.fhir.rest.core.resources.PatientTest;
 import es.fhir.rest.core.resources.PractitionerRoleTest;
 import es.fhir.rest.core.resources.ProcedureRequestTest;
+import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 @RunWith(Suite.class)
 @SuiteClasses({
 	MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
 	PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
-	ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class
+	ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class,
+	FamilyMemberHistoryTest.class
 })
 public class AllTests {
 	
@@ -81,5 +85,15 @@ public class AllTests {
 			iFindingsService = bundleContext.getService(serviceReference);
 		}
 		return iFindingsService;
+	}
+	
+	public static void deleteAllFindings(){
+		IFindingsService iFindingsService = getFindingsService();
+		if (iFindingsService != null) {
+			for (IFinding iFinding : iFindingsService.getPatientsFindings(
+				TestDatabaseInitializer.getPatient().getId(), IFinding.class)) {
+				iFindingsService.deleteFinding(iFinding);
+			}
+		}
 	}
 }

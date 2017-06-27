@@ -81,7 +81,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 
 	@Override
 	public Optional<IProcedureRequest> createLocalObject(ProcedureRequest fhirObject) {
-		IProcedureRequest iProcedureRequest = findingsService.getFindingsFactory().createProcedureRequest();
+		IProcedureRequest iProcedureRequest = findingsService.create(IProcedureRequest.class);
 		contentHelper.setResource(fhirObject, iProcedureRequest);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();
