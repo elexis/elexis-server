@@ -36,6 +36,7 @@ import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
@@ -58,6 +59,8 @@ public class FindingsService implements IFindingsService {
 	private ProcedureRequestService procedureRequestService;
 
 	private ObservationService observationService;
+	
+	private FamilyMemberHistoryService familyMemberHistoryService;
 
 	private InitializationRunner initializationRunner;
 
@@ -67,6 +70,7 @@ public class FindingsService implements IFindingsService {
 		conditionService = new ConditionService();
 		procedureRequestService = new ProcedureRequestService();
 		observationService = new ObservationService();
+		familyMemberHistoryService = new FamilyMemberHistoryService();
 
 		initializationRunner = new InitializationRunner();
 	}
@@ -261,6 +265,10 @@ public class FindingsService implements IFindingsService {
 		if (observation.isPresent()) {
 			return Optional.of(new ObservationModelAdapter(observation.get()));
 		}
+		Optional<FamilyMemberHistory> familyMemberHistory = familyMemberHistoryService.findById(id);
+		if (familyMemberHistory.isPresent()) {
+			return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
+		}
 		return Optional.empty();
 	}
 
@@ -288,6 +296,13 @@ public class FindingsService implements IFindingsService {
 			Optional<Observation> observation = observationService.findById(id);
 			if (observation.isPresent()) {
 				return Optional.of(new ObservationModelAdapter(observation.get()));
+			}
+		}
+		if (clazz.isAssignableFrom(IFamilyMemberHistory.class)) {
+			Optional<FamilyMemberHistory> familyMemberHistory =
+				familyMemberHistoryService.findById(id);
+			if (familyMemberHistory.isPresent()) {
+				return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
 			}
 		}
 		return Optional.empty();

@@ -14,6 +14,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
@@ -105,5 +107,19 @@ public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvide
 			}
 		}
 		return outcome;
+	}
+	
+	@Read
+	public FamilyMemberHistory getResourceById(@IdParam IdType theId){
+		String idPart = theId.getIdPart();
+		if (idPart != null) {
+			Optional<IFinding> optionalFam = findingsService.findById(idPart);
+			if (optionalFam.isPresent() && (optionalFam.get() instanceof IFamilyMemberHistory)) {
+				Optional<FamilyMemberHistory> fhirFam =
+					getTransformer().getFhirObject((IFamilyMemberHistory) optionalFam.get());
+				return fhirFam.get();
+			}
+		}
+		return null;
 	}
 }

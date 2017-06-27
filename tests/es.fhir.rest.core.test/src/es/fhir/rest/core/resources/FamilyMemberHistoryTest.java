@@ -1,7 +1,9 @@
 package es.fhir.rest.core.resources;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,10 +12,12 @@ import java.util.List;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.FamilyMemberHistory;
+import org.hl7.fhir.dstu3.model.Narrative;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.IFamilyMemberHistory;
 import ch.elexis.core.findings.IFindingsFactory;
@@ -57,6 +61,27 @@ public class FamilyMemberHistoryTest {
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
+	}
+	
+	@Test
+	public void createFamilyMemberHistory(){
+		FamilyMemberHistory familyMemberHistory = new FamilyMemberHistory();
+		
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		familyMemberHistory.setText(narrative);
+		
+		MethodOutcome outcome = client.create().resource(familyMemberHistory).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+		
+		FamilyMemberHistory readFamilyMemberHistory =
+			client.read().resource(FamilyMemberHistory.class).withId(outcome.getId()).execute();
+		assertNotNull(readFamilyMemberHistory);
+		assertEquals(outcome.getId().getIdPart(),
+			readFamilyMemberHistory.getIdElement().getIdPart());
 	}
 	
 }
