@@ -46,6 +46,9 @@ public class DbInitializer {
 				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_FAMILYMEMBERHISTORY")) {
 					executeDbScript(jdbcConnection, "/rsc/findings_familymemberhistory.sql");
 				}
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_ALLERGYINTOLERANCE")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_allergyintolerance.sql");
+				}
 			} catch (IOException | SQLException e) {
 				logger.error("Faild to run sql script on database.", e);
 				return;

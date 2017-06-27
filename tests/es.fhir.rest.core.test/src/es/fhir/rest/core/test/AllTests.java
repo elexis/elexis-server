@@ -17,6 +17,7 @@ import org.osgi.framework.ServiceReference;
 
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
+import es.fhir.rest.core.resources.AllergyIntoleranceTest;
 import es.fhir.rest.core.resources.ClaimTest;
 import es.fhir.rest.core.resources.CodesySystemTest;
 import es.fhir.rest.core.resources.ConditionTest;
@@ -36,7 +37,7 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer
 	MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
 	PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
 	ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class,
-	FamilyMemberHistoryTest.class
+	FamilyMemberHistoryTest.class, AllergyIntoleranceTest.class
 })
 public class AllTests {
 	

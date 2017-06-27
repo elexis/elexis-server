@@ -24,7 +24,8 @@ Service-Component: OSGI-INF/es.fhir.rest.core.model.util.transformer.CoverageFal
  OSGI-INF/es.fhir.rest.core.model.util.transformer.PractitionerRoleUserTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.MedicationRequestPrescriptionTransformer.xml,
  OSGI-INF/es.fhir.rest.core.model.util.transformer.ObservationIObservationTransformer.xml,
- OSGI-INF/es.fhir.rest.core.model.util.transformer.FamilyMemberHistoryIFamilyMemberHistoryTransformer.xml
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.FamilyMemberHistoryIFamilyMemberHistoryTransformer.xml,
+ OSGI-INF/es.fhir.rest.core.model.util.transformer.AllergyIntoleranceIAllergyIntoleranceTransformer.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.model,
