@@ -31,7 +31,6 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
-import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IObservation.ObservationCode;
@@ -58,25 +57,24 @@ public class ObservationTest {
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 
-		IFindingsFactory iFindingsFactory = AllTests.getFindingsService().getFindingsFactory();
-		IObservation persAnam = iFindingsFactory.createObservation();
+		IObservation persAnam = AllTests.getFindingsService().create(IObservation.class);
 		persAnam.setCategory(ObservationCategory.SOCIALHISTORY);
 		persAnam.setCoding(
 			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
 		persAnam.setText("Pers Anamnese 1");
 		persAnam.setPatientId(TestDatabaseInitializer.getPatient().getId());
-		IObservation risk = iFindingsFactory.createObservation();
+		IObservation risk = AllTests.getFindingsService().create(IObservation.class);
 		risk.setCategory(ObservationCategory.SOCIALHISTORY);
 		risk.setCoding(
 			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
 		risk.setText("Risiken 1");
 		risk.setPatientId(TestDatabaseInitializer.getPatient().getId());
 		
-		IEncounter encounter = iFindingsFactory.createEncounter();
+		IEncounter encounter = AllTests.getFindingsService().create(IEncounter.class);
 		encounter.setConsultationId(TestDatabaseInitializer.getBehandlung().getId());
 		encounter.setPatientId(TestDatabaseInitializer.getPatient().getId());
 
-		IObservation iObservation = iFindingsFactory.createObservation();
+		IObservation iObservation = AllTests.getFindingsService().create(IObservation.class);
 		iObservation.setCategory(ObservationCategory.SOAP_SUBJECTIVE);
 		iObservation.setText("Encounter test 1");
 		iObservation.setPatientId(TestDatabaseInitializer.getPatient().getId());

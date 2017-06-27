@@ -20,7 +20,6 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.IFamilyMemberHistory;
-import ch.elexis.core.findings.IFindingsFactory;
 import ch.elexis.core.findings.util.ModelUtil;
 import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
@@ -38,8 +37,8 @@ public class FamilyMemberHistoryTest {
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 		
-		IFindingsFactory iFindingsFactory = AllTests.getFindingsService().getFindingsFactory();
-		IFamilyMemberHistory familyMemberHistory = iFindingsFactory.createFamilyMemberHistory();
+		IFamilyMemberHistory familyMemberHistory =
+			AllTests.getFindingsService().create(IFamilyMemberHistory.class);
 		familyMemberHistory.setText("Family Member History test 1");
 		familyMemberHistory.setPatientId(TestDatabaseInitializer.getPatient().getId());
 		

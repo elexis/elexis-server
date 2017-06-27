@@ -13,7 +13,6 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
-import ch.elexis.core.findings.codes.ICodingService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -30,13 +29,6 @@ public class ObservationIObservationTransformer
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
 	protected void bindIFindingsService(IFindingsService findingsService) {
 		this.findingsService = findingsService;
-	}
-
-	private ICodingService codingService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindICodingService(ICodingService codingService) {
-		this.codingService = codingService;
 	}
 
 	@Override
@@ -66,7 +58,7 @@ public class ObservationIObservationTransformer
 
 	@Override
 	public Optional<IObservation> createLocalObject(Observation fhirObject) {
-		IObservation iObservation = findingsService.getFindingsFactory().createObservation();
+		IObservation iObservation = findingsService.create(IObservation.class);
 		contentHelper.setResource(fhirObject, iObservation);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();

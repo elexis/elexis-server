@@ -56,7 +56,7 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 
 	@Override
 	public Optional<ICondition> createLocalObject(Condition fhirObject) {
-		ICondition iCondition = findingsService.getFindingsFactory().createCondition();
+		ICondition iCondition = findingsService.create(ICondition.class);
 		contentHelper.setResource(fhirObject, iCondition);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();

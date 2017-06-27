@@ -60,7 +60,7 @@ public class FamilyMemberHistoryIFamilyMemberHistoryTransformer
 	@Override
 	public Optional<IFamilyMemberHistory> createLocalObject(FamilyMemberHistory fhirObject){
 		IFamilyMemberHistory IFamilyMemberHistory =
-			findingsService.getFindingsFactory().createFamilyMemberHistory();
+			findingsService.create(IFamilyMemberHistory.class);
 		contentHelper.setResource(fhirObject, IFamilyMemberHistory);
 		if (fhirObject.getPatient() != null && fhirObject.getPatient().hasReference()) {
 			String id = fhirObject.getPatient().getReferenceElement().getIdPart();

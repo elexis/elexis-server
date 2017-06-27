@@ -80,8 +80,7 @@ public class MigratorService implements IMigratorService {
 						.filter(iFinding -> isDiagnose(iFinding))
 						.collect(Collectors.toList());
 				if (conditions.isEmpty()) {
-					ICondition condition = findingsService.getFindingsFactory()
-							.createCondition();
+					ICondition condition = findingsService.create(ICondition.class);
 					condition.setPatientId(patientId);
 					condition.setCategory(ConditionCategory.PROBLEMLISTITEM);
 					condition.setText(diagnosis);
@@ -123,7 +122,7 @@ public class MigratorService implements IMigratorService {
 	}
 
 	private void createEncounter(Behandlung behandlung) {
-		IEncounter encounter = findingsService.getFindingsFactory().createEncounter();
+		IEncounter encounter = findingsService.create(IEncounter.class);
 		updateEncounter(encounter, behandlung);
 	}
 
