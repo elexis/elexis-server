@@ -35,7 +35,7 @@ public class PractitionerRoleUserTransformer implements IFhirTransformer<Practit
 		// add the practitioner
 		if(localObject.getKontakt() != null) {
 			practitionerRole.setPractitioner(
-					new Reference(new IdDt(Practitioner.class.getName(), localObject.getKontakt().getId())));
+					new Reference(new IdDt(Practitioner.class.getSimpleName(), localObject.getKontakt().getId())));
 		}
 		localObject.getKontakt().getId();
 
