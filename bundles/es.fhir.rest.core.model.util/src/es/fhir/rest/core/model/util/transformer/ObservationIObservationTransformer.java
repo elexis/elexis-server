@@ -10,7 +10,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import es.fhir.rest.core.IFhirTransformer;
@@ -43,9 +42,10 @@ public class ObservationIObservationTransformer
 	@Override
 	public Optional<IObservation> getLocalObject(Observation fhirObject) {
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing = findingsService.findById(fhirObject.getId(), IObservation.class);
+			Optional<IObservation> existing =
+				findingsService.findById(fhirObject.getId(), IObservation.class);
 			if (existing.isPresent()) {
-				return Optional.of((IObservation) existing.get());
+				return Optional.of(existing.get());
 			}
 		}
 		return Optional.empty();
@@ -68,9 +68,9 @@ public class ObservationIObservationTransformer
 		IEncounter iEncounter = null;
 		if (fhirObject.getContext() != null && fhirObject.getContext().hasReference()) {
 			String id = fhirObject.getContext().getReferenceElement().getIdPart();
-			Optional<IFinding> encounter = findingsService.findById(id, IEncounter.class);
+			Optional<IEncounter> encounter = findingsService.findById(id, IEncounter.class);
 			if (encounter.isPresent()) {
-				iEncounter = (IEncounter) encounter.get();
+				iEncounter = encounter.get();
 				iObservation.setEncounter(iEncounter);
 			}
 		}

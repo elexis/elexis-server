@@ -25,7 +25,6 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.migration.IMigratorService;
 import es.fhir.rest.core.IFhirResourceProvider;
@@ -75,9 +74,9 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 	public Condition getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> condition = findingsService.findById(idPart);
-			if (condition.isPresent() && (condition.get() instanceof ICondition)) {
-				Optional<Condition> fhirCondition = getTransformer().getFhirObject((ICondition) condition.get());
+			Optional<ICondition> condition = findingsService.findById(idPart, ICondition.class);
+			if (condition.isPresent()) {
+				Optional<Condition> fhirCondition = getTransformer().getFhirObject(condition.get());
 				return fhirCondition.get();
 			}
 		}
@@ -95,15 +94,18 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
 						ICondition.class, null);
 
-					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),
+					List<ICondition> findings = findingsService
+						.getPatientsFindings(thePatientId.getIdPart(),
 							ICondition.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Condition> ret = new ArrayList<Condition>();
-						for (IFinding iFinding : findings) {
-							if (categoryCode != null && !isConditionCategory((ICondition) iFinding, categoryCode)) {
+						for (ICondition iFinding : findings) {
+							if (categoryCode != null
+								&& !isConditionCategory(iFinding, categoryCode)) {
 								continue;
 							}
-							Optional<Condition> fhirEncounter = getTransformer().getFhirObject((ICondition) iFinding);
+							Optional<Condition> fhirEncounter =
+								getTransformer().getFhirObject(iFinding);
 							fhirEncounter.ifPresent(fe -> ret.add(fe));
 						}
 						return ret;

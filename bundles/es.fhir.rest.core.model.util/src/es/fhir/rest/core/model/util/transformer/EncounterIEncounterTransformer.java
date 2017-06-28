@@ -11,7 +11,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
@@ -45,9 +44,10 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 	@Override
 	public Optional<IEncounter> getLocalObject(Encounter fhirObject) {
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing = findingsService.findById(fhirObject.getId(), IEncounter.class);
+			Optional<IEncounter> existing =
+				findingsService.findById(fhirObject.getId(), IEncounter.class);
 			if (existing.isPresent()) {
-				return Optional.of((IEncounter) existing.get());
+				return Optional.of(existing.get());
 			}
 		}
 		return Optional.empty();

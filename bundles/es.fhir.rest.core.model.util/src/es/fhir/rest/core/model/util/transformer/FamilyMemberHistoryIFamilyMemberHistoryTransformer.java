@@ -10,7 +10,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ch.elexis.core.findings.IFamilyMemberHistory;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
@@ -42,10 +41,10 @@ public class FamilyMemberHistoryIFamilyMemberHistoryTransformer
 	@Override
 	public Optional<IFamilyMemberHistory> getLocalObject(FamilyMemberHistory fhirObject){
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing =
+			Optional<IFamilyMemberHistory> existing =
 				findingsService.findById(fhirObject.getId(), IFamilyMemberHistory.class);
 			if (existing.isPresent()) {
-				return Optional.of((IFamilyMemberHistory) existing.get());
+				return Optional.of(existing.get());
 			}
 		}
 		return Optional.empty();

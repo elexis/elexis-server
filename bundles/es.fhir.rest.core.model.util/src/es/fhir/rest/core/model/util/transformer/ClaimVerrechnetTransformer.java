@@ -23,7 +23,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.lock.types.LockInfo;
@@ -296,9 +295,10 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 
 		private Optional<Behandlung> getBehandlungWithEncounterRef(IdType encounterRef) {
 			if (encounterRef.getIdPart() != null) {
-				Optional<IFinding> encounter = findingsService.findById(encounterRef.getIdPart(), IEncounter.class);
+				Optional<IEncounter> encounter =
+					findingsService.findById(encounterRef.getIdPart(), IEncounter.class);
 				if (encounter.isPresent()) {
-					return getBehandlungForEncounter((IEncounter) encounter.get());
+					return getBehandlungForEncounter(encounter.get());
 				}
 			}
 			return Optional.empty();

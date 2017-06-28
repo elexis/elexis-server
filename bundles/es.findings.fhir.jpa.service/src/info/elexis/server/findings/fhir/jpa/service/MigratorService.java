@@ -75,7 +75,8 @@ public class MigratorService implements IMigratorService {
 		patient.ifPresent(p -> {
 			String diagnosis = p.getDiagnosen();
 			if (diagnosis != null && !diagnosis.isEmpty()) {
-				List<IFinding> conditions = findingsService.getPatientsFindings(patientId, ICondition.class);
+				List<ICondition> conditions =
+					findingsService.getPatientsFindings(patientId, ICondition.class);
 				conditions = conditions.stream()
 						.filter(iFinding -> isDiagnose(iFinding))
 						.collect(Collectors.toList());
@@ -90,9 +91,8 @@ public class MigratorService implements IMigratorService {
 		});
 	}
 
-	private boolean isDiagnose(IFinding iFinding) {
-		return iFinding instanceof ICondition
-				&& ((ICondition) iFinding).getCategory() == ConditionCategory.PROBLEMLISTITEM;
+	private boolean isDiagnose(ICondition iFinding){
+		return iFinding.getCategory() == ConditionCategory.PROBLEMLISTITEM;
 	}
 
 	private void migratePatientEncounters(String patientId) {

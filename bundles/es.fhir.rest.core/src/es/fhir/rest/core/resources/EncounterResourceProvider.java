@@ -74,9 +74,9 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	public Encounter getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> encounter = findingsService.findById(idPart);
-			if (encounter.isPresent() && (encounter.get() instanceof IEncounter)) {
-				Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) encounter.get());
+			Optional<IEncounter> encounter = findingsService.findById(idPart, IEncounter.class);
+			if (encounter.isPresent()) {
+				Optional<Encounter> fhirEncounter = getTransformer().getFhirObject(encounter.get());
 				return fhirEncounter.get();
 			}
 		}
@@ -102,13 +102,15 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
 						IEncounter.class, null);
 
-					List<IFinding> findings = findingsService.getPatientsFindings(patient.get().getId(),
+					List<IEncounter> findings = findingsService
+						.getPatientsFindings(patient.get().getId(),
 							IEncounter.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Encounter> ret = new ArrayList<Encounter>();
 
-						for (IFinding iFinding : findings) {
-							Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) iFinding);
+						for (IEncounter iFinding : findings) {
+							Optional<Encounter> fhirEncounter =
+								getTransformer().getFhirObject(iFinding);
 							fhirEncounter.ifPresent(fe -> {
 								if (dates != null) {
 									if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(), dates)) {
@@ -139,7 +141,8 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 				&& !identifier.getValue().isEmpty()) {
 			migratorService.migrateConsultationsFindings(identifier.getValue().getValue(), IEncounter.class);
 
-			List<IFinding> findings = findingsService.getConsultationsFindings(identifier.getValue().getValue(),
+			List<IEncounter> findings = findingsService
+				.getConsultationsFindings(identifier.getValue().getValue(),
 					IEncounter.class);
 			if (findings != null && !findings.isEmpty()) {
 				List<Encounter> ret = new ArrayList<Encounter>();

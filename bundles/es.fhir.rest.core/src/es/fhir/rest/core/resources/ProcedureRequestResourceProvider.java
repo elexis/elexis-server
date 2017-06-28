@@ -23,7 +23,6 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IProcedureRequest;
 import es.fhir.rest.core.IFhirResourceProvider;
@@ -65,10 +64,11 @@ public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 	public ProcedureRequest getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> procedureRequest = findingsService.findById(idPart);
-			if (procedureRequest.isPresent() && (procedureRequest.get() instanceof IProcedureRequest)) {
+			Optional<IProcedureRequest> procedureRequest =
+				findingsService.findById(idPart, IProcedureRequest.class);
+			if (procedureRequest.isPresent()) {
 				Optional<ProcedureRequest> fhirProcedureRequest = getTransformer()
-						.getFhirObject((IProcedureRequest) procedureRequest.get());
+					.getFhirObject(procedureRequest.get());
 				return fhirProcedureRequest.get();
 			}
 		}
@@ -83,12 +83,14 @@ public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
-					List<IFinding> findings = findingsService.getPatientsFindings(thePatientId.getIdPart(),
+					List<IProcedureRequest> findings = findingsService
+						.getPatientsFindings(thePatientId.getIdPart(),
 							IProcedureRequest.class);
 					if(theEncounterId != null) {
-						Optional<IFinding> encounter = findingsService.findById(theEncounterId.getIdPart(), IEncounter.class);
+						Optional<IEncounter> encounter =
+							findingsService.findById(theEncounterId.getIdPart(), IEncounter.class);
 						if(encounter.isPresent()) {
-							IEncounter iEncounter = (IEncounter) encounter.get();
+							IEncounter iEncounter = encounter.get();
 							String consid = iEncounter.getConsultationId();
 							if (consid != null && !consid.isEmpty()) {
 								findings = findingsService.getConsultationsFindings(consid, IProcedureRequest.class);
@@ -97,9 +99,9 @@ public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 					}
 					if (findings != null && !findings.isEmpty()) {
 						List<ProcedureRequest> ret = new ArrayList<ProcedureRequest>();
-						for (IFinding iFinding : findings) {
+						for (IProcedureRequest iFinding : findings) {
 							Optional<ProcedureRequest> fhirProcedureRequest = getTransformer()
-									.getFhirObject((IProcedureRequest) iFinding);
+								.getFhirObject(iFinding);
 							fhirProcedureRequest.ifPresent(pr -> ret.add(pr));
 						}
 						return ret;

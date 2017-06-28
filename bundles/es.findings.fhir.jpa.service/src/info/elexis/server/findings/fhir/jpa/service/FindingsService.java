@@ -100,8 +100,9 @@ public class FindingsService implements IFindingsService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<IFinding> getPatientsFindings(String patientId, Class<? extends IFinding> filter) {
+	public <T extends IFinding> List<T> getPatientsFindings(String patientId, Class<T> filter){
 		List<IFinding> ret = new ArrayList<>();
 		if (patientId != null && !patientId.isEmpty()) {
 			if (filter.isAssignableFrom(IEncounter.class)) {
@@ -126,11 +127,13 @@ public class FindingsService implements IFindingsService {
 				ret.addAll(getAllergyIntolerance(patientId));
 			}
 		}
-		return ret;
+		return (List<T>) ret;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<IFinding> getConsultationsFindings(String consultationId, Class<? extends IFinding> filter) {
+	public <T extends IFinding> List<T> getConsultationsFindings(String consultationId,
+		Class<T> filter){
 		List<IFinding> ret = new ArrayList<>();
 		if (consultationId != null && !consultationId.isEmpty()) {
 			Optional<IEncounter> encounter = getEncounter(consultationId);
@@ -153,7 +156,7 @@ public class FindingsService implements IFindingsService {
 
 			}
 		}
-		return ret;
+		return (List<T>) ret;
 	}
 
 	private List<ProcedureRequestModelAdapter> getProcedureRequests(String patientId, String encounterId) {
@@ -305,74 +308,47 @@ public class FindingsService implements IFindingsService {
 		logger.error("Could not delete unknown finding type [" + finding + "]");
 	}
 
-	//TODO refactor
 	@Override
-	public Optional<IFinding> findById(String id) {
-		Optional<Encounter> encounter = encounterService.findById(id);
-		if (encounter.isPresent()) {
-			return Optional.of(new EncounterModelAdapter(encounter.get()));
-		}
-		Optional<Condition> condition = conditionService.findById(id);
-		if (condition.isPresent()) {
-			return Optional.of(new ConditionModelAdapter(condition.get()));
-		}
-		Optional<ProcedureRequest> procedureRequest = procedureRequestService.findById(id);
-		if (procedureRequest.isPresent()) {
-			return Optional.of(new ProcedureRequestModelAdapter(procedureRequest.get()));
-		}
-		Optional<Observation> observation = observationService.findById(id);
-		if (observation.isPresent()) {
-			return Optional.of(new ObservationModelAdapter(observation.get()));
-		}
-		Optional<FamilyMemberHistory> familyMemberHistory = familyMemberHistoryService.findById(id);
-		if (familyMemberHistory.isPresent()) {
-			return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
-		}
-		Optional<AllergyIntolerance> allergyIntolerance = allergyIntoleranceService.findById(id);
-		if (allergyIntolerance.isPresent()) {
-			return Optional.of(new AllergyIntoleranceModelAdapter(allergyIntolerance.get()));
-		}
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<IFinding> findById(String id, Class<? extends IFinding> clazz) {
+	public <T extends IFinding> Optional<T> findById(String id, Class<T> clazz){
 		if (clazz.isAssignableFrom(IEncounter.class)) {
 			Optional<Encounter> encounter = encounterService.findById(id);
 			if (encounter.isPresent()) {
-				return Optional.of(new EncounterModelAdapter(encounter.get()));
+				return Optional.of(clazz.cast(new EncounterModelAdapter(encounter.get())));
 			}
 		}
 		if (clazz.isAssignableFrom(ICondition.class)) {
 			Optional<Condition> condition = conditionService.findById(id);
 			if (condition.isPresent()) {
-				return Optional.of(new ConditionModelAdapter(condition.get()));
+				return Optional.of(clazz.cast(new ConditionModelAdapter(condition.get())));
 			}
 		}
 		if (clazz.isAssignableFrom(IProcedureRequest.class)) {
 			Optional<ProcedureRequest> procedureRequest = procedureRequestService.findById(id);
 			if (procedureRequest.isPresent()) {
-				return Optional.of(new ProcedureRequestModelAdapter(procedureRequest.get()));
+				return Optional
+					.of(clazz.cast(new ProcedureRequestModelAdapter(procedureRequest.get())));
 			}
 		}
 		if (clazz.isAssignableFrom(IObservation.class)) {
 			Optional<Observation> observation = observationService.findById(id);
 			if (observation.isPresent()) {
-				return Optional.of(new ObservationModelAdapter(observation.get()));
+				return Optional.of(clazz.cast(new ObservationModelAdapter(observation.get())));
 			}
 		}
 		if (clazz.isAssignableFrom(IFamilyMemberHistory.class)) {
 			Optional<FamilyMemberHistory> familyMemberHistory =
 				familyMemberHistoryService.findById(id);
 			if (familyMemberHistory.isPresent()) {
-				return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
+				return Optional
+					.of(clazz.cast(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get())));
 			}
 		}
-		if (clazz.isAssignableFrom(IFamilyMemberHistory.class)) {
+		if (clazz.isAssignableFrom(IAllergyIntolerance.class)) {
 			Optional<AllergyIntolerance> allergyIntolerance =
 				allergyIntoleranceService.findById(id);
 			if (allergyIntolerance.isPresent()) {
-				return Optional.of(new AllergyIntoleranceModelAdapter(allergyIntolerance.get()));
+				return Optional
+					.of(clazz.cast(new AllergyIntoleranceModelAdapter(allergyIntolerance.get())));
 			}
 		}
 		

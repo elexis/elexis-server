@@ -10,7 +10,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ch.elexis.core.findings.IAllergyIntolerance;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
@@ -42,10 +41,10 @@ public class AllergyIntoleranceIAllergyIntoleranceTransformer
 	@Override
 	public Optional<IAllergyIntolerance> getLocalObject(AllergyIntolerance fhirObject){
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing =
+			Optional<IAllergyIntolerance> existing =
 				findingsService.findById(fhirObject.getId(), IAllergyIntolerance.class);
 			if (existing.isPresent()) {
-				return Optional.of((IAllergyIntolerance) existing.get());
+				return Optional.of(existing.get());
 			}
 		}
 		return Optional.empty();

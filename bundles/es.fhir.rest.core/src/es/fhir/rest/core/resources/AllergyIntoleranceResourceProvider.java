@@ -22,7 +22,6 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IAllergyIntolerance;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
@@ -67,13 +66,12 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<AllergyIntolerance> ret = new ArrayList<>();
-					List<IFinding> findings = findingsService
+					List<IAllergyIntolerance> findings = findingsService
 						.getPatientsFindings(patientId.getIdPart(), IAllergyIntolerance.class);
 					if (findings != null && !findings.isEmpty()) {
-						for (IFinding iFinding : findings) {
-							
+						for (IAllergyIntolerance iFinding : findings) {
 							Optional<AllergyIntolerance> fhirAllergyIntolerance =
-								getTransformer().getFhirObject((IAllergyIntolerance) iFinding);
+								getTransformer().getFhirObject(iFinding);
 							if (fhirAllergyIntolerance.isPresent()) {
 								ret.add(fhirAllergyIntolerance.get());
 							}
@@ -113,10 +111,11 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	public AllergyIntolerance getResourceById(@IdParam IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> optionalAllergyIntolerance = findingsService.findById(idPart);
-			if (optionalAllergyIntolerance.isPresent() && (optionalAllergyIntolerance.get() instanceof IAllergyIntolerance)) {
+			Optional<IAllergyIntolerance> optionalAllergyIntolerance =
+				findingsService.findById(idPart, IAllergyIntolerance.class);
+			if (optionalAllergyIntolerance.isPresent()) {
 				Optional<AllergyIntolerance> fhirAllergyIntolerance =
-					getTransformer().getFhirObject((IAllergyIntolerance) optionalAllergyIntolerance.get());
+					getTransformer().getFhirObject(optionalAllergyIntolerance.get());
 				return fhirAllergyIntolerance.get();
 			}
 		}
