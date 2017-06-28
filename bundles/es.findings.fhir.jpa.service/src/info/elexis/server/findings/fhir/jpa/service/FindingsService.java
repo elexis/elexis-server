@@ -15,6 +15,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.findings.IAllergyIntolerance;
 import ch.elexis.core.findings.IClinicalImpression;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
@@ -24,6 +25,7 @@ import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.util.ModelUtil;
+import info.elexis.server.findings.fhir.jpa.model.annotated.AllergyIntolerance;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
@@ -34,6 +36,8 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.Observation_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest;
 import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest_;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.AllergyIntoleranceModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.AllergyIntoleranceService;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
@@ -63,6 +67,8 @@ public class FindingsService implements IFindingsService {
 	
 	private FamilyMemberHistoryService familyMemberHistoryService;
 
+	private AllergyIntoleranceService allergyIntoleranceService;
+	
 	private InitializationRunner initializationRunner;
 
 	public FindingsService() {
@@ -71,6 +77,7 @@ public class FindingsService implements IFindingsService {
 		procedureRequestService = new ProcedureRequestService();
 		observationService = new ObservationService();
 		familyMemberHistoryService = new FamilyMemberHistoryService();
+		allergyIntoleranceService = new AllergyIntoleranceService();
 	}
 
 	@Activate
@@ -114,6 +121,9 @@ public class FindingsService implements IFindingsService {
 			}
 			if (filter.isAssignableFrom(IFamilyMemberHistory.class)) {
 				ret.addAll(getFamilyMemberHistory(patientId));
+			}
+			if (filter.isAssignableFrom(IAllergyIntolerance.class)) {
+				ret.addAll(getAllergyIntolerance(patientId));
 			}
 		}
 		return ret;
@@ -232,6 +242,16 @@ public class FindingsService implements IFindingsService {
 			.map(e -> new FamilyMemberHistoryModelAdapter(e))
 			.collect(Collectors.toList());
 	}
+	
+	private List<AllergyIntoleranceModelAdapter> getAllergyIntolerance(String patientId){
+		JPAQuery<AllergyIntolerance> query = new JPAQuery<>(AllergyIntolerance.class);
+		if (patientId != null) {
+			query.add(Observation_.patientid, JPAQuery.QUERY.EQUALS, patientId);
+		}
+		List<AllergyIntolerance> entries = query.execute();
+		return entries.parallelStream()
+			.map(e -> new AllergyIntoleranceModelAdapter(e)).collect(Collectors.toList());
+	}
 
 	@Override
 	public void saveFinding(IFinding finding) {
@@ -252,7 +272,10 @@ public class FindingsService implements IFindingsService {
 			familyMemberHistoryService.write((FamilyMemberHistory) model);
 			return;
 		}
-		
+		else if (model instanceof AllergyIntolerance) {
+			allergyIntoleranceService.write((AllergyIntolerance) model);
+			return;
+		}
 		logger.error("Could not save unknown finding type [" + finding + "]");
 	}
 
@@ -275,9 +298,14 @@ public class FindingsService implements IFindingsService {
 			familyMemberHistoryService.delete((FamilyMemberHistory) model);
 			return;
 		}
+		else if (model instanceof AllergyIntolerance) {
+			allergyIntoleranceService.delete((AllergyIntolerance) model);
+			return;
+		}
 		logger.error("Could not delete unknown finding type [" + finding + "]");
 	}
 
+	//TODO refactor
 	@Override
 	public Optional<IFinding> findById(String id) {
 		Optional<Encounter> encounter = encounterService.findById(id);
@@ -299,6 +327,10 @@ public class FindingsService implements IFindingsService {
 		Optional<FamilyMemberHistory> familyMemberHistory = familyMemberHistoryService.findById(id);
 		if (familyMemberHistory.isPresent()) {
 			return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
+		}
+		Optional<AllergyIntolerance> allergyIntolerance = allergyIntoleranceService.findById(id);
+		if (allergyIntolerance.isPresent()) {
+			return Optional.of(new AllergyIntoleranceModelAdapter(allergyIntolerance.get()));
 		}
 		return Optional.empty();
 	}
@@ -336,6 +368,14 @@ public class FindingsService implements IFindingsService {
 				return Optional.of(new FamilyMemberHistoryModelAdapter(familyMemberHistory.get()));
 			}
 		}
+		if (clazz.isAssignableFrom(IFamilyMemberHistory.class)) {
+			Optional<AllergyIntolerance> allergyIntolerance =
+				allergyIntoleranceService.findById(id);
+			if (allergyIntolerance.isPresent()) {
+				return Optional.of(new AllergyIntoleranceModelAdapter(allergyIntolerance.get()));
+			}
+		}
+		
 		return Optional.empty();
 	}
 	
@@ -388,6 +428,17 @@ public class FindingsService implements IFindingsService {
 			fhirFamilyMemberHistory
 				.setId(new IdType(fhirFamilyMemberHistory.getClass().getSimpleName(), ret.getId()));
 			ModelUtil.saveResource(fhirFamilyMemberHistory, ret);
+			saveFinding(ret);
+			return type.cast(ret);
+		}
+		else if (type.equals(IAllergyIntolerance.class)) {
+			AllergyIntoleranceModelAdapter ret =
+				new AllergyIntoleranceModelAdapter(allergyIntoleranceService.create());
+			org.hl7.fhir.dstu3.model.AllergyIntolerance fhirAllergyIntolerance =
+				new org.hl7.fhir.dstu3.model.AllergyIntolerance();
+			fhirAllergyIntolerance
+				.setId(new IdType(fhirAllergyIntolerance.getClass().getSimpleName(), ret.getId()));
+			ModelUtil.saveResource(fhirAllergyIntolerance, ret);
 			saveFinding(ret);
 			return type.cast(ret);
 		}
