@@ -10,7 +10,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ch.elexis.core.findings.ICondition;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
@@ -41,9 +40,10 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 	@Override
 	public Optional<ICondition> getLocalObject(Condition fhirObject) {
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing = findingsService.findById(fhirObject.getId(), ICondition.class);
+			Optional<ICondition> existing =
+				findingsService.findById(fhirObject.getId(), ICondition.class);
 			if (existing.isPresent()) {
-				return Optional.of((ICondition) existing.get());
+				return Optional.of(existing.get());
 			}
 		}
 		return Optional.empty();

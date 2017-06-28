@@ -22,7 +22,6 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IFamilyMemberHistory;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
@@ -67,13 +66,12 @@ public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvide
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<FamilyMemberHistory> ret = new ArrayList<>();
-					List<IFinding> findings = findingsService
+					List<IFamilyMemberHistory> findings = findingsService
 						.getPatientsFindings(patientId.getIdPart(), IFamilyMemberHistory.class);
 					if (findings != null && !findings.isEmpty()) {
-						for (IFinding iFinding : findings) {
-							
+						for (IFamilyMemberHistory iFinding : findings) {
 							Optional<FamilyMemberHistory> fhirFamilyMemberHistory =
-								getTransformer().getFhirObject((IFamilyMemberHistory) iFinding);
+								getTransformer().getFhirObject(iFinding);
 							if (fhirFamilyMemberHistory.isPresent()) {
 								ret.add(fhirFamilyMemberHistory.get());
 							}
@@ -113,10 +111,11 @@ public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvide
 	public FamilyMemberHistory getResourceById(@IdParam IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> optionalFam = findingsService.findById(idPart);
-			if (optionalFam.isPresent() && (optionalFam.get() instanceof IFamilyMemberHistory)) {
+			Optional<IFamilyMemberHistory> optionalFam =
+				findingsService.findById(idPart, IFamilyMemberHistory.class);
+			if (optionalFam.isPresent()) {
 				Optional<FamilyMemberHistory> fhirFam =
-					getTransformer().getFhirObject((IFamilyMemberHistory) optionalFam.get());
+					getTransformer().getFhirObject(optionalFam.get());
 				return fhirFam.get();
 			}
 		}

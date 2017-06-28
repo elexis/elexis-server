@@ -29,7 +29,6 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
@@ -87,10 +86,11 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			// do lookup in findings first, then lab results
-			Optional<IFinding> observation = findingsService.findById(idPart, IObservation.class);
-			if (observation.isPresent() && (observation.get() instanceof IObservation)) {
+			Optional<IObservation> observation =
+				findingsService.findById(idPart, IObservation.class);
+			if (observation.isPresent()) {
 				Optional<Observation> fhirObservation = getTransformer()
-						.getFhirObject((IObservation) observation.get());
+					.getFhirObject(observation.get());
 				return fhirObservation.get();
 			}
 			Optional<LabResult> labresult = LabResultService.load(idPart);
@@ -131,15 +131,17 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 						ret = sortLaboratory(ret);
 					}
 					// all other observations
-					List<IFinding> findings = findingsService.getPatientsFindings(theSubjectId.getIdPart(),
+					List<IObservation> findings = findingsService
+						.getPatientsFindings(theSubjectId.getIdPart(),
 							IObservation.class);
 					if (findings != null && !findings.isEmpty()) {
-						for (IFinding iFinding : findings) {
-							if (categoryCode != null && !isObservationCategory((IObservation) iFinding, categoryCode)) {
+						for (IObservation iFinding : findings) {
+							if (categoryCode != null
+								&& !isObservationCategory(iFinding, categoryCode)) {
 								continue;
 							}
 							Optional<Observation> fhirObservation = getTransformer()
-									.getFhirObject((IObservation) iFinding);
+								.getFhirObject(iFinding);
 							if (fhirObservation.isPresent()) {
 								ret.add(fhirObservation.get());
 							}

@@ -16,7 +16,6 @@ import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IEncounter;
-import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
@@ -66,9 +65,10 @@ public class ProcedureRequestIProcedureRequestTransformer
 	@Override
 	public Optional<IProcedureRequest> getLocalObject(ProcedureRequest fhirObject) {
 		if (fhirObject != null && fhirObject.getId() != null) {
-			Optional<IFinding> existing = findingsService.findById(fhirObject.getId(), IProcedureRequest.class);
+			Optional<IProcedureRequest> existing =
+				findingsService.findById(fhirObject.getId(), IProcedureRequest.class);
 			if (existing.isPresent()) {
-				return Optional.of((IProcedureRequest) existing.get());
+				return Optional.of(existing.get());
 			}
 		}
 		return Optional.empty();
@@ -91,9 +91,9 @@ public class ProcedureRequestIProcedureRequestTransformer
 		IEncounter iEncounter = null;
 		if (fhirObject.getContext() != null && fhirObject.getContext().hasReference()) {
 			String id = fhirObject.getContext().getReferenceElement().getIdPart();
-			Optional<IFinding> encounter = findingsService.findById(id, IEncounter.class);
+			Optional<IEncounter> encounter = findingsService.findById(id, IEncounter.class);
 			if (encounter.isPresent()) {
-				iEncounter = (IEncounter) encounter.get();
+				iEncounter = encounter.get();
 				iProcedureRequest.setEncounter(iEncounter);
 			}
 		}
@@ -189,11 +189,11 @@ public class ProcedureRequestIProcedureRequestTransformer
 	}
 
 	private String getSubjectiveText(IEncounter iEncounter) {
-		List<IFinding> observations = findingsService.getConsultationsFindings(iEncounter.getConsultationId(),
+		List<IObservation> observations = findingsService
+			.getConsultationsFindings(iEncounter.getConsultationId(),
 				IObservation.class);
 		StringBuilder ret = new StringBuilder();
-		for (IFinding iFinding : observations) {
-			IObservation iObservation = (IObservation) iFinding;
+		for (IObservation iObservation : observations) {
 			if (iObservation.getCategory() == ObservationCategory.SOAP_SUBJECTIVE) {
 				Optional<String> text = iObservation.getText();
 				if (ret.length() > 0) {
