@@ -113,11 +113,11 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	public AllergyIntolerance getResourceById(@IdParam IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IFinding> optionalFam = findingsService.findById(idPart);
-			if (optionalFam.isPresent() && (optionalFam.get() instanceof IAllergyIntolerance)) {
-				Optional<AllergyIntolerance> fhirFam =
-					getTransformer().getFhirObject((IAllergyIntolerance) optionalFam.get());
-				return fhirFam.get();
+			Optional<IFinding> optionalAllergyIntolerance = findingsService.findById(idPart);
+			if (optionalAllergyIntolerance.isPresent() && (optionalAllergyIntolerance.get() instanceof IAllergyIntolerance)) {
+				Optional<AllergyIntolerance> fhirAllergyIntolerance =
+					getTransformer().getFhirObject((IAllergyIntolerance) optionalAllergyIntolerance.get());
+				return fhirAllergyIntolerance.get();
 			}
 		}
 		return null;
