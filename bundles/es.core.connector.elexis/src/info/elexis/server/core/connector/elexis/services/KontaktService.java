@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,9 +11,14 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.types.Gender;
+import ch.elexis.core.types.RelationshipType;
+import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.DbImage;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.KontaktEntityListener;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
@@ -32,8 +38,8 @@ public class KontaktService extends PersistenceService {
 		}
 
 		/**
-		 * This method does not initialize a patient number. The patient number
-		 * is created by the persistence layer in {@link KontaktEntityListener}
+		 * This method does not initialize a patient number. The patient number is
+		 * created by the persistence layer in {@link KontaktEntityListener}
 		 * 
 		 * @return
 		 */
@@ -86,6 +92,41 @@ public class KontaktService extends PersistenceService {
 		JPAQuery<Fall> query = new JPAQuery<Fall>(Fall.class);
 		query.add(Fall_.patientKontakt, QUERY.EQUALS, k);
 		return query.execute();
+	}
+
+	/**
+	 * Set a profile image for a given contact.
+	 * 
+	 * @param contact
+	 * @param image
+	 */
+	public static void setContactImage(Kontakt contact, byte[] image) {
+		Optional<AbstractDBObjectIdDeleted> contactImage = PersistenceService.load(DbImage.class, contact.getId());
+		DbImage dbImage = new DbImage();
+		if (!contactImage.isPresent()) {
+			dbImage = new DbImage();
+			dbImage.setId(contact.getId());
+		} else {
+			dbImage = (DbImage) contactImage.get();
+		}
+
+		dbImage.setPrefix(ElexisTypeMap.TYPE_KONTAKT);
+		dbImage.setTitle("ContactImage");
+		dbImage.setImage(image);
+		PersistenceService.save(dbImage);
+	}
+
+	/**
+	 * 
+	 * @param contact
+	 * @return the image or <code>null</code>
+	 */
+	public static byte[] getContactImage(Kontakt contact) {
+		Optional<AbstractDBObjectIdDeleted> contactImage = PersistenceService.load(DbImage.class, contact.getId());
+		if (contactImage.isPresent()) {
+			return ((DbImage) contactImage.get()).getImage();
+		}
+		return null;
 	}
 
 	/**
@@ -168,4 +209,49 @@ public class KontaktService extends PersistenceService {
 		}
 		return query.execute();
 	}
+
+	/**
+	 * Set a related contact to the provided myContact. If there already exists a
+	 * related contact where the otherContact, otherContactrole and (if defined)
+	 * relationshipDescription matches, no additional entry is done.
+	 * 
+	 * @param myContact
+	 * @param otherContact
+	 * @param otherContactRole
+	 *            a formal {@link RelationshipType} int value, <code>null</code>
+	 *            valid
+	 * @param myContactRole
+	 *            a formal {@link RelationshipType} int value, <code>null</code>
+	 *            valid
+	 * @param relationshipDescription
+	 *            <code>null</code> or a description
+	 * @return
+	 */
+	public static Kontakt setRelatedContact(Kontakt myContact, Kontakt otherContact, Integer otherContactRole,
+			Integer myContactRole, String relationshipDescription) {
+		// other contact and role or roleDescription already found ?
+		// return
+		Collection<KontaktAdressJoint> relatedContacts = myContact.getRelatedContacts();
+		for (KontaktAdressJoint kaj : relatedContacts) {
+			if (otherContact.equals(kaj.getOtherKontakt()) && kaj.getOtherRType() == otherContactRole) {
+				if (relationshipDescription != null) {
+					if (relationshipDescription.equals(kaj.getBezug())) {
+						return myContact;
+					}
+				} else {
+					return myContact;
+				}
+			}
+		}
+
+		KontaktAdressJoint relatedContact = new KontaktAdressJoint();
+		relatedContact.setMyKontakt(myContact);
+		relatedContact.setOtherKontakt(otherContact);
+		relatedContact.setOtherRType(otherContactRole);
+		relatedContact.setMyRType(myContactRole);
+		relatedContact.setBezug(relationshipDescription);
+		myContact.getRelatedContacts().add(relatedContact);
+		return (Kontakt) KontaktService.save(myContact);
+	}
+
 }

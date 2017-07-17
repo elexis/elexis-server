@@ -12,6 +12,8 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -19,6 +21,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -74,10 +77,9 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	/**
 	 * Contains the following values in the respective instantiations of contact
-	 * isIstPatient(): ? isIstPerson(): if medic: area of expertise
-	 * isIstMandant(): username/mandant short name isIstAnwender():
-	 * username/mandant short name isIstOrganisation(): contact person
-	 * isIstLabor(): ?
+	 * isIstPatient(): ? isIstPerson(): if medic: area of expertise isIstMandant():
+	 * username/mandant short name isIstAnwender(): username/mandant short name
+	 * isIstOrganisation(): contact person isIstLabor(): ?
 	 */
 	@Column(length = 255, name = "bezeichnung3")
 	protected String description3;
@@ -190,11 +192,34 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Column(length = 255)
 	protected String website;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patientKontakt")
-	protected List<Fall> faelle;
+	/**
+	 * All related {@link Fall} entities; modifications ignored
+	 */
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PatientID", updatable = false, insertable = false, nullable = false)
+	protected List<Fall> faelle = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-	protected List<Userconfig> userconfig;
+	protected List<Userconfig> userconfig = new ArrayList<>();
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contact")
+	protected List<ZusatzAdresse> addresses = new ArrayList<>();
+
+	/**
+	 * Contacts we relate to (egress reference)
+	 */
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myKontakt")
+	protected List<KontaktAdressJoint> relatedContacts = new ArrayList<>();
+
+	/**
+	 * Contacts we are related by (ingress reference); modifications ignored<br>
+	 * <b>ATTENTION</b> In these relationships, the <i>other</i> contact is
+	 * referenced via {@link KontaktAdressJoint#getMyKontakt()} as we are the
+	 * {@link KontaktAdressJoint#getOtherKontakt()}
+	 */
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "otherID", updatable = false, insertable = false, nullable = false)
+	protected Collection<KontaktAdressJoint> relatedByContacts;
 
 	// ---------------------------------------------
 	public Kontakt() {
@@ -348,6 +373,30 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.faelle = faelle;
 	}
 
+	public List<ZusatzAdresse> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<ZusatzAdresse> addresses) {
+		this.addresses = addresses;
+	}
+
+	public List<KontaktAdressJoint> getRelatedContacts() {
+		return relatedContacts;
+	}
+
+	public void setRelatedContacts(List<KontaktAdressJoint> relatedContacts) {
+		this.relatedContacts = relatedContacts;
+	}
+
+	public Collection<KontaktAdressJoint> getRelatedByContacts() {
+		return relatedByContacts;
+	}
+
+	public void setRelatedByContacts(Collection<KontaktAdressJoint> relatedByContacts) {
+		this.relatedByContacts = relatedByContacts;
+	}
+
 	public List<Userconfig> getUserconfig() {
 		return userconfig;
 	}
@@ -499,7 +548,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	public void setPersonalAnamnese(String personalAnamnese) {
 		this.personalAnamnese = personalAnamnese;
 	}
-	
+
 	@Override
 	@Transient
 	public void setContactType(ContactType value) {

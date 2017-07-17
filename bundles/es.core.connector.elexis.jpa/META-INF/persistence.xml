@@ -16,6 +16,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Config</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.DbImage</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Eigenleistung</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall</class>
@@ -46,6 +47,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.VKPreis</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Xid</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ZusatzAdresse</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<shared-cache-mode>NONE</shared-cache-mode>
 		<properties>

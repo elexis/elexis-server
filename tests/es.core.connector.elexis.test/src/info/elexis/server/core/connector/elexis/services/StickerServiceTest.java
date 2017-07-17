@@ -68,6 +68,8 @@ public class StickerServiceTest extends AbstractServiceTest {
 		sticker = StickerService.save(sticker);
 		assertEquals(0, sticker.getStickerClassLinks().size());
 		assertEquals(1, sticker.getStickerObjectLinks().size());
+		
+		StickerService.remove(sticker);
 	}
 
 	@Test
@@ -140,18 +142,14 @@ public class StickerServiceTest extends AbstractServiceTest {
 
 	@Test
 	public void testApplyStickerToPatient() {
-		Sticker sticker = new Sticker();
-		sticker.setBackground("0");
-		sticker.setForeground("0");
-		sticker.setName("Sticker 2");
+		
+		Sticker sticker = new StickerService.StickerBuilder("Sticker 2", "123456", "123456", ElexisTypeMap.TYPE_PATIENT)
+				.buildAndSave();
 
-		StickerClassLink stickerClassLink = new StickerClassLink();
-		stickerClassLink.setObjclass(ElexisTypeMap.TYPE_PATIENT);
-		stickerClassLink.setSticker(sticker);
-		sticker.getStickerClassLinks().add(stickerClassLink);
-
-		sticker = StickerService.save(sticker);
-
+		assertEquals(1, StickerService.findAll(Sticker.class, false).size());
+		assertEquals("Sticker 2", sticker.getName());
+		assertEquals(1, sticker.getStickerClassLinks().size());
+		assertEquals(ElexisTypeMap.TYPE_PATIENT, sticker.getStickerClassLinks().iterator().next().getObjclass());
 		Optional<Kontakt> findById = KontaktService.load(TestEntities.PATIENT_MALE_ID);
 
 		List<Sticker> findStickersOnObject = StickerService.findStickersOnObject(findById.get());

@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -9,10 +10,35 @@ import javax.persistence.Query;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.StickerClassLink;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StickerObjectLink;
 
 public class StickerService extends PersistenceService {
+
+	public static class StickerBuilder extends AbstractBuilder<Sticker> {
+		/**
+		 * 
+		 * @param name
+		 * @param foregroundColor
+		 * @param backgroundColor
+		 * @param applicableTo
+		 *            the {@link ElexisTypeMap} class name this sticker is applicable to
+		 */
+		public StickerBuilder(String name, String foregroundColor, String backgroundColor, String applicableTo) {
+			object = new Sticker();
+			object.setName(name);
+			object.setForeground(foregroundColor);
+			object.setBackground(backgroundColor);
+
+			StickerClassLink stickerClassLink = new StickerClassLink();
+			stickerClassLink.setObjclass(applicableTo);
+			stickerClassLink.setSticker(object);
+			object.getStickerClassLinks().add(stickerClassLink);
+		}
+	}
+
 	/**
 	 * Loads a {@link Sticker} by id
 	 * 
@@ -21,6 +47,17 @@ public class StickerService extends PersistenceService {
 	 */
 	public static Optional<Sticker> load(String id) {
 		return PersistenceService.load(Sticker.class, id).map(v -> (Sticker) v);
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param includeElementsMarkedDeleted
+	 * @return
+	 */
+	public static List<Sticker> findAll(boolean includeElementsMarkedDeleted) {
+		return PersistenceService.findAll(Sticker.class, includeElementsMarkedDeleted).stream().map(v -> (Sticker) v)
+				.collect(Collectors.toList());
 	}
 
 	/**

@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,11 +20,9 @@ public class KontaktAdressJoint extends AbstractDBObjectIdDeleted {
 	@Column(length = 80)
 	private String bezug;
 
-	@OneToOne
 	@JoinColumn(name = "myID")
 	private Kontakt myKontakt;
 
-	@OneToOne
 	@JoinColumn(name = "otherID")
 	private Kontakt otherKontakt;
 

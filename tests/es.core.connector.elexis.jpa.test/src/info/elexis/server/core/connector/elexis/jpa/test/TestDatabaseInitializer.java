@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.test;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -173,6 +175,8 @@ public class TestDatabaseInitializer {
 					// ignore
 				}
 			}
+		} else {
+			fail("No connection present");
 		}
 		return false;
 	}
