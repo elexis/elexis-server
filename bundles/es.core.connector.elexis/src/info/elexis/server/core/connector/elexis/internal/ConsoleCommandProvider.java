@@ -101,6 +101,10 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	@SuppressWarnings("unchecked")
 	public String __entities_list(Iterator<String> args) {
 		String entity = args.next();
+		if(StringUtils.isEmpty(entity)) {
+			return missingArgument("Entity");
+		}
+		
 		String includeDeletedString = args.next();
 		boolean includeDeleted = true;
 		if (!StringUtils.isAlpha(entity)) {

@@ -13,7 +13,6 @@ import ch.elexis.core.model.IContact;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.types.RelationshipType;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DbImage;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall_;
@@ -21,6 +20,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.KontaktEntityListener;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.MimeType;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class KontaktService extends PersistenceService {
@@ -99,9 +99,11 @@ public class KontaktService extends PersistenceService {
 	 * 
 	 * @param contact
 	 * @param image
+	 * @param mimeType 
 	 */
-	public static void setContactImage(Kontakt contact, byte[] image) {
-		Optional<AbstractDBObjectIdDeleted> contactImage = PersistenceService.load(DbImage.class, contact.getId());
+	public static void setContactImage(Kontakt contact, byte[] image, MimeType mimeType) {
+		@SuppressWarnings("unchecked")
+		Optional<DbImage> contactImage = (Optional<DbImage>) PersistenceService.load(DbImage.class, contact.getId());
 		DbImage dbImage = new DbImage();
 		if (!contactImage.isPresent()) {
 			dbImage = new DbImage();
@@ -111,7 +113,7 @@ public class KontaktService extends PersistenceService {
 		}
 
 		dbImage.setPrefix(ElexisTypeMap.TYPE_KONTAKT);
-		dbImage.setTitle("ContactImage");
+		dbImage.setTitle("ContactImage."+mimeType.name());
 		dbImage.setImage(image);
 		PersistenceService.save(dbImage);
 	}
@@ -119,14 +121,11 @@ public class KontaktService extends PersistenceService {
 	/**
 	 * 
 	 * @param contact
-	 * @return the image or <code>null</code>
+	 * @return the {@link DbImage} object containing the resp. image, if present
 	 */
-	public static byte[] getContactImage(Kontakt contact) {
-		Optional<AbstractDBObjectIdDeleted> contactImage = PersistenceService.load(DbImage.class, contact.getId());
-		if (contactImage.isPresent()) {
-			return ((DbImage) contactImage.get()).getImage();
-		}
-		return null;
+	@SuppressWarnings("unchecked")
+	public static Optional<DbImage> getContactImage(Kontakt contact) {
+		return (Optional<DbImage>) PersistenceService.load(DbImage.class, contact.getId());
 	}
 
 	/**
@@ -227,8 +226,16 @@ public class KontaktService extends PersistenceService {
 	 *            <code>null</code> or a description
 	 * @return
 	 */
-	public static Kontakt setRelatedContact(Kontakt myContact, Kontakt otherContact, Integer otherContactRole,
+	public static KontaktAdressJoint setRelatedContact(Kontakt myContact, Kontakt otherContact, Integer otherContactRole,
 			Integer myContactRole, String relationshipDescription) {
+		
+		if (otherContactRole == null) {
+			otherContactRole = RelationshipType.AGENERIC_VALUE;
+		}
+		if (myContactRole == null) {
+			myContactRole = RelationshipType.AGENERIC_VALUE;
+		}
+		
 		// other contact and role or roleDescription already found ?
 		// return
 		Collection<KontaktAdressJoint> relatedContacts = myContact.getRelatedContacts();
@@ -236,10 +243,10 @@ public class KontaktService extends PersistenceService {
 			if (otherContact.equals(kaj.getOtherKontakt()) && kaj.getOtherRType() == otherContactRole) {
 				if (relationshipDescription != null) {
 					if (relationshipDescription.equals(kaj.getBezug())) {
-						return myContact;
+						return kaj;
 					}
 				} else {
-					return myContact;
+					return kaj;
 				}
 			}
 		}
@@ -251,7 +258,7 @@ public class KontaktService extends PersistenceService {
 		relatedContact.setMyRType(myContactRole);
 		relatedContact.setBezug(relationshipDescription);
 		myContact.getRelatedContacts().add(relatedContact);
-		return (Kontakt) KontaktService.save(myContact);
+		return relatedContact;
 	}
 
 }

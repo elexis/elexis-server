@@ -10,7 +10,6 @@ import javax.persistence.Query;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StickerClassLink;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StickerObjectLink;

@@ -14,7 +14,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,6 +25,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -203,7 +206,8 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	protected List<Userconfig> userconfig = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contact")
-	protected List<ZusatzAdresse> addresses = new ArrayList<>();
+	@MapKey(name = "id")
+	protected Map<String, ZusatzAdresse> addresses = new HashMap<>();
 
 	/**
 	 * Contacts we relate to (egress reference)
@@ -373,11 +377,11 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.faelle = faelle;
 	}
 
-	public List<ZusatzAdresse> getAddresses() {
+	public Map<String, ZusatzAdresse> getAddresses() {
 		return addresses;
 	}
 
-	public void setAddresses(List<ZusatzAdresse> addresses) {
+	public void setAddresses(Map<String, ZusatzAdresse> addresses) {
 		this.addresses = addresses;
 	}
 

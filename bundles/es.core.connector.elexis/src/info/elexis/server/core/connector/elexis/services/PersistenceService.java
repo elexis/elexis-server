@@ -59,7 +59,7 @@ public class PersistenceService {
 	 * @param id
 	 * @return castable to clazz if present
 	 */
-	public static Optional<AbstractDBObjectIdDeleted> load(Class<? extends AbstractDBObjectIdDeleted> clazz,
+	public static Optional<? extends AbstractDBObjectIdDeleted> load(Class<? extends AbstractDBObjectIdDeleted> clazz,
 			String id) {
 		EntityManager em = ElexisEntityManager.createEntityManager();
 		try {
@@ -75,7 +75,7 @@ public class PersistenceService {
 	 * 
 	 * @param entity
 	 */
-	public static Optional<AbstractDBObjectIdDeleted> reload(AbstractDBObjectIdDeleted entity) {
+	public static Optional<? extends AbstractDBObjectIdDeleted> reload(AbstractDBObjectIdDeleted entity) {
 		return load(entity.getClass(), entity.getId());
 	}
 

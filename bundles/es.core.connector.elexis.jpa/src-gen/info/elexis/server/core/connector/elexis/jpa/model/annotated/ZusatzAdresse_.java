@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import ch.elexis.core.types.AddressType;
+import ch.elexis.core.types.Country;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
@@ -11,7 +12,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 public class ZusatzAdresse_ { 
 
     public static volatile SingularAttribute<ZusatzAdresse, String> zip;
-    public static volatile SingularAttribute<ZusatzAdresse, String> country;
+    public static volatile SingularAttribute<ZusatzAdresse, Country> country;
     public static volatile SingularAttribute<ZusatzAdresse, String> city;
     public static volatile SingularAttribute<ZusatzAdresse, AddressType> addressType;
     public static volatile SingularAttribute<ZusatzAdresse, Kontakt> contact;

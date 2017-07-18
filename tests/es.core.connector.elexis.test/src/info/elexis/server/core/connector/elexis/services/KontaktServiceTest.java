@@ -31,6 +31,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ZusatzAdresse;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.MimeType;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.XidQuality;
 import info.elexis.server.core.connector.elexis.jpa.test.TestEntities;
 
@@ -132,8 +133,8 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		byte[] image = IOUtils.toByteArray(this.getClass().getResourceAsStream("testPatientImage.jpg"));
 		Optional<Kontakt> findById = KontaktService.load(TestEntities.PATIENT_MALE_ID);
 		assertTrue(findById.isPresent());
-		KontaktService.setContactImage(findById.get(), image);
-		assertArrayEquals(image, KontaktService.getContactImage(findById.get()));
+		KontaktService.setContactImage(findById.get(), image, MimeType.jpg);
+		assertArrayEquals(image, KontaktService.getContactImage(findById.get()).get().getImage());
 	}
 
 	@Test
@@ -188,9 +189,9 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertTrue(result);
 
 		byte[] image = IOUtils.toByteArray(this.getClass().getResourceAsStream("testPatientImage.jpg"));
-		KontaktService.setContactImage(p, image);
+		KontaktService.setContactImage(p, image, MimeType.jpg);
 		// run twice to test alternative execution (if image already exists)
-		KontaktService.setContactImage(p, image);
+		KontaktService.setContactImage(p, image, MimeType.jpg);
 
 		// addresses
 		// PRINCIPAL_RESIDENCE (PRIMARY)
@@ -205,7 +206,8 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		nursingHome.setAddressType(AddressType.NURSING_HOME);
 		nursingHome.setStreet2(s[16]);
 		nursingHome.setZip(s[17].substring(0, 6));
-		p.getAddresses().add(nursingHome);
+		nursingHome.setCountry(Country.AT);
+		p.getAddresses().put(nursingHome.getId(), nursingHome);
 
 		Kontakt familyDoctor = new KontaktService.PersonBuilder("family", "doctor", dob, Gender.FEMALE).buildAndSave();
 		p.setExtInfoValue(PatientConstants.FLD_EXTINFO_STAMMARZT, familyDoctor.getId());
@@ -219,7 +221,7 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		/// ----- verify values
 		Kontakt pl = KontaktService.load(p.getId()).get();
 		assertEquals(pl.getId(), p.getId());
-		
+
 		assertEquals(s[2], pl.getTitel());
 		assertEquals(s[3], pl.getExtInfoAsString(PatientConstants.FLD_EXTINFO_BIRTHNAME));
 		assertEquals(dod.toString(), pl.getExtInfoAsString(PatientConstants.FLD_EXTINFO_DATE_OF_DEATH));
@@ -229,10 +231,10 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertEquals(s[6], pl.getPhone1());
 		assertEquals(s[7], pl.getPhone2());
 		assertEquals(s[8], pl.getMobile());
-		assertEquals(s[9], pl.getEmail());	
+		assertEquals(s[9], pl.getEmail());
 		assertEquals("testSticker", StickerService.findStickersOnObject(pl).get(0).getName());
-		assertArrayEquals(image, KontaktService.getContactImage(pl));
-		
+		assertArrayEquals(image, KontaktService.getContactImage(pl).get().getImage());
+
 		assertEquals(s[10], pl.getStreet());
 		assertEquals(s[11], pl.getExtInfoAsString("Street2"));
 		assertEquals(s[12].substring(0, 6), pl.getZip());
@@ -240,12 +242,14 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertEquals(Country.CH, pl.getCountry());
 
 		assertEquals(1, pl.getAddresses().size());
-		ZusatzAdresse nhv = pl.getAddresses().iterator().next();
+		ZusatzAdresse nhv = pl.getAddresses().entrySet().iterator().next().getValue();
+		assertEquals(nhv.getId(), pl.getAddresses().get(nursingHome.getId()).getId());
 		assertEquals(pl, nhv.getContact());
 		assertEquals(AddressType.NURSING_HOME, nhv.getAddressType());
 		assertEquals(s[16], nhv.getStreet2());
 		assertEquals(s[17].substring(0, 6), nhv.getZip());
-		
+		assertEquals(Country.AT, nhv.getCountry());
+
 		assertEquals(familyDoctor.getId(), p.getExtInfoAsString(PatientConstants.FLD_EXTINFO_STAMMARZT));
 
 		laboratory = KontaktService.reload(laboratory);

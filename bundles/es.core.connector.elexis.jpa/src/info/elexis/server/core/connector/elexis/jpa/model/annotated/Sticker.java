@@ -105,6 +105,12 @@ public class Sticker extends AbstractDBObjectIdDeleted {
 	}
 
 	@Override
+	public String toString() {
+		return super.toString() + " name=[" + name + "] foreground=[" + foreground + "] background=[" + background
+				+ "] stickerClassLinks=[" + getStickerClassLinks() + "]";
+	}
+
+	@Override
 	public String getLabel() {
 		return getName();
 	}

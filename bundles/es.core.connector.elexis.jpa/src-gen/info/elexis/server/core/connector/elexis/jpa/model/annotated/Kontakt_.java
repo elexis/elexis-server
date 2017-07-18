@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -19,7 +20,7 @@ public class Kontakt_ {
 
     public static volatile SingularAttribute<Kontakt, String> allergies;
     public static volatile SingularAttribute<Kontakt, Country> country;
-    public static volatile ListAttribute<Kontakt, ZusatzAdresse> addresses;
+    public static volatile MapAttribute<Kontakt, String, ZusatzAdresse> addresses;
     public static volatile SingularAttribute<Kontakt, String> code;
     public static volatile SingularAttribute<Kontakt, Gender> gender;
     public static volatile SingularAttribute<Kontakt, String> city;

@@ -6,7 +6,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
+
 import ch.elexis.core.types.AddressType;
+import ch.elexis.core.types.Country;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 
 @Entity
 @Table(name = "ZUSATZADRESSE")
@@ -31,7 +36,9 @@ public class ZusatzAdresse extends AbstractDBObjectIdDeleted {
 	public String city;
 
 	@Column(length = 255, name = "land")
-	public String country;
+	@Converter(name = "FuzzyCountryToEnumConverter", converterClass = FuzzyCountryToEnumConverter.class)
+	@Convert(value = "FuzzyCountryToEnumConverter")
+	public Country country;
 
 	@Lob
 	@Column(name = "anschrift")
@@ -85,11 +92,11 @@ public class ZusatzAdresse extends AbstractDBObjectIdDeleted {
 		this.city = city;
 	}
 
-	public String getCountry() {
+	public Country getCountry() {
 		return country;
 	}
-
-	public void setCountry(String country) {
+	
+	public void setCountry(Country country) {
 		this.country = country;
 	}
 
