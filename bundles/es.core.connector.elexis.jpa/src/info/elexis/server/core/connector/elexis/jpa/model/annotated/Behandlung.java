@@ -33,7 +33,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "RechnungsID")
 	private Invoice invoice;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate datum;
 
 	@OneToMany

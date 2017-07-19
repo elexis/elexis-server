@@ -7,12 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
 import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "CH_MEDELEXIS_LABORTARIF2009")
@@ -36,12 +32,10 @@ public class Labor2009Tarif extends AbstractDBObjectIdDeleted {
 	@Column(length = 10)
 	private String fachbereich;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate gueltigVon;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate gueltigBis;
 
 	@Column(length = 2)

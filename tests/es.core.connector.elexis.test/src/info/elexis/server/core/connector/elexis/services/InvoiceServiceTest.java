@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.exparity.hamcrest.date.LocalDateMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +41,7 @@ public class InvoiceServiceTest extends AbstractServiceTest {
 		assertEquals(fromDate, loaded.getInvoiceDateFrom());
 		assertEquals(new Money(34.50).toString(), loaded.getAmount());
 		assertEquals(InvoiceState.OPEN, loaded.getState());
+		MatcherAssert.assertThat(invoice.getInvoiceDate()	, LocalDateMatchers.sameOrAfter(LocalDate.now()));
 	}
 
 }

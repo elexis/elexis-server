@@ -8,8 +8,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-
 import ch.elexis.core.model.InvoiceState;
 
 @Entity
@@ -27,23 +25,19 @@ public class Invoice extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "MandantID")
 	protected Kontakt mandator;
 
-	@Convert("ElexisDBStringDateConverter")
-	@Column(name = "RnDatum")
+	@Column(name = "RnDatum", length = 8)
 	protected LocalDate invoiceDate;
 
-	@Convert("ElexisDBStringDateConverter")
-	@Column(name = "RnDatumVon")
+	@Column(name = "RnDatumVon", length = 8)
 	protected LocalDate invoiceDateFrom;
 
-	@Convert("ElexisDBStringDateConverter")
-	@Column(name = "RnDatumBis")
+	@Column(name = "RnDatumBis", length = 8)
 	protected LocalDate invoiceDateTo;
 
 	@Column(length = 20, name = "RnStatus")
 	protected InvoiceState state;
 
-	@Convert("ElexisDBStringDateConverter")
-	@Column(name = "StatusDatum")
+	@Column(name = "StatusDatum", length = 8)
 	protected LocalDate statusDate;
 
 	@Column(length = 8, name = "Betrag")

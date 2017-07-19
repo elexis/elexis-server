@@ -37,7 +37,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column(name = "modifiziert")
 	protected LocalDateTime modifiedDate;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	protected LocalDate gedruckt;
 
 	@OneToOne
@@ -77,7 +77,7 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column
 	@Convert("booleanStringConverter")
 	protected boolean geloescht = false;
-	
+
 	public Brief() {
 		super();
 		content = new Heap();
@@ -198,11 +198,11 @@ public class Brief extends AbstractDBObjectIdDeleted {
 
 	@Override
 	public String getLabel() {
-		return getSubject()+" "+getCreationDate();
+		return getSubject() + " " + getCreationDate();
 	}
-	
+
 	@Override
 	public String toString() {
-		return super.toString() + "subject=["+getSubject()+"] date=["+getCreationDate()+"]";
+		return super.toString() + "subject=[" + getSubject() + "] date=[" + getCreationDate() + "]";
 	}
 }

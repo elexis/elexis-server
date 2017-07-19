@@ -41,7 +41,6 @@ import ch.elexis.core.types.ContactType;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import ch.rgw.tools.TimeTool;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyCountryToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FuzzyGenderToEnumConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.listener.KontaktEntityListener;
@@ -108,9 +107,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Column(length = 30)
 	protected String fax;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
-	@Column(name = "geburtsdatum")
+	@Column(name = "geburtsdatum", length = 8)
 	protected LocalDate dob;
 
 	@Converter(name = "FuzzyGenderToEnumConverter", converterClass = FuzzyGenderToEnumConverter.class)

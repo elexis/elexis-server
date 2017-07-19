@@ -7,20 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
-
 @Entity
 @Table(name = "CH_ELEXIS_ARZTTARIFE_CH_PHYSIO")
 public class PhysioLeistung extends AbstractDBObjectIdDeleted {
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	
+	@Column(length = 8)
 	private LocalDate validFrom;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate validUntil;
 
 	@Column(length = 8)

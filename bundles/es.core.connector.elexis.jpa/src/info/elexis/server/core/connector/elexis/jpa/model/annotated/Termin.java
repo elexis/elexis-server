@@ -10,9 +10,6 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "AGNTERMINE")
@@ -24,8 +21,7 @@ public class Termin extends AbstractDBObjectIdDeleted {
 	@Column(length = 25)
 	private String bereich;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate tag;
 
 	@Column(length = 4)

@@ -39,11 +39,13 @@ public class KontaktServiceTest extends AbstractServiceTest {
 
 	@Test
 	public void testCreateAndRemoveKontakt() throws InstantiationException, IllegalAccessException {
-		Kontakt val = new KontaktService.PersonBuilder("", "", LocalDate.of(2016, 12, 12), Gender.MALE).buildAndSave();
+		LocalDate dob = LocalDate.of(2016, 12, 12);
+		Kontakt val = new KontaktService.PersonBuilder("", "", dob, Gender.MALE).buildAndSave();
 		assertNotNull(val.getId());
 		assertNotNull(val.getLastupdate());
 		Kontakt findById = KontaktService.load(val.getId()).get();
 		assertEquals(val.getId(), findById.getId());
+		assertEquals(dob, val.getDateOfBirth().toLocalDate());
 		KontaktService.remove(val);
 		Optional<Kontakt> found = KontaktService.load(val.getId());
 		assertFalse(found.isPresent());

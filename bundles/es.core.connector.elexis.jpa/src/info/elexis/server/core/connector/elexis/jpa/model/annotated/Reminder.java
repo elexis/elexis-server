@@ -13,8 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-
 import ch.elexis.core.model.issue.Priority;
 import ch.elexis.core.model.issue.ProcessStatus;
 import ch.elexis.core.model.issue.Type;
@@ -35,7 +33,7 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	@OneToMany(mappedBy = "reminder", cascade=CascadeType.ALL)
 	private Set<ReminderResponsible> responsible;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	protected LocalDate dateDue;
 
 	@Column

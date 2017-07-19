@@ -12,8 +12,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-
 @Entity
 @Table(name = "faelle")
 public class Fall extends AbstractDBObjectIdDeletedExtInfo {
@@ -24,10 +22,10 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 80)
 	private String bezeichnung;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate datumBis;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate datumVon;
 
 	@Column(length = 80)

@@ -6,11 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
-
 @Entity
 @Table(name = "TARMED_KUMULATION")
 public class TarmedKumulation extends AbstractDBObjectIdDeleted {
@@ -40,12 +35,10 @@ public class TarmedKumulation extends AbstractDBObjectIdDeleted {
 	@Column(length = 1)
 	private String validSide;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate validFrom;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate validTo;
 
 	public String getMasterCode() {

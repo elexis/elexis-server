@@ -13,14 +13,15 @@ public class TerminServiceTest {
 	@Test
 	public void testFindAllAppointments() {
 		List<Termin> all = TerminService.findAll(false);
+		assertEquals(21, all.size());
 		List<Termin> allAppointments = TerminService.findAllAppointments();
-		assertEquals(all.size() - 2, allAppointments.size());
+		assertEquals(20, allAppointments.size());
 	}
-	
+
 	@Test
 	public void testFindAllUsedAppointmentAreas() {
 		List<String> areas = TerminService.findAllUsedAppointmentAreas();
-		assertTrue(areas.size()>3);
+		assertTrue(areas.size() > 3);
 	}
 
 }

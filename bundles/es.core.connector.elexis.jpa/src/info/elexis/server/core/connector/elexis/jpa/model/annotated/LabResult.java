@@ -12,11 +12,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
@@ -27,9 +25,7 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "PatientID")
 	private Kontakt patient;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
-	@Column(name = "datum")
+	@Column(name = "datum", length = 8)
 	private LocalDate date;
 
 	@Column(length = 6)

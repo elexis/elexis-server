@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-import static info.elexis.server.core.connector.elexis.jpa.QueryConstants.*;
+import static info.elexis.server.core.connector.elexis.jpa.QueryConstants.PARAM_ID;
+import static info.elexis.server.core.connector.elexis.jpa.QueryConstants.QUERY_DOCHANDLE_determineLength;
 
 import java.time.LocalDate;
 
@@ -15,8 +16,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-
 @Entity
 @Table(name = "CH_ELEXIS_OMNIVORE_DATA")
 @NamedQueries({
@@ -30,10 +29,10 @@ public class DocHandle extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "PatID")
 	protected Kontakt kontakt;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	protected LocalDate datum;
 
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	protected LocalDate creationDate;
 
 	@Column(length = 80)

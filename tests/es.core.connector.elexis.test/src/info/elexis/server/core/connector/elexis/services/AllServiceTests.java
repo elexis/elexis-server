@@ -6,12 +6,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ArtikelServiceTest.class, ArtikelstammItemServiceTest.class, BehandlungServiceTest.class,
-		BriefServiceTest.class, DocHandleServiceTest.class, EigenleistungServiceTest.class, InvoiceServiceTest.class,
-		JPAQueryTest.class, KontaktServiceTest.class, LabOrderServiceTest.class, LabResultServiceTest.class,
-		LockServiceTest.class, PrescriptionServiceTest.class, StockServiceTest.class, UserServiceTest.class, UserconfigServiceTest.class,
-	StoreToStringTest.class, TarmedLeistungServiceTest.class, XidServiceTest.class,
-	StickerServiceTest.class
-})
+		BriefServiceTest.class, DocHandleServiceTest.class, EigenleistungServiceTest.class, FallServiceTest.class,
+		InvoiceServiceTest.class, JPAQueryTest.class, KontaktServiceTest.class, LabOrderServiceTest.class,
+		LabResultServiceTest.class, LockServiceTest.class, PrescriptionServiceTest.class, StockServiceTest.class,
+		UserServiceTest.class, UserconfigServiceTest.class, PhysioLeistungTest.class, StoreToStringTest.class,
+		TarmedLeistungServiceTest.class, TerminServiceTest.class, XidServiceTest.class, StickerServiceTest.class })
 public class AllServiceTests {
 
 }

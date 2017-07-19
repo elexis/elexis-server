@@ -42,6 +42,7 @@ public class TarmedLeistungServiceTest extends AbstractServiceTest {
 		assertEquals("1.0", limits.get("F_TL"));
 		assertEquals("H", limits.get("LEISTUNG_TYP"));
 		assertEquals("8.19", limits.get("TP_TL"));
+
 	}
 
 	@Test
@@ -50,4 +51,14 @@ public class TarmedLeistungServiceTest extends AbstractServiceTest {
 		int minutesForTarmedLeistung = TarmedLeistungService.getMinutesForTarmedLeistung(code);
 		assertEquals(5, minutesForTarmedLeistung);
 	}
+
+	@Test
+	public void testGetExclusions() {
+		TarmedLeistung code = TarmedLeistungService.findFromCode("39.0015", null).get();
+		String exclusionsForTarmedLeistung = TarmedLeistungService.getExclusionsForTarmedLeistung(code,
+				LocalDate.now());
+		assertEquals("39.0021,39.0016,39.0020,39.0021,39.0016,39.0016,39.0020,39.0021,39.0020",
+				exclusionsForTarmedLeistung);
+	}
+
 }

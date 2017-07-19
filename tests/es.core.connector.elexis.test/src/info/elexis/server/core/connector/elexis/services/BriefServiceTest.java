@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
@@ -48,6 +49,7 @@ public class BriefServiceTest {
 		assertNotNull(document.getContent());
 		assertEquals(document.getId(), document.getContent().getId());
 		assertEquals(patient.getId(), document.getPatient().getId());
+		assertNull(document.getGedruckt());
 		
 		Optional<Heap> findById = HeapService.load(document.getId());
 		assertTrue(findById.isPresent());

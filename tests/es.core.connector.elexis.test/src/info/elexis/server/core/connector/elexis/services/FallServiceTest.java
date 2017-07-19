@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.exparity.hamcrest.date.LocalDateMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +44,10 @@ public class FallServiceTest {
 		assertEquals(fall.getBezeichnung(), storedFall.getBezeichnung());
 		assertEquals(fall.getGesetz(), storedFall.getGesetz());
 		assertEquals("UVG", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
-
+		MatcherAssert.assertThat(storedFall.getDatumVon()	, LocalDateMatchers.sameOrAfter(LocalDate.now()));
+		assertEquals(null, storedFall.getDatumBis());
+		
+		
 		List<Fall> faelle = KontaktService.getFaelle(patient);
 		assertEquals(1, faelle.size());
 
@@ -66,5 +71,14 @@ public class FallServiceTest {
 		assertEquals(patient.getId(), storedFall.getPatientKontakt().getId());
 		assertEquals("description", storedFall.getBezeichnung());
 		assertEquals("insuranceType", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
+	}
+	
+	@Test
+	public void testCheckFallIsOpen() {
+		fall = new FallService.Builder(patient, "description", FallConstants.TYPE_DISEASE, "UVG").buildAndSave();
+		assertEquals(true, FallService.isOpen(fall));
+		fall.setDatumBis(LocalDate.now());
+		FallService.save(fall);
+		assertEquals(false, FallService.isOpen(fall));
 	}
 }

@@ -7,14 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-
 import ch.elexis.core.model.article.Constants;
 import ch.elexis.core.model.article.IArticle;
 import ch.rgw.tools.StringTool;
 import info.elexis.server.core.connector.elexis.jpa.POHelper;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter;
 
 @Entity
 @Table(name = "artikel")
@@ -63,12 +59,10 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 	@Column(length = 8)
 	private String lastImport;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate validFrom;
 
-	@Converter(name = "ElexisDBStringDateConverter", converterClass = ElexisDBStringDateConverter.class)
-	@Convert("ElexisDBStringDateConverter")
+	@Column(length = 8)
 	private LocalDate validTo;
 
 	@Column(length = 255, name = "ATC_code")
