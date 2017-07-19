@@ -12,8 +12,6 @@
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisExtInfoMapConverter" />
 	<converter name="ElexisDBCompressedStringConverter"
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBCompressedStringConverter" />
-	<converter name="ElexisDBStringDateConverter"
-		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStringDateConverter" />
 	<converter name="ElexisDBStoreToStringConverter"
 		class="info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ElexisDBStoreToStringConverter" />
 	<converter name="IntegerStringConverter"
