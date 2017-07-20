@@ -28,8 +28,7 @@ public class Application implements IApplication {
 
 	private static final Date startTime = new Date();
 
-	private File singleInstanceLockFile;
-
+	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		log.info("Starting " + Application.class.getName() + "...");
@@ -37,12 +36,27 @@ public class Application implements IApplication {
 		TimeZone tzone = TimeZone.getTimeZone("CET");
 		TimeZone.setDefault(tzone);
 
-		singleInstanceLockFile = new File(CoreUtil.getHomeDirectory().toString(), "elexis-server.lock");
+		final File singleInstanceLockFile = new File(CoreUtil.getHomeDirectory().toString(), "elexis-server.lock");
 		if (!singleInstanceLockFile.createNewFile()) {
 			log.error("Found existing lock-file {}, shutting down.", singleInstanceLockFile.toString());
 			return IApplication.EXIT_OK;
 		}
 		singleInstanceLockFile.deleteOnExit();
+		
+		/**
+		 * In case the JVM shuts down, we want the lock file to be removed.
+		 * This is e.g. the case in a docker environment
+		 */
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				log.warn("Shutdown-Hook removing lock file [{}]", singleInstanceLockFile);
+				boolean delete = singleInstanceLockFile.delete();
+				if (!delete) {
+					log.error("Delete failed.");
+				}
+			}
+		});
 
 		context.applicationRunning();
 		while (!restart && !shutdown) {
