@@ -51,7 +51,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 	@Test
 	public void testGetBehandlung() {
 		Behandlung findById = BehandlungService.load(testBehandlungen.get(0).getId()).get();
-		assertEquals(LocalDate.of(2017, 07, 19), findById.getDatum());
+		assertEquals(LocalDate.now(), findById.getDatum());
 	}
 
 	@Test
