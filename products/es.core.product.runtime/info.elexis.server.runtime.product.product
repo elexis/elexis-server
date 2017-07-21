@@ -41,8 +41,8 @@
       <feature id="info.elexis.server.rootfiles.feature" installMode="root"/>
       <feature id="info.elexis.server.core.p2.feature" installMode="root"/>
       <feature id="info.elexis.server.core.connector.elexis.feature" installMode="root"/>
-      <feature id="info.elexis.server.fhir.rest.core.feature"/>
-      <feature id="info.elexis.server.findings.feature"/>
+      <feature id="info.elexis.server.fhir.rest.core.feature" installMode="root"/>
+      <feature id="info.elexis.server.findings.feature" installMode="root"/>
    </features>
 
    <configurations>
