@@ -7,6 +7,8 @@
    </configIni>
 
    <launcherArgs>
+      <programArgs>-console
+      </programArgs>
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
 -Djetty.home.bundle=info.elexis.server.core.jetty.homebundle
 -Djava.awt.headless=true
@@ -22,7 +24,6 @@
    <windowImages/>
 
    <launcher name="elexis-server">
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -40,6 +41,8 @@
       <feature id="info.elexis.server.rootfiles.feature" installMode="root"/>
       <feature id="info.elexis.server.core.p2.feature" installMode="root"/>
       <feature id="info.elexis.server.core.connector.elexis.feature" installMode="root"/>
+      <feature id="info.elexis.server.fhir.rest.core.feature"/>
+      <feature id="info.elexis.server.findings.feature"/>
    </features>
 
    <configurations>
