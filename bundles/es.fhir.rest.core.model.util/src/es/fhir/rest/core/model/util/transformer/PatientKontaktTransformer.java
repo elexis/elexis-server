@@ -5,8 +5,10 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -43,6 +45,11 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 		patient.setAddress(addresses);
 		List<ContactPoint> contactPoints = kontaktHelper.getContactPoints(localObject);
 		patient.setTelecom(contactPoints);
+
+		Extension elexisPatientNote = new Extension();
+		elexisPatientNote.setUrl("www.elexis.info/extensions/patient/notes");
+		elexisPatientNote.setValue(new StringType(localObject.getComment()));
+		patient.addExtension(elexisPatientNote);
 
 		return Optional.of(patient);
 	}
