@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
@@ -18,6 +19,7 @@ public class BriefService extends PersistenceService {
 		public Builder(Kontakt patient) {
 			object = new Brief();
 			object.setPatient(patient);
+			object.setCreationDate(LocalDateTime.now());
 		}
 	}
 

@@ -15,10 +15,6 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
 @Table(name = "BRIEFE")
@@ -27,14 +23,10 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column(length = 255, name = "betreff")
 	protected String subject;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@Column(name = "Datum")
+	@Column(name = "Datum", length = 24)
 	protected LocalDateTime creationDate;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@Column(name = "modifiziert")
+	@Column(name = "modifiziert", length = 24)
 	protected LocalDateTime modifiedDate;
 
 	@Column(length = 8)

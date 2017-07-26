@@ -7,6 +7,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FailsafeIntegerStringNullableConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.InvoiceStateConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.LocalDateConverter</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.LocalDateTimeConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.PriorityConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ProcessStatusConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.TypeConverter</class>

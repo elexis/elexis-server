@@ -2,8 +2,11 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.exparity.hamcrest.date.LocalDateTimeMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,10 +45,10 @@ public class PrescriptionServiceTest extends AbstractServiceTest {
 		selfDispensePres.setPrescriptionType("3");
 		PrescriptionService.save(selfDispensePres);
 
-		assertNotNull(articlePres.getDateFrom());
+		MatcherAssert.assertThat(articlePres.getDateFrom(), LocalDateTimeMatchers.sameOrBefore(LocalDateTime.now()));
 		assertEquals("1-1-0-0", articlePres.getDosis());
 		assertNotNull(productPres.getDateFrom());
-
+	
 		List<Prescription> prescList = PrescriptionService
 				.findAllNonDeletedPrescriptionsForPatient(testPatients.get(0));
 		assertEquals(2, prescList.size());
@@ -59,5 +62,4 @@ public class PrescriptionServiceTest extends AbstractServiceTest {
 		PrescriptionService.remove(deletedPres);
 		PrescriptionService.remove(recipePres);
 	}
-
 }

@@ -21,7 +21,6 @@ Export-Package: info.elexis.server.core.connector.elexis.jpa,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.converter,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.id,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.listener,
- info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.types
 Import-Package: at.medevit.ch.artikelstamm,
  ch.elexis.core.constants,

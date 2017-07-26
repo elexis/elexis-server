@@ -8,11 +8,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
-
 @Entity
 @Table(name = "laborder")
 public class LabOrder extends AbstractDBObjectIdDeleted {
@@ -43,12 +38,10 @@ public class LabOrder extends AbstractDBObjectIdDeleted {
 	@Column(length = 255)
 	private String groupname;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime time;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime observationTime;
 
 	@Column(length = 1)

@@ -12,11 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
 
 import ch.elexis.core.model.prescription.EntryType;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
 @Table(name = "patient_artikel_joint")
@@ -33,12 +30,10 @@ public class Prescription extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 255)
 	private String bemerkung;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime dateFrom;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime dateUntil;
 
 	@Column(length = 255)

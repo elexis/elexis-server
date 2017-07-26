@@ -12,10 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.WriteTransformer;
-
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.transformer.ElexisDBStringDateTimeTransformer;
 
 @Entity
 @Table(name = "laborwerte")
@@ -51,16 +47,13 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 255)
 	private String unit;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime analysetime;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime observationtime;
 
-	@ReadTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
-	@WriteTransformer(transformerClass = ElexisDBStringDateTimeTransformer.class)
+	@Column(length = 24)
 	private LocalDateTime transmissiontime;
 
 	@Column(length = 255)
