@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.rgw.tools.TimeTool;
+import ch.rgw.tools.TimeTool.TimeFormatException;
 
 @Converter(autoApply = true)
 public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime, String> {
@@ -41,10 +42,10 @@ public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime,
 			case 8:
 				return LocalDate.parse(dateValue, yyyyMMdd).atStartOfDay();
 			default:
-				return new TimeTool(dateValue).toLocalDateTime();
+				return new TimeTool(dateValue, true).toLocalDateTime();
 			}
 
-		} catch (DateTimeParseException e) {
+		} catch (DateTimeParseException | TimeFormatException e) {
 			log.warn("Error parsing [{}], returning null.", dateValue, e);
 			return null;
 		}
