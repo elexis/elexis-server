@@ -1,0 +1,14 @@
+# Build script used by gitlab.medelexis.ch
+stages:
+    - build
+    - deploy
+    - trigger_other_builds
+
+build:
+  stage: build
+  script: mvn -f releng/es.parent/pom.xml clean verify
+  artifacts:
+    paths:
+    - products/es.core.product.runtime/target/products/*.zip
+    - products/es.updatesite/target/*.zip
+    expire_in: 1 day
