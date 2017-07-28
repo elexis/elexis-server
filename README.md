@@ -13,9 +13,7 @@ This id documented in the [es.core.product.runtime](products/es.core.product.run
 
 ## Running inside docker
 
-Use the following command to start an elexis-server docker image, omit or replace `:tag` with
-the required elexis-server executable branch to use. At the moment valid values are 
-[master, 1.3].
+Use the following command to start an elexis-server docker image, omit or replace `:tag` with the required elexis-server executable branch to use. At the moment valid values are `[latest, 1.3]`.
 
 ```bash
 docker run -p 8380:8380 -p 7234:7234 medevit/elexis-server:tag
