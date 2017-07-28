@@ -39,24 +39,29 @@ public abstract class AbstractServiceTest {
 			List<Verrechnet> verrechnet = VerrechnetService.getAllVerrechnetForBehandlung(cons);
 			for (Verrechnet verrechnet2 : verrechnet) {
 				System.out
-						.println("Deleting verrechnet " + verrechnet2.getLabel() + " on behandlung " + cons.getLabel());
+						.print("Deleting verrechnet " + verrechnet2.getLabel() + " on behandlung " + cons.getLabel());
 				VerrechnetService.remove(verrechnet2);
+				System.out.println(" [OK]");
 			}
 
-			System.out.println("Deleting behandlung " + cons.getLabel());
+			System.out.print("Deleting behandlung " + cons.getLabel());
 			BehandlungService.remove(cons);
+			System.out.println(" [OK]");
 		}
 		for (Fall fall : testFaelle) {
-			System.out.println("Removing fall " + fall.getLabel());
+			System.out.print("Removing fall " + fall.getLabel());
 			FallService.remove(fall);
+			System.out.println(" [OK]");
 		}
 		for (Kontakt contact : testPatients) {
-			System.out.println("Removing patient " + contact.getLabel());
+			System.out.print("Removing patient " + contact.getLabel());
 			PersistenceService.remove(contact);
+			System.out.println(" [OK]");
 		}
 		for (Kontakt contact : testContacts) {
-			System.out.println("Removing contact " + contact.getLabel());
+			System.out.print("Removing contact " + contact.getLabel());
 			PersistenceService.remove(contact);
+			System.out.println(" [OK]");
 		}
 	}
 
