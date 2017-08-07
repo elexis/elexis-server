@@ -210,7 +210,8 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	 * Contacts we relate to (egress reference)
 	 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myKontakt")
-	protected List<KontaktAdressJoint> relatedContacts = new ArrayList<>();
+	@MapKey(name = "id")
+	protected Map<String, KontaktAdressJoint> relatedContacts = new HashMap<>();
 
 	/**
 	 * Contacts we are related by (ingress reference); modifications ignored<br>
@@ -382,11 +383,11 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 		this.addresses = addresses;
 	}
 
-	public List<KontaktAdressJoint> getRelatedContacts() {
+	public Map<String, KontaktAdressJoint> getRelatedContacts() {
 		return relatedContacts;
 	}
-
-	public void setRelatedContacts(List<KontaktAdressJoint> relatedContacts) {
+	
+	public void setRelatedContacts(Map<String, KontaktAdressJoint> relatedContacts) {
 		this.relatedContacts = relatedContacts;
 	}
 

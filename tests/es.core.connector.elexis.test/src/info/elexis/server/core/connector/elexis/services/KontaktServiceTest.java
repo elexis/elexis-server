@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ZusatzAdresse;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.types.MimeType;
@@ -215,8 +217,8 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		p.setExtInfoValue(PatientConstants.FLD_EXTINFO_STAMMARZT, familyDoctor.getId());
 
 		Kontakt laboratory = KontaktService.load(TestEntities.LABORATORY_ID).get();
-		KontaktService.setRelatedContact(p, laboratory, RelationshipType.BUSINESS_EMPLOYER_VALUE,
-				RelationshipType.BUSINESS_EMPLOYEE_VALUE, "employer");
+		KontaktAdressJoint relatedBusinessEmployeeContact = KontaktService.setRelatedContact(p, laboratory,
+				RelationshipType.BUSINESS_EMPLOYER_VALUE, RelationshipType.BUSINESS_EMPLOYEE_VALUE, "employer");
 
 		KontaktService.save(p);
 
@@ -246,14 +248,17 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertEquals(1, pl.getAddresses().size());
 		ZusatzAdresse nhv = pl.getAddresses().entrySet().iterator().next().getValue();
 		assertEquals(nhv.getId(), pl.getAddresses().get(nursingHome.getId()).getId());
+		assertNull(pl.getAddresses().get("invalidKeyObjectDoesNotExist"));
 		assertEquals(pl, nhv.getContact());
 		assertEquals(AddressType.NURSING_HOME, nhv.getAddressType());
 		assertEquals(s[16], nhv.getStreet2());
 		assertEquals(s[17].substring(0, 6), nhv.getZip());
 		assertEquals(Country.AT, nhv.getCountry());
 
+		assertEquals(laboratory, pl.getRelatedContacts().get(relatedBusinessEmployeeContact.getId()).getOtherKontakt());
+		
 		assertEquals(familyDoctor.getId(), p.getExtInfoAsString(PatientConstants.FLD_EXTINFO_STAMMARZT));
-
+		
 		laboratory = KontaktService.reload(laboratory);
 		assertEquals(1, laboratory.getRelatedByContacts().size());
 		assertEquals(p.getId(), laboratory.getRelatedByContacts().iterator().next().getMyKontakt().getId());

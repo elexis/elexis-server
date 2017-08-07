@@ -47,7 +47,7 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, String> mobile;
     public static volatile SingularAttribute<Kontakt, String> anschrift;
     public static volatile CollectionAttribute<Kontakt, KontaktAdressJoint> relatedByContacts;
-    public static volatile ListAttribute<Kontakt, KontaktAdressJoint> relatedContacts;
+    public static volatile MapAttribute<Kontakt, String, KontaktAdressJoint> relatedContacts;
     public static volatile SingularAttribute<Kontakt, Boolean> laboratory;
     public static volatile SingularAttribute<Kontakt, LocalDate> dob;
     public static volatile SingularAttribute<Kontakt, Boolean> person;

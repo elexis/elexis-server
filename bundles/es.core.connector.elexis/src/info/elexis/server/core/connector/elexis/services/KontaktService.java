@@ -238,7 +238,7 @@ public class KontaktService extends PersistenceService {
 		
 		// other contact and role or roleDescription already found ?
 		// return
-		Collection<KontaktAdressJoint> relatedContacts = myContact.getRelatedContacts();
+		Collection<KontaktAdressJoint> relatedContacts = myContact.getRelatedContacts().values();
 		for (KontaktAdressJoint kaj : relatedContacts) {
 			if (otherContact.equals(kaj.getOtherKontakt()) && kaj.getOtherRType() == otherContactRole) {
 				if (relationshipDescription != null) {
@@ -257,7 +257,7 @@ public class KontaktService extends PersistenceService {
 		relatedContact.setOtherRType(otherContactRole);
 		relatedContact.setMyRType(myContactRole);
 		relatedContact.setBezug(relationshipDescription);
-		myContact.getRelatedContacts().add(relatedContact);
+		myContact.getRelatedContacts().put(relatedContact.getId(), relatedContact);
 		return relatedContact;
 	}
 

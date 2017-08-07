@@ -87,7 +87,7 @@ public class ElexisEntityManager {
 			// TODO refactor this
 			ProvidedEntityManager.setEntityManagerFactory(factory);
 		} catch (RuntimeException ite) {
-			log.error("Error activating component", ite);
+			log.error("Error configuration database connection parameters.", ite);
 			ite.printStackTrace();
 		}
 	}

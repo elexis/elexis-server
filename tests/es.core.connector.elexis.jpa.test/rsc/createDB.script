@@ -749,7 +749,7 @@ INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE) VALUES ('1','"2.0.4"');
 INSERT INTO `ch_elexis_omnivore_data` (ID, TITLE, CATEGORY, MIMETYPE) VALUES ('c86beffec61dd2550021','"default"', '"default"', '"text/category"');
 
 CREATE TABLE ZUSATZADRESSE (
-	ID       	VARCHAR(25) NOT NULL,
+	ID       	VARCHAR(41) NOT NULL,
  	LASTUPDATE 	BIGINT DEFAULT NULL,
   	DELETED 	CHAR(1) DEFAULT '0',
 	PRIMARY KEY (ID),
