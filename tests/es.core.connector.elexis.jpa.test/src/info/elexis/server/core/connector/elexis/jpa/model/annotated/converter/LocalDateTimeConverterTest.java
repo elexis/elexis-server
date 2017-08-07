@@ -35,6 +35,7 @@ public class LocalDateTimeConverterTest {
 		MatcherAssert.assertThat(value, LocalDateTimeMatchers.sameInstant(instant));
 		
 		assertNull(ldtc.convertToEntityAttribute("dalkfjasldkfjasdkjf"));
+		assertNull(ldtc.convertToEntityAttribute(""));
 	}
 
 }

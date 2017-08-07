@@ -24,14 +24,16 @@ public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime,
 
 	@Override
 	public String convertToDatabaseColumn(LocalDateTime date) {
-		if (date == null)
+		if (date == null) {
 			return null;
+		}
+
 		return date.format(yyyyMMddHHmmss);
 	}
 
 	@Override
 	public LocalDateTime convertToEntityAttribute(String dateValue) {
-		if (dateValue == null) {
+		if (dateValue == null || dateValue.length() == 0) {
 			return null;
 		}
 

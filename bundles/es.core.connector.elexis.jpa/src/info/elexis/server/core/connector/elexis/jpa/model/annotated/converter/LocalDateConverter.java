@@ -19,14 +19,16 @@ public class LocalDateConverter implements AttributeConverter<LocalDate, String>
 
 	@Override
 	public String convertToDatabaseColumn(LocalDate date) {
-		if (date == null)
+		if (date == null) {
 			return null;
+		}
+
 		return date.format(yyyyMMdd);
 	}
 
 	@Override
 	public LocalDate convertToEntityAttribute(String dateValue) {
-		if (dateValue == null) {
+		if (dateValue == null || dateValue.length() == 0) {
 			return null;
 		}
 
