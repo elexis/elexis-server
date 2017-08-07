@@ -64,7 +64,7 @@
    </configurations>
 
    <repositories>
-      <repository location="http://download.elexis.info/elexis-server/p2/master/" enabled="true" />
+      <repository location="http://download.elexis.info/elexis-server/p2/1.4/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
