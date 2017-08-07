@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -202,7 +203,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
 	protected List<Userconfig> userconfig = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contact")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
 	@MapKey(name = "id")
 	protected Map<String, ZusatzAdresse> addresses = new HashMap<>();
 
