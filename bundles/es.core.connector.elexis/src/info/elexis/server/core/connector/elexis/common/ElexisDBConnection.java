@@ -59,15 +59,6 @@ public class ElexisDBConnection {
 
 	private static void setConnection(DBConnection connection) {
 		ElexisDBConnection.connection = connection;
-
-		// try (OutputStream os = Files.newOutputStream(connectionConfigPath,
-		// StandardOpenOption.WRITE);) {
-		// connection.marshall(os);
-		// } catch (IOException | JAXBException e) {
-		// log.error("Error marshalling connection", e);
-		// }
-
-		// ElexisEntityManager.initializeEntityManager();
 	}
 
 	public static boolean isTestMode() {
