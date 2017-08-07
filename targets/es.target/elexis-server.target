@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1498657361">
+<target name="Elexis-Server" sequenceNumber="1502105010">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -57,12 +57,12 @@
       <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201602281253"/>
-      <unit id="ch.rgw.utility" version="3.2.0.a20170613-1541"/>
-      <unit id="ch.elexis.core" version="3.2.0.a20170626-1127"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.a20170609-0757"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.a20170612-1058"/>
-      <unit id="ch.elexis.core.findings" version="1.0.0.a20170628-1133"/>
-      <unit id="ch.elexis.core.findings.util" version="1.0.0.a20170628-0814"/>
+      <unit id="ch.rgw.utility" version="3.2.0.b20170613-1541"/>
+      <unit id="ch.elexis.core" version="3.2.0.b20170727-1055"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.b20170727-1054"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.b20170612-1058"/>
+      <unit id="ch.elexis.core.findings" version="1.0.0.b20170802-1124"/>
+      <unit id="ch.elexis.core.findings.util" version="1.0.0.b20170807-1059"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.1.v201101151400"/>
@@ -73,9 +73,9 @@
       <unit id="ca.uhn.hapi.osgi-base" version="1.2.0"/>
       <unit id="org.apache.poi" version="3.0.2.FINAL"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.a20161229-1720"/>
-      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.a20161116-1732"/>
-      <unit id="at.medevit.atc_codes" version="3.1.0.a20160519-0702"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.2.0.b20161229-1720"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.b20161116-1732"/>
+      <unit id="at.medevit.atc_codes" version="3.1.0.b20160519-0702"/>
       <unit id="org.tukaani.xz" version="1.5.0.v20170111-1717"/>
       <unit id="osgi.enterprise" version="4.2.0.v201108120515"/>
       <unit id="javax.ejb" version="3.1.1.v201204261316"/>
@@ -123,7 +123,7 @@
       <unit id="org.unbescape" version="1.1.4.RELEASE"/>
       <unit id="org.springframework.spring-web" version="4.3.8.RELEASE"/>
       <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
-      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/p2/master/target/"/>
+      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/p2/1.4/target/"/>
     </location>
   </locations>
 </target>
