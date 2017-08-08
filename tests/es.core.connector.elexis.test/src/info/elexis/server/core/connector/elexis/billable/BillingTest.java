@@ -713,5 +713,4 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(tlTechMain.getId(), lst.get(1).getLeistungenCode());
 		assertEquals(tlTapingCat1.getId(), lst.get(2).getLeistungenCode());
 	}
-	
 }
