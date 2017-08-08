@@ -15,4 +15,4 @@ build:
 trigger_dockerhub_build:
     stage: trigger_other_builds
     script:
-    - curl -H "Content-Type: application/json" --data "{"source_type": "Branch", "source_name": "$CI_COMMIT_REF_NAME"}" -X POST https://registry.hub.docker.com/u/medevit/elexis-server/trigger/$DOCKERHUB_TRIGGER_TOKEN/
+    - curl -X POST -F source_type=Branch -F source_name=$CI_COMMIT_REF_NAME https://registry.hub.docker.com/u/medevit/elexis-server/trigger/$DOCKERHUB_TRIGGER_TOKEN/
