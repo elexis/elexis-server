@@ -1,6 +1,6 @@
 FROM openjdk:8-jre
 MAINTAINER MEDEVIT <office@medevit.at>
-ARG branch=master
+ARG branch=1.4
 
 RUN adduser --disabled-password --gecos "" --home /elexis elexis && \
     mkdir /es-prog && \
