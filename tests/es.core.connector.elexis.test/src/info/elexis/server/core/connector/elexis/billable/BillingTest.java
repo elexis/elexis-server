@@ -657,4 +657,25 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(100, vr.getScale());
 		assertEquals(50, vr.getScale2());
 	}
+	
+	@Test
+	public void testAddAutoPositions(){
+		TarmedLeistung pos1 =
+			(TarmedLeistung) TarmedLeistungService.findFromCode("39.0590", null).get();
+		TarmedLeistung pos2 =
+			(TarmedLeistung) TarmedLeistungService.findFromCode("39.2000", null).get();
+		TarmedLeistung pos3 =
+			(TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
+		VerrechenbarTarmedLeistung v1 = new VerrechenbarTarmedLeistung(pos1);
+		
+		IStatus status = v1.add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+		List<Verrechnet> lst =
+			VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(0));
+		assertEquals(3, lst.size());
+		assertEquals(pos1.getId(), lst.get(0).getLeistungenCode());
+		assertEquals(pos2.getId(), lst.get(1).getLeistungenCode());
+		assertEquals(pos3.getId(), lst.get(2).getLeistungenCode());
+	}
+	
 }
