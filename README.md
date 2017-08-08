@@ -1,4 +1,4 @@
-# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) <a href="https://gitlab.medelexis.ch/elexis/elexis-server/commits/master"><img alt="build status" src="https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg" /></a>
+# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) [![build status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/commits/master)
 Elexis for server operation
 
 The Elexis server implements a part of the FHIR specification. Please consult [HL7-FHIR wik](http://wiki.hl7.org/index.php?title=FHIR) for further details.
