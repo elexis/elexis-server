@@ -46,38 +46,43 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 
 	@Transient
 	public int getAL() {
-		Object object = extension.getLimits().get("TP_AL");
-		if(object==null) {
-			return 0;
+		if (extension != null) {
+			Object object = extension.getLimits().get("TP_AL");
+			if (object != null) {
+				try {
+					double val = Double.parseDouble((String) object);
+					return (int) Math.round(val * 100);
+				} catch (NumberFormatException nfe) {
+					/* ignore */
+				}
+			}
 		}
-		double val;
-		try {
-			val = Double.parseDouble((String) object);
-			return (int) Math.round(val * 100);
-		} catch (NumberFormatException nfe) {
-			return 0;
-		}
+		return 0;
 	}
 
 	@Transient
 	public int getTL() {
-		Object object = extension.getLimits().get("TP_TL");
-		if(object==null) {
-			return 0;
+		if (extension != null) {
+			Object object = extension.getLimits().get("TP_TL");
+			if (object != null) {
+				try {
+					double val = Double.parseDouble((String) object);
+					return (int) Math.round(val * 100);
+				} catch (NumberFormatException nfe) {
+					/* ignore */
+				}
+			}
+			
 		}
-		double val;
-		try {
-			val = Double.parseDouble((String) object);
-			return (int) Math.round(val * 100);
-		} catch (NumberFormatException nfe) {
-			return 0;
-		}
+		return 0;
 	}
 
 	public boolean requiresSide() {
-		Object object = extension.getLimits().get("SEITE");
-		if (object != null && Integer.parseInt((String) object) == 1) {
-			return true;
+		if (extension != null) {
+			Object object = extension.getLimits().get("SEITE");
+			if (object != null && Integer.parseInt((String) object) == 1) {
+				return true;
+			}
 		}
 		return false;
 	}

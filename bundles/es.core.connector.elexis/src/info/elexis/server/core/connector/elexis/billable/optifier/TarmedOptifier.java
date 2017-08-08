@@ -54,6 +54,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	public static final String RIGHT = "right";
 
 	private static final String CHAPTER_XRAY = "39.02";
+	private static final String CHAPTER_ULTRA = "39.03";
 	private static final String DEFAULT_TAX_XRAY_ROOM = "39.2000";
 
 	public static final String PREF_ADDCHILDREN = "tarmed/addchildrentp";
@@ -328,11 +329,13 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				&& tc.getParent().startsWith(CHAPTER_XRAY)) {
 			Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode(DEFAULT_TAX_XRAY_ROOM);
 			if (tl.isPresent()) {
+				saveVerrechnet();
 				add(tl.get(), kons, userContact, mandatorContact);
 			}
 			// add 39.0020, will be changed according to case (see above)
 			Optional<IBillable> tla = TarmedLeistungService.getVerrechenbarFromCode("39.0020");
 			if (tla.isPresent()) {
+				saveVerrechnet();
 				add(tla.get(), kons, userContact, mandatorContact);
 			}
 		}
@@ -406,6 +409,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 							Optional<TarmedLeistung> tl = TarmedLeistungService.findFromCode("00.0040",
 									new TimeTool(kons.getDatum()));
 							if (tl.isPresent()) {
+								saveVerrechnet();
 								add(new VerrechenbarTarmedLeistung(tl.get()), kons, userContact, mandatorContact);
 							}
 						}
@@ -442,6 +446,39 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			newVerrechnet.setDetail(TL, Double.toString(sumTL));
 			newVerrechnet.setPrimaryScaleFactor(0.5);
 		}
+		// Zuschläge für 04.0620 sollte sich diese mit 70% auf die Positionen 04.0630 & 04.0640 beziehen
+		else if (tcid.equals("04.0620")) {
+			double sumAL = 0.0;
+			double sumTL = 0.0;
+			for (Verrechnet v : lst) {
+				Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
+				if (verrechenbar.isPresent()
+					&& verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
+					String tlc = tl.getCode();
+					int z = v.getZahl();
+					if (tlc.equals("04.0610") || tlc.equals("04.0630") || tlc.equals("04.0640")) {
+						sumAL += tl.getAL() * z;
+						sumTL += tl.getTL() * z;
+					}
+				}
+			}
+			newVerrechnet.setTP(sumAL + sumTL);
+			newVerrechnet.setDetail(AL, Double.toString(sumAL));
+			newVerrechnet.setDetail(TL, Double.toString(sumTL));
+			newVerrechnet.setPrimaryScaleFactor(0.7);
+		}
+		
+		// Zuschlag fuer Ultraschall & check also 39.3800 is not added twice
+		if (tc.getParent().startsWith(CHAPTER_ULTRA) && !tc.getCode().equals("39.3800")) {
+			Optional<IBillable> verrechenbar =
+				TarmedLeistungService.getVerrechenbarFromCode("39.3800");
+			if (verrechenbar.isPresent()) {
+				saveVerrechnet();
+				add(verrechenbar.get(), kons, userContact, mandatorContact);
+			}
+		}
+		
 		// Notfall-Zuschläge
 		if (tcid.startsWith("00.25")) { //$NON-NLS-1$
 			double sum = 0.0;
@@ -503,10 +540,14 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			// PREISAENDERUNG, "Preis", null, false); //$NON-NLS-1$
 		}
 
-		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
+		saveVerrechnet();
 
 		return ObjectStatus.OK_STATUS(newVerrechnet);
 		// return new Result<IVerrechenbar>(null);
+	}
+	
+	private void saveVerrechnet(){
+		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
 	}
 
 	@Override
