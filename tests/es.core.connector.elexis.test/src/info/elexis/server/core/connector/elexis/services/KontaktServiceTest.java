@@ -140,6 +140,44 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		KontaktService.setContactImage(findById.get(), image, MimeType.jpg);
 		assertArrayEquals(image, KontaktService.getContactImage(findById.get()).get().getImage());
 	}
+	
+	/**
+	 * Test Kontakt#addresses configuration. INSERT is always carried out as DB
+	 * operation, but a subsequent entity UPDATE only if at lease CascadeType.MERGE
+	 * is specified.
+	 */
+	@Test
+	public void testZusatzaddressInsertAndUpdate() {
+		Kontakt patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR).get();
+		
+		// INSERT does happen without specifying a CascadeType
+		ZusatzAdresse nursingHome = new ZusatzAdresse();
+		nursingHome.setContact(patient);
+		nursingHome.setAddressType(AddressType.NURSING_HOME);
+		nursingHome.setStreet2("Street2");
+		nursingHome.setZip("6840");
+		nursingHome.setCountry(Country.AT);
+		patient.getAddresses().put(nursingHome.getId(), nursingHome);
+		KontaktService.save(patient);
+		
+		// UPDATE does only happen if CascadeType.MERGE is specified
+		Kontakt pla = KontaktService.load(patient.getId()).get();
+		ZusatzAdresse local = pla.getAddresses().get(nursingHome.getId());
+		local.setCountry(Country.CH);
+		pla.getAddresses().put(nursingHome.getId(), local);
+		KontaktService.save(pla);
+		
+		Kontakt pl = KontaktService.load(patient.getId()).get();
+		assertEquals(1, pl.getAddresses().size());
+		ZusatzAdresse nhv = pl.getAddresses().entrySet().iterator().next().getValue();
+		assertEquals(nhv.getId(), pl.getAddresses().get(nursingHome.getId()).getId());
+		assertNull(pl.getAddresses().get("invalidKeyObjectDoesNotExist"));
+		assertEquals(pl, nhv.getContact());
+		assertEquals(AddressType.NURSING_HOME, nhv.getAddressType());
+		assertEquals("Street2", nhv.getStreet2());
+		assertEquals("6840", nhv.getZip());
+		assertEquals(Country.CH, nhv.getCountry());
+	}
 
 	@Test
 	public void testContactListElementsBehaviour() {
@@ -205,14 +243,6 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		p.setCity(s[13]);
 		p.setCountry(Country.CH);
 
-		ZusatzAdresse nursingHome = new ZusatzAdresse();
-		nursingHome.setContact(p);
-		nursingHome.setAddressType(AddressType.NURSING_HOME);
-		nursingHome.setStreet2(s[16]);
-		nursingHome.setZip(s[17].substring(0, 6));
-		nursingHome.setCountry(Country.AT);
-		p.getAddresses().put(nursingHome.getId(), nursingHome);
-
 		Kontakt familyDoctor = new KontaktService.PersonBuilder("family", "doctor", dob, Gender.FEMALE).buildAndSave();
 		p.setExtInfoValue(PatientConstants.FLD_EXTINFO_STAMMARZT, familyDoctor.getId());
 
@@ -244,16 +274,6 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertEquals(s[12].substring(0, 6), pl.getZip());
 		assertEquals(s[13], pl.getCity());
 		assertEquals(Country.CH, pl.getCountry());
-
-		assertEquals(1, pl.getAddresses().size());
-		ZusatzAdresse nhv = pl.getAddresses().entrySet().iterator().next().getValue();
-		assertEquals(nhv.getId(), pl.getAddresses().get(nursingHome.getId()).getId());
-		assertNull(pl.getAddresses().get("invalidKeyObjectDoesNotExist"));
-		assertEquals(pl, nhv.getContact());
-		assertEquals(AddressType.NURSING_HOME, nhv.getAddressType());
-		assertEquals(s[16], nhv.getStreet2());
-		assertEquals(s[17].substring(0, 6), nhv.getZip());
-		assertEquals(Country.AT, nhv.getCountry());
 
 		assertEquals(laboratory, pl.getRelatedContacts().get(relatedBusinessEmployeeContact.getId()).getOtherKontakt());
 		
