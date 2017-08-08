@@ -3,11 +3,11 @@ target "Elexis-Server"
 with source allEnvironments
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis.3.core/snapshot/" {
-	ch.rgw.utility [3.2.0,3.3.0)
-	ch.elexis.core [3.2.0,3.3.0)
-	ch.elexis.core.importer.div [3.2.0,3.3.0)
-	ch.elexis.core.hl7.v2x [3.2.0,3.3.0)
+location "http://download.elexis.info/elexis/p2/master/elexis-3-core/" {
+	ch.rgw.utility
+	ch.elexis.core
+	ch.elexis.core.importer.div
+	ch.elexis.core.hl7.v2x
 	ch.elexis.core.findings
 	ch.elexis.core.findings.util
 	org.postgresql
@@ -23,7 +23,7 @@ location "http://download.elexis.info/elexis.3.core/snapshot/" {
 }
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis.3.base/snapshot/" {
+location "http://download.elexis.info/elexis/p2/master/elexis-3-base/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
 	at.medevit.atc_codes
