@@ -1,0 +1,27 @@
+# Build script used by gitlab.medelexis.ch
+stages:
+    - build
+    - trigger_other_builds
+
+build:
+  stage: build
+  script: mvn -f releng/es.parent/pom.xml clean verify
+  artifacts:
+    paths:
+    - products/es.core.product.runtime/target/products/*.zip
+    - products/es.updatesite/target/*.zip
+    expire_in: 1 day
+
+trigger_dockerhub_build:
+    stage: trigger_other_builds
+    script:
+    - >- 
+         curl 
+         -X POST https://registry.hub.docker.com/u/medevit/elexis-server/trigger/$DOCKERHUB_TRIGGER_TOKEN/
+         -d '
+         {
+         "source_type": "Branch",
+         "source_name": "'"$CI_COMMIT_REF_NAME"'"
+         }
+         '
+         -H "Content-Type: application/json"

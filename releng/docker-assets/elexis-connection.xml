@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dbConnection hostName="localhost" port="" databaseName="" connectionString="jdbc:h2:///elexis/demoDB/db;AUTO_SERVER=TRUE" username="sa" password="">
+    <rdbmsType>H2</rdbmsType>
+</dbConnection>
