@@ -1,7 +1,6 @@
 # Build script used by gitlab.medelexis.ch
 stages:
     - build
-    - deploy
     - trigger_other_builds
 
 build:
@@ -12,3 +11,8 @@ build:
     - products/es.core.product.runtime/target/products/*.zip
     - products/es.updatesite/target/*.zip
     expire_in: 1 day
+
+trigger_dockerhub_build:
+    stage: trigger_other_builds
+    script:
+    - curl -H "Content-Type: application/json" --data "{"source_type": "Branch", "source_name": "$CI_COMMIT_REF_NAME"}" -X POST https://registry.hub.docker.com/u/medevit/elexis-server/trigger/$DOCKERHUB_TRIGGER_TOKEN/
