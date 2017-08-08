@@ -678,4 +678,39 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(pos3.getId(), lst.get(2).getLeistungenCode());
 	}
 	
+	@Test
+	public void testUltrasoundAutoMainPositions(){
+		TarmedLeistung tlUltrasound =
+			(TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
+		TarmedLeistung tlTechMain =
+			(TarmedLeistung) TarmedLeistungService.findFromCode("39.3800", null).get();
+		
+		IStatus status = new VerrechenbarTarmedLeistung(tlUltrasound).add(testBehandlungen.get(0),
+			userContact, mandator);
+		assertTrue(status.isOK());
+		List<Verrechnet> lst =
+			VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(0));
+		assertEquals(2, lst.size());
+		assertEquals(tlUltrasound.getId(), lst.get(0).getLeistungenCode());
+		assertEquals(tlTechMain.getId(), lst.get(1).getLeistungenCode());
+		
+		// special case 1: add techMain manually again -> size should not be changed
+		new VerrechenbarTarmedLeistung(tlTechMain).add(testBehandlungen.get(0), userContact,
+			mandator);
+		lst = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(0));
+		assertEquals(2, lst.size());
+		assertEquals(tlUltrasound.getId(), lst.get(0).getLeistungenCode());
+		assertEquals(tlTechMain.getId(), lst.get(1).getLeistungenCode());
+		
+		// special case 2: add something compatible -> size should changed
+		TarmedLeistung tlTapingCat1 =
+			(TarmedLeistung) TarmedLeistungService.findFromCode("01.0110", null).get();
+		new VerrechenbarTarmedLeistung(tlTapingCat1).add(testBehandlungen.get(0), userContact,
+			mandator);
+		lst = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(0));
+		assertEquals(3, lst.size());
+		assertEquals(tlUltrasound.getId(), lst.get(0).getLeistungenCode());
+		assertEquals(tlTechMain.getId(), lst.get(1).getLeistungenCode());
+		assertEquals(tlTapingCat1.getId(), lst.get(2).getLeistungenCode());
+	}
 }
