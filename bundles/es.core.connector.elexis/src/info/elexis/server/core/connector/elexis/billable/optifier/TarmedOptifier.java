@@ -328,11 +328,13 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				&& tc.getParent().startsWith(CHAPTER_XRAY)) {
 			Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode(DEFAULT_TAX_XRAY_ROOM);
 			if (tl.isPresent()) {
+				saveVerrechnet();
 				add(tl.get(), kons, userContact, mandatorContact);
 			}
 			// add 39.0020, will be changed according to case (see above)
 			Optional<IBillable> tla = TarmedLeistungService.getVerrechenbarFromCode("39.0020");
 			if (tla.isPresent()) {
+				saveVerrechnet();
 				add(tla.get(), kons, userContact, mandatorContact);
 			}
 		}
@@ -406,6 +408,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 							Optional<TarmedLeistung> tl = TarmedLeistungService.findFromCode("00.0040",
 									new TimeTool(kons.getDatum()));
 							if (tl.isPresent()) {
+								saveVerrechnet();
 								add(new VerrechenbarTarmedLeistung(tl.get()), kons, userContact, mandatorContact);
 							}
 						}
@@ -503,10 +506,14 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			// PREISAENDERUNG, "Preis", null, false); //$NON-NLS-1$
 		}
 
-		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
+		saveVerrechnet();
 
 		return ObjectStatus.OK_STATUS(newVerrechnet);
 		// return new Result<IVerrechenbar>(null);
+	}
+	
+	private void saveVerrechnet(){
+		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
 	}
 
 	@Override
