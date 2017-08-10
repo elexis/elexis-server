@@ -203,7 +203,7 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
 	protected List<Userconfig> userconfig = new ArrayList<>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", orphanRemoval = true)
 	@MapKey(name = "id")
 	protected Map<String, ZusatzAdresse> addresses = new HashMap<>();
 
