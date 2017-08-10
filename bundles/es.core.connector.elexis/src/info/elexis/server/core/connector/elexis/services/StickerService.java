@@ -1,7 +1,9 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -148,5 +150,34 @@ public class StickerService extends PersistenceService {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Remove all stickers from object
+	 * 
+	 * @param object
+	 */
+	public static void removeAllStickersFromObject(AbstractDBObjectIdDeleted object) {
+		List<Sticker> stickers = StickerService.findStickersOnObject(object);
+		for (Sticker sticker : stickers) {
+			StickerService.removeStickerFromObject(sticker, object);
+		}
+	}
+
+	/**
+	 * Removes the sticker from object if possible
+	 * 
+	 * @param sticker
+	 * @param object
+	 */
+	public static void removeStickerFromObject(Sticker sticker, AbstractDBObjectIdDeleted object) {
+		Set<StickerObjectLink> stickerObjectLinks = sticker.getStickerObjectLinks();
+		for (Iterator<StickerObjectLink> iterator = stickerObjectLinks.iterator(); iterator.hasNext();) {
+			StickerObjectLink sol = (StickerObjectLink) iterator.next();
+			if (sol.getObj().equals(object.getId())) {
+				iterator.remove();
+			}
+		}
+		StickerService.save(sticker);
 	}
 }

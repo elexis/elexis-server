@@ -141,7 +141,7 @@ public class StickerServiceTest extends AbstractServiceTest {
 	}
 
 	@Test
-	public void testApplyStickerToPatient() {
+	public void testApplyRemoveStickerToPatient() {
 		
 		Sticker sticker = new StickerService.StickerBuilder("Sticker 2", "123456", "123456", ElexisTypeMap.TYPE_PATIENT)
 				.buildAndSave();
@@ -163,7 +163,12 @@ public class StickerServiceTest extends AbstractServiceTest {
 		
 		findStickersOnObject = StickerService.findStickersOnObject(findById.get());
 		assertEquals(1, findStickersOnObject.size());
+		
+		StickerService.removeAllStickersFromObject(findById.get());
 
+		findStickersOnObject = StickerService.findStickersOnObject(findById.get());
+		assertEquals(0, findStickersOnObject.size());
+		
 		StickerService.remove(sticker);
 	}
 }
