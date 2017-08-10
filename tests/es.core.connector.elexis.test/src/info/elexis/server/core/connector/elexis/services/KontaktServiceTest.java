@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,11 +10,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -140,7 +144,7 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		KontaktService.setContactImage(findById.get(), image, MimeType.jpg);
 		assertArrayEquals(image, KontaktService.getContactImage(findById.get()).get().getImage());
 	}
-	
+
 	/**
 	 * Test Kontakt#addresses configuration. INSERT is always carried out as DB
 	 * operation, but a subsequent entity UPDATE only if at lease CascadeType.MERGE
@@ -149,7 +153,7 @@ public class KontaktServiceTest extends AbstractServiceTest {
 	@Test
 	public void testZusatzaddressInsertAndUpdate() {
 		Kontakt patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR).get();
-		
+
 		// INSERT does happen without specifying a CascadeType
 		ZusatzAdresse nursingHome = new ZusatzAdresse();
 		nursingHome.setContact(patient);
@@ -159,14 +163,14 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		nursingHome.setCountry(Country.AT);
 		patient.getAddresses().put(nursingHome.getId(), nursingHome);
 		KontaktService.save(patient);
-		
+
 		// UPDATE does only happen if CascadeType.MERGE is specified
 		Kontakt pla = KontaktService.load(patient.getId()).get();
 		ZusatzAdresse local = pla.getAddresses().get(nursingHome.getId());
 		local.setCountry(Country.CH);
 		pla.getAddresses().put(nursingHome.getId(), local);
 		KontaktService.save(pla);
-		
+
 		Kontakt pl = KontaktService.load(patient.getId()).get();
 		assertEquals(1, pl.getAddresses().size());
 		ZusatzAdresse nhv = pl.getAddresses().entrySet().iterator().next().getValue();
@@ -177,6 +181,47 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertEquals("Street2", nhv.getStreet2());
 		assertEquals("6840", nhv.getZip());
 		assertEquals(Country.CH, nhv.getCountry());
+		
+		ZusatzAdresse zusatzAdresse = pl.getAddresses().get(nursingHome.getId());
+		PersistenceService.remove(zusatzAdresse);
+	}
+
+	@Test
+	public void testZusatzadressenMapModification() {
+		Kontakt patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR).get();
+
+		Map<String, ZusatzAdresse> stateA = new HashMap<>();
+		Map<String, ZusatzAdresse> stateB = new HashMap<>();
+
+		ZusatzAdresse nursingHome = new ZusatzAdresse();
+		nursingHome.setContact(patient);
+		nursingHome.setAddressType(AddressType.NURSING_HOME);
+		nursingHome.setStreet2("Street2");
+		nursingHome.setZip("6840");
+		nursingHome.setCountry(Country.AT);
+		stateA.put(nursingHome.getId(), nursingHome);
+		stateB.put(nursingHome.getId(), nursingHome);
+
+		ZusatzAdresse secondaryHome = new ZusatzAdresse();
+		secondaryHome.setContact(patient);
+		secondaryHome.setAddressType(AddressType.SECONDARY_RESIDENCE);
+		secondaryHome.setZip("6841");
+		stateB.put(secondaryHome.getId(), secondaryHome);
+
+		patient.setAddresses(stateA);
+		KontaktService.save(patient);
+		assertThat(KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR).get().getAddresses(),
+				CoreMatchers.is(stateA));
+
+		patient.setAddresses(stateB);
+		KontaktService.save(patient);
+		assertThat(KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR).get().getAddresses(),
+				CoreMatchers.is(stateB));
+
+		patient.setAddresses(stateA);
+		KontaktService.save(patient);
+		assertThat(KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR).get().getAddresses(),
+				CoreMatchers.is(stateA));
 	}
 
 	@Test
@@ -276,9 +321,9 @@ public class KontaktServiceTest extends AbstractServiceTest {
 		assertEquals(Country.CH, pl.getCountry());
 
 		assertEquals(laboratory, pl.getRelatedContacts().get(relatedBusinessEmployeeContact.getId()).getOtherKontakt());
-		
+
 		assertEquals(familyDoctor.getId(), p.getExtInfoAsString(PatientConstants.FLD_EXTINFO_STAMMARZT));
-		
+
 		laboratory = KontaktService.reload(laboratory);
 		assertEquals(1, laboratory.getRelatedByContacts().size());
 		assertEquals(p.getId(), laboratory.getRelatedByContacts().iterator().next().getMyKontakt().getId());
