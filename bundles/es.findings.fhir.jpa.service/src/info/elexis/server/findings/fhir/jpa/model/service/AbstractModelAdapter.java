@@ -41,6 +41,14 @@ public abstract class AbstractModelAdapter<T> implements IFinding {
 		return ModelUtil.loadResource(this);
 	}
 
+	public String fixXhtmlContent(String content) {
+		if (content.contains("http://www.w3.org/1999/xhtml")) {
+			// replace unicode nbsp with space character
+			content = content.replace((char) 0xa0, ' ');
+		}
+		return content;
+	}
+
 	@Override
 	public Optional<String> getText() {
 		Optional<IBaseResource> resource = loadResource();

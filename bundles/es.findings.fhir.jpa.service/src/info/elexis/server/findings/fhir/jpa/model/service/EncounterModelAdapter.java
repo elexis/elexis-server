@@ -87,7 +87,7 @@ public class EncounterModelAdapter extends AbstractModelAdapter<Encounter> imple
 
 	@Override
 	public String getRawContent() {
-		return getModel().getContent();
+		return fixXhtmlContent(getModel().getContent());
 	}
 
 	@Override
