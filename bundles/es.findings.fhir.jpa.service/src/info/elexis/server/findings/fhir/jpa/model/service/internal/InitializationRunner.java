@@ -72,9 +72,6 @@ public class InitializationRunner {
 		});
 		// FHIR format upgrade
 		runnalbes.add(new InitializationRunnable() {
-
-
-
 			private boolean stop = false;
 
 			@Override
