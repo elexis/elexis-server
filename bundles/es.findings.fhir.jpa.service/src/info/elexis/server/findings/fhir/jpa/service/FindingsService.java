@@ -84,7 +84,7 @@ public class FindingsService implements IFindingsService {
 	protected void activate() {
 		// make sure entities are available
 		if (FindingsEntityManager.getEntityManager() == null) {
-			LoggerFactory.getLogger(FindingsService.class).error("No findings entity manager available " + this);
+			LoggerFactory.getLogger(FindingsService.class).warn("No findings entity manager available " + this);
 		}
 		LoggerFactory.getLogger(FindingsService.class).debug("New IFindingsService " + this);
 		initializationRunner = new InitializationRunner(this);
@@ -274,8 +274,7 @@ public class FindingsService implements IFindingsService {
 		} else if (model instanceof FamilyMemberHistory) {
 			familyMemberHistoryService.write((FamilyMemberHistory) model);
 			return;
-		}
-		else if (model instanceof AllergyIntolerance) {
+		} else if (model instanceof AllergyIntolerance) {
 			allergyIntoleranceService.write((AllergyIntolerance) model);
 			return;
 		}
@@ -300,8 +299,7 @@ public class FindingsService implements IFindingsService {
 		} else if (model instanceof FamilyMemberHistory) {
 			familyMemberHistoryService.delete((FamilyMemberHistory) model);
 			return;
-		}
-		else if (model instanceof AllergyIntolerance) {
+		} else if (model instanceof AllergyIntolerance) {
 			allergyIntoleranceService.delete((AllergyIntolerance) model);
 			return;
 		}

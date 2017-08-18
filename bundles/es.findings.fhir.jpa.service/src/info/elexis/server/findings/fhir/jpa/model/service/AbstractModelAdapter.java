@@ -41,29 +41,13 @@ public abstract class AbstractModelAdapter<T> implements IFinding {
 		return ModelUtil.loadResource(this);
 	}
 
-	public String fixXhtmlContent(String content) {
-		if (content.contains("http://www.w3.org/1999/xhtml")) {
-			// replace unicode nbsp with space character
-			content = content.replace((char) 0xa0, ' ');
-		}
-		return content;
-	}
-
 	@Override
 	public Optional<String> getText() {
 		Optional<IBaseResource> resource = loadResource();
 		if (resource.isPresent() && resource.get() instanceof DomainResource) {
 			Narrative narrative = ((DomainResource) resource.get()).getText();
 			if (narrative != null && narrative.getDivAsString() != null) {
-				String text = narrative.getDivAsString();
-				if (text != null) {
-					String divDecodedText = text
-							.replaceAll("<div>|<div xmlns=\"http://www.w3.org/1999/xhtml\">|</div>|</ div>", "");
-					divDecodedText = divDecodedText.replaceAll("<br/>|<br />", "\n").replaceAll("&amp;", "&")
-							.replaceAll("&gt;", ">").replaceAll("<", "&lt;")
-							.replaceAll("'&sect;'", "§");
-					return Optional.of(divDecodedText);
-				}
+				return ModelUtil.getNarrativeAsString(narrative);
 			}
 		}
 		return Optional.empty();
@@ -78,11 +62,7 @@ public abstract class AbstractModelAdapter<T> implements IFinding {
 			if (narrative == null) {
 				narrative = new Narrative();
 			}
-			String divEncodedText =
-				text.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("§", "'&sect;'")
-					.replaceAll("&", "&amp;")
-					.replaceAll("(\r\n|\r|\n)", "<br />");
-			narrative.setDivAsString(divEncodedText);
+			ModelUtil.setNarrativeFromString(narrative, text);
 			domainResource.setText(narrative);
 			saveResource(domainResource);
 		}
