@@ -54,7 +54,6 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	public static final String RIGHT = "right";
 
 	private static final String CHAPTER_XRAY = "39.02";
-	private static final String CHAPTER_ULTRA = "39.03";
 	private static final String DEFAULT_TAX_XRAY_ROOM = "39.2000";
 
 	public static final String PREF_ADDCHILDREN = "tarmed/addchildrentp";
@@ -467,16 +466,6 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			newVerrechnet.setDetail(AL, Double.toString(sumAL));
 			newVerrechnet.setDetail(TL, Double.toString(sumTL));
 			newVerrechnet.setPrimaryScaleFactor(0.7);
-		}
-		
-		// Zuschlag fuer Ultraschall & check also 39.3800 is not added twice
-		if (tc.getParent().startsWith(CHAPTER_ULTRA) && !tc.getCode().equals("39.3800")) {
-			Optional<IBillable> verrechenbar =
-				TarmedLeistungService.getVerrechenbarFromCode("39.3800");
-			if (verrechenbar.isPresent()) {
-				saveVerrechnet();
-				add(verrechenbar.get(), kons, userContact, mandatorContact);
-			}
 		}
 		
 		// Notfall-Zuschläge
