@@ -44,6 +44,10 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 	@Column(length = 8, name = "EK_Preis")
 	private String ekPreis;
 
+	/**
+	 * user-defined prices are stored as negative value,
+	 * hence Math.abs should be applied for billing
+	 */
 	@Column(length = 8, name = "VK_Preis")
 	private String vkPreis;
 

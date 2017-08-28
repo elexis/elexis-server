@@ -48,6 +48,10 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	@Column(length = 10)
 	private String pexf;
 
+	/**
+	 * user-defined prices are stored as negative value,
+	 * hence Math.abs should be applied for billing
+	 */
 	@Column(length = 10)
 	private String ppub;
 
