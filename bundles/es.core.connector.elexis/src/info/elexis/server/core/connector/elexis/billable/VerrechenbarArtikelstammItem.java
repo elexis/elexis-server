@@ -79,7 +79,7 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 		double vke = 0.0;
 
 		try {
-			vkt = new Money(artikelstammItem.getPpub()).getCents();
+			vkt = Math.abs(new Money(artikelstammItem.getPpub()).getCents());
 		} catch (Exception e) {
 			log.warn("Error parsing public price: " + e.getMessage() + " @ " + artikelstammItem.getId());
 		}

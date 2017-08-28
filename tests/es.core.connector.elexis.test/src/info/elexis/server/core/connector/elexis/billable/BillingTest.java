@@ -381,7 +381,7 @@ public class BillingTest extends AbstractServiceTest {
 	public void testAddEigenartikelBilling() {
 		Artikel ea1 = new ArtikelService.Builder("NameVerrechnen", "InternalName", Artikel.TYP_EIGENARTIKEL).build();
 		ea1.setEkPreis("150");
-		ea1.setVkPreis("300");
+		ea1.setVkPreis("-300"); // emulate user-defined price
 		ArtikelService.save(ea1);
 
 		VerrechenbarArtikel verrechenbar = new VerrechenbarArtikel(ea1);
