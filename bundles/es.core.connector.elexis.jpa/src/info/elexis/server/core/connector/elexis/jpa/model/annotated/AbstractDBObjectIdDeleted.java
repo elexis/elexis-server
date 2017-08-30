@@ -85,4 +85,9 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject impleme
 	public String toString() {
 		return super.toString() + (isDeleted() ? " D " : "   ") + "id=[" + String.format("%25S", getId()) + "]";
 	}
+	
+	@Override
+	public String getLabel() {
+		return toString();
+	}
 }
