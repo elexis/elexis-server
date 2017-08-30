@@ -167,10 +167,4 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 		this.extension = extension;
 	}
 
-	@Override
-	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
