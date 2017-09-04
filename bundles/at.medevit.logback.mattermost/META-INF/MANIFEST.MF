@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mattermost Appender
+Bundle-SymbolicName: at.medevit.logback.mattermost
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: medevit.at
+Fragment-Host: ch.qos.logback.classic;bundle-version="1.0.7"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
