@@ -20,12 +20,14 @@ import ch.qos.logback.classic.spi.StackTraceElementProxy;
 
 public class IntegrationPostHandler {
 
+	private final boolean attachment;
 	private final ILoggingEvent eventObject;
 	private final String identification;
 
-	public IntegrationPostHandler(ILoggingEvent eventObject, String identification) {
+	public IntegrationPostHandler(ILoggingEvent eventObject, String identification, boolean attachment) {
 		this.eventObject = eventObject;
 		this.identification = identification;
+		this.attachment = attachment;
 	}
 
 	public int post(String url) throws MalformedURLException, IOException {
@@ -44,12 +46,44 @@ public class IntegrationPostHandler {
 		StringBuilder sbHeader = new StringBuilder();
 		sbHeader.append(eventTimeStamp.toLocalDateTime() + " @" + logLevel.levelStr);
 		sbHeader.append(" _" + eventObject.getLoggerName() + "_\n");
-		json.put("text", sbHeader.toString());
+		String sbHeaderString = sbHeader.toString();
 
-		Map<String, Object> params = new HashMap<>();
-		params.put("color", levelToColor(logLevel));
-		params.put("title", eventObject.getFormattedMessage());
+		String exception = parseException(eventObject);
 
+		if (attachment) {
+			json.put("text", sbHeaderString);
+
+			Map<String, Object> params = new HashMap<>();
+			params.put("color", levelToColor(logLevel));
+			params.put("title", eventObject.getFormattedMessage());
+			if (exception != null) {
+				params.put("text", exception);
+			}
+
+			json.put("attachments", Collections.singletonList(params));
+		} else {
+			StringBuilder sbBody = new StringBuilder();
+			switch (logLevel.levelInt) {
+			case Level.ERROR_INT:
+				sbBody.append(":exclamation:");
+				break;
+			case Level.WARN_INT:
+				sbBody.append(":warning:");
+			default:
+				break;
+			}
+			sbBody.append(eventObject.getFormattedMessage());
+			if (exception != null) {
+				sbBody.append("\n" + exception);
+			}
+			json.put("text", sbHeader + sbBody.toString());
+		}
+
+		return send(json.toString().getBytes(), url);
+
+	}
+
+	private String parseException(ILoggingEvent eventObject2) {
 		if (eventObject.getThrowableProxy() != null) {
 			StringBuilder sbException = new StringBuilder();
 			IThrowableProxy throwableProxy = eventObject.getThrowableProxy();
@@ -65,13 +99,9 @@ public class IntegrationPostHandler {
 				}
 			}
 			sbException.append("```");
-			params.put("text", sbException.toString());
+			return sbException.toString();
 		}
-
-		json.put("attachments", Collections.singletonList(params));
-
-		return send(json.toString().getBytes(), url);
-
+		return null;
 	}
 
 	private Object levelToColor(Level logLevel) {
