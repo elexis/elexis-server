@@ -1,7 +1,7 @@
 
 # Mattermost Logback Appender
 
-This fragment connects logback to mattermost.
+This fragment connects logback to [Mattermost](url "https://about.mattermost.com/").
 
 ### Configuration
 
@@ -25,4 +25,4 @@ Log messages can be transmitted as [message attachment](url "https://docs.matter
 as these messages may be searched within the channel. The attachment based method can be activated by adding `<attachmentBased>true</attachmentBased>`
 to the appender configuration. 
 
-![Attachment based vs. native](doc/attachmentBased.png "Attachment based transmission vs. "native" transmission") 
+![Attachment based vs. native](./doc/attachmentBased.png "Attachment based vs.simple incoming webhook") 
