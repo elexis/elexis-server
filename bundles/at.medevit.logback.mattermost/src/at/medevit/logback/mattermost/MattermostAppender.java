@@ -11,6 +11,7 @@ public class MattermostAppender extends AppenderBase<ILoggingEvent> {
 
 	private String integrationUrl;
 	private String identification;
+	private String attachmentBased;
 
 	@Override
 	public void start() {
@@ -22,9 +23,10 @@ public class MattermostAppender extends AppenderBase<ILoggingEvent> {
 	}
 
 	@Override
-	protected void append(ILoggingEvent eventObject) {		
+	protected void append(ILoggingEvent eventObject) {
 		try {
-			new IntegrationPostHandler(eventObject, identification).post(integrationUrl);
+			new IntegrationPostHandler(eventObject, identification, Boolean.valueOf(attachmentBased))
+					.post(integrationUrl);
 		} catch (IOException ex) {
 			addError("Error posting to integrationUrl [" + integrationUrl + "]", ex);
 		}
@@ -52,5 +54,13 @@ public class MattermostAppender extends AppenderBase<ILoggingEvent> {
 
 	public void setIdentification(String identification) {
 		this.identification = identification;
+	}
+
+	public String getAttachmentBased() {
+		return attachmentBased;
+	}
+	
+	public void setAttachmentBased(String attachmentBased) {
+		this.attachmentBased = attachmentBased;
 	}
 }

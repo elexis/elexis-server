@@ -20,7 +20,7 @@ public class IntegrationPostHandlerTest {
 
 		ILoggingEvent ile = new IntegrationPostHandlerTest().createLoggingEvent();
 
-		System.out.println(new IntegrationPostHandler(ile, null).post(CHANNEL_URL));
+		System.out.println(new IntegrationPostHandler(ile, null, false).post(CHANNEL_URL));
 	}
 
 	public ILoggingEvent createLoggingEvent() {
