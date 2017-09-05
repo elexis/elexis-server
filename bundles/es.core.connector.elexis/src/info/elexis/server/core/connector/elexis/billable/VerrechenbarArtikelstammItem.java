@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -75,25 +76,14 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	@Override
 	public int getTP(TimeTool date, Fall fall) {
 		int vkt = 0;
-		double vpe = 0.0;
-		double vke = 0.0;
+		double vpe = artikelstammItem.getPkg_size();
+		double vke = artikelstammItem.getVerkaufseinheit();
 
+		String ppub = artikelstammItem.getPpub();
 		try {
-			vkt = Math.abs(new Money(artikelstammItem.getPpub()).getCents());
+			vkt = Math.abs(new Money(ppub).getCents());
 		} catch (Exception e) {
-			log.warn("Error parsing public price: " + e.getMessage() + " @ " + artikelstammItem.getId());
-		}
-
-		try {
-			vpe = artikelstammItem.getPkg_size();
-		} catch (Exception e) {
-			log.warn("Error parsing package size: " + e.getMessage() + "@ " + artikelstammItem.getId());
-		}
-
-		try {
-			vke = artikelstammItem.getVerkaufseinheit();
-		} catch (Exception e) {
-			log.warn("Error parsing sell unit: " + e.getMessage() + " @ " + artikelstammItem.getId());
+			log.warn("ArtikelstammItem [{}] error parsing public price [{}]", artikelstammItem.getId(), ppub);
 		}
 
 		return VerrechenbarArtikel.determineTP(date, fall, vpe, vke, vkt);
