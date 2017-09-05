@@ -81,24 +81,33 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 		double vpe = 0.0;
 		double vke = 0.0;
 
-		try {
-			Money m = new Money();
-			m.addCent(article.getVkPreis());
-			vkt = Math.abs(m.getCents());
-		} catch (Exception e) {
-			log.warn("Error parsing public price: " + e.getMessage() + " @ " + article.getId());
+		Money m = new Money();
+		String vkPreis = article.getVkPreis();
+		if (vkPreis != null) {
+			try {
+				m.addCent(article.getVkPreis());
+			} catch (Exception e) {
+				log.warn("Article [{}] error parsing vkPreis [{}], setting 0.", article.getId(), vkPreis);
+			}
+		}
+		vkt = Math.abs(m.getCents());
+
+		String packageUnit = article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT);
+		if (packageUnit != null) {
+			try {
+				vpe = Double.parseDouble(article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT));
+			} catch (Exception e) {
+				log.warn("Article [{}] error parsing package unit [{}]", article.getId(), packageUnit);
+			}
 		}
 
-		try {
-			vpe = Double.parseDouble(article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT));
-		} catch (Exception e) {
-			log.warn("Error parsing package size: " + e.getMessage() + "@ " + article.getId());
-		}
-
-		try {
-			vke = Double.parseDouble(article.getExtInfoAsString(Artikel.FLD_EXTINFO_SELLUNIT));
-		} catch (Exception e) {
-			log.warn("Error parsing sell unit: " + e.getMessage() + " @ " + article.getId());
+		String sellUnit = article.getExtInfoAsString(Artikel.FLD_EXTINFO_SELLUNIT);
+		if (sellUnit != null) {
+			try {
+				vke = Double.parseDouble(sellUnit);
+			} catch (Exception e) {
+				log.warn("Article [{}] error parsing sell unit [{}] ", article.getId(), sellUnit);
+			}
 		}
 
 		return determineTP(date, fall, vpe, vke, vkt);
