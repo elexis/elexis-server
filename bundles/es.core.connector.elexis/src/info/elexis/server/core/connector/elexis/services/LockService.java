@@ -139,7 +139,8 @@ public class LockService implements ILockService {
 
 				return LockResponse.OK(lockInfo);
 			} else {
-				log.warn("Could not acquire locksLock in acquireLock method on thread {}. ", Thread.currentThread());
+				log.warn("Could not acquire locksLock in #acquireLock (request not handled), denying lock",
+						new Throwable("Diagnosis"));
 				return LockResponse.DENIED(lockInfo);
 			}
 		} finally {
@@ -195,11 +196,12 @@ public class LockService implements ILockService {
 						lockInfo.getElementStoreToString() + "#" + lockInfo.getUser() + "@" + lockInfo.getSystemUuid());
 				return LockResponse.DENIED(lockInfo);
 			} else {
-				log.warn("Could not acquire locksLock in releaseLock method on thread {}. ", Thread.currentThread());
+				log.warn("Could not acquire locksLock in #releaseLock (request not handled), denying lock",
+						new Throwable("Diagnosis"));
 				return LockResponse.DENIED(lockInfo);
 			}
 		} catch (InterruptedException ie) {
-			log.warn("Interrupted in acquire locksLock in releaseLock method on thread {}. ", Thread.currentThread());
+			log.warn("Interrupted in acquire locksLock in #releaseLock", ie);
 			return LockResponse.DENIED(lockInfo);
 		} finally {
 			if (locksLock.isHeldByCurrentThread()) {
@@ -244,7 +246,7 @@ public class LockService implements ILockService {
 					return response;
 				}
 				if (sleptMilli > (timeout * 1000)) {
-					log.warn("Timeout {} lock blocking ({} sec) for [{}].", method, Integer.toString(timeout),
+					log.warn("Timeout [{}] lock blocking ({} sec) for [{}].", method, Integer.toString(timeout),
 							lockInfo.getElementStoreToString());
 					return response;
 				}
@@ -345,12 +347,12 @@ public class LockService implements ILockService {
 							}
 						}
 					} else {
-						log.warn("Could not acquire locksLock in LockEvictionTask#run method on thread {}. ",
-								Thread.currentThread());
+						log.warn(
+								"Could not acquire locksLock in LockEvictionTask#run (request not handled), denying lock",
+								new Throwable("Diagnosis"));
 					}
 				} catch (InterruptedException ie) {
-					log.warn("Interrupted @ acquire locksLock in LockEvictionTask#run method on thread {}. ",
-							Thread.currentThread(), ie);
+					log.warn("Interrupted @ acquire locksLock in LockEvictionTask#run method", ie);
 				} finally {
 					if (locksLock.isHeldByCurrentThread()) {
 						locksLock.unlock();
