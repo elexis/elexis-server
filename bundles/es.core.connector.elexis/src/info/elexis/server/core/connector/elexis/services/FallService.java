@@ -109,6 +109,13 @@ public class FallService extends PersistenceService {
 		}
 	}
 
+	/**
+	 * Returns a configuration constant defined for the billing system (as stored in the config table).
+	 * 
+	 * @param billingSystem
+	 * @param constant the constant to parse, not case-sensitive
+	 * @return the resp. value or <code>null</code> if none found or incorrect
+	 */
 	public static String getBillingSystemConstant(final String billingSystem, final String constant) {
 		String[] c = getBillingSystemConstants(billingSystem);
 		for (String bc : c) {
@@ -117,7 +124,7 @@ public class FallService extends PersistenceService {
 				return val[1];
 			}
 		}
-		return "";
+		return null;
 	}
 
 }
