@@ -31,8 +31,13 @@ public class FallServiceTest {
 
 	@After
 	public void cleanup() {
-		FallService.remove(fall);
-		PersistenceService.remove(patient);
+		if (fall != null) {
+			FallService.remove(fall);
+		}
+		if (patient != null) {
+			PersistenceService.remove(patient);
+		}
+
 	}
 
 	@Test
@@ -44,10 +49,9 @@ public class FallServiceTest {
 		assertEquals(fall.getBezeichnung(), storedFall.getBezeichnung());
 		assertEquals(fall.getGesetz(), storedFall.getGesetz());
 		assertEquals("UVG", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
-		MatcherAssert.assertThat(storedFall.getDatumVon()	, LocalDateMatchers.sameOrAfter(LocalDate.now()));
+		MatcherAssert.assertThat(storedFall.getDatumVon(), LocalDateMatchers.sameOrAfter(LocalDate.now()));
 		assertEquals(null, storedFall.getDatumBis());
-		
-		
+
 		List<Fall> faelle = KontaktService.getFaelle(patient);
 		assertEquals(1, faelle.size());
 
@@ -80,5 +84,13 @@ public class FallServiceTest {
 		fall.setDatumBis(LocalDate.now());
 		FallService.save(fall);
 		assertEquals(false, FallService.isOpen(fall));
+	}
+
+	@Test
+	public void testGetBillingSystemConstant() {
+		ConfigService.INSTANCE.set("billing/systems/MV/constants", "Gesetz=MVG#bla=foo");
+		assertEquals("MVG", FallService.getBillingSystemConstant("MV", "Gesetz"));
+		ConfigService.INSTANCE.set("billing/systems/MV/constants", "Gesetz=MVG");
+		assertEquals("MVG", FallService.getBillingSystemConstant("MV", "Gesetz"));
 	}
 }
