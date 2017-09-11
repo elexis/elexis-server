@@ -63,7 +63,7 @@
 			<property name="eclipselink.logging.parameters" value="true" />
 			<property name="eclipselink.logging.thread" value="true" />
 			<property name="eclipselink.session.customizer"
-				value="info.elexis.server.core.connector.elexis.jpa.model.annotated.id.UUIDSequence" />
+				value="info.elexis.server.core.connector.elexis.jpa.datasource.ElexisSessionCustomizer" />
 		</properties>
 	</persistence-unit>
 </persistence>
