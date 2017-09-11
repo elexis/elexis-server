@@ -11,7 +11,9 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.200",
  org.eclipse.persistence.asm;bundle-version="5.0.1",
  com.mysql.jdbc;bundle-version="5.1.21",
  org.h2;bundle-version="1.3.170",
- org.postgresql;bundle-version="9.2.0"
+ org.postgresql;bundle-version="9.2.0",
+ org.apache.commons.pool;bundle-version="1.6.0",
+ org.apache.commons.dbcp;bundle-version="1.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-BundleShape: dir
 Meta-Persistence: META-INF/persistence.xml
@@ -23,6 +25,7 @@ Export-Package: info.elexis.server.core.connector.elexis.jpa,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.listener,
  info.elexis.server.core.connector.elexis.jpa.model.annotated.types
 Import-Package: at.medevit.ch.artikelstamm,
+ ch.elexis.core.common,
  ch.elexis.core.constants,
  ch.elexis.core.interfaces,
  ch.elexis.core.model,

@@ -8,23 +8,30 @@
  * Contributors:
  *     MEDEVIT <office@medevit.at> - initial API and implementation
  ******************************************************************************/
-package info.elexis.server.core.connector.elexis.jpa.model.annotated.id;
+package info.elexis.server.core.connector.elexis.jpa.datasource;
 
 import java.util.Vector;
 
+import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.Session;
 
-public class UUIDSequence extends Sequence {
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.id.ElexisIdGenerator;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.id.UUIDSequence;
+
+public class ElexisSessionCustomizer extends Sequence implements SessionCustomizer {
 
 	private static final long serialVersionUID = 1L;
 
-	public UUIDSequence() {
+	public ElexisSessionCustomizer() {
 		super();
 	}
 
-	public UUIDSequence(String name) {
+	public ElexisSessionCustomizer(String name) {
 		super(name);
 	}
 
@@ -64,4 +71,20 @@ public class UUIDSequence extends Sequence {
 	public boolean shouldUsePreallocation() {
 		return false;
 	}
+
+	public void customize(Session session) throws Exception {
+		DatabaseLogin databaseLogin = session.getLogin();
+		if (databaseLogin != null) {
+			// set datasource to poolable datasource
+			JNDIConnector conn = (JNDIConnector) databaseLogin.getConnector();
+			ElexisDataSourceUtil.getDataSource(session)
+				.ifPresent(dataSource -> conn.setDataSource(dataSource));
+			
+			// add sequence for system uuid
+			UUIDSequence sequence = new UUIDSequence("system-uuid");
+			databaseLogin.addSequence(sequence);
+		}
+		
+	}
+
 }
