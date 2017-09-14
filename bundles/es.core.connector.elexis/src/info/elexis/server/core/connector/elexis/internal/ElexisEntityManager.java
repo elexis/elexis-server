@@ -1,16 +1,10 @@
 package info.elexis.server.core.connector.elexis.internal;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_USER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,7 +19,6 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.constants.Preferences;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
@@ -46,14 +39,12 @@ public class ElexisEntityManager {
 	}
 
 	@Activate
-	protected synchronized void activate() {
-		Optional<DBConnection> connection = ElexisDBConnection.getConnection();
-		if (!connection.isPresent()) {
-			log.error("No elexis-connection available, not initialization EntityManager");
-			return;
-		}
+	protected synchronized void activate() {		
+		HashMap<String, Object> props = new HashMap<String, Object>();
+		props.put(DDL_GENERATION, NONE);
+		factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
+		ProvidedEntityManager.setEntityManagerFactory(factory);
 		
-		initializeEntityManager(connection.get());
 		if (!ElexisDBConnection.isTestMode()) {
 			executeStartupTasksRequiringEntityManager();
 		}
@@ -62,34 +53,6 @@ public class ElexisEntityManager {
 	protected synchronized void unbind(EntityManagerFactoryBuilder factoryBuilder) {
 		log.debug("Unbinding " + factoryBuilder.getClass().getName());
 		ElexisEntityManager.factoryBuilder = null;
-	}
-
-	private void initializeEntityManager(DBConnection connection) {
-		HashMap<String, Object> props = new HashMap<String, Object>();
-		try {
-			props.put(JDBC_DRIVER, connection.rdbmsType.driverName);
-			props.put(JDBC_URL, connection.connectionString);
-			props.put(JDBC_USER, connection.username);
-			props.put(JDBC_PASSWORD, connection.password);
-			props.put(DDL_GENERATION, NONE);
-			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=379397
-			props.put(CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, Boolean.TRUE.toString());
-
-			if (ElexisDBConnection.isTestMode()) {
-				// we don't want the entities to generate the database, as
-				// initialization is handled via the creation scripts
-				props.put("eclipselink.ddl-generation", "none");
-				props.put("eclipselink.ddl-generation.output-mode", "database");
-			}
-
-			factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
-			
-			// TODO refactor this
-			ProvidedEntityManager.setEntityManagerFactory(factory);
-		} catch (RuntimeException ite) {
-			log.error("Error configuration database connection parameters.", ite);
-			ite.printStackTrace();
-		}
 	}
 
 	private void executeStartupTasksRequiringEntityManager() {
