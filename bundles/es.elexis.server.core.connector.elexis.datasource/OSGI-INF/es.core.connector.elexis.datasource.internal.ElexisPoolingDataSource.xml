@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="es.core.connector.elexis.datasource.internal.ElexisPoolingDataSource">
+   <property name="osgi.jndi.service.name" value="jdbc/poolable"/>
+   <service>
+      <provide interface="javax.sql.DataSource"/>
+   </service>
+   <implementation class="es.core.connector.elexis.datasource.internal.ElexisPoolingDataSource"/>
+</scr:component>
