@@ -16,7 +16,7 @@ public class ElexisEventHandler implements EventHandler {
 	
 	@Override
 	public void handleEvent(Event event) {
-		log.trace("Incoming event [{}]", event.getTopic());
+		log.trace("Incoming event [{}] propertyNames [{}]", event.getTopic(), event.getPropertyNames());
 	}
 
 }
