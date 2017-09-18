@@ -73,7 +73,7 @@ public class ElexisEntityManager {
 			props.put(JDBC_PASSWORD, connection.password);
 			props.put(DDL_GENERATION, NONE);
 			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=379397
-			props.put(CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, Boolean.TRUE.toString());
+			props.put(CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, Boolean.FALSE.toString());
 
 			if (ElexisDBConnection.isTestMode()) {
 				// we don't want the entities to generate the database, as
