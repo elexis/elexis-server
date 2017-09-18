@@ -51,7 +51,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public void __system_logTestError() {
-		LoggerFactory.getLogger(ConsoleCommandProvider.class).error("TEST {}", "ERROR");
+		LoggerFactory.getLogger(ConsoleCommandProvider.class).error("TEST {}", "ERROR", new Throwable("Diagnosis"));
 		ok();
 	}
 
