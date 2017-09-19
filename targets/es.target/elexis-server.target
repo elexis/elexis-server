@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1504083909">
+<target name="Elexis-Server" sequenceNumber="1505817850">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -58,9 +58,9 @@
       <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="ch.rgw.utility" version="3.2.0.201708031209"/>
-      <unit id="ch.elexis.core" version="3.3.0.201708181301"/>
+      <unit id="ch.elexis.core" version="3.3.0.201709071154"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.201707030925"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201707030925"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201709080831"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.201708281405"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.201708180811"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
@@ -73,7 +73,7 @@
       <unit id="ca.uhn.hapi.osgi-base" version="1.2.0"/>
       <unit id="org.apache.poi" version="3.0.2.FINAL"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20170828-1357"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20170915-0846"/>
       <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20161116-1732"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20160519-0702"/>
       <unit id="org.tukaani.xz" version="1.5.0.v20170111-1717"/>
@@ -88,6 +88,7 @@
       <unit id="org.eclipse.persistence.dbws.feature.group" version="2.6.4.v20160829-44060b6"/>
       <unit id="javax.validation" version="1.1.0.v201304101302"/>
       <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.201307051903"/>
+      <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
       <unit id="com.mashape.unirest.java" version="1.4.7"/>
       <unit id="org.apache.commons.logging" version="1.2.0"/>
       <unit id="org.apache.httpcomponents.httpasyncclient" version="4.0.2"/>
