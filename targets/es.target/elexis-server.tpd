@@ -94,6 +94,8 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
+	org.eclipse.gemini.naming.feature.feature.group
+	
 	com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
