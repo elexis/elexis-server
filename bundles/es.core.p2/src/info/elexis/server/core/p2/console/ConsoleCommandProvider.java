@@ -26,7 +26,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __features_listLocal() {
-		return ProvisioningHelper.getAllInstalledFeatures().stream().map(i -> i.getId() + " (" + i.getVersion() + ")")
+		return ProvisioningHelper.getAllInstalledFeatures().stream()
+				.map(i -> i.getId() + " (" + i.getVersion() + ") " + i.getProperty("git-repo-url")+"  "+i.getProperty("git-rev"))
 				.reduce((u, t) -> u + "\n" + t).get();
 	}
 

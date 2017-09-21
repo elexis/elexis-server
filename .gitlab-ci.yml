@@ -5,7 +5,10 @@ stages:
 
 build:
   stage: build
-  script: mvn -f releng/es.parent/pom.xml clean verify
+  script: 
+  - find features -type f -name p2.inf -exec sed -i "s/REPLACE_WITH_GIT_REV/$CI_COMMIT_SHA/g" {} \;
+  - find features -type f -name p2.inf -exec sed -i "s/REPLACE_WITH_GIT_REPO_URL/$CI_REPOSITORY_URL/g" {} \;
+  - mvn -f releng/es.parent/pom.xml clean verify
   artifacts:
     paths:
     - products/es.core.product.runtime/target/products/*.zip

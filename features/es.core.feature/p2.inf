@@ -1,0 +1,4 @@
+ properties.0.name = git-rev
+ properties.0.value = REPLACE_WITH_GIT_REV
+ properties.1.name = git-repo-url
+ properties.1.value = REPLACE_WITH_GIT_REPO_URL
