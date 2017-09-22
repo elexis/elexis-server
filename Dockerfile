@@ -1,10 +1,10 @@
 FROM openjdk:8-jre
 MAINTAINER MEDEVIT <office@medevit.at>
-ARG branch=1.4
+ARG branch=master
 
 RUN adduser --disabled-password --gecos "" --home /elexis elexis && \
     mkdir /es-prog && \
-    wget http://download.elexis.info/elexis-server/products/$branch/info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
+    wget http://download.elexis.info/elexis-server/$branch/products/info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
     unzip info.elexis.server.runtime.product-linux.gtk.x86_64.zip -d /opt/elexis-server && \
     rm info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
     	mkdir -p /elexis/elexis-server/logs && \

@@ -1,7 +1,7 @@
-# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) <a href="https://gitlab.medelexis.ch/elexis/elexis-server/commits/master"><img alt="build status" src="https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg" /></a>
+# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) [![build status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/commits/master)
 Elexis for server operation
 
-The Elexis server implements a part of the FHIR specification. Please consult [HL7-FHIR wik](http://wiki.hl7.org/index.php?title=FHIR) for further details.
+The Elexis server implements a part of the FHIR specification. Please consult [HL7-FHIR wiki](http://wiki.hl7.org/index.php?title=FHIR) for further details.
 
 ## Build
 
@@ -13,7 +13,7 @@ This id documented in the [es.core.product.runtime](products/es.core.product.run
 
 ## Running inside docker
 
-Use the following command to start an elexis-server docker image, omit or replace `:tag` with the required elexis-server executable branch to use. At the moment valid values are `[latest, 1.3]`.
+Use the following command to start an elexis-server docker image, omit (for latest) or replace `:tag` with the [tag](https://hub.docker.com/r/medevit/elexis-server/tags/) to use. 
 
 ```bash
 docker run -p 8380:8380 -p 7234:7234 medevit/elexis-server:tag
