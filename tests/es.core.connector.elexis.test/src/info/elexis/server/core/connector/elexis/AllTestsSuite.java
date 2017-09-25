@@ -29,6 +29,7 @@ public class AllTestsSuite {
 		AllTestsSuite.getInitializer().initializeArzttarifePhysioLeistungTables();
 		AllTestsSuite.getInitializer().initializeTarmedTables();
 		AllTestsSuite.getInitializer().initializeLaborItemsOrdersResults();
+		AllTestsSuite.getInitializer().initializeReminders();
 	}
 
 	public static TestDatabaseInitializer getInitializer() {

@@ -1,13 +1,12 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
-
 import java.time.LocalDate;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -30,9 +29,13 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	@JoinColumn(name = "OriginID")
 	private Kontakt creator;
 
-	@OneToMany(mappedBy = "reminder", cascade=CascadeType.ALL)
-	private Set<ReminderResponsible> responsible;
+	@OneToMany
+	@JoinTable(name = "reminders_responsible_link", joinColumns = @JoinColumn(name = "ReminderID"), inverseJoinColumns = @JoinColumn(name = "ResponsibleID"))
+	private Set<Kontakt> responsible;
 
+	@Column(name = "Responsible", length = 25)
+	private String responsibleValue;
+	
 	@Column(length = 8)
 	protected LocalDate dateDue;
 
@@ -44,19 +47,19 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 
 	@Column(length = 160)
 	protected String subject;
-	
+
 	@Lob()
 	protected String params;
 
 	@Lob()
 	protected String message;
-	
+
 	@Column(length = 1)
 	protected Priority priority;
 
 	@Column(length = 2)
 	protected Type actionType;
-	
+
 	public Kontakt getKontakt() {
 		return kontakt;
 	}
@@ -64,11 +67,11 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	public void setKontakt(Kontakt kontakt) {
 		this.kontakt = kontakt;
 	}
-	
+
 	public Type getActionType() {
 		return actionType;
 	}
-	
+
 	public void setActionType(Type actionType) {
 		this.actionType = actionType;
 	}
@@ -120,34 +123,36 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 	public Priority getPriority() {
 		return priority;
 	}
-	
+
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
 
-	public Set<ReminderResponsible> getResponsible() {
+	public Set<Kontakt> getResponsible() {
 		return responsible;
 	}
-	
-	public void setResponsible(Set<ReminderResponsible> responsible) {
+
+	public void setResponsible(Set<Kontakt> responsible) {
 		this.responsible = responsible;
 	}
-	
+
 	public String getSubject() {
 		return subject;
 	}
-	
+
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-
-	@Override
-	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public String getResponsibleValue() {
+		return responsibleValue;
+	}
+	
+	public void setResponsibleValue(String responsibleValue) {
+		this.responsibleValue = responsibleValue;
 	}
 }

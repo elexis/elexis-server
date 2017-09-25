@@ -86,6 +86,7 @@ public class TestDatabaseInitializer {
 	private static boolean isPhysioLeistungInitialized = false;
 
 	private static boolean isAgendaInitialized = false;
+	private static boolean isRemindersInitialized = false;
 
 	public synchronized void initializeDb() throws IOException, SQLException {
 		if (!isDbInitialized) {
@@ -154,6 +155,13 @@ public class TestDatabaseInitializer {
 		initializeDb();
 		if (!isLaborItemsOrdersResultsInitialized) {
 			isLaborItemsOrdersResultsInitialized = initializeDbScript("/rsc/dbScripts/LaborItemsWerteResults.sql");
+		}
+	}
+	
+	public synchronized void initializeReminders() throws IOException, SQLException {
+		initializeDb();
+		if(!isRemindersInitialized) {
+			isRemindersInitialized = initializeDbScript("/rsc/dbScripts/Reminder.sql");
 		}
 	}
 

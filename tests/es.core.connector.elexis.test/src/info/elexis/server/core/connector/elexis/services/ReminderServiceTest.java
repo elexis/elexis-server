@@ -1,8 +1,11 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,8 +15,8 @@ import ch.elexis.core.model.issue.Priority;
 import ch.elexis.core.model.issue.ProcessStatus;
 import ch.elexis.core.model.issue.Type;
 import ch.elexis.core.model.issue.Visibility;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Reminder;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ReminderResponsible;
 
 public class ReminderServiceTest extends AbstractServiceTest {
 
@@ -28,14 +31,28 @@ public class ReminderServiceTest extends AbstractServiceTest {
 	}
 
 	@Test
+	public void testLoadExistingReminder() {
+		Reminder reminder = ReminderService.load("i86a54e5b46e66bda01308").get();
+		Kontakt contact = KontaktService.load("h2c1172107ce2df95065").get();
+		Kontakt testPatient = KontaktService.load("s9b71824bf6b877701111").get();
+		assertEquals(reminder.getId(), reminder.getId());
+		assertEquals(contact, reminder.getCreator());
+		assertEquals(testPatient, reminder.getKontakt());
+		assertEquals(Visibility.POPUP_ON_PATIENT_SELECTION, reminder.getVisibility());
+		assertEquals("Assura", reminder.getSubject());
+		assertEquals(Priority.MEDIUM, reminder.getPriority());
+		assertEquals(Type.COMMON, reminder.getActionType());
+		assertEquals(ProcessStatus.OVERDUE, reminder.getStatus());
+		assertEquals(1, reminder.getResponsible().size());
+		assertEquals(true, reminder.getResponsible().contains(contact));
+	}
+
+	@Test
 	public void testCreateAndDeleteReminder() throws InstantiationException, IllegalAccessException {
 		Reminder reminder = new ReminderService.Builder(testContacts.get(0), Visibility.ALWAYS, "testSubject")
 				.buildAndSave();
 		reminder.setStatus(ProcessStatus.CLOSED);
-		ReminderResponsible rr = new ReminderResponsible();
-		rr.setReminder(reminder);
-		rr.setResponsible(testContacts.get(0));
-		reminder.getResponsible().add(rr);
+		reminder.setResponsible(Collections.singleton(testContacts.get(0)));
 		ReminderService.save(reminder);
 
 		Reminder findById = ReminderService.load(reminder.getId()).get();
@@ -49,15 +66,10 @@ public class ReminderServiceTest extends AbstractServiceTest {
 		assertEquals(Type.COMMON, findById.getActionType());
 		assertEquals(ProcessStatus.CLOSED, findById.getStatus());
 		assertEquals(1, findById.getResponsible().size());
-
-		ReminderResponsible rr2 = new ReminderResponsible();
-		rr2.setReminder(findById);
-		rr2.setResponsible(testContacts.get(0));
-		assertEquals(true, findById.getResponsible().contains(rr));
+		assertEquals(true, findById.getResponsible().contains(testContacts.get(0)));
 
 		ReminderService.remove(findById);
-		Optional<Reminder> found = ReminderService.load(reminder.getId());
-		assertFalse(found.isPresent());
+		assertFalse(ReminderService.load(reminder.getId()).isPresent());
 	}
 
 	@Test
@@ -65,33 +77,28 @@ public class ReminderServiceTest extends AbstractServiceTest {
 		Reminder reminder = new ReminderService.Builder(testContacts.get(0), Visibility.ALWAYS, "testSubject")
 				.buildAndSave();
 		reminder.setStatus(ProcessStatus.CLOSED);
-		ReminderResponsible rr = new ReminderResponsible();
-		rr.setReminder(reminder);
-		rr.setResponsible(testContacts.get(0));
-		reminder.getResponsible().add(rr);
-		ReminderService.save(rr);
+		reminder.setResponsible(Collections.singleton(testContacts.get(0)));
 
 		createTestMandantPatientFallBehandlung();
 
-		reminder.getResponsible().clear(); // clear the list, although one
-											// already inserted
-
-		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(1), true);
-		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(1), true);
-		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(1), true);
-
-		createTestMandantPatientFallBehandlung();
-
-		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(2), true);
-
-		ReminderService.addOrRemoveResponsibleReminderContact(reminder, testContacts.get(1), false);
+		Set<Kontakt> responsibles = new HashSet<>();
+		responsibles.add(testContacts.get(0));
+		responsibles.add(testContacts.get(1));
+		reminder.setResponsible(responsibles);
+		ReminderService.save(reminder);
 
 		Reminder findById = ReminderService.load(reminder.getId()).get();
+		assertEquals(2, findById.getResponsible().size());
 
-		assertEquals(1, findById.getResponsible().size());
+		createTestMandantPatientFallBehandlung();
+
+		responsibles.add(testContacts.get(2));
+		ReminderService.save(reminder);
+
+		findById = ReminderService.load(reminder.getId()).get();
+		assertEquals(3, findById.getResponsible().size());
 
 		ReminderService.remove(findById);
-		Optional<Reminder> found = ReminderService.load(reminder.getId());
-		assertFalse(found.isPresent());
+		assertFalse(ReminderService.load(reminder.getId()).isPresent());
 	}
 }

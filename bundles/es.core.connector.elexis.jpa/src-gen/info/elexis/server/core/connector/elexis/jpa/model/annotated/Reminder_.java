@@ -5,7 +5,6 @@ import ch.elexis.core.model.issue.ProcessStatus;
 import ch.elexis.core.model.issue.Type;
 import ch.elexis.core.model.issue.Visibility;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.ReminderResponsible;
 import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SetAttribute;
@@ -21,7 +20,8 @@ public class Reminder_ {
     public static volatile SingularAttribute<Reminder, Kontakt> creator;
     public static volatile SingularAttribute<Reminder, Visibility> visibility;
     public static volatile SingularAttribute<Reminder, String> subject;
-    public static volatile SetAttribute<Reminder, ReminderResponsible> responsible;
+    public static volatile SetAttribute<Reminder, Kontakt> responsible;
+    public static volatile SingularAttribute<Reminder, String> responsibleValue;
     public static volatile SingularAttribute<Reminder, Kontakt> kontakt;
     public static volatile SingularAttribute<Reminder, String> params;
     public static volatile SingularAttribute<Reminder, String> message;

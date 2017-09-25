@@ -10,7 +10,8 @@ import org.junit.runners.Suite.SuiteClasses;
 		InvoiceServiceTest.class, JPAQueryTest.class, KontaktServiceTest.class, LabOrderServiceTest.class,
 		LabResultServiceTest.class, LockServiceTest.class, PrescriptionServiceTest.class, StockServiceTest.class,
 		UserServiceTest.class, UserconfigServiceTest.class, PhysioLeistungTest.class, StoreToStringTest.class,
-		TarmedLeistungServiceTest.class, TerminServiceTest.class, XidServiceTest.class, StickerServiceTest.class })
+		TarmedLeistungServiceTest.class, TerminServiceTest.class, XidServiceTest.class, StickerServiceTest.class,
+		ReminderServiceTest.class })
 public class AllServiceTests {
 
 }
