@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -19,7 +20,9 @@ import ch.elexis.core.model.issue.Visibility;
 
 @Entity
 @Table(name = "reminders")
-public class Reminder extends AbstractDBObjectIdDeleted {
+public class Reminder extends AbstractDBObjectIdDeletedExtInfo {
+	
+	public static final String ALL_RESPONSIBLE = "ALL";
 
 	@OneToOne
 	@JoinColumn(name = "IdentID")
@@ -31,7 +34,7 @@ public class Reminder extends AbstractDBObjectIdDeleted {
 
 	@OneToMany
 	@JoinTable(name = "reminders_responsible_link", joinColumns = @JoinColumn(name = "ReminderID"), inverseJoinColumns = @JoinColumn(name = "ResponsibleID"))
-	private Set<Kontakt> responsible;
+	private Set<Kontakt> responsible = new HashSet<>();
 
 	@Column(name = "Responsible", length = 25)
 	private String responsibleValue;

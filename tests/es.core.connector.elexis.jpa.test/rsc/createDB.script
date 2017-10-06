@@ -386,15 +386,16 @@ CREATE TABLE REMINDERS(
 	Message			TEXT,
 	priority		CHAR(1),
 	actionType		CHAR(2),
-	subject			VARCHAR(160)
+	subject			VARCHAR(160),
+	ExtInfo			LONGBLOB
 );
 
 CREATE TABLE REMINDERS_RESPONSIBLE_LINK(
-	ID				VARCHAR(25),
+	ID				VARCHAR(25) NULL,
 	lastupdate      BIGINT,
 	deleted			CHAR(1) default '0',
-	ReminderID		VARCHAR(25),                  # foreign key from REMINDERS
-	ResponsibleID	VARCHAR(25),               # foreign key from KONTAKT
+	ReminderID		VARCHAR(25) NOT NULL,                  # foreign key from REMINDERS
+	ResponsibleID	VARCHAR(25) NOT NULL,               # foreign key from KONTAKT
 	PRIMARY KEY (ReminderID, ResponsibleID)
 );
 
