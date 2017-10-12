@@ -1,6 +1,5 @@
 package info.elexis.server.core;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Set;
 import java.util.TimeZone;
@@ -11,7 +10,6 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.contrib.ApplicationShutdownRegistrar;
 import info.elexis.server.core.contrib.IApplicationShutdownListener;
 
@@ -35,28 +33,6 @@ public class Application implements IApplication {
 
 		TimeZone tzone = TimeZone.getTimeZone("CET");
 		TimeZone.setDefault(tzone);
-
-		final File singleInstanceLockFile = new File(CoreUtil.getHomeDirectory().toString(), "elexis-server.lock");
-		if (!singleInstanceLockFile.createNewFile()) {
-			log.error("Found existing lock-file {}, shutting down.", singleInstanceLockFile.toString());
-			return IApplication.EXIT_OK;
-		}
-		singleInstanceLockFile.deleteOnExit();
-		
-		/**
-		 * In case the JVM shuts down, we want the lock file to be removed.
-		 * This is e.g. the case in a docker environment
-		 */
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				log.warn("Shutdown-Hook removing lock file [{}]", singleInstanceLockFile);
-				boolean delete = singleInstanceLockFile.delete();
-				if (!delete) {
-					log.error("Delete failed.");
-				}
-			}
-		});
 
 		context.applicationRunning();
 		while (!restart && !shutdown) {
