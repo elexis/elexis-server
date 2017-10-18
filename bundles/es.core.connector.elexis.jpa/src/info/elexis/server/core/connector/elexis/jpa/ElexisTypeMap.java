@@ -107,14 +107,17 @@ public class ElexisTypeMap {
 		stsToClassMap.put(TYPE_PATIENT, Kontakt.class);	
 		stsToClassMap.put(TYPE_PERSON, Kontakt.class);
 		stsToClassMap.put(TYPE_LABORATORY, Kontakt.class);
-		
-		// TODO add other values
 	}
 
-	// TODO we can not deterministically map person to patient, anwender, mandant as
-	// we do not know what was initially intended
+	/**
+	 * 
+	 * @param obj
+	 * @return <code>null</code> if not resolvable, else the resp. Entity Type
+	 */
 	public static String getKeyForObject(AbstractDBObjectIdDeleted obj) {
 		if (obj instanceof Kontakt) {
+			// TODO we can not deterministically map person to patient, anwender, mandant as
+			// we do not know what was initially intended
 			Kontakt k = (Kontakt) obj;
 			if (k.isPerson()) {
 				if (k.isPatient()) {
@@ -145,8 +148,12 @@ public class ElexisTypeMap {
 				return TYPE_ARTIKEL;
 			}
 		}
+		
+		if(obj != null) {
+			return classToStsMap.get(obj.getClass());
+		}
 
-		return classToStsMap.get(obj.getClass());
+		return null;
 	}
 
 	public static Class<? extends AbstractDBObjectIdDeleted> get(String value) {

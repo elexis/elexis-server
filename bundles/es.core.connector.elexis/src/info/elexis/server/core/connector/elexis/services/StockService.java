@@ -87,6 +87,9 @@ public class StockService extends PersistenceService implements IStockService {
 
 	@Override
 	public Integer getCumulatedStockForArticle(IArticle article) {
+		if (article == null) {
+			return null;
+		}
 		String storeToString = StoreToStringService.storeToString((AbstractDBObjectIdDeleted) article);
 		String[] typeId = info.elexis.server.core.service.StoreToStringService.splitIntoTypeAndId(storeToString);
 		EntityManager em = ElexisEntityManager.createEntityManager();
