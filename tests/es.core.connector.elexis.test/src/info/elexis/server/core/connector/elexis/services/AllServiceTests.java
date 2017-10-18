@@ -11,7 +11,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		LabResultServiceTest.class, LockServiceTest.class, PrescriptionServiceTest.class, StockServiceTest.class,
 		UserServiceTest.class, UserconfigServiceTest.class, PhysioLeistungTest.class, StoreToStringTest.class,
 		TarmedLeistungServiceTest.class, TerminServiceTest.class, XidServiceTest.class, StickerServiceTest.class,
-		ReminderServiceTest.class })
+		ReminderServiceTest.class, Labor2009TarifServiceTest.class})
 public class AllServiceTests {
 
 }
