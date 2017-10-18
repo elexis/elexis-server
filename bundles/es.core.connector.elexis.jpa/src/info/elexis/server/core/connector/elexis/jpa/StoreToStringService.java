@@ -62,7 +62,7 @@ public enum StoreToStringService {
 	public static String storeToString(AbstractDBObjectIdDeleted adbo) {
 		String classKey = ElexisTypeMap.getKeyForObject(adbo);
 		if (classKey == null) {
-			log.warn("Could not resolve {} to storeToString name", adbo.getClass());
+			log.warn("Could not resolve [{}] to storeToString name", (adbo != null) ? adbo.getClass() : "null");
 			return null;
 		}
 

@@ -114,6 +114,9 @@ public class StockServiceTest extends AbstractServiceTest {
 		stockEntry_Dd.setMaximumStock(20);
 		StockEntryService.save((StockEntry) stockEntry_Dd);
 
+		Integer nullValue = stockService.getCumulatedStockForArticle(null);
+		assertNull(nullValue);
+
 		Integer cumulatedStockForArticle = stockService.getCumulatedStockForArticle(article_A);
 		assertEquals(20, cumulatedStockForArticle.intValue());
 
