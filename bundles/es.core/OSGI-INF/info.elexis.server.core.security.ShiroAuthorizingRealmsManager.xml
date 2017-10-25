@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" name="info.elexis.server.core.security.ShiroAuthorizingRealmsManager">
-    <implementation class="info.elexis.server.core.security.ShiroAuthorizingRealmsManager"/>
-    <reference name="ShiroRealm" interface="org.apache.shiro.realm.Realm" cardinality="1..n" policy="static" bind="addShiroRealm" unbind="removeShiroRealm"/>
-</scr:component>

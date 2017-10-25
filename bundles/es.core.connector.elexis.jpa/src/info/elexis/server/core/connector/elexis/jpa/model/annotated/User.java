@@ -43,6 +43,9 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected String keystore;
+	
+	@Column(length = 64)
+	protected String apiKey;
 
 	@ManyToMany
 	@JoinTable(name = "USER_ROLE_JOINT", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
@@ -94,6 +97,14 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setKeystore(String keystore) {
 		this.keystore = keystore;
+	}
+	
+	public String getApiKey() {
+		return apiKey;
+	}
+	
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 	public Collection<Role> getRoles() {

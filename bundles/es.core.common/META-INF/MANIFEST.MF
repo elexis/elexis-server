@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: elexis.info
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.11.1",
- org.apache.shiro.core;bundle-version="1.3.2"
+ org.apache.shiro.core;bundle-version="1.4.0";visibility:=reexport
 Import-Package: org.slf4j
 Export-Package: info.elexis.server.core.common,
  info.elexis.server.core.common.security,

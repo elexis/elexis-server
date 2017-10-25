@@ -28,24 +28,24 @@ import info.elexis.server.core.common.security.ESAuthorizingRealm;
  * Composite authentication realm. Allows for registration of additional realms.
  */
 @Component(service = {})
-public class ElexisServerRealm extends AuthorizingRealm {
+public class ElexisServerCompositeRealm extends AuthorizingRealm {
 
-	private static Logger log = LoggerFactory.getLogger(ElexisServerRealm.class);
+	private static Logger log = LoggerFactory.getLogger(ElexisServerCompositeRealm.class);
 
 	private static Map<String, ESAuthorizingRealm> realms = Collections.synchronizedMap(new HashMap<>());
 
 	@Reference(service = ESAuthorizingRealm.class, cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
 	protected synchronized void bind(ESAuthorizingRealm realm) {
-		log.debug("Binding realm [{}] as [{}]", realm.getClass().getName(), realm.getName());
+		log.info("Binding realm [{}] as [{}]", realm.getClass().getName(), realm.getName());
 		realms.put(realm.getName(), realm);
 	}
 
 	protected synchronized void unbind(ESAuthorizingRealm realm) {
-		log.debug("Unbinding realm [{}]", realm.getClass().getName());
+		log.info("Unbinding realm [{}]", realm.getClass().getName());
 		realms.remove(realm.getName());
 	}
 
-	public ElexisServerRealm() {
+	public ElexisServerCompositeRealm() {
 		super(credentialsMatcher);
 	}
 
@@ -91,8 +91,7 @@ public class ElexisServerRealm extends AuthorizingRealm {
 	}
 
 	/**
-	 * Forward the credentials match request to the resp. realm responsible for
-	 * it
+	 * Forward the credentials match request to the resp. realm responsible for it
 	 */
 	private static final CredentialsMatcher credentialsMatcher = new CredentialsMatcher() {
 

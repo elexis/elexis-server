@@ -13,6 +13,7 @@ public class User_ {
 
     public static volatile SingularAttribute<User, Boolean> administrator;
     public static volatile SingularAttribute<User, String> salt;
+    public static volatile SingularAttribute<User, String> apiKey;
     public static volatile SingularAttribute<User, String> hashedPassword;
     public static volatile CollectionAttribute<User, Role> roles;
     public static volatile SingularAttribute<User, Kontakt> kontakt;

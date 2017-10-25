@@ -17,6 +17,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class UserService extends PersistenceService {
 
@@ -135,5 +136,21 @@ public class UserService extends PersistenceService {
 			}
 		}
 
+	}
+	
+	/**
+	 * Find a user by its apiKey
+	 * 
+	 * @param apiKey
+	 * @param includeInactive
+	 * @return
+	 */
+	public static Optional<User> findByApiKey(String apiKey, boolean includeInactive) {
+		JPAQuery<User> query = new JPAQuery<User>(User.class);
+		query.add(User_.apiKey, QUERY.EQUALS, apiKey);
+		if (!includeInactive) {
+			query.add(User_.active, QUERY.EQUALS, true);
+		}
+		return query.executeGetSingleResult();
 	}
 }

@@ -1,4 +1,4 @@
-package info.elexis.server.core.security.internal;
+package info.elexis.server.core.internal.security;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +10,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.shiro.authc.credential.DefaultPasswordService;
@@ -39,7 +41,7 @@ public class ElexisServerAuthenticationFile {
 						continue;
 					}
 					String[] lineTokens = line.split(":");
-					if (lineTokens.length == 3) {
+					if (lineTokens.length == 4) {
 						ESAFLine el = new ESAFLine(lineTokens);
 						entries.put(el.getUsername(), el);
 					}
@@ -53,15 +55,11 @@ public class ElexisServerAuthenticationFile {
 		}
 	}
 
-	public static void saveFile() {
+	public static void saveFile() throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("# Elexis-Server Password file written " + LocalDateTime.now());
 		entries.values().stream().map(e -> e.toString()).forEach(e -> lines.add(e));
-		try {
-			Files.write(PASSWD_PATH, lines);
-		} catch (IOException e1) {
-			log.warn("Error writing password file [{}]", PASSWD_PATH.toFile().getAbsolutePath(), e1);
-		}
+		Files.write(PASSWD_PATH, lines);
 	}
 
 	/**
@@ -88,11 +86,13 @@ public class ElexisServerAuthenticationFile {
 		private String username;
 		private Set<String> roles;
 		private String hashedPassword;
+		private String apiKey;
 
 		public ESAFLine(String[] lineTokens) {
 			username = lineTokens[0];
 			roles = Arrays.asList(lineTokens[1].split(",")).stream().collect(Collectors.toSet());
 			hashedPassword = lineTokens[2];
+			apiKey = lineTokens[3];
 		}
 
 		public String getUsername() {
@@ -107,9 +107,13 @@ public class ElexisServerAuthenticationFile {
 			return hashedPassword;
 		}
 
+		public String getApiKey() {
+			return apiKey;
+		}
+
 		@Override
 		public String toString() {
-			return username + ":" + StringUtils.join(roles.iterator(), ",") + ":" + hashedPassword;
+			return username + ":" + StringUtils.join(roles.iterator(), ",") + ":" + hashedPassword + ":" + apiKey;
 		}
 	}
 
@@ -118,29 +122,54 @@ public class ElexisServerAuthenticationFile {
 	}
 
 	/**
-	 * Sets the initial password of the {@link ElexisServerWebConstants#ES_ADMIN} user. Can be set only
-	 * once. In order to be able to call it again, the password file needs to be
-	 * deleted.
+	 * Sets the initial password of the {@link ElexisServerWebConstants#ES_ADMIN}
+	 * user. Can be set only once. In order to be able to call it again, the
+	 * password file needs to be deleted.
 	 * 
 	 * @param password
+	 * @throws IOException
 	 * @throws SecurityException
 	 *             if the password was already set
+	 * @return an apiKey generated for the user
 	 */
-	public static void setInitialEsAdminPassword(String password) {
+	public synchronized static String setInitialEsAdminPassword(String password) throws IOException {
 		if (entries.containsKey(SecurityConstants.ES_ADMIN)) {
-			throw new SecurityException(SecurityConstants.ES_ADMIN + " user is already instantiated, please delete file or entry line");
+			throw new SecurityException(
+					SecurityConstants.ES_ADMIN + " user is already instantiated, please delete file or entry line");
 		}
 
 		DefaultPasswordService defaultPasswordService = new DefaultPasswordService();
 		String encryptedPassword = defaultPasswordService.encryptPassword(password);
+		String apiKey = UUID.randomUUID().toString().replaceAll("-", "");
 
-		ESAFLine esadminLine;
-		if (entries.containsKey(SecurityConstants.ES_ADMIN)) {
-			esadminLine = entries.get(SecurityConstants.ES_ADMIN);
-		} else {
-			esadminLine = new ESAFLine(new String[] { SecurityConstants.ES_ADMIN, SecurityConstants.ES_ADMIN, encryptedPassword });
-		}
+		ESAFLine esadminLine = new ESAFLine(
+				new String[] { SecurityConstants.ES_ADMIN, SecurityConstants.ES_ADMIN, encryptedPassword, apiKey });
 		entries.put(SecurityConstants.ES_ADMIN, esadminLine);
 		saveFile();
+		return esadminLine.getApiKey();
+	}
+
+	/**
+	 * Clear all entries in the hashmap and remove the password file
+	 * 
+	 * @throws IOException
+	 */
+	public static void clearAndRemove() throws IOException {
+		entries.clear();
+		Files.deleteIfExists(PASSWD_PATH);
+	}
+
+	/**
+	 * Finds the user providing its apiKey
+	 * 
+	 * @param apiKey
+	 * @return the userid if found, else <code>null</code>
+	 */
+	public static String getUserByApiKey(String apiKey) {
+		Optional<ESAFLine> user = entries.values().stream().filter(v -> v.getApiKey().equals(apiKey)).findFirst();
+		if (user.isPresent()) {
+			return user.get().getUsername();
+		}
+		return null;
 	}
 }

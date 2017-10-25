@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" immediate="true" name="info.elexis.server.core.scheduler.test.GenericSchedulerFailTest">
-    <implementation class="info.elexis.server.core.scheduler.test.GenericSchedulerFailTest"/>
-    <reference name="SchedulerService" interface="info.elexis.server.core.scheduler.ISchedulerService" cardinality="1..1" policy="static" bind="bind" unbind="unbind"/>
-</scr:component>

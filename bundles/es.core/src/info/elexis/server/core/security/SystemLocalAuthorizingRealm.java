@@ -1,5 +1,6 @@
 package info.elexis.server.core.security;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.apache.shiro.authc.AuthenticationException;
@@ -15,7 +16,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.osgi.service.component.annotations.Component;
 
 import info.elexis.server.core.common.security.ESAuthorizingRealm;
-import info.elexis.server.core.security.internal.ElexisServerAuthenticationFile;
+import info.elexis.server.core.internal.security.ElexisServerAuthenticationFile;
 
 /**
  * Elexis-Server local authorizing realm, stored in
@@ -37,16 +38,25 @@ public class SystemLocalAuthorizingRealm extends AuthorizingRealm implements ESA
 
 	@Override
 	public AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-		UsernamePasswordToken upToken = (UsernamePasswordToken) token;
-		String userid = upToken.getUsername();
-		if (userid == null || userid.length() == 0) {
-			return null;
-		}
 
-		String hashedPassword = ElexisServerAuthenticationFile.getHashedPasswordForUserId(userid);
-		if (hashedPassword != null) {
-			SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userid, hashedPassword, REALM_NAME);
-			return info;
+		if (token instanceof UsernamePasswordToken) {
+			UsernamePasswordToken upToken = (UsernamePasswordToken) token;
+			String userid = upToken.getUsername();
+			if (userid == null || userid.length() == 0) {
+				return null;
+			}
+
+			String hashedPassword = ElexisServerAuthenticationFile.getHashedPasswordForUserId(userid);
+			if (hashedPassword != null) {
+				SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userid, hashedPassword, REALM_NAME);
+				return info;
+			}
+		} else if (token instanceof ApiKeyAuthenticationToken) {
+			String apiKey = (String) ((ApiKeyAuthenticationToken) token).getCredentials();
+			String user = ElexisServerAuthenticationFile.getUserByApiKey(apiKey);
+			if (user != null) {
+
+			}
 		}
 
 		return null;
@@ -66,8 +76,18 @@ public class SystemLocalAuthorizingRealm extends AuthorizingRealm implements ESA
 		return ElexisServerAuthenticationFile.isInitialized();
 	}
 
-	public static void setInitialEsAdminPassword(String password) {
-		ElexisServerAuthenticationFile.setInitialEsAdminPassword(password);
+	/**
+	 * 
+	 * @param password
+	 * @return an apiKey generated for the esadmin user
+	 * @throws IOException
+	 */
+	public static String setInitialEsAdminPassword(String password) throws IOException {
+		return ElexisServerAuthenticationFile.setInitialEsAdminPassword(password);
+	}
+
+	public static void clearRealm() throws IOException {
+		ElexisServerAuthenticationFile.clearAndRemove();
 	}
 
 }
