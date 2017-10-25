@@ -136,6 +136,11 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.httpcomponents.httpmime
 	org.apache.httpcomponents.httpcore-nio
 	org.json
+	org.apache.shiro.core [1.4.0,1.5.0]
+	org.apache.shiro.web [1.4.0,1.5.0]
+	org.apache.shiro.ehcache [1.4.0,1.5.0]
+	org.apache.shiro.aspectj [1.4.0,1.5.0]
+	org.apache.shiro.jaxrs [1.4.0,1.5.0]
 	org.apache.commons.collections4
 	se.ugli.bigqueue
 	// weird problems with com.mysql.jdbc >= 5.1.39

@@ -30,7 +30,6 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.apache.commons.codec
 	org.apache.commons.exec
 	org.apache.commons.io [2.2.0,3.0.0)
-	org.apache.commons.beanutils
 	org.junit
 	org.hamcrest.core
 	org.hamcrest.library
@@ -96,6 +95,7 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	
 	org.eclipse.gemini.naming.feature.feature.group
 	
+	org.apache.commons.beanutils
 	com.mashape.unirest.java
 	org.apache.commons.logging
 	org.apache.httpcomponents.httpasyncclient
@@ -108,7 +108,8 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	org.apache.shiro.web
 	org.apache.shiro.ehcache
 	org.apache.shiro.aspectj
-	org.secnod.shiro.jersey
+	org.apache.shiro.jaxrs
+	org.apache.commons.collections
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
