@@ -307,7 +307,7 @@ public class FindingsService implements IFindingsService {
 	}
 
 	@Override
-	public <T extends IFinding> Optional<T> findById(String id, Class<T> clazz){
+	public <T extends IFinding> Optional<T> findById(String id, Class<T> clazz, boolean skipChecks) {
 		if (clazz.isAssignableFrom(IEncounter.class)) {
 			Optional<Encounter> encounter = encounterService.findById(id);
 			if (encounter.isPresent()) {

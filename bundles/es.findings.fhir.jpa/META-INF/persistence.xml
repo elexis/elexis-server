@@ -10,6 +10,7 @@
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Condition</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Observation</class>
+		<class>info.elexis.server.findings.fhir.jpa.model.annotated.ObservationLink</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.FamilyMemberHistory</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.AllergyIntolerance</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>

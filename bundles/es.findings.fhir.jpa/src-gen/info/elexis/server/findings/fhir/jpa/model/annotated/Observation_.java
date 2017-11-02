@@ -8,9 +8,15 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Observation.class)
 public class Observation_ extends AbstractDBObjectIdDeleted_ {
 
+    public static volatile SingularAttribute<Observation, Boolean> referenced;
     public static volatile SingularAttribute<Observation, String> patientid;
+    public static volatile SingularAttribute<Observation, String> originuri;
+    public static volatile SingularAttribute<Observation, String> format;
+    public static volatile SingularAttribute<Observation, String> decimalplace;
+    public static volatile SingularAttribute<Observation, String> type;
     public static volatile SingularAttribute<Observation, String> encounterid;
     public static volatile SingularAttribute<Observation, String> performerid;
+    public static volatile SingularAttribute<Observation, String> script;
     public static volatile SingularAttribute<Observation, String> content;
 
 }
