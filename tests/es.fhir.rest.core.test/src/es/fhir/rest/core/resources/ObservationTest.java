@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -29,13 +30,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ch.elexis.core.exceptions.ElexisException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IObservation.ObservationCode;
+import ch.elexis.core.findings.IObservation.ObservationType;
+import ch.elexis.core.findings.ObservationComponent;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
+import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
 import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
@@ -44,11 +49,11 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer
 public class ObservationTest {
 
 	private static IGenericClient client;
-	
+
 	private static List<IFinding> findingsCreated = new ArrayList<>();
 
 	@BeforeClass
-	public static void setupClass() throws IOException, SQLException {
+	public static void setupClass() throws IOException, SQLException, ElexisException {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeLabResult();
 		initializer.initializeBehandlung();
@@ -59,17 +64,15 @@ public class ObservationTest {
 
 		IObservation persAnam = AllTests.getFindingsService().create(IObservation.class);
 		persAnam.setCategory(ObservationCategory.SOCIALHISTORY);
-		persAnam.setCoding(
-			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
+		persAnam.setCoding(Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
 		persAnam.setText("Pers Anamnese 1");
 		persAnam.setPatientId(TestDatabaseInitializer.getPatient().getId());
 		IObservation risk = AllTests.getFindingsService().create(IObservation.class);
 		risk.setCategory(ObservationCategory.SOCIALHISTORY);
-		risk.setCoding(
-			Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
+		risk.setCoding(Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
 		risk.setText("Risiken 1");
 		risk.setPatientId(TestDatabaseInitializer.getPatient().getId());
-		
+
 		IEncounter encounter = AllTests.getFindingsService().create(IEncounter.class);
 		encounter.setConsultationId(TestDatabaseInitializer.getBehandlung().getId());
 		encounter.setPatientId(TestDatabaseInitializer.getPatient().getId());
@@ -79,20 +82,38 @@ public class ObservationTest {
 		iObservation.setText("Encounter test 1");
 		iObservation.setPatientId(TestDatabaseInitializer.getPatient().getId());
 		iObservation.setEncounter(encounter);
+
+		IObservation vitalSign = AllTests.getFindingsService().create(IObservation.class);
+		vitalSign.setObservationType(ObservationType.COMP);
+		vitalSign.setCategory(ObservationCategory.VITALSIGNS);
+		vitalSign.setCoding(Collections.singletonList(
+				new TransientCoding(CodingSystem.ELEXIS_LOCAL_CODESYSTEM.getSystem(), "test", "display test")));
+		ObservationComponent componentA = new ObservationComponent("componentA");
+		componentA.setNumericValue(new BigDecimal("122"));
+		componentA.setNumericValueUnit("mmHg");
+		vitalSign.addComponent(componentA);
+		ObservationComponent componentB = new ObservationComponent("componentB");
+		componentB.setNumericValue(new BigDecimal("78"));
+		componentB.setNumericValueUnit("mmHg");
+		vitalSign.addComponent(componentB);
+		vitalSign.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		vitalSign.setEncounter(encounter);
+		new UpdateFindingTextCommand(vitalSign).execute();
 		
 		AllTests.getFindingsService().saveFinding(persAnam);
 		AllTests.getFindingsService().saveFinding(risk);
 		AllTests.getFindingsService().saveFinding(encounter);
 		AllTests.getFindingsService().saveFinding(iObservation);
+		AllTests.getFindingsService().saveFinding(vitalSign);
 		findingsCreated.add(persAnam);
 		findingsCreated.add(risk);
 		findingsCreated.add(encounter);
 		findingsCreated.add(iObservation);
-		
+		findingsCreated.add(vitalSign);
 	}
-	
+
 	@AfterClass
-	public static void afterClass(){
+	public static void afterClass() {
 		AllTests.deleteAllFindings();
 	}
 
@@ -183,6 +204,16 @@ public class ObservationTest {
 		assertTrue(((Observation) entries.get(0).getResource()).getText().getDivAsString()
 			.contains("Risiken 1"));
 		
+		// search for vital signs
+		results = client.search().forResource(Observation.class)
+				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.and(Observation.CATEGORY.exactly().code(ObservationCategory.VITALSIGNS.getCode()))
+				.returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+		assertTrue(((Observation) entries.get(0).getResource()).getText().getDivAsString().contains("display test"));
+
 		// search for encounter
 		results = client.search().forResource(Observation.class)
 			.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
