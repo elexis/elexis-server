@@ -31,14 +31,23 @@ public class DbInitializer {
 		if (connectionOpt.isPresent()) {
 			Connection jdbcConnection = connectionOpt.get();
 			try {
-				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_ENCOUNTER")) {
-					executeDbScript(jdbcConnection, "/rsc/findings_encounter.sql");
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_ALLERGYINTOLERANCE")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_allergyintolerance.sql");
+				}
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_CLINICALIMPRESSION")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_clinicalimpression.sql");
 				}
 				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_CONDITION")) {
 					executeDbScript(jdbcConnection, "/rsc/findings_condition.sql");
 				}
-				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_PROCEDUREREQUEST")) {
-					executeDbScript(jdbcConnection, "/rsc/findings_procedurereq.sql");
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_ENCOUNTER")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_encounter.sql");
+				}
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_FAMILYMEMBERHISTORY")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_familymemberhistory.sql");
+				}
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_LOCALCODING")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_localcoding.sql");
 				}
 				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_OBSERVATION")) {
 					executeDbScript(jdbcConnection, "/rsc/findings_observation.sql");
@@ -46,11 +55,8 @@ public class DbInitializer {
 				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_OBSERVATIONLINK")) {
 					executeDbScript(jdbcConnection, "/rsc/findings_observationlink.sql");
 				}
-				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_FAMILYMEMBERHISTORY")) {
-					executeDbScript(jdbcConnection, "/rsc/findings_familymemberhistory.sql");
-				}
-				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_ALLERGYINTOLERANCE")) {
-					executeDbScript(jdbcConnection, "/rsc/findings_allergyintolerance.sql");
+				if (!tableExists(jdbcConnection, "CH_ELEXIS_CORE_FINDINGS_PROCEDUREREQUEST")) {
+					executeDbScript(jdbcConnection, "/rsc/findings_procedurereq.sql");
 				}
 			} catch (IOException | SQLException e) {
 				logger.error("Faild to run sql script on database.", e);

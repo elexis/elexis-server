@@ -26,6 +26,8 @@ import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.findings.fhir.jpa.model.annotated.AllergyIntolerance;
+import info.elexis.server.findings.fhir.jpa.model.annotated.ClinicalImpression;
+import info.elexis.server.findings.fhir.jpa.model.annotated.ClinicalImpression_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Condition_;
 import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
@@ -38,6 +40,8 @@ import info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest_;
 import info.elexis.server.findings.fhir.jpa.model.service.AbstractModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.AllergyIntoleranceModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.AllergyIntoleranceService;
+import info.elexis.server.findings.fhir.jpa.model.service.ClinicalImpressionModelAdapter;
+import info.elexis.server.findings.fhir.jpa.model.service.ClinicalImpressionService;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ConditionService;
 import info.elexis.server.findings.fhir.jpa.model.service.EncounterModelAdapter;
@@ -45,6 +49,8 @@ import info.elexis.server.findings.fhir.jpa.model.service.EncounterService;
 import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.FamilyMemberHistoryService;
 import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
+import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery.QUERY;
+import info.elexis.server.findings.fhir.jpa.model.service.ObservationLinkService;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationModelAdapter;
 import info.elexis.server.findings.fhir.jpa.model.service.ObservationService;
 import info.elexis.server.findings.fhir.jpa.model.service.ProcedureRequestModelAdapter;
@@ -69,6 +75,10 @@ public class FindingsService implements IFindingsService {
 
 	private AllergyIntoleranceService allergyIntoleranceService;
 	
+	private ObservationLinkService observationLinkService;
+
+	private ClinicalImpressionService clinicalImpressionService;
+
 	private InitializationRunner initializationRunner;
 
 	public FindingsService() {
@@ -78,6 +88,8 @@ public class FindingsService implements IFindingsService {
 		observationService = new ObservationService();
 		familyMemberHistoryService = new FamilyMemberHistoryService();
 		allergyIntoleranceService = new AllergyIntoleranceService();
+		observationLinkService = new ObservationLinkService();
+		clinicalImpressionService = new ClinicalImpressionService();
 	}
 
 	@Activate
@@ -147,9 +159,9 @@ public class FindingsService implements IFindingsService {
 				if (filter.isAssignableFrom(IProcedureRequest.class)) {
 					ret.addAll(getProcedureRequests(null, encounter.get().getId()));
 				}
-				// if (filter.isAssignableFrom(IClinicalImpression.class)) {
-				// ret.addAll(getClinicalImpressions(patientId, null));
-				// }
+				if (filter.isAssignableFrom(IClinicalImpression.class)) {
+					ret.addAll(getClinicalImpressions(null, encounter.get().getId()));
+				}
 				if (filter.isAssignableFrom(IObservation.class)) {
 					ret.addAll(getObservations(null, encounter.get().getId()));
 				}
@@ -171,18 +183,19 @@ public class FindingsService implements IFindingsService {
 		return procedureRequests.parallelStream().map(r -> new ProcedureRequestModelAdapter(r))
 				.collect(Collectors.toList());
 	}
-	//
-	// private List<ClinicalImpression> getClinicalImpressions(String patientId,
-	// String encounterId) {
-	// Query<ClinicalImpression> query = new Query<>(ClinicalImpression.class);
-	// if (patientId != null) {
-	// query.add(ClinicalImpression.FLD_PATIENTID, Query.EQUALS, patientId);
-	// }
-	// if (encounterId != null) {
-	// query.add(ClinicalImpression.FLD_ENCOUNTERID, Query.EQUALS, encounterId);
-	// }
-	// return query.execute();
-	// }
+
+	private List<ClinicalImpressionModelAdapter> getClinicalImpressions(String patientId, String encounterId) {
+		JPAQuery<ClinicalImpression> query = new JPAQuery<>(ClinicalImpression.class);
+		if (patientId != null) {
+			query.add(ClinicalImpression_.patientid, QUERY.EQUALS, patientId);
+		}
+		if (encounterId != null) {
+			query.add(ClinicalImpression_.encounterid, QUERY.EQUALS, encounterId);
+		}
+		List<ClinicalImpression> clinicalImpressions = query.execute();
+		return clinicalImpressions.parallelStream().map(c -> new ClinicalImpressionModelAdapter(c))
+				.collect(Collectors.toList());
+	}
 
 	@SuppressWarnings("unchecked")
 	private List<ConditionModelAdapter> getConditions(String patientId, IEncounter encounter) {
@@ -277,6 +290,9 @@ public class FindingsService implements IFindingsService {
 		} else if (model instanceof AllergyIntolerance) {
 			allergyIntoleranceService.write((AllergyIntolerance) model);
 			return;
+		} else if (model instanceof ClinicalImpression) {
+			clinicalImpressionService.write((ClinicalImpression) model);
+			return;
 		}
 		logger.error("Could not save unknown finding type [" + finding + "]");
 	}
@@ -301,6 +317,9 @@ public class FindingsService implements IFindingsService {
 			return;
 		} else if (model instanceof AllergyIntolerance) {
 			allergyIntoleranceService.delete((AllergyIntolerance) model);
+			return;
+		} else if (model instanceof ClinicalImpression) {
+			clinicalImpressionService.delete((ClinicalImpression) model);
 			return;
 		}
 		logger.error("Could not delete unknown finding type [" + finding + "]");
@@ -349,7 +368,12 @@ public class FindingsService implements IFindingsService {
 					.of(clazz.cast(new AllergyIntoleranceModelAdapter(allergyIntolerance.get())));
 			}
 		}
-		
+		if (clazz.isAssignableFrom(IClinicalImpression.class)) {
+			Optional<ClinicalImpression> clinicalImpression = clinicalImpressionService.findById(id);
+			if (clinicalImpression.isPresent()) {
+				return Optional.of(clazz.cast(new ClinicalImpressionModelAdapter(clinicalImpression.get())));
+			}
+		}
 		return Optional.empty();
 	}
 	
@@ -381,9 +405,6 @@ public class FindingsService implements IFindingsService {
 			ModelUtil.saveResource(fhirCondition, ret);
 			saveFinding(ret);
 			return type.cast(ret);
-		} else if (type.equals(IClinicalImpression.class)) {
-			//TODO ????
-			return null;
 		} else if (type.equals(IProcedureRequest.class)) {
 			ProcedureRequestModelAdapter ret =
 				new ProcedureRequestModelAdapter(procedureRequestService.create());
@@ -404,18 +425,22 @@ public class FindingsService implements IFindingsService {
 			ModelUtil.saveResource(fhirFamilyMemberHistory, ret);
 			saveFinding(ret);
 			return type.cast(ret);
-		}
-		else if (type.equals(IAllergyIntolerance.class)) {
-			AllergyIntoleranceModelAdapter ret =
-				new AllergyIntoleranceModelAdapter(allergyIntoleranceService.create());
-			org.hl7.fhir.dstu3.model.AllergyIntolerance fhirAllergyIntolerance =
-				new org.hl7.fhir.dstu3.model.AllergyIntolerance();
-			fhirAllergyIntolerance
-				.setId(new IdType(fhirAllergyIntolerance.getClass().getSimpleName(), ret.getId()));
+		} else if (type.equals(IAllergyIntolerance.class)) {
+			AllergyIntoleranceModelAdapter ret = new AllergyIntoleranceModelAdapter(allergyIntoleranceService.create());
+			org.hl7.fhir.dstu3.model.AllergyIntolerance fhirAllergyIntolerance = new org.hl7.fhir.dstu3.model.AllergyIntolerance();
+			fhirAllergyIntolerance.setId(new IdType(fhirAllergyIntolerance.getClass().getSimpleName(), ret.getId()));
 			ModelUtil.saveResource(fhirAllergyIntolerance, ret);
 			saveFinding(ret);
 			return type.cast(ret);
+		} else if (type.equals(IClinicalImpression.class)) {
+			ClinicalImpressionModelAdapter ret = new ClinicalImpressionModelAdapter(clinicalImpressionService.create());
+			org.hl7.fhir.dstu3.model.ClinicalImpression fhirClinicalImpression = new org.hl7.fhir.dstu3.model.ClinicalImpression();
+			fhirClinicalImpression.setId(new IdType(fhirClinicalImpression.getClass().getSimpleName(), ret.getId()));
+			ModelUtil.saveResource(fhirClinicalImpression, ret);
+			saveFinding(ret);
+			return type.cast(ret);
 		}
+
 		return null;
 	}
 }

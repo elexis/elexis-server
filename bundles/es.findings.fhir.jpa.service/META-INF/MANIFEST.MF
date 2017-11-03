@@ -30,7 +30,8 @@ Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.Finding
  OSGI-INF/info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.service.MigratorService.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CodingService.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.service.StoreToStringContribution.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.TessinerCodeContribution.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml,
- OSGI-INF/info.elexis.server.findings.fhir.jpa.service.StoreToStringContribution.xml
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.LocalCodingContribution.xml
 Export-Package: info.elexis.server.findings.fhir.jpa.service

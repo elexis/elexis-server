@@ -7,7 +7,9 @@
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.AbstractDBObject</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.AbstractDBObjectIdDeleted</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Encounter</class>
+		<class>info.elexis.server.findings.fhir.jpa.model.annotated.ClinicalImpression</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Condition</class>
+		<class>info.elexis.server.findings.fhir.jpa.model.annotated.LocalCoding</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.ProcedureRequest</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.Observation</class>
 		<class>info.elexis.server.findings.fhir.jpa.model.annotated.ObservationLink</class>
