@@ -10,6 +10,7 @@ import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.findings.IObservation;
 import info.elexis.server.core.service.StoreToStringService;
 
 @Component
@@ -26,6 +27,8 @@ public class StoreToStringContribution implements info.elexis.server.core.servic
 			nameMap.put(IEncounter.class, "ch.elexis.core.findings.fhir.po.model.Encounter");
 			typeMap.put("ch.elexis.core.findings.fhir.po.model.Condition", ICondition.class);
 			nameMap.put(ICondition.class, "ch.elexis.core.findings.fhir.po.model.Condition");
+			typeMap.put("ch.elexis.core.findings.fhir.po.model.Observation", IObservation.class);
+			nameMap.put(IObservation.class, "ch.elexis.core.findings.fhir.po.model.Observation");
 		}
 
 		public Class<? extends IFinding> getType(String poClassName) {
