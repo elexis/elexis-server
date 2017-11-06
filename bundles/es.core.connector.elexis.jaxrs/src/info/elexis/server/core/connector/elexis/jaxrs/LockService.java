@@ -25,8 +25,16 @@ public class LockService implements ILockService {
 
 	@Override
 	public LockInfo getLockInfo(String objectId) {
-		Optional<LockInfo> li = LockServiceInstance.INSTANCE.getLockInfo(objectId);
-		return (li.isPresent()) ? li.get() : null;
+		if (objectId == null) {
+			return null;
+		}
+
+		try {
+			Optional<LockInfo> li = LockServiceInstance.INSTANCE.getLockInfo(objectId);
+			return (li.isPresent()) ? li.get() : null;
+		} catch (IllegalArgumentException iae) {
+			return null;
+		}
 	}
 
 	@Override
