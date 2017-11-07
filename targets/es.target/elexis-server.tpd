@@ -56,6 +56,8 @@ location "http://download.elexis.info/elexis-server/p2/master/target/" elexis-se
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
 	com.eclipsesource.jaxrs.provider.gson.feature.feature.group
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group
+	com.eclipsesource.jaxrs.provider.swagger.feature.feature.group
+	com.eclipsesource.jaxrs.provider.multipart.feature.feature.group
 	
 	ch.rgw.utility
 	ch.elexis.core
