@@ -11,6 +11,7 @@
       </programArgs>
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
 -Djetty.home.bundle=info.elexis.server.core.jetty.homebundle
+-Djetty.etc.config.urls=etc/jetty.xml,etc/jetty-http.xml,etc/jetty-ssl-context.xml,etc/jetty-ssl.xml,etc/jetty-https.xml,etc/jetty-deployer.xml
 -Djava.awt.headless=true
 -Duser.language=de
 -Duser.region=CH
