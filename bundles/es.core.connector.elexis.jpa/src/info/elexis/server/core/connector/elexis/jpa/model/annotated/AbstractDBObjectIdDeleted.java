@@ -83,7 +83,7 @@ public abstract class AbstractDBObjectIdDeleted extends AbstractDBObject impleme
 
 	@Override
 	public String toString() {
-		return super.toString() + (isDeleted() ? " D " : "   ") + "id=[" + String.format("%25S", getId()) + "]";
+		return super.toString() + (isDeleted() ? " D " : "   ") + "id=[" + String.format("%25s", getId()) + "]";
 	}
 	
 	@Override
