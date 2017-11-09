@@ -104,7 +104,7 @@ public class TarmedLeistungService extends PersistenceService {
 			date = new TimeTool();
 		}
 		JPAQuery<TarmedLeistung> query = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
-		query.add(TarmedLeistung_.code, JPAQuery.QUERY.LIKE, code);
+		query.add(TarmedLeistung_.code_, JPAQuery.QUERY.LIKE, code);
 		List<TarmedLeistung> leistungen = query.execute();
 		for (TarmedLeistung tarmedLeistung : leistungen) {
 			TimeTool validFrom = new TimeTool(tarmedLeistung.getGueltigVon());

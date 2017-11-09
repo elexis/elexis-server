@@ -9,9 +9,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import ch.elexis.core.model.ICodeElement;
+
 @Entity
 @Table(name = "TARMED")
-public class TarmedLeistung extends AbstractDBObjectIdDeleted {
+public class TarmedLeistung extends AbstractDBObjectIdDeleted implements ICodeElement {
+
+	public static final String CODESYSTEM_NAME = "Tarmed";
 
 	@Column(length = 14)
 	private String parent;
@@ -37,8 +41,8 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 	@Column(length = 255)
 	private String tx255;
 
-	@Column(length = 25)
-	private String code;
+	@Column(length = 25, name = "code")
+	private String code_;
 
 	@OneToOne
 	@JoinColumn(name = "id", insertable = false, updatable = false)
@@ -72,7 +76,7 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 					/* ignore */
 				}
 			}
-			
+
 		}
 		return 0;
 	}
@@ -151,14 +155,14 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 		this.tx255 = tx255;
 	}
 
-	public String getCode() {
-		return code;
+	public void setCode_(String code_) {
+		this.code_ = code_;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public String getCode_() {
+		return code_;
 	}
-
+	
 	public TarmedExtension getExtension() {
 		return extension;
 	}
@@ -166,5 +170,18 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted {
 	public void setExtension(TarmedExtension extension) {
 		this.extension = extension;
 	}
+	
+	public String getCode() {
+		return (code_ != null) ? code_ : getId();
+	}
 
+	@Override
+	public String getCodeSystemName() {
+		return CODESYSTEM_NAME;
+	}
+
+	@Override
+	public String getText() {
+		return getTx255();
+	}
 }

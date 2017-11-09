@@ -87,6 +87,7 @@ public class TestDatabaseInitializer {
 
 	private static boolean isAgendaInitialized = false;
 	private static boolean isRemindersInitialized = false;
+	private static boolean isLeistungsblockInitialized = false;
 
 	public synchronized void initializeDb() throws IOException, SQLException {
 		if (!isDbInitialized) {
@@ -144,6 +145,13 @@ public class TestDatabaseInitializer {
 		}
 	}
 
+	public synchronized void initializeLeistungsblockTables() throws IOException, SQLException {
+		initializeDb();
+		if (!isLeistungsblockInitialized) {
+			isLeistungsblockInitialized = initializeDbScript("/rsc/dbScripts/Leistungsblock.sql");
+		}
+	}
+	
 	/**
 	 * Initializes an intrinsic consistent set of LabItems, LabResults and
 	 * LabOrders
@@ -590,4 +598,5 @@ public class TestDatabaseInitializer {
 			isArtikelstammInitialized = true;
 		}
 	}
+
 }

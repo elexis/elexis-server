@@ -9,13 +9,15 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import info.elexis.server.core.connector.elexis.billable.BillingTest;
+import info.elexis.server.core.connector.elexis.billable.ICodeElementValuesTest;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTest;
 import info.elexis.server.core.connector.elexis.jpa.AbstractDBObjectIdDeletedTest;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.services.AllServiceTests;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AbstractDBObjectIdDeletedTest.class, AllServiceTests.class, BillingTest.class, VerrechenbarTest.class })
+@SuiteClasses({ AbstractDBObjectIdDeletedTest.class, AllServiceTests.class, BillingTest.class, VerrechenbarTest.class,
+		ICodeElementValuesTest.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();
@@ -30,6 +32,7 @@ public class AllTestsSuite {
 		AllTestsSuite.getInitializer().initializeTarmedTables();
 		AllTestsSuite.getInitializer().initializeLaborItemsOrdersResults();
 		AllTestsSuite.getInitializer().initializeReminders();
+		AllTestsSuite.getInitializer().initializeLeistungsblockTables();
 	}
 
 	public static TestDatabaseInitializer getInitializer() {

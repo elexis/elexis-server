@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import ch.elexis.core.model.ICodeElement;
 import ch.elexis.core.model.article.Constants;
 import ch.elexis.core.model.article.IArticle;
 import ch.rgw.tools.StringTool;
@@ -14,7 +15,9 @@ import info.elexis.server.core.connector.elexis.jpa.POHelper;
 
 @Entity
 @Table(name = "artikel")
-public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticle {
+public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticle, ICodeElement {
+
+	public static final String CODESYSTEM_NAME = "Artikel";
 
 	public static final String TYP_EIGENARTIKEL = "Eigenartikel";
 	public static final String TYP_MIGEL = "MiGeL";
@@ -45,8 +48,8 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 	private String ekPreis;
 
 	/**
-	 * user-defined prices are stored as negative value,
-	 * hence Math.abs should be applied for billing
+	 * user-defined prices are stored as negative value, hence Math.abs should be
+	 * applied for billing
 	 */
 	@Column(length = 8, name = "VK_Preis")
 	private String vkPreis;
@@ -74,9 +77,9 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 
 	@Override
 	public String toString() {
-		return super.toString() + "name=["+getName()+"]";
+		return super.toString() + "name=[" + getName() + "]";
 	}
-	
+
 	public String getLabel() {
 		String ret = getNameIntern();
 		if (StringTool.isNothing(ret)) {
@@ -84,7 +87,7 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 		}
 		return ret;
 	}
-	
+
 	@Transient
 	public String getGTIN() {
 		return getEan();
@@ -220,5 +223,26 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 	@Override
 	public boolean isProduct() {
 		return false;
+	}
+
+	@Override
+	public String getCodeSystemName() {
+		if (TYP_EIGENARTIKEL.equals(getTyp())) {
+			return TYP_EIGENARTIKEL;
+		}
+		return CODESYSTEM_NAME;
+	}
+
+	@Override
+	public String getCode() {
+		if (TYP_EIGENARTIKEL.equals(getTyp())) {
+			return getSubId();
+		}
+		return getId();
+	}
+
+	@Override
+	public String getText() {
+		return getNameIntern();
 	}
 }

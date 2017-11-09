@@ -12,7 +12,7 @@ public class TarmedLeistung_ {
 
     public static volatile SingularAttribute<TarmedLeistung, String> parent;
     public static volatile SingularAttribute<TarmedLeistung, TarmedExtension> extension;
-    public static volatile SingularAttribute<TarmedLeistung, String> code;
+    public static volatile SingularAttribute<TarmedLeistung, String> code_;
     public static volatile SingularAttribute<TarmedLeistung, String> digniQuanti;
     public static volatile SingularAttribute<TarmedLeistung, String> tx255;
     public static volatile SingularAttribute<TarmedLeistung, String> nickname;

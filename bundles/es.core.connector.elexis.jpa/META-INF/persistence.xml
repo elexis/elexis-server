@@ -6,6 +6,7 @@
 		<non-jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/poolable)</non-jta-data-source>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.AddressTypeConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.FailsafeIntegerStringNullableConverter</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.ICodeElementListConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.InvoiceStateConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.LocalDateConverter</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.converter.LocalDateTimeConverter</class>
@@ -31,6 +32,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Leistungsblock</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.ObjVatInfo</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Prescription</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung</class>

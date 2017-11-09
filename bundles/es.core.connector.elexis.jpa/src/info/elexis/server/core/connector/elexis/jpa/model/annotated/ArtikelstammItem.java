@@ -9,12 +9,14 @@ import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.Convert;
 
 import at.medevit.ch.artikelstamm.ArtikelstammConstants.TYPE;
+import ch.elexis.core.model.ICodeElement;
 import ch.elexis.core.model.article.IArticle;
-
 
 @Entity
 @Table(name = "artikelstamm_ch")
-public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implements IArticle {
+public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implements IArticle, ICodeElement {
+	public static final String CODESYSTEM_NAME = "Artikelstamm";
+
 	@Column(length = 1)
 	private String type;
 
@@ -49,8 +51,8 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	private String pexf;
 
 	/**
-	 * user-defined prices are stored as negative value,
-	 * hence Math.abs should be applied for billing
+	 * user-defined prices are stored as negative value, hence Math.abs should be
+	 * applied for billing
 	 */
 	@Column(length = 10)
 	private String ppub;
@@ -130,7 +132,7 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	public String getGTIN() {
 		return getGtin();
 	};
-	
+
 	public String getGtin() {
 		return gtin;
 	}
@@ -306,10 +308,10 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	public void setProdno(String prodno) {
 		this.prodno = prodno;
 	}
-	
+
 	@Override
 	public String toString() {
-		return super.toString() + "name=["+getName()+"]";
+		return super.toString() + "name=[" + getName() + "]";
 	}
 
 	public String getLabel() {
@@ -333,7 +335,7 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 	public boolean isProduct() {
 		return (TYPE.X == getTYPE());
 	}
-	
+
 	@Transient
 	@Override
 	public String getName() {
@@ -351,5 +353,33 @@ public class ArtikelstammItem extends AbstractDBObjectIdDeletedExtInfo implement
 		} catch (IllegalArgumentException iae) {
 			return null;
 		}
+	}
+
+	@Override
+	public String getCodeSystemName() {
+		return CODESYSTEM_NAME;
+	}
+
+	@Override
+	public String getCode() {
+		return getPhar();
+	}
+
+	@Override
+	public String getText() {
+		return getLabel();
+	}
+
+	@Override
+	public String getCodeSystemCode() {
+		String gtin = getGTIN();
+		if (gtin != null && gtin.length() > 3) {
+			if (getTYPE() == TYPE.P) {
+				return "402";
+			} else if (getTYPE() == TYPE.N) {
+				return "406";
+			}
+		}
+		return ICodeElement.super.getCodeSystemCode();
 	}
 }

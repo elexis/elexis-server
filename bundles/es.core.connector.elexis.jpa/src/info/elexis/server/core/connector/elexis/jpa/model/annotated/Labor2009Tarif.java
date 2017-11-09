@@ -7,12 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import ch.elexis.core.model.ICodeElement;
 import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
 
 @Entity
 @Table(name = "CH_MEDELEXIS_LABORTARIF2009")
-public class Labor2009Tarif extends AbstractDBObjectIdDeleted {
+public class Labor2009Tarif extends AbstractDBObjectIdDeleted implements ICodeElement {
+
+	public static final String CODESYSTEM_NAME = "EAL 2009";
 
 	@Column(length = 255)
 	private String chapter;
@@ -146,4 +149,18 @@ public class Labor2009Tarif extends AbstractDBObjectIdDeleted {
 		}
 	}
 
+	@Override
+	public String getCodeSystemName() {
+		return CODESYSTEM_NAME;
+	}
+
+	@Override
+	public String getText() {
+		return StringTool.getFirstLine(getName(), 80);
+	}
+
+	@Override
+	public String getCodeSystemCode() {
+		return "317";
+	}
 }

@@ -7,10 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import ch.elexis.core.model.ICodeElement;
+
 @Entity
 @Table(name = "CH_ELEXIS_ARZTTARIFE_CH_PHYSIO")
-public class PhysioLeistung extends AbstractDBObjectIdDeleted {
+public class PhysioLeistung extends AbstractDBObjectIdDeleted implements ICodeElement {
 	
+	public static final String CODESYSTEM_NAME = "Physiotherapie";
+
 	@Column(length = 8)
 	private LocalDate validFrom;
 
@@ -80,5 +84,25 @@ public class PhysioLeistung extends AbstractDBObjectIdDeleted {
 	@Override
 	public String getLabel() {
 		return getZiffer() + " " + getTitel();
+	}
+
+	@Override
+	public String getCodeSystemName() {
+		return CODESYSTEM_NAME;
+	}
+
+	@Override
+	public String getCode() {
+		return getZiffer();
+	}
+
+	@Override
+	public String getText() {
+		return getTitel();
+	}
+	
+	@Override
+	public String getCodeSystemCode() {
+		return "311";
 	}
 }
