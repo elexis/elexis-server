@@ -16,7 +16,7 @@ This id documented in the [es.core.product.runtime](products/es.core.product.run
 Use the following command to start an elexis-server docker image, omit (for latest) or replace `:tag` with the [tag](https://hub.docker.com/r/medevit/elexis-server/tags/) to use. 
 
 ```bash
-docker run -p 8380:8380 -p 7234:7234 medevit/elexis-server:tag
+docker run -p 8380:8380 -p 8480:8480 -p 7234:7234 medevit/elexis-server:tag
 ```
 
 After initially creating a container out of this image (which is what the `run` command does) you should make a note
