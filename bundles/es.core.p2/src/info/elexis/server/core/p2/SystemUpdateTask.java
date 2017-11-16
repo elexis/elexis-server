@@ -1,7 +1,6 @@
 package info.elexis.server.core.p2;
 
 import org.eclipse.core.runtime.IStatus;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -12,7 +11,7 @@ import info.elexis.server.core.scheduler.ISchedulerService;
 import it.sauronsoftware.cron4j.SchedulingPattern;
 import it.sauronsoftware.cron4j.TaskExecutionContext;
 
-@Component(immediate = true)
+//@Component(immediate = true)
 public class SystemUpdateTask extends AbstractSchedulerTask {
 	
 	@Reference(service = ISchedulerService.class, 
