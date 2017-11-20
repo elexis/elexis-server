@@ -65,6 +65,36 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 		setVk_tp((int) Math.round(tp));
 	}
 
+	/**
+	 * Derives the settings for {@link #zahl}, {@link #scale} and {@link #scale2}
+	 * for the provided value
+	 * 
+	 * @param countValue
+	 */
+	@Transient
+	public void setDerivedCountValue(float countValue) {
+		if (countValue % 1 == 0) {
+			// integer -> full package
+			setZahl((int) countValue);
+			setScale(100);
+			setScale2(100);
+		} else {
+			// float -> fractional package
+			setZahl(1);
+			setScale(100);
+			int scale2 = Math.round(countValue * 100);
+			setScale2(scale2);
+		}
+	}
+	
+	@Transient
+	public float getDerivedCountValue() {
+		if (scale2 == 100) {
+			return getZahl();
+		}
+		return scale2 / 100f;
+	}
+
 	@Transient
 	public void setPrimaryScaleFactor(double scale) {
 		int sca = (int) Math.round(scale * 100);

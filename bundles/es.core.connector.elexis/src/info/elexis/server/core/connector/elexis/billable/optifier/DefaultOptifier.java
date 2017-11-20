@@ -29,7 +29,7 @@ public class DefaultOptifier implements IOptifier {
 	}
 
 	public IStatus add(final IBillable code, final Behandlung kons, final Kontakt userContact,
-			final Kontakt mandatorContact) {
+			final Kontakt mandatorContact, float count) {
 		Verrechnet foundVerrechnet = null;
 		for (Verrechnet verrechnet : VerrechnetService.getAllVerrechnetForBehandlung(kons)) {
 			Optional<IBillable> vrElement = VerrechnetService.getVerrechenbar(verrechnet);
@@ -51,9 +51,11 @@ public class DefaultOptifier implements IOptifier {
 		}
 
 		if (foundVerrechnet != null) {
-			DefaultOptifier.changeCount(foundVerrechnet, foundVerrechnet.getZahl() + 1);
-			log.trace("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
-					foundVerrechnet.getZahl() + 1);
+			float newSum = foundVerrechnet.getDerivedCountValue() + count;
+			System.out.println(newSum+" "+count+" "+foundVerrechnet.getDerivedCountValue()+" SSDFSDFSDDFSD");
+			DefaultOptifier.changeCount(foundVerrechnet, newSum);
+			log.info("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
+					foundVerrechnet.getDerivedCountValue() + count);
 			
 			int sellingPrice = foundVerrechnet.getVk_tp();
 			if (sellingPrice == 0) {
@@ -63,7 +65,7 @@ public class DefaultOptifier implements IOptifier {
 			
 			return ObjectStatus.OK_STATUS(foundVerrechnet);
 		} else {
-			newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).buildAndSave();
+			newVerrechnet = new VerrechnetService.Builder(code, kons, count, userContact).buildAndSave();
 			log.trace("Created new Verrechnet entry ({})", newVerrechnet.getId());
 
 			int sellingPrice = newVerrechnet.getVk_tp();
@@ -82,7 +84,7 @@ public class DefaultOptifier implements IOptifier {
 		return ObjectStatus.OK_STATUS(code);
 	}
 
-	protected static void changeCount(Verrechnet vr, int newCount) {
+	protected static void changeCount(Verrechnet vr, float newCount) {
 		int previous = vr.getZahl();
 		int count = 1;
 
@@ -101,11 +103,11 @@ public class DefaultOptifier implements IOptifier {
 		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(vr);
 		if (verrechenbar.isPresent() && ((verrechenbar.get() instanceof VerrechenbarArtikelstammItem)
 				|| (verrechenbar.get() instanceof VerrechenbarArtikel))) {
-			int diff = newCount - previous;
+			float diff = newCount - previous;
 			if (diff < 0) {
-				new StockService().performSingleReturn((IArticle) verrechenbar.get().getEntity(), Math.abs(diff), null);
+				new StockService().performSingleReturn((IArticle) verrechenbar.get().getEntity(), Math.round(Math.abs(diff)), null);
 			} else if (diff > 0) {
-				new StockService().performSingleDisposal((IArticle) verrechenbar.get().getEntity(), diff, null);
+				new StockService().performSingleDisposal((IArticle) verrechenbar.get().getEntity(),  Math.round(diff), null);
 			}
 		}
 	}

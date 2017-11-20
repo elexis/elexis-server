@@ -63,12 +63,30 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	private Verrechnet newVerrechnet;
 	private String newVerrechnetSide;
 
+	@Override
+	public IStatus add(IBillable<TarmedLeistung> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact,
+			float count) {
+		
+		IStatus status = Status.OK_STATUS;
+		Object verrechnet = null;
+		
+		for (int i = 0; i < count; i++) {
+			status = add(code, kons, userContact, mandatorContact);
+			if(!status.isOK()) {
+				return new ObjectStatus(status, verrechnet);
+			} else {
+				verrechnet = ((ObjectStatus) status).getObject();
+			}
+		}
+
+		return status;
+	}
+	
 	/**
 	 * Eine Verrechnungsposition zufügen. Der Optifier muss prüfen, ob die
 	 * Verrechnungsposition im Kontext der übergebenen Konsultation verwendet
 	 * werden kann und kann sie ggf. zurückweisen oder modifizieren.
 	 */
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public IStatus add(IBillable<TarmedLeistung> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 

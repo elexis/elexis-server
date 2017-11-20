@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -94,12 +95,12 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count) {
 		// if(!artikelstammItem.isSl_entry()) {
 		// return new NoObligationOptifier().add(this, kons, userContact,
 		// mandatorContact);
 		// }
-		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
+		return new DefaultOptifier().add(this, kons, userContact, mandatorContact, count);
 	}
 
 	@Override

@@ -86,11 +86,26 @@ public class BehandlungService extends PersistenceService {
 
 	public static IStatus chargeBillableOnBehandlung(Behandlung kons, IBillable<?> billableObject, Kontakt userContact,
 			Kontakt mandatorContact) {
+		return chargeBillableOnBehandlung(kons, billableObject, userContact, mandatorContact, 1);
+	}
+
+	/**
+	 * 
+	 * @param kons
+	 * @param billableObject
+	 * @param userContact
+	 * @param mandatorContact
+	 * @param count
+	 * @return
+	 * @since 1.5
+	 */
+	public static IStatus chargeBillableOnBehandlung(Behandlung kons, IBillable<?> billableObject, Kontakt userContact,
+			Kontakt mandatorContact, float count) {
 		IStatus editableStatus = BehandlungService.isEditable(kons, mandatorContact);
 		if (!editableStatus.isOK()) {
 			return editableStatus;
 		}
-		return billableObject.add(kons, userContact, mandatorContact);
+		return billableObject.add(kons, userContact, mandatorContact, count);
 	}
 
 	public static IStatus isEditable(Behandlung kons, Kontakt mandator) {
@@ -157,8 +172,7 @@ public class BehandlungService extends PersistenceService {
 	/**
 	 * 
 	 * @param patient
-	 * @return all {@link Behandlung} for patient, ordered by date (newest
-	 *         first)
+	 * @return all {@link Behandlung} for patient, ordered by date (newest first)
 	 */
 	public static List<Behandlung> findAllConsultationsForPatient(Kontakt patient) {
 		JPAQuery<Fall> query = new JPAQuery<Fall>(Fall.class);

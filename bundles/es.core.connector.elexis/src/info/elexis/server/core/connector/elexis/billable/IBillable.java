@@ -5,15 +5,15 @@ import java.util.EnumSet;
 import org.eclipse.core.runtime.IStatus;
 
 import ch.elexis.core.model.ICodeElement;
+import ch.elexis.core.model.Identifiable;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 
-public interface IBillable<T extends AbstractDBObjectIdDeleted> extends ICodeElement {
+public interface IBillable<T extends Identifiable> extends ICodeElement {
 
 	/**
 	 * Definition von Informationen zu der Leistung welche für die MWSt relevant
@@ -23,8 +23,7 @@ public interface IBillable<T extends AbstractDBObjectIdDeleted> extends ICodeEle
 	 * <li>VAT_DEFAULT ... Standard MWST Satz laut Einstellungsseite</li>
 	 * <li>VAT_NONE ... Keine MWST</li>
 	 * <li>VAT_CH_ISMEDICAMENT ... Artikel ist als Medikament anerkannt</li>
-	 * <li>VAT_CH_NOTMEDICAMENT ... Artikel ist nicht als Medikament anerkannt
-	 * </li>
+	 * <li>VAT_CH_NOTMEDICAMENT ... Artikel ist nicht als Medikament anerkannt</li>
 	 * <li>VAT_CH_ISTREATMENT ... Leistung ist als Heilbehandlung anerkannt</li>
 	 * <li>VAT_CH_NOTTREATMENT ... Leistung ist nicht als Heilbehandlung
 	 * anerkannt</li>
@@ -53,8 +52,8 @@ public interface IBillable<T extends AbstractDBObjectIdDeleted> extends ICodeEle
 		}
 
 		/**
-		 * Get an EnumSet of {@link VatInfo} from a String representation
-		 * produced with {@link VatInfo#encodeAsString(EnumSet)}.
+		 * Get an EnumSet of {@link VatInfo} from a String representation produced with
+		 * {@link VatInfo#encodeAsString(EnumSet)}.
 		 * 
 		 * @param code
 		 * @return
@@ -70,11 +69,33 @@ public interface IBillable<T extends AbstractDBObjectIdDeleted> extends ICodeEle
 		}
 	};
 
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact);
+	/**
+	 * Add a single (count=1) service record to a consultation;
+	 * 
+	 * @param kons
+	 * @param userContact
+	 * @param mandatorContact
+	 * @return
+	 */
+	public default IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+		return add(kons, userContact, mandatorContact, 1);
+	}
 
 	/**
-	 * Uncharge the {@link IBillable} from the Behandlung it was charged (via
-	 * #add) to
+	 * Add a service record to a consultation.
+	 * 
+	 * @param kons
+	 * @param userContact
+	 * @param mandatorContact
+	 * @param count the number of times to add this element
+	 * @return
+	 * @since 1.5
+	 */
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count);
+
+	/**
+	 * Uncharge the {@link IBillable} from the Behandlung it was charged (via #add)
+	 * to
 	 * 
 	 * @param vr
 	 * @param mandatorContact

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.model.article.IArticle;
 import ch.elexis.core.status.ObjectStatus;
+import ch.elexis.core.status.StatusUtil;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
@@ -46,7 +47,7 @@ public class VerrechnetService extends PersistenceService {
 		@SuppressWarnings("rawtypes")
 		private final IBillable iv;
 
-		public Builder(@SuppressWarnings("rawtypes") IBillable iv, Behandlung kons, int count, Kontakt userContact) {
+		public Builder(@SuppressWarnings("rawtypes") IBillable iv, Behandlung kons, float count, Kontakt userContact) {
 			object = new Verrechnet();
 
 			this.iv = iv;
@@ -57,7 +58,6 @@ public class VerrechnetService extends PersistenceService {
 			object.setLeistungenCode(iv.getId());
 			object.setLeistungenText(iv.getText());
 			object.setBehandlung(kons);
-			object.setZahl(count);
 			object.setUser(userContact);
 
 			TimeTool dat = new TimeTool(kons.getDatum());
@@ -70,14 +70,21 @@ public class VerrechnetService extends PersistenceService {
 			object.setVk_tp(tp);
 			object.setVk_scale(Double.toString(factor));
 			object.setVk_preis((int) preis);
-			object.setScale(100);
-			object.setScale2(100);
+
+			object.setDerivedCountValue(count);
 		}
 
 		@Override
 		public Verrechnet build() {
 			if (iv.getEntity() instanceof IArticle) {
-				new StockService().performSingleDisposal((IArticle) iv.getEntity(), object.getZahl(), null);
+				// only output for integer values
+				// currently only RH bills, not considering the selling unit, hence we ignore it
+				// here
+				IStatus status = new StockService().performSingleDisposal((IArticle) iv.getEntity(), object.getZahl(),
+						null);
+				if (!status.isOK()) {
+					StatusUtil.logStatus(log, status, true);
+				}
 			}
 			// call the adjusters
 			new VatVerrechnetAdjuster().adjust(object);
@@ -173,31 +180,31 @@ public class VerrechnetService extends PersistenceService {
 	}
 
 	/**
-	 * Perform a validated (returns Status error on fail) change on the count of
-	 * the {@link Verrechnet}
+	 * Perform a validated (returns Status error on fail) change on the count of the
+	 * {@link Verrechnet}
 	 * 
 	 * @param verrechnet
 	 * @param newCount
 	 * @param mandatorContact
-	 * @return {@link ObjectStatus} containing the refreshed {@link Verrechnet}
-	 *         if {@link Status#OK_STATUS}, else an {@link IStatus}
+	 * @return {@link ObjectStatus} containing the refreshed {@link Verrechnet} if
+	 *         {@link Status#OK_STATUS}, else an {@link IStatus}
 	 */
 	public static IStatus changeCountValidated(Verrechnet verrechnet, int newCount, Kontakt mandatorContact) {
 		return changeCountValidated(verrechnet, (float) newCount, mandatorContact);
 	}
 
 	/**
-	 * Perform a validated (returns Status error on fail) change on the count of
-	 * the {@link Verrechnet}
+	 * Perform a validated (returns Status error on fail) change on the count of the
+	 * {@link Verrechnet}
 	 * 
 	 * @param verrechnet
 	 * @param newCount
 	 * @param mandatorContact
-	 * @return {@link ObjectStatus} containing the refreshed {@link Verrechnet}
-	 *         if {@link Status#OK_STATUS}, else an {@link IStatus}
+	 * @return {@link ObjectStatus} containing the refreshed {@link Verrechnet} if
+	 *         {@link Status#OK_STATUS}, else an {@link IStatus}
 	 */
 	public static IStatus changeCountValidated(Verrechnet verrechnet, float newCount, Kontakt mandatorContact) {
-		int previous = verrechnet.getZahl();
+		float previous = verrechnet.getDerivedCountValue();
 		if (newCount == previous && verrechnet.getScale() == 100 && verrechnet.getScale2() == 100) {
 			return Status.OK_STATUS;
 		}
@@ -214,31 +221,24 @@ public class VerrechnetService extends PersistenceService {
 
 		if (newCount % 1 == 0) {
 			// integer -> full package
-			int difference = (int) newCount - previous;
+			float difference = newCount - previous;
 			if (difference > 0) {
 				// addition
-				for (int i = 0; i < difference; i++) {
-					IStatus ret = verrechenbar.get().add(verrechnet.getBehandlung(), verrechnet.getUser(),
-							mandatorContact);
-					if (!ret.isOK()) {
-						return ret;
-					}
+				IStatus ret = verrechenbar.get().add(verrechnet.getBehandlung(), verrechnet.getUser(), mandatorContact,
+						difference);
+				if (!ret.isOK()) {
+					return ret;
 				}
+
 				return ObjectStatus.OK_STATUS(VerrechnetService.reload(verrechnet).get());
 			} else {
 				// subtraction, we assume that this will never fail
-				verrechnet.setZahl((int) newCount);
-				verrechnet.setScale(100);
-				verrechnet.setScale2(100);
+				verrechnet.setDerivedCountValue(newCount);
 				return ObjectStatus.OK_STATUS(VerrechnetService.save(verrechnet));
 			}
 		} else {
-			// float -> fractional package
-			verrechnet.setZahl(1);
+			verrechnet.setDerivedCountValue(newCount);
 
-			verrechnet.setScale(100);
-			int scale2 = Math.round(newCount * 100);
-			verrechnet.setScale2(scale2);
 			return ObjectStatus.OK_STATUS(VerrechnetService.save(verrechnet));
 		}
 	}

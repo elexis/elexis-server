@@ -52,8 +52,8 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
-		return new TarmedOptifier().add(this, kons, userContact, mandatorContact);
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count) {
+		return new TarmedOptifier().add(this, kons, userContact, mandatorContact, count);
 	}
 
 	@Override

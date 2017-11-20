@@ -31,6 +31,24 @@ public class LaborTarif2009Optifier implements IOptifier<Labor2009Tarif> {
 	private Verrechnet newVerrechnet;
 	private Logger log;
 
+	@Override
+	public IStatus add(IBillable<Labor2009Tarif> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact,
+			float count) {
+		IStatus status = Status.OK_STATUS;
+		Object verrechnet = null;
+		
+		for (int i = 0; i < count; i++) {
+			status = add(code, kons, userContact, mandatorContact);
+			if(!status.isOK()) {
+				return new ObjectStatus(status, verrechnet);
+			} else {
+				verrechnet = ((ObjectStatus) status).getObject();
+			}
+		}
+
+		return status;
+	}
+
 	/**
 	 * Add and recalculate the various possible amendments
 	 */

@@ -69,8 +69,8 @@ public class VerrechenbarPhysioLeistung implements IBillable<PhysioLeistung> {
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
-		return new DefaultOptifier().add(this, kons, userContact, mandatorContact);
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count) {
+		return new DefaultOptifier().add(this, kons, userContact, mandatorContact, count);
 	}
 
 	@Override

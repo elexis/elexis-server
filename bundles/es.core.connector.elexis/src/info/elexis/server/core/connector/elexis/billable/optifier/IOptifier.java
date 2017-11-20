@@ -26,7 +26,11 @@ public interface IOptifier<T extends AbstractDBObjectIdDeleted> {
 	 *            the mandator this operation is executed for
 	 * @return Result mit der möglicherweise veränderten Liste
 	 */
-	public IStatus add(IBillable<T> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact);
+	default IStatus add(IBillable<T> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+		return add(code, kons, userContact, mandatorContact, 1);
+	}
+	
+	public IStatus add(IBillable<T> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count);
 
 	/**
 	 * Eine Leistung aus einer Konsultation entfernen; die Liste ggf. anpassen

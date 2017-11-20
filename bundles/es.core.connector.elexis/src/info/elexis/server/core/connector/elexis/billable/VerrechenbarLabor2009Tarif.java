@@ -48,8 +48,8 @@ public class VerrechenbarLabor2009Tarif implements IBillable<Labor2009Tarif> {
 	}
 
 	@Override
-	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
-		return new LaborTarif2009Optifier().add(this, kons, userContact, mandatorContact);
+	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count) {
+		return new LaborTarif2009Optifier().add(this, kons, userContact, mandatorContact, count);
 	}
 
 	@Override
