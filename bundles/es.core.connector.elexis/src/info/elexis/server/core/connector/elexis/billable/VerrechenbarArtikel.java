@@ -78,8 +78,8 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 	@Override
 	public int getTP(TimeTool date, Fall fall) {
 		int vkt = 0;
-		double vpe = 0.0;
-		double vke = 0.0;
+		double vpe = article.getPackageUnit();
+		double vke = article.getSellingUnit();
 
 		Money m = new Money();
 		String vkPreis = article.getVkPreis();
@@ -91,25 +91,7 @@ public class VerrechenbarArtikel implements IBillable<Artikel> {
 			}
 		}
 		vkt = Math.abs(m.getCents());
-
-		String packageUnit = article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT);
-		if (packageUnit != null) {
-			try {
-				vpe = Double.parseDouble(article.getExtInfoAsString(Constants.FLD_EXT_PACKAGE_UNIT_INT));
-			} catch (Exception e) {
-				log.warn("Article [{}] error parsing package unit [{}]", article.getId(), packageUnit);
-			}
-		}
-
-		String sellUnit = article.getExtInfoAsString(Artikel.FLD_EXTINFO_SELLUNIT);
-		if (sellUnit != null) {
-			try {
-				vke = Double.parseDouble(sellUnit);
-			} catch (Exception e) {
-				log.warn("Article [{}] error parsing sell unit [{}] ", article.getId(), sellUnit);
-			}
-		}
-
+		
 		return determineTP(date, fall, vpe, vke, vkt);
 	}
 

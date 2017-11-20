@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.billable;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -76,8 +75,8 @@ public class VerrechenbarArtikelstammItem implements IBillable<ArtikelstammItem>
 	@Override
 	public int getTP(TimeTool date, Fall fall) {
 		int vkt = 0;
-		double vpe = artikelstammItem.getPkg_size();
-		double vke = artikelstammItem.getVerkaufseinheit();
+		double vpe = artikelstammItem.getPackageUnit();
+		double vke = artikelstammItem.getSellingUnit();
 
 		String ppub = artikelstammItem.getPpub();
 		try {

@@ -24,11 +24,6 @@ public class Artikel extends AbstractDBObjectIdDeletedExtInfo implements IArticl
 	public static final String TYP_MEDICAL = "Medical";
 	public static final String TYP_MEDIKAMENT = "Medikament";
 
-	/**
-	 * @deprecated switch to EigenartikelConstants after beta build
-	 */
-	public static final String FLD_EXTINFO_SELLUNIT = "Verkaufseinheit";
-
 	@Column(length = 15)
 	private String ean;
 

@@ -76,7 +76,7 @@ public class VerrechnetService extends PersistenceService {
 
 		@Override
 		public Verrechnet build() {
-			if (iv instanceof VerrechenbarArtikelstammItem || iv instanceof VerrechenbarArtikel) {
+			if (iv.getEntity() instanceof IArticle) {
 				new StockService().performSingleDisposal((IArticle) iv.getEntity(), object.getZahl(), null);
 			}
 			// call the adjusters

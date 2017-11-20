@@ -194,7 +194,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
-	public IStatus performArticleOutlay(IStockEntry stockEntry, int quantity, Object data) {
+	public IStatus performArticleOutlay(IStockEntry stockEntry, int quantity, Map<String, Object> data) {
 		IStock stock = stockEntry.getStock();
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
@@ -218,7 +218,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	@Override
-	public IStatus synchronizeInventory(IStock stock, List<String> gtinsToUpdate, Object data) {
+	public IStatus synchronizeInventory(IStock stock, List<String> gtinsToUpdate, Map<String, Object> data) {
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
 			IStatus icsStatus = initializeStockCommissioningSystem(stock);
