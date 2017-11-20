@@ -12,8 +12,11 @@ import info.elexis.server.core.connector.elexis.billable.BillingTest;
 import info.elexis.server.core.connector.elexis.billable.ICodeElementValuesTest;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTest;
 import info.elexis.server.core.connector.elexis.jpa.AbstractDBObjectIdDeletedTest;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.core.connector.elexis.mocks.MockStockCommissioningSystemDriverFactory;
 import info.elexis.server.core.connector.elexis.services.AllServiceTests;
+import info.elexis.server.core.connector.elexis.services.StockService;
 
 @RunWith(Suite.class)
 @SuiteClasses({ AbstractDBObjectIdDeletedTest.class, AllServiceTests.class, BillingTest.class, VerrechenbarTest.class,
@@ -21,6 +24,7 @@ import info.elexis.server.core.connector.elexis.services.AllServiceTests;
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();
+	public static String RWA_ID;
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
@@ -33,6 +37,12 @@ public class AllTestsSuite {
 		AllTestsSuite.getInitializer().initializeLaborItemsOrdersResults();
 		AllTestsSuite.getInitializer().initializeReminders();
 		AllTestsSuite.getInitializer().initializeLeistungsblockTables();
+		
+		Stock rowaStock = new StockService.Builder("RWA", 0).build();
+		rowaStock.setDriverUuid(MockStockCommissioningSystemDriverFactory.uuid.toString());
+		rowaStock.setDriverConfig("10.10.20.30:6050;defaultOutputDestination=2");
+		StockService.save(rowaStock);
+		RWA_ID = rowaStock.getId();
 	}
 
 	public static TestDatabaseInitializer getInitializer() {

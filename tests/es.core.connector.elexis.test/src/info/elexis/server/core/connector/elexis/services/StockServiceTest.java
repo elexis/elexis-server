@@ -1,17 +1,22 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.services.IStockService.Availability;
 import info.elexis.server.core.connector.elexis.AllTestsSuite;
+import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
@@ -21,6 +26,7 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestEntities;
 public class StockServiceTest extends AbstractServiceTest {
 
 	private static Stock defaultStock;
+	private static Stock rowaStock;
 
 	private static StockService stockService = new StockService();
 	private static ArtikelstammItem article_A;
@@ -43,11 +49,18 @@ public class StockServiceTest extends AbstractServiceTest {
 
 		defaultStock = StockService.load("STD").get();
 
+		rowaStock = StockService.load(AllTestsSuite.RWA_ID).get();
+
 		IStockEntry stockEntry_A = stockService.storeArticleInStock(defaultStock, artikel_AStS);
 		stockEntry_A.setMinimumStock(5);
 		stockEntry_A.setCurrentStock(10);
 		stockEntry_A.setMaximumStock(15);
 		StockEntryService.save((StockEntry) stockEntry_A);
+	}
+
+	@After
+	public void teardownPatientAndBehandlung() {
+		cleanup();
 	}
 
 	@Test
@@ -128,6 +141,35 @@ public class StockServiceTest extends AbstractServiceTest {
 
 		Availability availability4 = stockService.getCumulatedAvailabilityForArticle(item2);
 		assertEquals(Availability.CRITICAL_STOCK, availability4);
+	}
+
+	@Test
+	public void testOutlayOnBillingArticleIncluding6324() {
+		ArtikelstammItem artikelstammItem = ArtikelstammItemService.findByGTIN("7680531600264").get();
+		IStockEntry se = stockService.storeArticleInStock(rowaStock,
+				StoreToStringService.storeToString(artikelstammItem));
+		se.setMinimumStock(500);
+		se.setCurrentStock(800);
+		StockEntryService.save((StockEntry) se);
+
+		ArtikelstammItem someItem = ArtikelstammItemService.load("0403265107202630212210008").get();
+		IStockEntry se2 = stockService.storeArticleInStock(rowaStock, StoreToStringService.storeToString(someItem));
+		se2.setMinimumStock(50);
+		se2.setCurrentStock(80);
+		StockEntryService.save((StockEntry) se2);
+
+		createTestMandantPatientFallBehandlung();
+
+		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem);
+		VerrechenbarArtikelstammItem pharmaV = new VerrechenbarArtikelstammItem(someItem);
+
+		IStatus status = verrechenbar.add(testBehandlungen.get(0), testContacts.get(0), null);
+		assertTrue(status.isOK());
+		assertEquals(799, stockService
+				.findStockEntryForArticleInStock(rowaStock, StoreToStringService.storeToString(artikelstammItem))
+				.getCurrentStock());
+
+		stockService.unstoreArticleFromStock(rowaStock, StoreToStringService.storeToString(someItem));
 	}
 
 }
