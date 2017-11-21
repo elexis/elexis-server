@@ -80,8 +80,8 @@ public class VerrechnetService extends PersistenceService {
 				// only output for integer values
 				// currently only RH bills, not considering the selling unit, hence we ignore it
 				// here
-				IStatus status = new StockService().performSingleDisposal((IArticle) iv.getEntity(), object.getZahl(),
-						null);
+				IStatus status = new StockService().performDisposal((IArticle) iv.getEntity(),
+						object.getDerivedCountValue(), null);
 				if (!status.isOK()) {
 					StatusUtil.logStatus(log, status, true);
 				}

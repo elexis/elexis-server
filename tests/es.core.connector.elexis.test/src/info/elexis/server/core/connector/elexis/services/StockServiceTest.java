@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.services.IStockService.Availability;
 import info.elexis.server.core.connector.elexis.AllTestsSuite;
@@ -163,11 +164,31 @@ public class StockServiceTest extends AbstractServiceTest {
 		VerrechenbarArtikelstammItem verrechenbar = new VerrechenbarArtikelstammItem(artikelstammItem);
 		VerrechenbarArtikelstammItem pharmaV = new VerrechenbarArtikelstammItem(someItem);
 
-		IStatus status = verrechenbar.add(testBehandlungen.get(0), testContacts.get(0), null);
+		// do not outlay
+		IStatus status = verrechenbar.add(testBehandlungen.get(0), testContacts.get(0), null, 0.5f);
 		assertTrue(status.isOK());
-		assertEquals(799, stockService
+		assertEquals(800, stockService
 				.findStockEntryForArticleInStock(rowaStock, StoreToStringService.storeToString(artikelstammItem))
 				.getCurrentStock());
+
+		status = verrechenbar.add(testBehandlungen.get(0), testContacts.get(0), null, 5);
+		assertTrue(status.isOK());
+		assertEquals(795, stockService
+				.findStockEntryForArticleInStock(rowaStock, StoreToStringService.storeToString(artikelstammItem))
+				.getCurrentStock());
+		status = verrechenbar.add(testBehandlungen.get(0), testContacts.get(0), null, 2);
+		assertTrue(status.isOK());
+		assertEquals(793, stockService
+				.findStockEntryForArticleInStock(rowaStock, StoreToStringService.storeToString(artikelstammItem))
+				.getCurrentStock());
+
+		// do outlay
+		ConfigService.INSTANCE.set(Preferences.INVENTORY_MACHINE_OUTLAY_PARTIAL_PACKAGES, Boolean.TRUE.toString());
+		status = pharmaV.add(testBehandlungen.get(0), testContacts.get(0), null, 0.5f);
+		assertTrue(status.isOK());
+		assertEquals(79,
+				stockService.findStockEntryForArticleInStock(rowaStock, StoreToStringService.storeToString(someItem))
+						.getCurrentStock());
 
 		stockService.unstoreArticleFromStock(rowaStock, StoreToStringService.storeToString(someItem));
 		stockService.unstoreArticleFromStock(rowaStock, StoreToStringService.storeToString(artikelstammItem));
@@ -203,7 +224,7 @@ public class StockServiceTest extends AbstractServiceTest {
 		assertStockEntryEquals(stockEntry_A, 4, 8);
 		stockService.modifyStockCount(stockEntry_A, 1);
 		assertStockEntryEquals(stockEntry_A, 5, 8);
-		
+
 		// test with article without a defined package size
 		artikelstammItem.setPkg_size(0);
 		ArtikelstammItemService.save(artikelstammItem);
@@ -211,7 +232,7 @@ public class StockServiceTest extends AbstractServiceTest {
 		assertStockEntryEquals(stockEntry_A, 4, 8);
 		stockService.modifyStockCount(stockEntry_A, -0.5f);
 		assertStockEntryEquals(stockEntry_A, 3, 8);
-		
+
 		artikelstammItem.setPkg_size(16);
 		ArtikelstammItemService.save(artikelstammItem);
 	}
