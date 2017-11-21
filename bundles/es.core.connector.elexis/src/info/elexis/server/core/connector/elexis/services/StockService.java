@@ -9,7 +9,10 @@ import javax.persistence.Query;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IStock;
@@ -29,6 +32,8 @@ import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class StockService extends PersistenceService implements IStockService {
+
+	private Logger log = LoggerFactory.getLogger(StockService.class);
 
 	public static class Builder extends AbstractBuilder<Stock> {
 		public Builder(String code, int priority) {
@@ -211,8 +216,16 @@ public class StockService extends PersistenceService implements IStockService {
 		return Optional.empty();
 	}
 
-	@Override
-	public IStatus performSingleDisposal(IArticle article, int count, String mandatorId) {
+	/**
+	 * Perform a disposal of a stock article. Takes into account whether
+	 * 
+	 * @param article
+	 * @param count
+	 * @param mandatorId
+	 * @return
+	 * @since 1.5
+	 */
+	public IStatus performDisposal(IArticle article, float count, String mandatorId) {
 		if (article == null) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Article is null");
 		}
@@ -224,39 +237,21 @@ public class StockService extends PersistenceService implements IStockService {
 		}
 
 		if (se.getStock().isCommissioningSystem()) {
-			return new StockCommissioningSystemService().performArticleOutlay(se, count, null);
+			int outputCount;
+			if (count % 1 != 0) {
+				boolean performPartialOutly = ConfigService.INSTANCE.get(
+						Preferences.INVENTORY_MACHINE_OUTLAY_PARTIAL_PACKAGES,
+						Preferences.INVENTORY_MACHINE_OUTLAY_PARTIAL_PACKAGES_DEFAULT);
+				outputCount = (int) ((performPartialOutly) ? Math.ceil(count) : Math.floor(count));
+			} else {
+				outputCount = (int) count;
+			}
+
+			return new StockCommissioningSystemService().performArticleOutlay(se, outputCount, null);
 		} else {
 			Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
 			if (li.isPresent()) {
-				int fractionUnits = se.getFractionUnits();
-				int ve = article.getSellingUnit();
-				int vk = article.getPackageUnit();
-
-				if (vk == 0) {
-					if (ve != 0) {
-						vk = ve;
-					}
-				}
-				if (ve == 0) {
-					if (vk != 0) {
-						ve = vk;
-					}
-				}
-				int num = count * ve;
-				int cs = se.getCurrentStock();
-				if (vk == ve) {
-					se.setCurrentStock(cs - count);
-
-				} else {
-					int rest = fractionUnits - num;
-					while (rest < 0) {
-						rest = rest + vk;
-						se.setCurrentStock(cs - 1);
-					}
-					se.setFractionUnits(rest);
-				}
-
-				se = (IStockEntry) StockEntryService.save((StockEntry) se);
+				modifyStockCount(se, count * -1);
 
 				LockServiceInstance.INSTANCE.releaseLock(li.get());
 				return Status.OK_STATUS;
@@ -264,6 +259,11 @@ public class StockService extends PersistenceService implements IStockService {
 
 			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Could not acquire lock");
 		}
+	}
+
+	@Override
+	public IStatus performSingleDisposal(IArticle article, int count, String mandatorId) {
+		return performDisposal(article, (float) count, mandatorId);
 	}
 
 	@Override
@@ -285,39 +285,66 @@ public class StockService extends PersistenceService implements IStockService {
 
 		Optional<LockInfo> li = LockServiceInstance.INSTANCE.acquireLockBlocking((StockEntry) se);
 		if (li.isPresent()) {
-			int fractionUnits = se.getFractionUnits();
-			int ve = article.getSellingUnit();
-			int vk = article.getPackageUnit();
-
-			if (vk == 0) {
-				if (ve != 0) {
-					vk = ve;
-				}
-			}
-			if (ve == 0) {
-				if (vk != 0) {
-					ve = vk;
-				}
-			}
-			int num = count * ve;
-			int cs = se.getCurrentStock();
-			if (vk == ve) {
-				se.setCurrentStock(cs + count);
-			} else {
-				int rest = fractionUnits + num;
-				while (rest > vk) {
-					rest = rest - vk;
-					se.setCurrentStock(cs + 1);
-				}
-				se.setFractionUnits(rest);
-			}
-
-			se = (IStockEntry) StockEntryService.save((StockEntry) se);
+			modifyStockCount(se, count);
+			
 			LockServiceInstance.INSTANCE.releaseLock(li.get());
 			return Status.OK_STATUS;
 		}
 
 		return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Could not acquire lock");
+	}
+
+	/**
+	 * Modify the stock count for a given {@link IStockEntry}.<br>
+	 * The float value is split into base and mantissa, where base is the number of
+	 * full packages inserted (positive value) or dispensed (negative value). <br>
+	 * The mantissa is treated as a percentage value to the full package size of the
+	 * article (if available). If the package size of the article can not be
+	 * determined, the action is performed on the rounded full unit.
+	 * 
+	 * @param stockEntry
+	 * @param count
+	 * @since 1.5
+	 */
+	public void modifyStockCount(IStockEntry stockEntry, float count) {
+		int fullUnitsOnStock = stockEntry.getCurrentStock();
+		int fractionUnitsOnStock = stockEntry.getFractionUnits();
+		int packageUnit = stockEntry.getArticle().getPackageUnit();
+		int fullUnits;
+		int fractionUnits;
+		if ((count % 1 != 0) && packageUnit == 0) {
+			// we can't correctly determine the fractions
+			float tmpCount = (count < 0) ? (int) Math.floor(count) : (int) Math.ceil(count);
+			fullUnits = Math.abs((int) tmpCount);
+			fractionUnits = 0;
+			log.warn("StockEntry [{}], cannot determine fraction [{}], will handle as [{}].",
+					((StockEntry) stockEntry).getId(), Float.toString(count), Integer.toString(fullUnits));
+			count = tmpCount;
+		} else {
+			fullUnits = Math.abs((int) count);
+			fractionUnits = (int) ((Math.abs(count) - fullUnits) * packageUnit);
+		}
+	
+		if (count > 0) {
+			// add to stock
+			if (fractionUnits + fractionUnitsOnStock >= packageUnit) {
+				fullUnits++;
+				fractionUnits -= (fullUnits * packageUnit);
+			}
+		} else if (count < 0) {
+			// remove from stock
+			if (fractionUnits >= fractionUnitsOnStock) {
+				if (fractionUnits > fractionUnitsOnStock) {
+					fullUnits++;
+				}
+			}
+			fullUnits *= -1;
+			fractionUnits *= -1;
+		}
+	
+		stockEntry.setCurrentStock(fullUnitsOnStock + fullUnits);
+		stockEntry.setFractionUnits(Math.abs(fractionUnitsOnStock + fractionUnits));
+		StockEntryService.save((StockEntry) stockEntry);
 	}
 
 }

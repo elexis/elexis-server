@@ -170,6 +170,55 @@ public class StockServiceTest extends AbstractServiceTest {
 				.getCurrentStock());
 
 		stockService.unstoreArticleFromStock(rowaStock, StoreToStringService.storeToString(someItem));
+		stockService.unstoreArticleFromStock(rowaStock, StoreToStringService.storeToString(artikelstammItem));
+	}
+
+	@Test
+	public void testModifyStock() {
+		// article with 16 pieces per package
+		ArtikelstammItem artikelstammItem = ArtikelstammItemService.load("0768065339003664487240008").get();
+		IStockEntry stockEntry_A = stockService.storeArticleInStock(defaultStock,
+				StoreToStringService.storeToString(artikelstammItem));
+		stockEntry_A.setMinimumStock(5);
+		stockEntry_A.setCurrentStock(10);
+		stockEntry_A.setMaximumStock(15);
+		StockEntryService.save((StockEntry) stockEntry_A);
+
+		// test with article that has a defined package size
+		stockService.modifyStockCount(stockEntry_A, -1);
+		assertStockEntryEquals(stockEntry_A, 9, 0);
+		stockService.modifyStockCount(stockEntry_A, -0.5f);
+		assertStockEntryEquals(stockEntry_A, 8, 8);
+		stockService.modifyStockCount(stockEntry_A, -0.5f);
+		assertStockEntryEquals(stockEntry_A, 8, 0);
+		stockService.modifyStockCount(stockEntry_A, -1.5f);
+		assertStockEntryEquals(stockEntry_A, 6, 8);
+		stockService.modifyStockCount(stockEntry_A, -1.5f);
+		assertStockEntryEquals(stockEntry_A, 5, 0);
+		stockService.modifyStockCount(stockEntry_A, 0.5f);
+		assertStockEntryEquals(stockEntry_A, 5, 8);
+		stockService.modifyStockCount(stockEntry_A, 0f);
+		assertStockEntryEquals(stockEntry_A, 5, 8);
+		stockService.modifyStockCount(stockEntry_A, -1);
+		assertStockEntryEquals(stockEntry_A, 4, 8);
+		stockService.modifyStockCount(stockEntry_A, 1);
+		assertStockEntryEquals(stockEntry_A, 5, 8);
+		
+		// test with article without a defined package size
+		artikelstammItem.setPkg_size(0);
+		ArtikelstammItemService.save(artikelstammItem);
+		stockService.modifyStockCount(stockEntry_A, -1);
+		assertStockEntryEquals(stockEntry_A, 4, 8);
+		stockService.modifyStockCount(stockEntry_A, -0.5f);
+		assertStockEntryEquals(stockEntry_A, 3, 8);
+		
+		artikelstammItem.setPkg_size(16);
+		ArtikelstammItemService.save(artikelstammItem);
+	}
+
+	private void assertStockEntryEquals(IStockEntry se, int currentStock, int fractionUnits) {
+		assertEquals(currentStock, se.getCurrentStock());
+		assertEquals(fractionUnits, se.getFractionUnits());
 	}
 
 }
