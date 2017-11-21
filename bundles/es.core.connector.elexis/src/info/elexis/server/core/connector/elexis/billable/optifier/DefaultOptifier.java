@@ -52,7 +52,6 @@ public class DefaultOptifier implements IOptifier {
 
 		if (foundVerrechnet != null) {
 			float newSum = foundVerrechnet.getDerivedCountValue() + count;
-			System.out.println(newSum+" "+count+" "+foundVerrechnet.getDerivedCountValue()+" SSDFSDFSDDFSD");
 			DefaultOptifier.changeCount(foundVerrechnet, newSum);
 			log.info("Changed count on existing Verrechnet entry ({}): {}", foundVerrechnet.getId(),
 					foundVerrechnet.getDerivedCountValue() + count);
