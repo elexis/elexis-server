@@ -27,9 +27,7 @@ public class SystemLocalAuthorizingRealm extends AuthorizingRealm implements ESA
 
 	public static final String REALM_NAME = "elexis-server.local";
 
-	static {
-		ElexisServerAuthenticationFile.loadFile();
-	}
+	private static ElexisServerAuthenticationFile esaf = ElexisServerAuthenticationFile.getInstance();
 
 	public SystemLocalAuthorizingRealm() {
 		super(new PasswordMatcher());
@@ -46,16 +44,10 @@ public class SystemLocalAuthorizingRealm extends AuthorizingRealm implements ESA
 				return null;
 			}
 
-			String hashedPassword = ElexisServerAuthenticationFile.getHashedPasswordForUserId(userid);
+			String hashedPassword = esaf.getHashedPasswordForClient(userid);
 			if (hashedPassword != null) {
 				SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userid, hashedPassword, REALM_NAME);
 				return info;
-			}
-		} else if (token instanceof ApiKeyAuthenticationToken) {
-			String apiKey = (String) ((ApiKeyAuthenticationToken) token).getCredentials();
-			String user = ElexisServerAuthenticationFile.getUserByApiKey(apiKey);
-			if (user != null) {
-
 			}
 		}
 
@@ -66,28 +58,27 @@ public class SystemLocalAuthorizingRealm extends AuthorizingRealm implements ESA
 	public AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		String userid = (String) getAvailablePrincipal(principals);
 
-		Set<String> roles = ElexisServerAuthenticationFile.getRolesForUserId(userid);
+		Set<String> roles = esaf.getRolesForClientId(userid);
 
 		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roles);
 		return info;
 	}
 
 	public static boolean localRealmIsInitialized() {
-		return ElexisServerAuthenticationFile.isInitialized();
+		return esaf.isInitialized();
 	}
 
 	/**
 	 * 
 	 * @param password
-	 * @return an apiKey generated for the esadmin user
 	 * @throws IOException
 	 */
-	public static String setInitialEsAdminPassword(String password) throws IOException {
-		return ElexisServerAuthenticationFile.setInitialEsAdminPassword(password);
+	public static void setInitialEsAdminPassword(String password) throws IOException {
+		esaf.setInitialEsAdminPassword(password);
 	}
 
 	public static void clearRealm() throws IOException {
-		ElexisServerAuthenticationFile.clearAndRemove();
+		esaf.clearAndRemove();
 	}
 
 }

@@ -84,7 +84,7 @@ location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.3.9.v201
 	org.eclipse.jetty.osgi.httpservice
 }
 
-location "http://hstaudacher.github.io/osgi-jax-rs-connector/5.3.1/" {
+location "http://medevit.github.io/osgi-jax-rs-connector/5.3.100/" {
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
@@ -148,6 +148,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.oltu.oauth2.jwt [1.0.2,1.1.0]
 	org.apache.oltu.oauth2.resourceserver [1.0.2,1.1.0]
 	org.apache.oltu.oauth2.resourceserver-filter [1.0.2,1.1.0]
+	org.apache.oltu.oauth2.client [1.0.2,1.1.0]
+	org.apache.oltu.oauth2.httpclient4 [1.0.2,1.1.0]
 	org.apache.commons.collections4
 	se.ugli.bigqueue
 	// weird problems with com.mysql.jdbc >= 5.1.39

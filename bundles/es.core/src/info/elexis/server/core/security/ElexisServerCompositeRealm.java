@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -63,7 +62,7 @@ public class ElexisServerCompositeRealm extends AuthorizingRealm {
 				return authInfo;
 			}
 		} else {
-			log.warn("AuthenticationInfo does not match against single realm []", realmNames);
+			log.warn("AuthenticationInfo does not match against single realm [{}]", realmNames);
 		}
 
 		return null;
@@ -109,7 +108,7 @@ public class ElexisServerCompositeRealm extends AuthorizingRealm {
 					return result;
 				}
 			} else {
-				log.warn("AuthenticationInfo does not match against single realm []", realmNames);
+				log.warn("AuthenticationInfo does not match against single realm [{}]", realmNames);
 			}
 
 			return false;
@@ -118,6 +117,6 @@ public class ElexisServerCompositeRealm extends AuthorizingRealm {
 
 	@Override
 	public boolean supports(AuthenticationToken token) {
-		return (token instanceof UsernamePasswordToken || token instanceof ApiKeyAuthenticationToken);
+		return true;
 	}
 }

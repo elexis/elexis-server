@@ -26,7 +26,6 @@ import ch.rgw.tools.PasswordEncryptionService;
 import info.elexis.server.core.common.security.ESAuthorizingRealm;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.services.UserService;
-import info.elexis.server.core.security.ApiKeyAuthenticationToken;
 
 /**
  * Realm to authenticate and authorize against an Elexis >=3.2 database.
@@ -63,11 +62,7 @@ public class ElexisConnectorAuthorizingRealm extends AuthorizingRealm implements
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException | DecoderException e) {
 					log.warn("Error verifying password for user [{}].", e);
 				}
-			} else if (token instanceof ApiKeyAuthenticationToken) {
-				// we loaded the user by its provided apiKey, so the fact
-				// that a principal is available proves the key
-				return sai.getPrincipals() != null;
-			}
+			} 
 
 			return false;
 		}
@@ -94,14 +89,7 @@ public class ElexisConnectorAuthorizingRealm extends AuthorizingRealm implements
 				}
 			}
 
-		} else if (token instanceof ApiKeyAuthenticationToken) {
-			String apiKey = (String) ((ApiKeyAuthenticationToken) token).getCredentials();
-			if (apiKey == null || apiKey.length() == 0) {
-				return null;
-			}
-
-			userOptional = UserService.findByApiKey(apiKey, false);
-		}
+		} 
 
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
@@ -132,6 +120,6 @@ public class ElexisConnectorAuthorizingRealm extends AuthorizingRealm implements
 
 	@Override
 	public boolean supports(AuthenticationToken token) {
-		return (token instanceof UsernamePasswordToken || token instanceof ApiKeyAuthenticationToken);
+		return (token instanceof UsernamePasswordToken);
 	}
 }
