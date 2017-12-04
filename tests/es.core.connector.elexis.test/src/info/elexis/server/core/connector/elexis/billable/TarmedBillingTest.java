@@ -303,7 +303,6 @@ public class TarmedBillingTest extends AbstractServiceTest {
 	}
 
 	@Test
-	@Ignore("https://redmine.medelexis.ch/issues/9101")
 	public void testAddCompatibleAndIncompatibleTarmedBilling() {
 		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
 		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();

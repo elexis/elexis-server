@@ -540,7 +540,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				if (tarmedLimitation.isTestable()) {
 					Result<IBillable> result = tarmedLimitation.test(kons, newVerrechnet);
 					if (!result.isOK()) {
-						
+
 						return result;
 					}
 				}
@@ -906,6 +906,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		}
 		List<String> blocks = tarmed.getServiceBlocks(date);
 		for (String blockName : blocks) {
+			if (skipBlockExclusives(blockName)) {
+				continue;
+			}
 			List<TarmedExclusive> exclusives = TarmedLeistungService.getExclusives(blockName,
 					TarmedKumulationType.BLOCK, date, tarmed.getLaw());
 			// currently only test blocks exclusives, exclude hierarchy matches
@@ -923,6 +926,18 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 		}
 		return Status.OK_STATUS;
+	}
+
+	private boolean skipBlockExclusives(String blockName) {
+		try {
+			Integer blockNumber = Integer.valueOf(blockName);
+			if (blockNumber > 50 && blockNumber < 60) {
+				return true;
+			}
+		} catch (NumberFormatException nfe) {
+			// ignore and do not skip
+		}
+		return false;
 	}
 
 	private boolean isMatchingHierarchy(TarmedLeistung tarmedCode, TarmedLeistung tarmed, TimeTool date) {
