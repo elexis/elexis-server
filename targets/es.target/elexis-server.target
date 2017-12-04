@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1511189618">
+<target name="Elexis-Server" sequenceNumber="1512375411">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -127,7 +127,7 @@
       <unit id="org.unbescape" version="1.1.4.RELEASE"/>
       <unit id="org.springframework.spring-web" version="4.3.8.RELEASE"/>
       <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
-      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/p2/master/target/"/>
+      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/master/p2/target/"/>
     </location>
   </locations>
 </target>
