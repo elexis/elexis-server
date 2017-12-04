@@ -50,7 +50,7 @@ public class TarmedOptifierTest {
 	private static Kontakt patGrissemann, patStermann, patOneYear;
 	private static Behandlung konsGriss, konsSter, konsOneYear;
 	private static IBillable<TarmedLeistung> tlBaseFirst5Min, tlBaseXRay, tlBaseRadiologyHospital, tlUltrasound,
-			tlTapingCat1, tlAgeTo1Month, tlAgeTo7Years, tlAgeFrom7Years, tlGroupLimit1, tlGroupLimit2;
+			tlAgeTo1Month, tlAgeTo7Years, tlAgeFrom7Years, tlGroupLimit1, tlGroupLimit2;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -75,8 +75,6 @@ public class TarmedOptifierTest {
 				TarmedLeistungService.findFromCode("39.0015", new TimeTool()).get());
 		tlUltrasound = new VerrechenbarTarmedLeistung(
 				TarmedLeistungService.findFromCode("39.3005", new TimeTool()).get());
-		tlTapingCat1 = new VerrechenbarTarmedLeistung(
-				TarmedLeistungService.findFromCode("01.0110", new TimeTool()).get());
 
 		tlAgeTo1Month = new VerrechenbarTarmedLeistung(
 				TarmedLeistungService.findFromCode("00.0870", new TimeTool()).get());
@@ -133,16 +131,19 @@ public class TarmedOptifierTest {
 	@Test
 	public void testAddCompatibleAndIncompatible() {
 		clearKons(konsGriss);
-		IStatus resultGriss = optifier.add(tlUltrasound, konsGriss);
+		IStatus resultGriss = optifier.add(getT("39.3005"), konsGriss);
 		assertTrue(resultGriss.isOK());
-		resultGriss = optifier.add(tlBaseXRay, konsGriss);
+		resultGriss = optifier.add(getT("39.0020"), konsGriss);
 		assertFalse(resultGriss.isOK());
-		resultGriss = optifier.add(tlTapingCat1, konsGriss);
-		assertFalse(resultGriss.isOK());
-		resultGriss = optifier.add(TarmedLeistungService.getVerrechenbarFromCode("39.3830", new TimeTool(), null).get(),
-				konsGriss);
+		resultGriss = optifier.add(getT("01.0110"), konsGriss);
+		assertTrue(resultGriss.isOK());
+		resultGriss = optifier.add(getT("39.3830"), konsGriss);
 		assertTrue(resultGriss.isOK());
 		resetKons(konsGriss);
+	}
+
+	private IBillable<TarmedLeistung> getT(String string) {
+		return TarmedLeistungService.getVerrechenbarFromCode(string, new TimeTool(), null).get();
 	}
 
 	@Test
@@ -254,7 +255,7 @@ public class TarmedOptifierTest {
 		resultSter = optifier.add(additionalService, konsSter);
 		assertTrue(resultSter.isOK());
 		assertEquals(1, VerrechnetService.getVerrechnetForBehandlung(konsSter, additionalService).get().getZahl());
-		
+
 		// add another main and additional
 		resultSter = optifier.add(mainService, konsSter);
 		assertTrue(resultSter.isOK());
