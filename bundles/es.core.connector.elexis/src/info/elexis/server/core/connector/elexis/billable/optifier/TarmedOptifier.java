@@ -1,7 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2006-2010, G. Weirich and Elexis
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    G. Weirich - initial implementation
+ *    
+ *******************************************************************************/
+
 package info.elexis.server.core.connector.elexis.billable.optifier;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +28,16 @@ import org.eclipse.core.runtime.Status;
 
 import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.status.ObjectStatus;
+import ch.rgw.tools.Result;
 import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedExclusive;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedKumulationType;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLeistungAge;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation.LimitationUnit;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
@@ -23,16 +45,23 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedGroup;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
+import info.elexis.server.core.connector.elexis.services.ConfigService;
 import info.elexis.server.core.connector.elexis.services.FallService;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
+import info.elexis.server.core.connector.elexis.services.TarmedExclusion;
 import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 import info.elexis.server.core.connector.elexis.services.UserconfigService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 /**
- * port of TarmedOptifier from Elexis RCP
+ * Dies ist eine Beispielimplementation des IOptifier Interfaces, welches einige
+ * einfache Checks von Tarmed-Verrechnungen durchführt
+ * 
+ * @author gerry
+ * 
  */
 public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	private static final String TL = "TL"; //$NON-NLS-1$
@@ -46,6 +75,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	public static final int LEISTUNGSTYP = 6;
 	public static final int NOTYETVALID = 7;
 	public static final int NOMOREVALID = 8;
+	public static final int PATIENTAGE = 9;
+	public static final int EXKLUSIVE = 10;
 
 	public static final String SIDE = "Seite";
 	public static final String SIDE_L = "l";
@@ -63,16 +94,35 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	private Verrechnet newVerrechnet;
 	private String newVerrechnetSide;
 
+	/**
+	 * Hier kann eine Behandlung als Ganzes nochmal überprüft werden
+	 */
+	@SuppressWarnings("rawtypes")
+	public IStatus optify(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
+		List<TarmedLeistung> postponed = new LinkedList<TarmedLeistung>();
+		for (Verrechnet vv : VerrechnetService.getAllVerrechnetForBehandlung(kons)) {
+			Optional<IBillable> iv = VerrechnetService.getVerrechenbar(vv);
+			if (iv.isPresent() && iv.get() instanceof TarmedLeistung) {
+				TarmedLeistung tl = (TarmedLeistung) iv.get();
+				String tcid = tl.getCode();
+				if (("35.0020".equals(tcid)) || ("04.1930".equals(tcid)) || "00.25".startsWith(tcid)) {
+					postponed.add(tl);
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public IStatus add(IBillable<TarmedLeistung> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact,
 			float count) {
-		
+
 		IStatus status = Status.OK_STATUS;
 		Object verrechnet = null;
-		
+
 		for (int i = 0; i < count; i++) {
 			status = add(code, kons, userContact, mandatorContact);
-			if(!status.isOK()) {
+			if (!status.isOK()) {
 				return new ObjectStatus(status, verrechnet);
 			} else {
 				verrechnet = ((ObjectStatus) status).getObject();
@@ -81,24 +131,35 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 
 		return status;
 	}
-	
+
+	/**
+	 * Convenience method, assuming mandator = kons.getMandant(), user =
+	 * kons.getMandant and count = 1;
+	 * 
+	 * @param code
+	 * @param kons
+	 * @param userContact
+	 * @return
+	 */
+	public IStatus add(IBillable<TarmedLeistung> code, Behandlung kons) {
+		return add(code, kons, kons.getMandant(), kons.getMandant(), 1);
+	}
+
 	/**
 	 * Eine Verrechnungsposition zufügen. Der Optifier muss prüfen, ob die
-	 * Verrechnungsposition im Kontext der übergebenen Konsultation verwendet
-	 * werden kann und kann sie ggf. zurückweisen oder modifizieren.
+	 * Verrechnungsposition im Kontext der übergebenen Behandlung verwendet werden
+	 * kann und kann sie ggf. zurückweisen oder modifizieren.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	public IStatus add(IBillable<TarmedLeistung> code, Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
 
 		bOptify = UserconfigService.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY, true);
 
 		TarmedLeistung tc = code.getEntity();
 		List<Verrechnet> lst = VerrechnetService.getAllVerrechnetForBehandlung(kons);
-		boolean checkBezug = false;
-		boolean bezugOK = true;
 		/*
-		 * TODO Hier checken, ob dieser code mit der Dignität und
-		 * Fachspezialisierung des aktuellen Mandanten usw. vereinbar ist
+		 * TODO Hier checken, ob dieser code mit der Dignität und Fachspezialisierung
+		 * des aktuellen Mandanten usw. vereinbar ist
 		 */
 
 		Map<String, String> ext;
@@ -110,13 +171,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			ext = extension.getLimits();
 		}
 
-		// Bezug prüfen
-		String bezug = (String) ext.get("Bezug"); //$NON-NLS-1$
-		if (!StringTool.isNothing(bezug)) {
-			checkBezug = true;
-			bezugOK = false;
-		}
-		// Gültigkeit gemäss Datum prüfen
+		// Gültigkeit gemäss Datum und Alter prüfen
 		if (bOptify) {
 			LocalDate date = kons.getDatum();
 			if (!StringTool.isNothing(tc.getGueltigVon())) {
@@ -133,6 +188,13 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 							code.getCode() + Messages.TarmedOptifier_NoMoreValid);
 				}
 			}
+			String ageLimits = ext.get(TarmedLeistung.EXT_FLD_SERVICE_AGE);
+			if (ageLimits != null && !ageLimits.isEmpty()) {
+				String errorMessage = checkAge(ageLimits, kons);
+				if (errorMessage != null) {
+					return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, code.getCode() + errorMessage);
+				}
+			}
 		}
 		newVerrechnet = null;
 		newVerrechnetSide = null;
@@ -143,44 +205,40 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				gesetz = FallService.getAbrechnungsSystem(kons.getFall());
 			}
 
-			if ("KVG".equalsIgnoreCase(gesetz) && tc.getCode().matches("39.0011")) {
-				Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode("39.0010");
-				if (tl.isPresent()) {
-					return add(tl.get(), kons, userContact, mandatorContact);
-				}
-
+			if (gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0011")) {
+				return this.add(getKonsVerrechenbar("39.0010", kons), kons);
 			} else if (!gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0010")) {
-				Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode("39.0011");
-				if (tl.isPresent()) {
-					return add(tl.get(), kons, userContact, mandatorContact);
-				}
+				return this.add(getKonsVerrechenbar("39.0011", kons), kons);
 			}
 
-			if ("KVG".equalsIgnoreCase(gesetz) && tc.getCode().matches("39.0016")) {
-				Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode("39.0015");
-				if (tl.isPresent()) {
-					return add(tl.get(), kons, userContact, mandatorContact);
-				}
-
+			if (gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0016")) {
+				return this.add(getKonsVerrechenbar("39.0015", kons), kons);
 			} else if (!gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0015")) {
-				Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode("39.0016");
-				if (tl.isPresent()) {
-					return add(tl.get(), kons, userContact, mandatorContact);
-				}
+				return this.add(getKonsVerrechenbar("39.0016", kons), kons);
 			}
 
-			if ("KVG".equalsIgnoreCase(gesetz) && tc.getCode().matches("39.0021")) {
-				Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode("39.0020");
-				if (tl.isPresent()) {
-					return this.add(tl.get(), kons, userContact, mandatorContact);
-				}
-
+			if (gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0021")) {
+				return this.add(getKonsVerrechenbar("39.0020", kons), kons);
 			} else if (!gesetz.equalsIgnoreCase("KVG") && tc.getCode().matches("39.0020")) {
-				Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode("39.0021");
-				if (tl.isPresent()) {
-					return this.add(tl.get(), kons, userContact, mandatorContact);
-				}
+				return this.add(getKonsVerrechenbar("39.0021", kons), kons);
 			}
+		}
+
+		if (tc.getCode().matches("35.0020")) {
+			List<Verrechnet> opCodes = getOPList(lst);
+			List<Verrechnet> opReduction = getVerrechnetMatchingCode(lst, "35.0020");
+			// updated reductions to codes, and get not yet reduced codes
+			List<Verrechnet> availableCodes = updateOPReductions(opCodes, opReduction);
+			if (availableCodes.isEmpty()) {
+				return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, code.getCode() + " " + KOMBINATION);
+
+			}
+			for (Verrechnet verrechnet : availableCodes) {
+				newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).build();
+				mapOpReduction(verrechnet, newVerrechnet);
+			}
+			return Status.OK_STATUS;
+			// return new Result<IBillable>(null);
 		}
 
 		// Ist der Hinzuzufügende Code vielleicht schon in der Liste? Dann
@@ -190,19 +248,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				if (!tc.requiresSide()) {
 					newVerrechnet = v;
 					newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
-				}
-				if (bezugOK) {
+					saveVerrechnet();
 					break;
-				}
-			}
-			// "Nur zusammen mit" - Bedingung erfüllt ?
-			if (checkBezug && bOptify) {
-				Optional<IBillable> ver = VerrechnetService.getVerrechenbar(v);
-				if (ver.isPresent() && ver.get().getCode() != null && ver.get().getCode().equals(bezug)) {
-					bezugOK = true;
-					if (newVerrechnet != null) {
-						break;
-					}
 				}
 			}
 		}
@@ -220,18 +267,18 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 			// Exclusionen
 			if (bOptify) {
-				TarmedLeistung newTarmed = code.getEntity();
+				TarmedLeistung newTarmed = (TarmedLeistung) code.getEntity();
 				for (Verrechnet v : lst) {
 					Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
 					if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
 						TarmedLeistung tarmed = (TarmedLeistung) verrechenbar.get().getEntity();
 						// check if new has an exclusion for this verrechnet
 						// tarmed
-						IStatus resCompatible = isCompatible(tarmed, newTarmed);
+						IStatus resCompatible = isCompatible(tarmed, newTarmed, kons);
 						if (resCompatible.isOK()) {
 							// check if existing tarmed has exclusion for
 							// new one
-							resCompatible = isCompatible(newTarmed, tarmed);
+							resCompatible = isCompatible(newTarmed, tarmed, kons);
 						}
 
 						if (!resCompatible.isOK()) {
@@ -253,9 +300,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						}
 						for (Verrechnet v : lst) {
 							Optional<IBillable> vr = VerrechnetService.getVerrechenbar(v);
-
-							if (vr.isPresent() && vr.get().getCode() != null
-									&& vr.get().getCode().equals(excludeCode)) {
+							if (vr.isPresent() && vr.get().getCode().equals(excludeCode)) {
 								VerrechnetService.delete(newVerrechnet);
 								return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
 										"00.0750 ist nicht im Rahmen einer ärztlichen Beratung 00.0010 verrechnenbar.");
@@ -263,79 +308,55 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						}
 					}
 				}
-
 			}
-			newVerrechnet.setDetail(AL, Integer.toString(tc.getAL()));
+			newVerrechnet.setDetail(AL, Integer.toString(TarmedLeistungService.getAL(tc, kons.getMandant())));
 			newVerrechnet.setDetail(TL, Integer.toString(tc.getTL()));
 			lst.add(newVerrechnet);
 		}
 
-		/*
-		 * Dies führt zu Fehlern bei Codes mit mehreren Master-Möglichkeiten ->
-		 * vorerst raus // "Zusammen mit" - Bedingung nicht erfüllt ->
-		 * Hauptziffer einfügen. if(checkBezug){ if(bezugOK==false){
-		 * TarmedLeistung tl=TarmedLeistung.load(bezug); Result<IVerrechenbar>
-		 * r1=add(tl,kons); if(!r1.isOK()){
-		 * r1.add(Log.WARNINGS,KOMBINATION,code.getCode()+" nur zusammen mit
-		 * "+bezug,null,false); //$NON-NLS-1$ return r1; } } }
-		 */
-
-		// Prüfen, ob zu oft verrechnet - diese Version prüft nur "pro
-		// Sitzung" und "pro Tag".
-		if (bOptify) {
-			String lim = (String) ext.get("limits"); //$NON-NLS-1$
-			if (lim != null) {
-				String[] lin = lim.split("#"); //$NON-NLS-1$
-				for (String line : lin) {
-					String[] f = line.split(","); //$NON-NLS-1$
-					if (f.length == 5) {
-						Integer limitCode = Integer.parseInt(f[4].trim());
-						switch (limitCode) {
-						case 10: // Pro Seite
-						case 7: // Pro Sitzung
-							Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(newVerrechnet);
-							if (verrechenbar.isPresent() && verrechenbar.get().getCode().equals("00.0020")) {
-								boolean result = UserconfigService.get(mandatorContact, BILL_ELECTRONICALLY, false);
-								if (result) {
-									break;
-								}
-							}
-							// todo check if electronic billing
-							if (f[2].equals("1") && f[0].equals("<=")) {
-								int menge = Math.round(Float.parseFloat(f[1]));
-								if (newVerrechnet.getZahl() > menge) {
-									newVerrechnet.setZahl(menge);
-									if (limitCode == 7) {
-										return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
-												Messages.TarmedOptifier_codemax + menge
-														+ Messages.TarmedOptifier_perSession);
-
-									} else if (limitCode == 10) {
-										return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
-												Messages.TarmedOptifier_codemax + menge
-														+ Messages.TarmedOptifier_perSide);
-									}
-								}
-							}
-							break;
-						case 21: // Pro Tag
-							if (f[2].equals("1") && f[0].equals("<=")) { // 1
-																			// Tag
-								int menge = Math.round(Float.parseFloat(f[1]));
-								if (newVerrechnet.getZahl() > menge) {
-									newVerrechnet.setZahl(menge);
-									return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
-											Messages.TarmedOptifier_codemax + menge + "Mal pro Tag");
-								}
-							}
-
-							break;
-						default:
-							break;
+		// set bezug of zuschlagsleistung and referenzleistung
+		if (isReferenceInfoAvailable() && shouldDetermineReference(tc)) {
+			// lookup available masters
+			List<Verrechnet> masters = getPossibleMasters(newVerrechnet, lst);
+			if (masters.isEmpty()) {
+				int zahl = newVerrechnet.getZahl();
+				if (zahl > 1) {
+					newVerrechnet.setZahl(zahl - 1);
+					saveVerrechnet();
+				} else {
+					VerrechnetService.delete(newVerrechnet);
+				}
+				return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Für die Zuschlagsleistung "
+						+ code.getCode() + " konnte keine passende Hauptleistung gefunden werden.");
+			}
+			if (!masters.isEmpty()) {
+				String bezug = newVerrechnet.getDetail("Bezug");
+				if (bezug == null) {
+					// set bezug to first available master
+					newVerrechnet.setDetail("Bezug", VerrechnetService.getCode(masters.get(0)));
+				} else {
+					boolean found = false;
+					// lookup matching, or create new Verrechnet
+					for (Verrechnet mVerr : masters) {
+						if (VerrechnetService.getCode(mVerr).equals(bezug)) {
+							// just mark as found as amount is already increased
+							found = true;
 						}
+					}
+					if (!found) {
+						// create a new Verrechnet and decrease amount
+						newVerrechnet.setZahl(newVerrechnet.getZahl() - 1);
+						saveVerrechnet();
+						newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).build();
+						newVerrechnet.setDetail("Bezug", VerrechnetService.getCode(masters.get(0)));
 					}
 				}
 			}
+		}
+
+		Result<IBillable> limitResult = checkLimitations(kons, tc, newVerrechnet);
+		if (!limitResult.isOK()) {
+			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, limitResult.toString());
 		}
 
 		String tcid = code.getCode();
@@ -344,55 +365,17 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		// default xray tax will only be added once (see above)
 		if (!tc.getCode().equals(DEFAULT_TAX_XRAY_ROOM) && !tc.getCode().matches("39.002[01]")
 				&& tc.getParent().startsWith(CHAPTER_XRAY)) {
-			Optional<IBillable> tl = TarmedLeistungService.getVerrechenbarFromCode(DEFAULT_TAX_XRAY_ROOM);
-			if (tl.isPresent()) {
+			if (UserconfigService.get(userContact, Preferences.LEISTUNGSCODES_OPTIFY_XRAY, true)) {
 				saveVerrechnet();
-				add(tl.get(), kons, userContact, mandatorContact);
-			}
-			// add 39.0020, will be changed according to case (see above)
-			Optional<IBillable> tla = TarmedLeistungService.getVerrechenbarFromCode("39.0020");
-			if (tla.isPresent()) {
+				add(getKonsVerrechenbar(DEFAULT_TAX_XRAY_ROOM, kons), kons);
+				// add 39.0020, will be changed according to case (see above)
 				saveVerrechnet();
-				add(tla.get(), kons, userContact, mandatorContact);
+				add(getKonsVerrechenbar("39.0020", kons), kons);
 			}
-		}
-
-		// double factor =
-		// PersistentObject.checkZeroDouble(check.get("VK_Scale"));
-		// Abzug für Praxis-Op. (alle TL von OP I auf 40% reduzieren)
-		if ("35.0020".equals(tcid)) {
-
-			double sum = 0.0;
-			for (Verrechnet v : lst) {
-				Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
-				if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
-					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
-					if ("OP I".equals(tl.getSparte())) {
-						/*
-						 * int tech = tl.getTL(); double abzug = tech 4.0 /
-						 * 10.0; sum -= abzug;
-						 */
-						sum += tl.getTL();
-					}
-				}
-			}
-
-			// check.setPreis(new Money(sum));
-			newVerrechnet.setTP(sum);
-			newVerrechnet.setDetail(TL, Double.toString(sum));
-			newVerrechnet.setPrimaryScaleFactor(-0.4);
-			/*
-			 * double sum=0.0; for(Verrechnet v:lst){ if(v.getVerrechenbar()
-			 * instanceof TarmedLeistung){ TarmedLeistung tl=(TarmedLeistung)
-			 * v.getVerrechenbar(); if(tl.getSparteAsText().equals("OP I")){ int
-			 * tech=tl.getTL(); sum+=tech; } } } double scale=-0.4;
-			 * check.setDetail("scale", Double.toString(scale));
-			 * sum=sumfactor/100.0; check.setPreis(new Money(sum));
-			 */
 		}
 
 		// Interventionelle Schmerztherapie: Zuschlag cervical und thoracal
-		else if ("29.2090".equals(tcid)) {
+		else if (tcid.equals("29.2090")) {
 			double sumAL = 0.0;
 			double sumTL = 0.0;
 			for (Verrechnet v : lst) {
@@ -402,7 +385,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 					String tlc = tl.getCode();
 					double z = v.getZahl();
 					if (tlc.matches("29.20[12345678]0") || (tlc.equals("29.2200"))) {
-						sumAL += (z * tl.getAL()) / 2;
+						sumAL += (z * TarmedLeistungService.getAL(tl, kons.getMandant())) / 2;
 						sumTL += (z * tl.getTL()) / 4;
 					}
 				}
@@ -413,7 +396,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		}
 
 		// Zuschlag Kinder
-		else if ("00.0010".equals(tcid) || "00.0060".equals(tcid)) {
+		else if (tcid.equals("00.0010") || tcid.equals("00.0060")) {
 			boolean result = UserconfigService.get(mandatorContact, PREF_ADDCHILDREN, false);
 
 			if (result) {
@@ -423,12 +406,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 					if (p != null) {
 						int alter = KontaktService.getAgeInYears(p);
 						if (alter >= 0 && alter < 6) {
-							Optional<TarmedLeistung> tl = TarmedLeistungService.findFromCode("00.0040",
-									new TimeTool(kons.getDatum()));
-							if (tl.isPresent()) {
-								saveVerrechnet();
-								add(new VerrechenbarTarmedLeistung(tl.get()), kons, userContact, mandatorContact);
-							}
+							TarmedLeistung tl = (TarmedLeistung) getKonsVerrechenbar("00.0040", kons);
+							saveVerrechnet();
+							add(new VerrechenbarTarmedLeistung(tl), kons, userContact, mandatorContact);
 						}
 					}
 				}
@@ -436,7 +416,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		}
 
 		// Zuschläge für Insellappen 50% auf AL und TL bei 1910,20,40,50
-		else if ("04.1930".equals(tcid)) {
+		else if (tcid.equals("04.1930")) { //$NON-NLS-1$
 			double sumAL = 0.0;
 			double sumTL = 0.0;
 			for (Verrechnet v : lst) {
@@ -445,9 +425,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 					String tlc = tl.getCode();
 					int z = v.getZahl();
-					if ("04.1910".equals(tlc) || "04.1920".equals(tlc) || "04.1940".equals(tlc)
-							|| "04.1950".equals(tlc)) {
-						sumAL += tl.getAL() * z;
+					if (tlc.equals("04.1910") || tlc.equals("04.1920") || tlc.equals("04.1940") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							|| tlc.equals("04.1950")) { //$NON-NLS-1$
+						sumAL += TarmedLeistungService.getAL(tl, kons.getMandant()) * z;
 						sumTL += tl.getTL() * z;
 						// double al = (tl.getAL() * 15) / 10.0;
 						// double tel = (tl.getTL() * 15) / 10.0;
@@ -463,19 +443,19 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			newVerrechnet.setDetail(TL, Double.toString(sumTL));
 			newVerrechnet.setPrimaryScaleFactor(0.5);
 		}
-		// Zuschläge für 04.0620 sollte sich diese mit 70% auf die Positionen 04.0630 & 04.0640 beziehen
+		// Zuschläge für 04.0620 sollte sich diese mit 70% auf die Positionen 04.0630 &
+		// 04.0640 beziehen
 		else if (tcid.equals("04.0620")) {
 			double sumAL = 0.0;
 			double sumTL = 0.0;
 			for (Verrechnet v : lst) {
 				Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
-				if (verrechenbar.isPresent()
-					&& verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+				if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
 					TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
 					String tlc = tl.getCode();
 					int z = v.getZahl();
 					if (tlc.equals("04.0610") || tlc.equals("04.0630") || tlc.equals("04.0640")) {
-						sumAL += tl.getAL() * z;
+						sumAL += TarmedLeistungService.getAL(tl, kons.getMandant()) * z;
 						sumTL += tl.getTL() * z;
 					}
 				}
@@ -485,7 +465,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			newVerrechnet.setDetail(TL, Double.toString(sumTL));
 			newVerrechnet.setPrimaryScaleFactor(0.7);
 		}
-		
+
 		// Notfall-Zuschläge
 		if (tcid.startsWith("00.25")) { //$NON-NLS-1$
 			double sum = 0.0;
@@ -504,7 +484,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						if (tl.getCode().startsWith("00.25")) { //$NON-NLS-1$
 							continue;
 						}
-						sum += (tl.getAL() * v.getZahl());
+						sum += (TarmedLeistungService.getAL(tl, kons.getMandant()) * v.getZahl());
 						// int summand = tl.getAL() >> 2; // TODO ev. float?
 						// -> Rundung?
 						// ((sum.addCent(summand * v.getZahl());
@@ -528,7 +508,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						}
 						// int summand = tl.getAL() >> 1;
 						// sum.addCent(summand * v.getZahl());
-						sum += (tl.getAL() * v.getZahl());
+						sum += (TarmedLeistungService.getAL(tl, kons.getMandant()) * v.getZahl());
 					}
 				}
 				// check.setPreis(sum.multiply(factor));
@@ -543,61 +523,456 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				break;
 
 			}
-			// return new Result<IVerrechenbar>(Result.SEVERITY.OK,
-			// PREISAENDERUNG, "Preis", null, false); //$NON-NLS-1$
 		}
 
 		saveVerrechnet();
 
 		return ObjectStatus.OK_STATUS(newVerrechnet);
-		// return new Result<IVerrechenbar>(null);
-	}
-	
-	private void saveVerrechnet(){
-		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
 	}
 
-	@Override
 	@SuppressWarnings("rawtypes")
-	public IStatus optify(Behandlung kons, Kontakt userContact, Kontakt mandatorContact) {
-		List<TarmedLeistung> postponed = new LinkedList<TarmedLeistung>();
-		for (Verrechnet vv : VerrechnetService.getAllVerrechnetForBehandlung(kons)) {
-			Optional<IBillable> iv = VerrechnetService.getVerrechenbar(vv);
-			if (iv.isPresent() && iv.get() instanceof TarmedLeistung) {
-				TarmedLeistung tl = (TarmedLeistung) iv.get();
-				String tcid = tl.getCode();
-				if (("35.0020".equals(tcid)) || ("04.1930".equals(tcid)) || "00.25".startsWith(tcid)) {
-					postponed.add(tl);
+	private Result<IBillable> checkLimitations(Behandlung kons, TarmedLeistung tarmedLeistung,
+			Verrechnet newVerrechnet) {
+		if (bOptify) {
+			// service limitations
+			List<TarmedLimitation> limitations = TarmedLeistungService.getLimitations(tarmedLeistung);
+			for (TarmedLimitation tarmedLimitation : limitations) {
+				if (tarmedLimitation.isTestable()) {
+					Result<IBillable> result = tarmedLimitation.test(kons, newVerrechnet);
+					if (!result.isOK()) {
+						
+						return result;
+					}
+				}
+			}
+			// group limitations
+			TimeTool date = new TimeTool(kons.getDatum());
+			List<String> groups = tarmedLeistung.getServiceGroups(date);
+			for (String groupName : groups) {
+				Optional<TarmedGroup> group = TarmedLeistungService.findTarmedGroup(groupName, tarmedLeistung.getLaw(),
+						date);
+				if (group.isPresent()) {
+					limitations = TarmedLeistungService.getLimitations(group.get());
+					for (TarmedLimitation tarmedLimitation : limitations) {
+						if (tarmedLimitation.isTestable()) {
+							Result<IBillable> result = tarmedLimitation.test(kons, newVerrechnet);
+							if (!result.isOK()) {
+								return result;
+							}
+						}
+					}
+				}
+			}
+		}
+		return new Result<IBillable>(null);
+	}
+
+	private String checkAge(String limitsString, Behandlung kons) {
+		LocalDateTime consDate = new TimeTool(kons.getDatum()).toLocalDateTime();
+		Kontakt patient = kons.getFall().getPatient();
+		long patientAgeDays = patient.getAgeAt(consDate, ChronoUnit.DAYS);
+
+		List<TarmedLeistungAge> ageLimits = TarmedLeistungAge.of(limitsString);
+		for (TarmedLeistungAge tarmedLeistungAge : ageLimits) {
+			if (tarmedLeistungAge.isValidOn(consDate.toLocalDate())) {
+				// if only one of the limits is set, check only that limit
+				if (tarmedLeistungAge.getFromDays() >= 0 && !(tarmedLeistungAge.getToDays() >= 0)) {
+					if (patientAgeDays < tarmedLeistungAge.getFromDays()) {
+						return "Patient ist zu jung, verrechenbar ab " + tarmedLeistungAge.getFromText();
+					}
+				} else if (tarmedLeistungAge.getToDays() >= 0 && !(tarmedLeistungAge.getFromDays() >= 0)) {
+					if (patientAgeDays > tarmedLeistungAge.getToDays()) {
+						return "Patient ist zu alt, verrechenbar bis " + tarmedLeistungAge.getToText();
+					}
+				} else if (tarmedLeistungAge.getToDays() >= 0 && tarmedLeistungAge.getFromDays() >= 0) {
+					if (tarmedLeistungAge.getToDays() < tarmedLeistungAge.getFromDays()) {
+						if (patientAgeDays > tarmedLeistungAge.getToDays()
+								&& patientAgeDays < tarmedLeistungAge.getFromDays()) {
+							return "Patienten Alter nicht ok, verrechenbar " + tarmedLeistungAge.getText();
+						}
+					} else {
+						if (patientAgeDays > tarmedLeistungAge.getToDays()
+								|| patientAgeDays < tarmedLeistungAge.getFromDays()) {
+							return "Patienten Alter nicht ok, verrechenbar " + tarmedLeistungAge.getText();
+						}
+					}
 				}
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * Eine Verrechnungsposition entfernen. Der Optifier sollte prüfen, ob die
-	 * Konsultation nach Entfernung dieses Codes noch konsistent verrechnet wäre
-	 * und ggf. anpassen oder das Entfernen verweigern. Diese Version macht
-	 * keine Prüfungen, sondern erfüllt nur die Anfrage..
-	 */
-	@Override
-	public IStatus remove(Verrechnet code) {
-		VerrechnetService.delete(code);
-		return Status.OK_STATUS;
+	private IBillable<TarmedLeistung> getKonsVerrechenbar(String code, Behandlung kons) {
+		TimeTool date = new TimeTool(kons.getDatum());
+		if (kons.getFall() != null) {
+			String law = FallService.getRequiredString(kons.getFall(), "Gesetz");
+			return TarmedLeistungService.getVerrechenbarFromCode(code, date, law).get();
+		}
+		return null;
+	}
+
+	private boolean isReferenceInfoAvailable() {
+		return ConfigService.INSTANCE.get("ch.elexis.data.importer.TarmedReferenceDataImporter/referenceinfoavailable",
+				false);
+	}
+
+	private boolean shouldDetermineReference(TarmedLeistung tc) {
+		String typ = tc.getServiceTyp();
+		boolean becauseOfType = typ.equals("Z");
+		if (becauseOfType) {
+			String text = tc.getText();
+			return text.startsWith("+") || text.startsWith("-");
+		}
+		return false;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private String getSide(Verrechnet v) {
-		Optional<IBillable> vv = VerrechnetService.getVerrechenbar(v);
-		if (vv.isPresent() && vv.get() instanceof TarmedLeistung) {
-			String side = (String) v.getDetail().get(SIDE);
-			if (SIDE_L.equalsIgnoreCase(side)) {
-				return LEFT;
-			} else if (SIDE_R.equalsIgnoreCase(side)) {
-				return RIGHT;
+	private List<Verrechnet> getAvailableMasters(TarmedLeistung slave, List<Verrechnet> lst) {
+		List<Verrechnet> ret = new LinkedList<Verrechnet>();
+		TimeTool konsDate = null;
+		for (Verrechnet v : lst) {
+			if (konsDate == null) {
+				konsDate = new TimeTool(v.getBehandlung().getDatum());
+			}
+			Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
+			if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+				TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
+				if (tl.getHierarchy(konsDate).contains(slave.getCode())) {
+					ret.add(v);
+				}
 			}
 		}
-		return "none";
+		return ret;
+	}
+
+	private List<Verrechnet> getPossibleMasters(Verrechnet newSlave, List<Verrechnet> lst) {
+		TarmedLeistung slaveTarmed = (TarmedLeistung) VerrechnetService.getVerrechenbar(newSlave).get().getEntity();
+		// lookup available masters
+		List<Verrechnet> masters = getAvailableMasters(slaveTarmed, lst);
+		// check which masters are left to be referenced
+		int maxPerMaster = getMaxPerMaster(slaveTarmed);
+		if (maxPerMaster > 0) {
+			Map<Verrechnet, List<Verrechnet>> masterSlavesMap = getMasterToSlavesMap(newSlave, lst);
+			for (Verrechnet master : masterSlavesMap.keySet()) {
+				int masterCount = master.getZahl();
+				int slaveCount = 0;
+				for (Verrechnet slave : masterSlavesMap.get(master)) {
+					slaveCount += slave.getZahl();
+					if (slave.equals(newSlave)) {
+						slaveCount--;
+					}
+				}
+				if (masterCount <= (slaveCount * maxPerMaster)) {
+					masters.remove(master);
+				}
+			}
+		}
+		return masters;
+	}
+
+	/**
+	 * Creates a map of masters associated to slaves by the Bezug. This map will not
+	 * contain the newSlave, as it has no Bezug set yet.
+	 * 
+	 * @param newSlave
+	 * @param lst
+	 * @return
+	 */
+	private Map<Verrechnet, List<Verrechnet>> getMasterToSlavesMap(Verrechnet newSlave, List<Verrechnet> lst) {
+		Map<Verrechnet, List<Verrechnet>> ret = new HashMap<>();
+		TarmedLeistung slaveTarmed = (TarmedLeistung) (TarmedLeistung) VerrechnetService.getVerrechenbar(newSlave).get()
+				.getEntity();
+		// lookup available masters
+		List<Verrechnet> masters = getAvailableMasters(slaveTarmed, lst);
+		for (Verrechnet verrechnet : masters) {
+			ret.put(verrechnet, new ArrayList<Verrechnet>());
+		}
+		// lookup other slaves with same code
+		List<Verrechnet> slaves = getVerrechnetMatchingCode(lst, VerrechnetService.getCode(newSlave));
+		// add slaves to separate master list
+		for (Verrechnet slave : slaves) {
+			String bezug = slave.getDetail("Bezug");
+			if (bezug != null && !bezug.isEmpty()) {
+				for (Verrechnet master : ret.keySet()) {
+					if (VerrechnetService.getCode(master).equals(bezug)) {
+						ret.get(master).add(slave);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	private int getMaxPerMaster(TarmedLeistung slave) {
+		List<TarmedLimitation> limits = TarmedLeistungService.getLimitations(slave);
+		for (TarmedLimitation limit : limits) {
+			if (limit.getLimitationUnit() == LimitationUnit.MAINSERVICE) {
+				// only an integer makes sense here
+				return (int) limit.getAmount();
+			}
+		}
+		// default to unknown
+		return -1;
+	}
+
+	/**
+	 * Create a new mapping between an OP I reduction (35.0020) and a service from
+	 * the OP I section.
+	 * 
+	 * @param opVerrechnet
+	 *            Verrechnet representing a service from the OP I section
+	 * @param reductionVerrechnet
+	 *            Verrechnet representing the OP I reduction (35.0020)
+	 */
+	private void mapOpReduction(Verrechnet opVerrechnet, Verrechnet reductionVerrechnet) {
+		TarmedLeistung opVerrechenbar = (TarmedLeistung) VerrechnetService.getVerrechenbar(opVerrechnet).get()
+				.getEntity();
+		reductionVerrechnet.setZahl(opVerrechnet.getZahl());
+		reductionVerrechnet.setDetail(TL, Double.toString(opVerrechenbar.getTL()));
+		reductionVerrechnet.setDetail(AL, Double.toString(0.0));
+		reductionVerrechnet.setTP(opVerrechenbar.getTL());
+		reductionVerrechnet.setPrimaryScaleFactor(-0.4);
+		reductionVerrechnet.setDetail("Bezug", opVerrechenbar.getCode());
+		VerrechnetService.save(reductionVerrechnet);
+	}
+
+	/**
+	 * Update existing OP I reductions (35.0020), and return a list of all not yet
+	 * mapped OP I services.
+	 * 
+	 * @param opCodes
+	 *            list of all available OP I codes see {@link #getOPList(List)}
+	 * @param opReduction
+	 *            list of all available reduction codes see
+	 *            {@link #getVerrechnetMatchingCode(List)}
+	 * @return list of not unmapped OP I codes
+	 */
+	private List<Verrechnet> updateOPReductions(List<Verrechnet> opCodes, List<Verrechnet> opReduction) {
+		List<Verrechnet> notMappedCodes = new ArrayList<Verrechnet>();
+		notMappedCodes.addAll(opCodes);
+		// update already mapped
+		for (Verrechnet reductionVerrechnet : opReduction) {
+			boolean isMapped = false;
+			String bezug = reductionVerrechnet.getDetail("Bezug");
+			if (bezug != null && !bezug.isEmpty()) {
+				for (Verrechnet opVerrechnet : opCodes) {
+					TarmedLeistung opVerrechenbar = (TarmedLeistung) VerrechnetService.getVerrechenbar(opVerrechnet)
+							.get().getEntity();
+					String opCodeString = opVerrechenbar.getCode();
+					if (bezug.equals(opCodeString)) {
+						// update
+						reductionVerrechnet.setZahl(opVerrechnet.getZahl());
+						reductionVerrechnet.setDetail(TL, Double.toString(opVerrechenbar.getTL()));
+						reductionVerrechnet.setDetail(AL, Double.toString(0.0));
+						reductionVerrechnet.setPrimaryScaleFactor(-0.4);
+						saveVerrechnet();
+						notMappedCodes.remove(opVerrechnet);
+						isMapped = true;
+						break;
+					}
+				}
+			}
+			if (!isMapped) {
+				reductionVerrechnet.setZahl(0);
+				reductionVerrechnet.setDetail("Bezug", "");
+				saveVerrechnet();
+			}
+		}
+
+		return notMappedCodes;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Verrechnet> getOPList(List<Verrechnet> lst) {
+		List<Verrechnet> ret = new ArrayList<Verrechnet>();
+		for (Verrechnet v : lst) {
+			Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
+			if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+				TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
+				if (TarmedLeistungService.getSparteAsText(tl).equals("OP I")) { //$NON-NLS-1$
+					ret.add(v);
+				}
+			}
+		}
+		return ret;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Verrechnet> getVerrechnetMatchingCode(List<Verrechnet> lst, String code) {
+		List<Verrechnet> ret = new ArrayList<Verrechnet>();
+		for (Verrechnet v : lst) {
+			Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
+			if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+				TarmedLeistung tl = (TarmedLeistung) verrechenbar.get().getEntity();
+				if (tl.getCode().equals(code)) { // $NON-NLS-1$
+					ret.add(v);
+				}
+			}
+		}
+		return ret;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Verrechnet> getVerrechnetWithBezugMatchingCode(List<Verrechnet> lst, String code) {
+		List<Verrechnet> ret = new ArrayList<Verrechnet>();
+		for (Verrechnet v : lst) {
+			Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(v);
+			if (verrechenbar.isPresent() && verrechenbar.get().getEntity() instanceof TarmedLeistung) {
+				if (code.equals(v.getDetail("Bezug"))) { //$NON-NLS-1$
+					ret.add(v);
+				}
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Always toggle the side of a specific code. Starts with left, then right, then
+	 * add to the respective side.
+	 * 
+	 * @param code
+	 * @param lst
+	 * @return
+	 */
+	private String getNewVerrechnetSideOrIncrement(IBillable<TarmedLeistung> code, List<Verrechnet> lst) {
+		int countSideLeft = 0;
+		Verrechnet leftVerrechnet = null;
+		int countSideRight = 0;
+		Verrechnet rightVerrechnet = null;
+
+		for (Verrechnet v : lst) {
+			if (isInstance(v, code)) {
+				String side = v.getDetail(SIDE);
+				if (side.equals(SIDE_L)) {
+					countSideLeft += v.getZahl();
+					leftVerrechnet = v;
+				} else {
+					countSideRight += v.getZahl();
+					rightVerrechnet = v;
+				}
+			}
+		}
+
+		if (countSideLeft > 0 || countSideRight > 0) {
+			if ((countSideLeft > countSideRight) && rightVerrechnet != null) {
+				newVerrechnet = rightVerrechnet;
+				newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
+				saveVerrechnet();
+			} else if ((countSideLeft <= countSideRight) && leftVerrechnet != null) {
+				newVerrechnet = leftVerrechnet;
+				newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
+				saveVerrechnet();
+			} else if ((countSideLeft > countSideRight) && rightVerrechnet == null) {
+				return SIDE_R;
+			}
+		}
+		return SIDE_L;
+	}
+
+	/**
+	 * check compatibility of one tarmed with another
+	 * 
+	 * @param tarmedCode
+	 *            the tarmed and it's parents code are check whether they have to be
+	 *            excluded
+	 * @param tarmed
+	 *            TarmedLeistung who incompatibilities are examined
+	 * @param kons
+	 *            {@link Behandlung} providing context
+	 * @return true OK if they are compatible, WARNING if it matches an exclusion
+	 *         case
+	 */
+	public IStatus isCompatible(TarmedLeistung tarmedCode, TarmedLeistung tarmed, Behandlung kons) {
+		TimeTool date = new TimeTool(kons.getDatum());
+		List<TarmedExclusion> exclusions = TarmedLeistungService.getExclusions(tarmed, kons);
+		for (TarmedExclusion tarmedExclusion : exclusions) {
+			if (tarmedExclusion.isMatching(tarmedCode, date)) {
+				return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
+						tarmed.getCode() + " nicht kombinierbar mit " + tarmedExclusion.toString());
+			}
+		}
+		List<String> groups = tarmed.getServiceGroups(date);
+		for (String groupName : groups) {
+			Optional<TarmedGroup> group = TarmedLeistungService.findTarmedGroup(groupName, tarmed.getLaw(), date);
+			if (group.isPresent()) {
+				List<TarmedExclusion> groupExclusions = TarmedLeistungService.getExclusions(group.get(), kons);
+				for (TarmedExclusion tarmedExclusion : groupExclusions) {
+					if (tarmedExclusion.isMatching(tarmedCode, date)) {
+						return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
+								tarmed.getCode() + " nicht kombinierbar mit " + tarmedExclusion.toString());
+					}
+				}
+			}
+		}
+		List<String> blocks = tarmed.getServiceBlocks(date);
+		for (String blockName : blocks) {
+			List<TarmedExclusive> exclusives = TarmedLeistungService.getExclusives(blockName,
+					TarmedKumulationType.BLOCK, date, tarmed.getLaw());
+			// currently only test blocks exclusives, exclude hierarchy matches
+			if (canHandleAllExculives(exclusives) && !isMatchingHierarchy(tarmedCode, tarmed, date)) {
+				boolean included = false;
+				for (TarmedExclusive tarmedExclusive : exclusives) {
+					if (tarmedExclusive.isMatching(tarmedCode, date)) {
+						included = true;
+					}
+				}
+				if (!included) {
+					return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, tarmed.getCode()
+							+ " nicht kombinierbar mit " + tarmedCode.getCode() + ", wegen Block Kumulation");
+				}
+			}
+		}
+		return Status.OK_STATUS;
+	}
+
+	private boolean isMatchingHierarchy(TarmedLeistung tarmedCode, TarmedLeistung tarmed, TimeTool date) {
+		return tarmed.getHierarchy(date).contains(tarmedCode.getCode());
+	}
+
+	/**
+	 * Test if we can handle all {@link TarmedExclusive}.
+	 * 
+	 * @param exclusives
+	 * @return
+	 */
+	private boolean canHandleAllExculives(List<TarmedExclusive> exclusives) {
+		for (TarmedExclusive tarmedExclusive : exclusives) {
+			if (tarmedExclusive.getSlaveType() != TarmedKumulationType.BLOCK
+					&& tarmedExclusive.getSlaveType() != TarmedKumulationType.CHAPTER
+					&& tarmedExclusive.getSlaveType() != TarmedKumulationType.SERVICE) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void saveVerrechnet() {
+		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
+	}
+
+	/**
+	 * Eine Verrechnungsposition entfernen. Der Optifier sollte prüfen, ob die
+	 * Konsultation nach Entfernung dieses Codes noch konsistent verrechnet wäre und
+	 * ggf. anpassen oder das Entfernen verweigern. Diese Version macht keine
+	 * Prüfungen, sondern erfüllt nur die Anfrage..
+	 */
+	@Override
+	public IStatus remove(Verrechnet code) {
+		Behandlung behandlung = code.getBehandlung();
+		List<Verrechnet> l = behandlung.getLeistungen();
+		l.remove(code);
+		VerrechnetService.delete(code);
+		// if no more left, check for bezug and remove
+		List<Verrechnet> left = getVerrechnetMatchingCode(l, VerrechnetService.getCode(code));
+		if (left.isEmpty()) {
+			List<Verrechnet> verrechnetWithBezug = getVerrechnetWithBezugMatchingCode(behandlung.getLeistungen(),
+					VerrechnetService.getCode(code));
+			for (Verrechnet verrechnet : verrechnetWithBezug) {
+				remove(verrechnet);
+			}
+		}
+
+		return Status.OK_STATUS;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -614,75 +989,6 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		}
 
 		return false;
-	}
-
-	/**
-	 * check compatibility of one tarmed with another
-	 * 
-	 * @param tarmedCode
-	 *            the tarmed and it's parents code are check whether they have
-	 *            to be excluded
-	 * @param tarmed
-	 *            TarmedLeistung who incompatibilities are examined
-	 * @return true OK if they are compatible, WARNING if it matches an
-	 *         exclusion case
-	 */
-	public IStatus isCompatible(TarmedLeistung tarmedCode, TarmedLeistung tarmed) {
-		String notCompatible = TarmedLeistungService.getExclusionsForTarmedLeistung(tarmed, null);
-
-		// there are some exclusions to consider
-		if (!StringTool.isNothing(notCompatible)) {
-			String code = tarmedCode.getCode();
-			String codeParent = tarmedCode.getParent();
-			for (String nc : notCompatible.split(",")) {
-				if (code.equals(nc) || codeParent.startsWith(nc)) {
-					return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
-							tarmed.getCode() + " nicht kombinierbar mit " + code);
-				}
-			}
-		}
-		return Status.OK_STATUS;
-	}
-
-	/**
-	 * Always toggle the side of a specific code. Starts with left, then right,
-	 * then add to the respective side.
-	 * 
-	 * @param code
-	 * @param lst
-	 * @return
-	 */
-	private String getNewVerrechnetSideOrIncrement(IBillable code, List<Verrechnet> lst) {
-		int countSideLeft = 0;
-		Verrechnet leftVerrechnet = null;
-		int countSideRight = 0;
-		Verrechnet rightVerrechnet = null;
-
-		for (Verrechnet v : lst) {
-			if (isInstance(v, code)) {
-				String side = (String) v.getDetail().get(SIDE);
-				if (side.equals(SIDE_L)) {
-					countSideLeft += v.getZahl();
-					leftVerrechnet = v;
-				} else {
-					countSideRight += v.getZahl();
-					rightVerrechnet = v;
-				}
-			}
-		}
-
-		if (countSideLeft > 0 || countSideRight > 0) {
-			if ((countSideLeft > countSideRight) && rightVerrechnet != null) {
-				newVerrechnet = rightVerrechnet;
-				newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
-			} else if ((countSideLeft <= countSideRight) && leftVerrechnet != null) {
-				newVerrechnet = leftVerrechnet;
-				newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
-			} else if ((countSideLeft > countSideRight) && rightVerrechnet == null) {
-				return SIDE_R;
-			}
-		}
-		return SIDE_L;
 	}
 
 }

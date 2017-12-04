@@ -11,9 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
+import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.article.IArticle;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;
+import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
@@ -22,6 +24,7 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarEigenleistu
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarLabor2009Tarif;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.billable.adjuster.VatVerrechnetAdjuster;
+import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.StoreToStringService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
@@ -62,7 +65,7 @@ public class VerrechnetService extends PersistenceService {
 
 			TimeTool dat = new TimeTool(kons.getDatum());
 			Fall fall = kons.getFall();
-			int tp = iv.getTP(dat, fall);
+			int tp = iv.getTP(dat, kons);
 			double factor = iv.getFactor(dat, fall);
 			long preis = Math.round(tp * factor);
 
@@ -247,5 +250,106 @@ public class VerrechnetService extends PersistenceService {
 		JPAQuery<Verrechnet> qre = new JPAQuery<Verrechnet>(Verrechnet.class);
 		qre.add(Verrechnet_.behandlung, QUERY.EQUALS, behandlung);
 		return qre.execute();
+	}
+
+	public static Optional<Verrechnet> getVerrechnetForBehandlung(Behandlung kons, IBillable<?> billable) {
+		if (billable != null && billable.getId() != null) {
+			JPAQuery<Verrechnet> qbe = new JPAQuery<Verrechnet>(Verrechnet.class);
+			qbe.add(Verrechnet_.behandlung, QUERY.EQUALS, kons);
+			qbe.add(Verrechnet_.leistungenCode, QUERY.EQUALS, billable.getId());
+
+			List<Verrechnet> verrechnets = qbe.execute();
+			if (verrechnets.size() == 1) {
+				return Optional.of(verrechnets.get(0));
+			}
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Get the AL points used to calculate the value of the {@link Verrechnet}. The
+	 * value is set by the {@link TarmedOptifier}. If not found, the value of
+	 * {@link TarmedLeistung#getAL()} is returned. If no information is found 0 is
+	 * returned.
+	 * 
+	 * @param verrechnet
+	 * @return
+	 */
+	public static int getAL(Verrechnet verrechnet) {
+		String alString = (String) verrechnet.getDetail().get(Verrechnet.EXT_VERRRECHNET_AL);
+		if (alString != null) {
+			try {
+				return Integer.parseInt(alString);
+			} catch (NumberFormatException ne) {
+				// ignore, try resolve from IVerrechenbar
+			}
+		}
+		Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(verrechnet);
+		if (verrechenbar.isPresent()) {
+			Identifiable entity = verrechenbar.get().getEntity();
+			if (entity instanceof TarmedLeistung) {
+				TarmedLeistung tl = (TarmedLeistung) entity;
+				Behandlung kons = verrechnet.getBehandlung();
+				if (kons != null) {
+					return TarmedLeistungService.getAL(tl, kons.getMandant());
+				} else {
+					tl.getAL();
+				}
+			}
+
+		}
+		return 0;
+	}
+
+	/**
+	 * Den Preis nach Anwendung sämtlicher SKalierungsfaktoren zurückgeben
+	 * 
+	 * @return
+	 */
+	public static Money getNettoPreis(Verrechnet verrechnet) {
+		Money brutto = getBruttoPreis(verrechnet);
+		brutto.multiply(verrechnet.getPrimaryScaleFactor());
+		brutto.multiply(verrechnet.getSecondaryScaleFactor());
+
+		// call the adjusters
+		// for (IVerrechnetAdjuster adjuster : adjusters) {
+		// adjuster.adjustGetNettoPreis(this, brutto);
+		// }
+
+		return brutto;
+	}
+
+	/**
+	 * Den Preis nach Anwendung des Taxpunktwerts (aber ohne sonstige Skalierungen)
+	 * holen
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Money getBruttoPreis(Verrechnet verrechnet) {
+		int tp = verrechnet.getVk_tp();
+		Behandlung k = verrechnet.getBehandlung();
+		Fall fall = k.getFall();
+		TimeTool date = new TimeTool(k.getDatum());
+		Optional<IBillable> v = VerrechnetService.getVerrechenbar(verrechnet);
+		double tpw = 1.0;
+		if (v.isPresent()) { // Unknown tax system
+			tpw = v.get().getFactor(date, fall);
+		}
+		return new Money((int) Math.round(tpw * tp));
+	}
+
+	/**
+	 * 
+	 * @param verrechnet
+	 * @return the {@link IBillable#getCode()} the provided {@link Verrechnet} is
+	 *         based ond, ? if not resolvable
+	 */
+	@SuppressWarnings("rawtypes")
+	public static String getCode(Verrechnet verrechnet) {
+		Optional<IBillable> verrechenbar = getVerrechenbar(verrechnet);
+		if (verrechenbar.isPresent()) {
+			return verrechenbar.get().getCode();
+		} else {
+			return "?";
+		}
 	}
 }

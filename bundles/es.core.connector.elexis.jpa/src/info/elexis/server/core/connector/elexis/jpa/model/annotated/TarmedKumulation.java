@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import ch.rgw.tools.TimeTool;
 
 @Entity
 @Table(name = "TARMED_KUMULATION")
@@ -40,6 +43,9 @@ public class TarmedKumulation extends AbstractDBObjectIdDeleted {
 
 	@Column(length = 8)
 	private LocalDate validTo;
+	
+	@Column(length = 3)
+	private String law;
 
 	public String getMasterCode() {
 		return masterCode;
@@ -113,9 +119,36 @@ public class TarmedKumulation extends AbstractDBObjectIdDeleted {
 		this.validTo = validTo;
 	}
 
+	public String getLaw() {
+		return law;
+	}
+	
+	public void setLaw(String law) {
+		this.law = law;
+	}
+	
 	@Override
 	public String getLabel() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	
+	/**
+	 * Checks if the kumulation is still/already valid on the given date
+	 * 
+	 * @param date
+	 *            on which it should be valid
+	 * @return true if valid, false otherwise
+	 */
+	@Transient
+	public boolean isValidKumulation(TimeTool date){
+		TimeTool from = new TimeTool(getValidFrom());
+		TimeTool to = new TimeTool(getValidTo());
+		
+		if (date.isAfterOrEqual(from) && date.isBeforeOrEqual(to)) {
+			return true;
+		}
+		return false;
 	}
 }

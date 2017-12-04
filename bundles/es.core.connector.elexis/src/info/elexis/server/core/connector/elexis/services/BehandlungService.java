@@ -90,6 +90,19 @@ public class BehandlungService extends PersistenceService {
 	}
 
 	/**
+	 * Convenience method, calling
+	 * {@link #chargeBillableOnBehandlung(Behandlung, IBillable, Kontakt, Kontakt, float)}
+	 * with mandator and user = kons.getMandant and count = 1
+	 * 
+	 * @param kons
+	 * @param billableObject
+	 * @return
+	 */
+	public static IStatus chargeBillableOnBehandlung(Behandlung kons, IBillable<?> billableObject) {
+		return chargeBillableOnBehandlung(kons, billableObject, kons.getMandant(), kons.getMandant(), 1);
+	}
+
+	/**
 	 * 
 	 * @param kons
 	 * @param billableObject

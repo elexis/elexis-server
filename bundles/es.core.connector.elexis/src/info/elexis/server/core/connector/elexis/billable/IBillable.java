@@ -106,9 +106,32 @@ public interface IBillable<T extends Identifiable> extends ICodeElement {
 	public T getEntity();
 
 	/**
-	 * Betrag dieser Verrechenbar (in TP*100) an einem bestimmten Datum liefern
+	 * Get the (T)ax (P)oint value of the {@link IVerrechenbar}. Parameters are provided as context
+	 * to determine the correct value.
+	 * 
+	 * @param date
+	 * @param fall
+	 * @return
 	 */
 	public int getTP(TimeTool date, Fall fall);
+
+	/**
+	 * Get the (T)ax (P)oint value of the {@link IVerrechenbar}. Parameters are provided as context
+	 * to determine the correct value. This method was introduced because a context with
+	 * {@link Konsultation} was needed, as context with {@link IFall} was not specific enough. </br>
+	 * </br>
+	 * If parameter kons is null, value of {@link IVerrechenbar#getTP(TimeTool, IFall)} is returned.
+	 * 
+	 * @param date
+	 * @param kons
+	 * @return
+	 */
+	public default int getTP(TimeTool date,  Behandlung kons){
+		if (kons != null) {
+			return getTP(date, kons.getFall());
+		}
+		return getTP(date, (Fall) null);
+	}
 
 	public double getFactor(TimeTool dat, Fall fall);
 

@@ -8,10 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import info.elexis.server.core.connector.elexis.billable.BillingTest;
-import info.elexis.server.core.connector.elexis.billable.ICodeElementValuesTest;
-import info.elexis.server.core.connector.elexis.billable.TarmedBillingTest;
-import info.elexis.server.core.connector.elexis.billable.VerrechenbarTest;
+import info.elexis.server.core.connector.elexis.billable.AllBillingTests;
 import info.elexis.server.core.connector.elexis.jpa.AbstractDBObjectIdDeletedTest;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
@@ -20,8 +17,7 @@ import info.elexis.server.core.connector.elexis.services.AllServiceTests;
 import info.elexis.server.core.connector.elexis.services.StockService;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AbstractDBObjectIdDeletedTest.class, AllServiceTests.class, BillingTest.class, TarmedBillingTest.class,
-		VerrechenbarTest.class, ICodeElementValuesTest.class })
+@SuiteClasses({ AbstractDBObjectIdDeletedTest.class, AllServiceTests.class, AllBillingTests.class })
 public class AllTestsSuite {
 
 	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer();

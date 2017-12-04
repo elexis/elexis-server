@@ -12,6 +12,8 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -598,5 +600,11 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@Transient
 	public String getPatientLabel() {
 		return getLabel();
+	}
+	
+	@Transient
+	public long getAgeAt(LocalDateTime dateTime, ChronoUnit chronoUnit){
+		LocalDateTime birthDateTime = new TimeTool(getDateOfBirth()).toLocalDateTime();
+		return chronoUnit.between(birthDateTime, dateTime);
 	}
 }

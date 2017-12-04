@@ -1,8 +1,13 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +81,7 @@ public class FallServiceTest {
 		assertEquals("description", storedFall.getBezeichnung());
 		assertEquals("insuranceType", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
 	}
-	
+
 	@Test
 	public void testCheckFallIsOpen() {
 		fall = new FallService.Builder(patient, "description", FallConstants.TYPE_DISEASE, "UVG").buildAndSave();
@@ -84,6 +89,12 @@ public class FallServiceTest {
 		fall.setDatumBis(LocalDate.now());
 		FallService.save(fall);
 		assertEquals(false, FallService.isOpen(fall));
+	}
+
+	@Test
+	public void testFallConstantsConfiguration() {
+		List<String> abrechnungsSysteme = Arrays.asList(FallService.getAbrechnungsSysteme());
+		assertThat(abrechnungsSysteme, containsInAnyOrder("MV", "UVG", "IV", "privat", "VVG", "KVG"));
 	}
 
 	@Test
