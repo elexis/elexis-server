@@ -15,7 +15,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import info.elexis.server.core.Application;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
-import info.elexis.server.core.scheduler.SchedulerService;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
@@ -62,27 +61,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public void __scheduler() {
 		ci.println(getHelp(1));
-	}
-
-	public String __scheduler_launch(Iterator<String> args) {
-		if (args.hasNext()) {
-			String argument = args.next();
-			boolean launched = SchedulerService.launchTask(argument);
-			return (launched) ? "Launched " + argument : "Failed";
-		}
-		return "Missing argument (taskId)";
-	}
-
-	public String __scheduler_deschedule(Iterator<String> args) {
-		if (args.hasNext()) {
-			String argument = args.next();
-			return Boolean.toString(SchedulerService.descheduleTask(argument));
-		}
-		return "Missing argument (taskId)";
-	}
-
-	public String __scheduler_status() {
-		return SchedulerService.getSchedulerStatus().toString();
 	}
 
 	/**
