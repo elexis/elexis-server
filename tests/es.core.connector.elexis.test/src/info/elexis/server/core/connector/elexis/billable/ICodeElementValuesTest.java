@@ -26,7 +26,7 @@ public class ICodeElementValuesTest {
 	public void testICodeElementTarmed() {
 		assertICodeElement(TarmedLeistungService.load("00.0060-20120601").get(), "00.0060", "999",
 				TarmedLeistung.CODESYSTEM_NAME, "Besuch, erste 5 Min. (Grundbesuch)");
-		assertICodeElement(TarmedLeistungService.load("39.06.03").get(), "39.06.03", "999",
+		assertICodeElement(TarmedLeistungService.findFromCode("39.06.03").get(), "39.06.03", "999",
 				TarmedLeistung.CODESYSTEM_NAME, "Angiografie: Pfortader");
 	}
 

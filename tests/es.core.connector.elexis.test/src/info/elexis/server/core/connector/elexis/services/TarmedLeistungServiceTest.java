@@ -57,8 +57,9 @@ public class TarmedLeistungServiceTest extends AbstractServiceTest {
 		TarmedLeistung code = TarmedLeistungService.findFromCode("39.0015", null).get();
 		String exclusionsForTarmedLeistung = TarmedLeistungService.getExclusionsForTarmedLeistung(code,
 				LocalDate.now());
-		assertEquals("39.0021,39.0016,39.0020,39.0021,39.0016,39.0016,39.0020,39.0021,39.0020",
-				exclusionsForTarmedLeistung);
+		assertTrue(exclusionsForTarmedLeistung.contains("39.0021"));
+		assertTrue(exclusionsForTarmedLeistung.contains("39.0016"));
+		assertTrue(exclusionsForTarmedLeistung.contains("39.0020"));
 	}
 
 }

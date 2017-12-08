@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "faelle")
@@ -178,6 +179,11 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setConsultations(List<Behandlung> consultations) {
 		this.consultations = consultations;
+	}
+	
+	@Transient
+	public Kontakt getPatient() {
+		return getPatientKontakt();
 	}
 
 	@Override

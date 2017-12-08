@@ -76,8 +76,8 @@ public class ScriptRunner {
 	}
 
 	/**
-	 * Runs an SQL script (read in using the Reader parameter) using the
-	 * connection passed in
+	 * Runs an SQL script (read in using the Reader parameter) using the connection
+	 * passed in
 	 *
 	 * @param conn
 	 *            - the connection to use for the script
@@ -90,10 +90,13 @@ public class ScriptRunner {
 	 */
 	private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
 		StringBuffer command = null;
+		int lineNo = 0;
 		try {
 			LineNumberReader lineReader = new LineNumberReader(reader);
 			String line;
+
 			while ((line = lineReader.readLine()) != null) {
+				lineNo = lineReader.getLineNumber();
 				if (command == null) {
 					command = new StringBuffer();
 				}
@@ -127,7 +130,8 @@ public class ScriptRunner {
 				conn.commit();
 			}
 		} catch (Exception e) {
-			throw new IOException(String.format("Error executing '%s': %s", command, e.getMessage()), e);
+			throw new IOException(String.format("Error executing '%s [line %s]': %s", command, Integer.toString(lineNo),
+					e.getMessage()), e);
 		} finally {
 			conn.rollback();
 		}

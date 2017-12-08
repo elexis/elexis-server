@@ -17,6 +17,9 @@ import org.eclipse.persistence.annotations.Convert;
 @Entity
 @Table(name = "LEISTUNGEN")
 public class Verrechnet extends AbstractDBObjectIdDeleted {
+	
+	public static final String EXT_VERRRECHNET_TL = "TL"; //$NON-NLS-1$
+	public static final String EXT_VERRRECHNET_AL = "AL"; //$NON-NLS-1$
 
 	@Column(length = 80)
 	private String klasse;
@@ -96,11 +99,27 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 	}
 
 	@Transient
+	public double getPrimaryScaleFactor() {
+		if (getScale() == 0) {
+			return 1.0;
+		}
+		return ((double) getScale()) / 100.0;
+	}
+	
+	@Transient
 	public void setPrimaryScaleFactor(double scale) {
 		int sca = (int) Math.round(scale * 100);
 		setScale(sca);
 	}
 
+	@Transient
+	public double getSecondaryScaleFactor() {
+		if (getScale2() == 0) {
+			return 1.0;
+		}
+		return ((double) getScale2()) / 100.0;
+	}
+	
 	@Transient
 	public void setSecondaryScaleFactor(double scale) {
 		int sca = (int) Math.round(scale * 100);
@@ -226,6 +245,11 @@ public class Verrechnet extends AbstractDBObjectIdDeleted {
 
 	public void setUser(Kontakt user) {
 		this.user = user;
+	}
+	
+	@Transient
+	public String getDetail(final String key){
+		return (String) getDetail().get(key);
 	}
 
 	@Override

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Scheduler for Elexis-Server
+Bundle-SymbolicName: info.eleixs.server.core.scheduler
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: lib/cron4j-2.2.5.jar,
+ .
+Import-Package: org.eclipse.core.runtime;version="3.5.0",
+ org.osgi.service.component.annotations;version="1.2.0",
+ org.slf4j;version="1.7.2"
+Service-Component: OSGI-INF/info.elexis.server.core.scheduler.SchedulerService.xml
+Bundle-ActivationPolicy: lazy

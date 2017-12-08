@@ -13,6 +13,7 @@ public class TarmedKumulation_ {
     public static volatile SingularAttribute<TarmedKumulation, String> validSide;
     public static volatile SingularAttribute<TarmedKumulation, String> masterCode;
     public static volatile SingularAttribute<TarmedKumulation, String> view;
+    public static volatile SingularAttribute<TarmedKumulation, String> law;
     public static volatile SingularAttribute<TarmedKumulation, String> slaveArt;
     public static volatile SingularAttribute<TarmedKumulation, String> masterArt;
     public static volatile SingularAttribute<TarmedKumulation, String> typ;

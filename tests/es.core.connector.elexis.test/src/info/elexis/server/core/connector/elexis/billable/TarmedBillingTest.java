@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.service.event.Event;
 
@@ -158,7 +159,7 @@ public class TarmedBillingTest extends AbstractServiceTest {
 
 		assertEquals(1, vr.getZahl());
 	}
-	
+
 	@Test
 	public void testAddOnVerrechnetInvalid() {
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
@@ -274,37 +275,37 @@ public class TarmedBillingTest extends AbstractServiceTest {
 				.get();
 		TarmedLeistung tlBaseFirst5Min = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null).get();
 
-		IStatus resCompatible = optifier.isCompatible(tlBaseXRay, tlUltrasound);
+		IStatus resCompatible = optifier.isCompatible(tlBaseXRay, tlUltrasound, testBehandlungen.get(0));
 		assertFalse(resCompatible.isOK());
 		String resText = "";
 		if (!resCompatible.getMessage().isEmpty()) {
 			resText = resCompatible.getMessage();
 		}
-		assertEquals("39.3005 nicht kombinierbar mit 39.0020", resText);
-		resCompatible = optifier.isCompatible(tlUltrasound, tlBaseXRay);
+		assertEquals("39.3005 nicht kombinierbar mit Kapitel 39.01", resText);
+		resCompatible = optifier.isCompatible(tlUltrasound, tlBaseXRay, testBehandlungen.get(0));
 		assertTrue(resCompatible.isOK());
 
-		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseRadiologyHospital);
+		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseRadiologyHospital, testBehandlungen.get(0));
 		assertFalse(resCompatible.isOK());
 		if (!resCompatible.getMessage().isEmpty()) {
 			resText = resCompatible.getMessage();
 		}
-		assertEquals("39.0015 nicht kombinierbar mit 39.0020", resText);
+		assertEquals("39.0015 nicht kombinierbar mit Leistung 39.0020", resText);
 
-		resCompatible = optifier.isCompatible(tlBaseRadiologyHospital, tlUltrasound);
+		resCompatible = optifier.isCompatible(tlBaseRadiologyHospital, tlUltrasound, testBehandlungen.get(0));
 		assertFalse(resCompatible.isOK());
 
-		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseFirst5Min);
+		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseFirst5Min, testBehandlungen.get(0));
 		assertTrue(resCompatible.isOK());
 
-		resCompatible = optifier.isCompatible(tlBaseFirst5Min, tlBaseRadiologyHospital);
+		resCompatible = optifier.isCompatible(tlBaseFirst5Min, tlBaseRadiologyHospital, testBehandlungen.get(0));
 		assertTrue(resCompatible.isOK());
 	}
 
 	@Test
 	public void testAddCompatibleAndIncompatibleTarmedBilling() {
-		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
 		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
+		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
 		TarmedLeistung tlTapingCat1 = (TarmedLeistung) TarmedLeistungService.findFromCode("01.0110", null).get();
 
 		VerrechenbarTarmedLeistung tlBaseXRayV = new VerrechenbarTarmedLeistung(tlBaseXRay);
@@ -316,7 +317,7 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		status = tlBaseXRayV.add(testBehandlungen.get(0), userContact, mandator);
 		assertFalse(status.isOK());
 		status = tlTapingCat1V.add(testBehandlungen.get(0), userContact, mandator);
-		assertTrue(status.isOK());
+		assertTrue(status.getMessage(), status.isOK());
 	}
 
 	@Test
@@ -370,5 +371,5 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		assertEquals(pos2.getId(), lst.get(1).getLeistungenCode());
 		assertEquals(pos3.getId(), lst.get(2).getLeistungenCode());
 	}
-	
+
 }

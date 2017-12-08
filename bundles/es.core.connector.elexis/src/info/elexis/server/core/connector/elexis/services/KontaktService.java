@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.types.RelationshipType;
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DbImage;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;

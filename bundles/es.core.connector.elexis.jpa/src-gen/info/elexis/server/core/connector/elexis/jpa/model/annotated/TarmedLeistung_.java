@@ -12,13 +12,15 @@ public class TarmedLeistung_ {
 
     public static volatile SingularAttribute<TarmedLeistung, String> parent;
     public static volatile SingularAttribute<TarmedLeistung, TarmedExtension> extension;
+    public static volatile SingularAttribute<TarmedLeistung, String> law;
     public static volatile SingularAttribute<TarmedLeistung, String> code_;
     public static volatile SingularAttribute<TarmedLeistung, String> digniQuanti;
     public static volatile SingularAttribute<TarmedLeistung, String> tx255;
     public static volatile SingularAttribute<TarmedLeistung, String> nickname;
     public static volatile SingularAttribute<TarmedLeistung, String> sparte;
     public static volatile SingularAttribute<TarmedLeistung, LocalDate> gueltigBis;
-    public static volatile SingularAttribute<TarmedLeistung, String> digniQuali;
     public static volatile SingularAttribute<TarmedLeistung, LocalDate> gueltigVon;
+    public static volatile SingularAttribute<TarmedLeistung, String> digniQuali;
+    public static volatile SingularAttribute<TarmedLeistung, Boolean> isChapter;
 
 }

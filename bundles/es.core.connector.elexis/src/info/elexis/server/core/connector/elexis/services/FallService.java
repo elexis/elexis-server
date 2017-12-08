@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.elexis.core.constants.Preferences;
@@ -58,20 +59,22 @@ public class FallService extends PersistenceService {
 	}
 
 	/**
-	 * Find all installed billing systems. Does not support migration of the
-	 * billing systems, as defined in Elexis RCP Fall#getAbrechnungsSysteme
+	 * Find all installed billing systems. Does not support migration of the billing
+	 * systems, as defined in Elexis RCP Fall#getAbrechnungsSysteme
 	 * 
 	 * @return an Array with the names of all configured billing systems
 	 */
 	public static String[] getAbrechnungsSysteme() {
 		List<Config> billingSystemNodes = ConfigService.INSTANCE.getNodes(Preferences.LEISTUNGSCODES_CFG_KEY);
-		List<String> systeme = billingSystemNodes.stream().map(b -> b.getWert()).collect(Collectors.toList());
+		Set<String> systeme = billingSystemNodes.stream()
+				.map(b -> b.getParam().substring(Preferences.LEISTUNGSCODES_CFG_KEY.length() + 1))
+				.map(s -> s.substring(0, s.indexOf("/"))).collect(Collectors.toSet());
 		return systeme.toArray(new String[] {});
 	}
 
 	/**
-	 * Determine whether a {@link Fall} is closed, which is the case when a
-	 * final date is set
+	 * Determine whether a {@link Fall} is closed, which is the case when a final
+	 * date is set
 	 * 
 	 * @param fall
 	 * @return
@@ -84,9 +87,9 @@ public class FallService extends PersistenceService {
 	}
 
 	/**
-	 * Retrieve a required String Value from this billing system's definition.
-	 * If no variable with that name is found, the billings system constants
-	 * will be searched
+	 * Retrieve a required String Value from this billing system's definition. If no
+	 * variable with that name is found, the billings system constants will be
+	 * searched
 	 * 
 	 * @param name
 	 * @return a string that might be empty but will never be null.
@@ -110,10 +113,12 @@ public class FallService extends PersistenceService {
 	}
 
 	/**
-	 * Returns a configuration constant defined for the billing system (as stored in the config table).
+	 * Returns a configuration constant defined for the billing system (as stored in
+	 * the config table).
 	 * 
 	 * @param billingSystem
-	 * @param constant the constant to parse, not case-sensitive
+	 * @param constant
+	 *            the constant to parse, not case-sensitive
 	 * @return the resp. value or <code>null</code> if none found or incorrect
 	 */
 	public static String getBillingSystemConstant(final String billingSystem, final String constant) {

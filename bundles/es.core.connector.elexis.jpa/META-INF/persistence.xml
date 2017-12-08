@@ -42,7 +42,9 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Sticker</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedDefinitionen</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedExtension</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedGroup</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedKumulation</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin</class>
