@@ -8,9 +8,18 @@ import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.osgi.service.component.annotations.Component;
 
+import info.elexis.server.core.Application;
+
 @Path("system/v1")
 @Component(service = SystemRestResource.class, immediate = true)
 public class SystemRestResource {
+
+	@GET
+	@Path("uptime")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getStatus() {
+		return Application.uptime();
+	}
 
 	@GET
 	@Path("protected")
@@ -19,5 +28,5 @@ public class SystemRestResource {
 	public String getStatusPlaintext() {
 		return "PROTECTED RESOURCE";
 	}
-	
+
 }

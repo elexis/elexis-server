@@ -16,7 +16,7 @@ public class ElexisServerAuthenticationFile extends AbstractAuthenticationFile {
 	private static ElexisServerAuthenticationFile INSTANCE;
 
 	private ElexisServerAuthenticationFile() {
-		super(AUTH_FILE_PATH, ':', "Elexis-Server Authentication");
+		super(AUTH_FILE_PATH, ':', "Elexis-Server User Authentication");
 		loadFile();
 	}
 

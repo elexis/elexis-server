@@ -46,7 +46,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __system_status() {
-		return Application.getStatus();
+		return Application.uptime();
 	}
 
 	public void __system_logTestError() {

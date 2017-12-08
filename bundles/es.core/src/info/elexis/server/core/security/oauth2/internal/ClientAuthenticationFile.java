@@ -5,6 +5,10 @@ import java.nio.file.Path;
 import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.internal.security.AbstractAuthenticationFile;
 
+/**
+ * Authentication file containing OAuth2 Clients
+ * 
+ */
 public class ClientAuthenticationFile extends AbstractAuthenticationFile {
 
 	public static final String FILENAME = OAuthAuthorizingRealm.REALM_NAME + ".auth";
@@ -23,6 +27,5 @@ public class ClientAuthenticationFile extends AbstractAuthenticationFile {
 		}
 		return INSTANCE;
 	}
-
 
 }

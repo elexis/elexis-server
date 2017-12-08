@@ -1,6 +1,6 @@
 package info.elexis.server.core.security.oauth2.internal;
 
-import java.util.Collections;
+import java.util.Set;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -16,15 +16,17 @@ import org.osgi.service.component.annotations.Component;
 import info.elexis.server.core.common.security.ESAuthorizingRealm;
 import info.elexis.server.core.security.oauth2.OAuth2Token;
 
-@Component(service = OAuthAuthorizingRealm.class)
+/**
+ * Authorizing Realm for {@link OAuth2Token}
+ */
+@Component(service = ESAuthorizingRealm.class)
 public class OAuthAuthorizingRealm extends AuthorizingRealm implements ESAuthorizingRealm {
 
 	public static final String REALM_NAME = "elexis-server.oauth2";
+	private static final OAuthService oAuthService = new OAuthService();
 
 	public OAuthAuthorizingRealm() {
 		super(new CredentialsMatcher() {
-			private final OAuthService oAuthService = new OAuthService();
-
 			@Override
 			public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
 				if (token instanceof OAuth2Token) {
@@ -41,7 +43,9 @@ public class OAuthAuthorizingRealm extends AuthorizingRealm implements ESAuthori
 	@Override
 	public AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		SimpleAuthorizationInfo authzInfo = new SimpleAuthorizationInfo();
-		authzInfo.setRoles(Collections.emptySet()); // TODO
+		String primaryPrincipal = (String) principals.getPrimaryPrincipal();
+		Set<String> scopes = oAuthService.getScopes(primaryPrincipal);
+		authzInfo.setRoles(scopes);
 		return authzInfo;
 	}
 

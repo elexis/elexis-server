@@ -1,6 +1,7 @@
 package info.elexis.server.core.security.oauth2.internal;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.oltu.oauth2.common.message.OAuthResponse.OAuthResponseBuilder;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.security.oauth2.ClientUtil;
 
@@ -16,8 +23,10 @@ public class OAuthService {
 
 	private static final long ACCESS_TOKEN_EXPIRATION_SECONDS = 3600;
 
-	private static final Map<String, TokenMapEntry> tokenMap = Collections
+	private static final Map<String, TokenMapEntry> accessTokenMap = Collections
 			.synchronizedMap(new PassiveExpiringMap<String, TokenMapEntry>(ACCESS_TOKEN_EXPIRATION_SECONDS * 1000));
+
+	private Logger log = LoggerFactory.getLogger(OAuthService.class);
 
 	public boolean refreshTokenSupported() {
 		return false;
@@ -28,8 +37,8 @@ public class OAuthService {
 	}
 
 	public boolean checkAccessToken(String accessToken, HttpServletRequest httpServletRequest) {
-		if (tokenMap.containsKey(accessToken)) {
-			TokenMapEntry tokenMapEntry = tokenMap.get(accessToken);
+		if (accessTokenMap.containsKey(accessToken)) {
+			TokenMapEntry tokenMapEntry = accessTokenMap.get(accessToken);
 			return tokenMapEntry.isValid();
 		}
 		return false;
@@ -58,15 +67,24 @@ public class OAuthService {
 		}
 		// add access token
 		TokenMapEntry tme = new TokenMapEntry(accessToken,
-				LocalDateTime.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECONDS), scopes, clientId);
-		tokenMap.put(accessToken, tme);
+				LocalDateTime.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECONDS), scopes, clientId, null);
+		accessTokenMap.put(accessToken, tme);
 
 		return null;
 	}
 
-	private boolean checkScopes(String clientId, Set<String> scopes) {
-		// TODO Auto-generated method stub
-		return false;
+	/**
+	 * Retrieve the scopes for the provided access token
+	 * 
+	 * @param principals
+	 * @return
+	 */
+	public Set<String> getScopes(String accessToken) {
+		boolean containsKey = accessTokenMap.containsKey(accessToken);
+		if (containsKey) {
+			return accessTokenMap.get(accessToken).getScopes();
+		}
+		return Collections.emptySet();
 	}
 
 	public OAuthResponseBuilder addAcessTokenResourceOwnerPasswordClientCredentials(String accessToken, String username,
@@ -81,26 +99,30 @@ public class OAuthService {
 			return ResponseUtils.responseInvalidScope("invalid client scope(s) requested");
 		}
 
-		// check username and password or fail
-		if (!checkUserAndPassword(username, password)) {
-			return ResponseUtils.responseAccessDenied("invalid username or password");
-		}
-
-		// check scopes (roles) for user or fail
-		if (!checkScopes(username, scopes)) {
-			return ResponseUtils.responseInvalidScope("invalid user scope(s) requested");
+		// check username and password and scopes (roles) or fail
+		if (!checkUserAndPasswordAndScopes(username, password, scopes)) {
+			return ResponseUtils.responseAccessDenied("invalid username, password or scopes");
 		}
 
 		// add token to database
 		// TODO
 		TokenMapEntry tme = new TokenMapEntry(accessToken,
-				LocalDateTime.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECONDS), scopes, clientId, username, "realm");
-		tokenMap.put(accessToken, tme);
+				LocalDateTime.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECONDS), scopes, clientId, username);
+		accessTokenMap.put(accessToken, tme);
 		return null;
 	}
 
-	private boolean checkUserAndPassword(String username, String password) {
-		// TODO Auto-generated method stub
+	private boolean checkUserAndPasswordAndScopes(String userId, String password, Set<String> scopes) {
+		try {
+			Subject subject = SecurityUtils.getSubject();
+			UsernamePasswordToken upt = new UsernamePasswordToken(userId, password);
+			subject.login(upt);
+			subject.hasAllRoles(scopes);
+			subject.logout();
+			return true;
+		} catch (AuthenticationException ae) {
+			log.warn("User [{}] authentication error: {}", userId, ae.getMessage());
+		}
 		return false;
 	}
 
@@ -111,26 +133,38 @@ public class OAuthService {
 		private final Set<String> scopes;
 		private final String clientId;
 		private final String username;
-		private final String realm;
 
 		public TokenMapEntry(String accessToken, LocalDateTime expiration, Set<String> scopes, String clientId,
-				String username, String realm) {
+				String username) {
 			this.accessToken = accessToken;
 			this.expiration = expiration;
 			this.scopes = scopes;
 			this.clientId = clientId;
 			this.username = username;
-			this.realm = realm;
+		}
+
+		public Set<String> getScopes() {
+			return scopes;
 		}
 
 		public boolean isValid() {
 			return LocalDateTime.now().isBefore(expiration);
 		}
 
-		public TokenMapEntry(String accessToken, LocalDateTime expiration, Set<String> scopes, String clientId) {
-			this(accessToken, expiration, scopes, clientId, null, null);
+		@Override
+		public String toString() {
+			return String.format("[%36s]", accessToken) + " " + expiration + " " + clientId + " " + username + " "
+					+ " (" + scopes + ")";
 		}
+	}
 
+	public static String printStatus() {
+		StringBuilder sb = new StringBuilder();
+		Collection<TokenMapEntry> values = accessTokenMap.values();
+		for (TokenMapEntry tokenMapEntry : values) {
+			sb.append(tokenMapEntry + "\n");
+		}
+		return sb.toString();
 	}
 
 }

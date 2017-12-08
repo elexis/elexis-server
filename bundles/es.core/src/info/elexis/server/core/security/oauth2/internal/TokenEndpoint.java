@@ -21,8 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Supports: Client Credentials Flow Resource Owner Password Credentials Flow
- * Refresh Token
+ * OAuth2 Token Endpoint
  */
 public class TokenEndpoint extends HttpServlet {
 
@@ -80,7 +79,7 @@ public class TokenEndpoint extends HttpServlet {
 					return ResponseUtils.processResponse(response, null, error);
 				}
 				break;
-				
+
 			case PASSWORD:
 				// Resource Owner Password Credentials Flow
 				String username = oAuthRequest.getUsername();
