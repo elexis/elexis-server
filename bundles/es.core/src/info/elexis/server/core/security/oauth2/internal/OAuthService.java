@@ -94,11 +94,6 @@ public class OAuthService {
 			return ResponseUtils.responseUnauthClient("invalid client id or client secret");
 		}
 
-		// check client scopes (roles) or fail
-		if (!ClientUtil.validateRequestedScopes(clientId, scopes)) {
-			return ResponseUtils.responseInvalidScope("invalid client scope(s) requested");
-		}
-
 		// check username and password and scopes (roles) or fail
 		if (!checkUserAndPasswordAndScopes(username, password, scopes)) {
 			return ResponseUtils.responseAccessDenied("invalid username, password or scopes");

@@ -15,16 +15,21 @@ by an Elexis installation.
 
 ### Elexis Server System Realm
 
-The `elexis-server.auth` file contains users for direct system access, and OAuth2 clients.
-
-If an OAuth2 client has a set of defined roles (may not be limited), a user connecting via this client may not
-outreach the client rights - he is limited to a subset equal the rights of the client.
 
 ### Elexis Connector Realm
 
 
-## OAuth Authentication
+# Interfaces
 
+## OSGI Console
 
+## REST Interface
 
-### OAuth H2 Database
+### OAuth Authentication
+
+Currently supports two OAuth grant types
+
+*   Client credentials (considers roles mentioned in client file)
+*   Resource Owner credentials (considers roles of user)
+Both methods required a registered client application to connect. Registered clients are configured
+in the file `elexis-server.oauth2.auth`.

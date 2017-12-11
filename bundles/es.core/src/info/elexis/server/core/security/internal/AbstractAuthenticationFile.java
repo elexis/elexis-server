@@ -1,4 +1,4 @@
-package info.elexis.server.core.internal.security;
+package info.elexis.server.core.security.internal;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +49,7 @@ public abstract class AbstractAuthenticationFile {
 						continue;
 					}
 					String[] lineTokens = line.split(Character.toString(delimiter));
-					if (lineTokens.length == 4) {
+					if (lineTokens.length == 3) {
 						ESAFLine el = new ESAFLine(lineTokens);
 						entries.put(el.getId(), el);
 					}
@@ -91,8 +93,23 @@ public abstract class AbstractAuthenticationFile {
 		return Collections.emptySet();
 	}
 
+	/**
+	 * Add or replace an existing clientId
+	 * 
+	 * @param clientId
+	 * @param roles
+	 *            if <code>null</code> an empty set is instantiated
+	 * @param password
+	 *            if <code>null</code> a password will be generated
+	 * @return the password set
+	 * @throws IOException
+	 */
 	public String addOrReplaceId(String clientId, Set<String> roles, String password) throws IOException {
-		if (password == null) {
+		if (clientId == null) {
+			throw new IllegalArgumentException();
+		}
+
+		if (StringUtils.isEmpty(password)) {
 			password = UUID.randomUUID().toString().replaceAll("-", "");
 		}
 
@@ -110,6 +127,19 @@ public abstract class AbstractAuthenticationFile {
 	}
 
 	/**
+	 * Remove an existing clientId
+	 * 
+	 * @param clientId
+	 * @throws IOException
+	 */
+	public void removeId(String clientId) throws IOException {
+		if (clientId != null && entries.containsKey(clientId)) {
+			entries.remove(clientId);
+			saveFile();
+		}
+	}
+
+	/**
 	 * Clear all entries in the hashmap and remove the password file
 	 * 
 	 * @throws IOException
@@ -117,6 +147,15 @@ public abstract class AbstractAuthenticationFile {
 	public void clearAndRemove() throws IOException {
 		entries.clear();
 		Files.deleteIfExists(filePath);
+	}
+
+	public String printEntries() {
+		Collection<ESAFLine> values = getEntries().values();
+		StringBuilder sb = new StringBuilder();
+		for (ESAFLine value : values) {
+			sb.append(value + "\n");
+		}
+		return sb.toString();
 	}
 
 	protected class ESAFLine {

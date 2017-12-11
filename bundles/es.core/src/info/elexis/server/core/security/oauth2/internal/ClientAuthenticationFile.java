@@ -3,7 +3,7 @@ package info.elexis.server.core.security.oauth2.internal;
 import java.nio.file.Path;
 
 import info.elexis.server.core.common.util.CoreUtil;
-import info.elexis.server.core.internal.security.AbstractAuthenticationFile;
+import info.elexis.server.core.security.internal.AbstractAuthenticationFile;
 
 /**
  * Authentication file containing OAuth2 Clients

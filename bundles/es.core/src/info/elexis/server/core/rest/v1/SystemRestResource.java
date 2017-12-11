@@ -9,7 +9,12 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.osgi.service.component.annotations.Component;
 
 import info.elexis.server.core.Application;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 
+@Api(value = "/system", tags = { "system" })
 @Path("system/v1")
 @Component(service = SystemRestResource.class, immediate = true)
 public class SystemRestResource {
@@ -17,7 +22,8 @@ public class SystemRestResource {
 	@GET
 	@Path("uptime")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getStatus() {
+	@ApiOperation(value = "show how long system has been running")
+	public String uptime() {
 		return Application.uptime();
 	}
 
@@ -25,6 +31,9 @@ public class SystemRestResource {
 	@Path("protected")
 	@Produces(MediaType.TEXT_PLAIN)
 	@RequiresRoles("esadmin")
+	@ApiOperation(value = "Get the system status in plaintext", authorizations = {
+			@Authorization(value = "esoauth", scopes = {
+					@AuthorizationScope(scope = "esadmin", description = "bla") }) })
 	public String getStatusPlaintext() {
 		return "PROTECTED RESOURCE";
 	}

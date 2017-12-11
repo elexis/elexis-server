@@ -16,7 +16,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.osgi.service.component.annotations.Component;
 
 import info.elexis.server.core.common.security.ESAuthorizingRealm;
-import info.elexis.server.core.internal.security.ElexisServerAuthenticationFile;
+import info.elexis.server.core.security.internal.ElexisServerAuthenticationFile;
 
 /**
  * Elexis-Server local authorizing realm, stored in

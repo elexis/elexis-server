@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 
@@ -27,7 +26,7 @@ import info.elexis.server.core.security.oauth2.ClientUtil;
 
 public class TokenEndpointTest {
 
-	public static final String TOKEN_LOCATION = "http://localhost:8380/login/oauth/token";
+	public static final String TOKEN_LOCATION = "https://localhost:8480/login/oauth/token";
 	public static final String PROTECTED_RESOURCE_LOCATION = "http://localhost:8380/services/system/v1/protected";
 	public static final String CLIENT_ID_ADMIN_SCOPE = "Unit-Test-Client-AdminScope";
 	public static String CLIENT_SECRET_ADMIN_SCOPE;
@@ -37,27 +36,15 @@ public class TokenEndpointTest {
 
 	@BeforeClass
 	public static void waitForService() throws IOException, InterruptedException {
-
 		CLIENT_SECRET_ADMIN_SCOPE = ClientUtil.addOrReplaceOauthClient(CLIENT_ID_ADMIN_SCOPE,
 				Collections.singleton(SecurityConstants.ES_ADMIN));
 		assertNotNull(CLIENT_SECRET_ADMIN_SCOPE);
+		System.out.println("ClientSecret ["+CLIENT_SECRET_ADMIN_SCOPE+"]");
 
 		do {
 			Thread.sleep(500);
 			System.out.println("Waiting for login servlet ...");
-		} while (!isReachable(TOKEN_LOCATION));
-	}
-	
-	public static boolean isReachable(String targetUrl) throws MalformedURLException, IOException {
-		HttpURLConnection httpUrlConnection = (HttpURLConnection) new URL(targetUrl).openConnection();
-		httpUrlConnection.setRequestMethod("GET");
-		try {
-			int responseCode = httpUrlConnection.getResponseCode();
-
-			return responseCode > 0;
-		} catch (Exception exception) {
-			return false;
-		}
+		} while (!AllTests.isReachable(TOKEN_LOCATION));
 	}
 
 	@Test
@@ -82,6 +69,20 @@ public class TokenEndpointTest {
 		HttpURLConnection resource = (HttpURLConnection) (new URL(PROTECTED_RESOURCE_LOCATION).openConnection());
 		resource.addRequestProperty("Authorization", "Bearer " + accessToken);
 		assertEquals(200, resource.getResponseCode());
+	}
+
+	@Test
+	public void testFailTokenRequestUsingNonSSLConnection() throws Exception {
+		OAuthClientRequest request = OAuthClientRequest.tokenLocation("http://localhost:8380/login/oauth/token")
+				.setGrantType(GrantType.CLIENT_CREDENTIALS).setScope(SecurityConstants.ES_ADMIN)
+				.setClientId(CLIENT_ID_ADMIN_SCOPE).setClientSecret(CLIENT_SECRET_ADMIN_SCOPE).buildQueryMessage();
+
+		// create OAuth client that uses custom http client under the hood
+		OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+
+		thrown.expect(OAuthSystemException.class);
+
+		oAuthClient.accessToken(request);
 	}
 
 	@Test
@@ -138,23 +139,19 @@ public class TokenEndpointTest {
 	@Test
 	public void testResourceOwnerPasswordClientCredentialsFlowOk()
 			throws OAuthSystemException, OAuthProblemException, IOException {
-		
+
 		LocalUserUtil.addOrReplaceLocalUser("localUser", "password", Collections.singleton(SecurityConstants.ES_ADMIN));
 
-		OAuthClientRequest request = OAuthClientRequest.tokenLocation(TOKEN_LOCATION)
-				.setGrantType(GrantType.PASSWORD)
-				.setClientId(CLIENT_ID_ADMIN_SCOPE)
-				.setClientSecret(CLIENT_SECRET_ADMIN_SCOPE)
-				.setUsername("localUser")
-				.setPassword("password2")
-				.setScope(SecurityConstants.ES_ADMIN)
-				.buildQueryMessage();
+		OAuthClientRequest request = OAuthClientRequest.tokenLocation(TOKEN_LOCATION).setGrantType(GrantType.PASSWORD)
+				.setClientId(CLIENT_ID_ADMIN_SCOPE).setClientSecret(CLIENT_SECRET_ADMIN_SCOPE).setUsername("localUser")
+				.setPassword("password").setScope(SecurityConstants.ES_ADMIN).buildQueryMessage();
 
 		// create OAuth client that uses custom http client under the hood
 		OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
 		OAuthJSONAccessTokenResponse oAuthResponse = oAuthClient.accessToken(request);
 		String accessToken = oAuthResponse.getAccessToken();
+		assertNotNull(oAuthResponse.getExpiresIn());
 
 		HttpURLConnection resource = (HttpURLConnection) (new URL(PROTECTED_RESOURCE_LOCATION).openConnection());
 		resource.addRequestProperty("Authorization", "Bearer " + accessToken);

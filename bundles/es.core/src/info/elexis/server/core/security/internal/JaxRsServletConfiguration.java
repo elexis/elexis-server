@@ -1,4 +1,4 @@
-package info.elexis.server.core.internal.security;
+package info.elexis.server.core.security.internal;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
