@@ -15,17 +15,38 @@ cat <<EOF > req.conf
 [req]
 distinguished_name = req_distinguished_name
 req_extensions = v3_req
+x509_extensions = x509_ext
 prompt = no
+
 [req_distinguished_name]
 C = CH
 OU = Elexis-Server
 CN = ${HOSTNAME} 
+
 [v3_req]
-keyUsage = keyEncipherment, dataEncipherment
-extendedKeyUsage = serverAuth
-subjectAltName = @alt_names
-[alt_names]
-DNS.1 = ${HOSTNAME} 
+subjectKeyIdentifier    = hash
+basicConstraints        = CA:FALSE
+keyUsage                = digitalSignature, keyEncipherment
+subjectAltName          = @alternate_names
+nsComment               = "OpenSSL Generated Certificate"
+
+[ x509_ext ]
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer
+basicConstraints        = CA:FALSE
+keyUsage                = digitalSignature, keyEncipherment
+subjectAltName          = @alternate_names
+nsComment               = "OpenSSL Generated Certificate"
+
+[alternate_names]
+DNS.1 = ${HOSTNAME}
+DNS.2 = localhost
+DNS.3 = localhost.localdomain
+DNS.4 = 127.0.0.1
+DNS.5 = ::1
+DNS.6 = fe80::1
+IP.1 = 127.0.0.1
+IP.2 = ::1
 EOF
 }
 
