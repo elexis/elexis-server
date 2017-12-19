@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -370,6 +371,15 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		assertEquals(pos1.getId(), lst.get(0).getLeistungenCode());
 		assertEquals(pos2.getId(), lst.get(1).getLeistungenCode());
 		assertEquals(pos3.getId(), lst.get(2).getLeistungenCode());
+	}
+	
+	@Test
+	public void testFindFromCodeForMissingUVGPosition() {
+		// No UVG for 39.0021, find replacement
+		Optional<TarmedLeistung> result = TarmedLeistungService.findFromCode("39.0021", null, "UVG");
+		assertTrue(result.isPresent());
+		assertEquals("39.0021", result.get().getCode());
+		assertEquals("", result.get().getLaw());
 	}
 
 }

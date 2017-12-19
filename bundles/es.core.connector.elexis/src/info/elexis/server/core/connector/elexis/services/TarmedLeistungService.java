@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeist
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedExclusive;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedKumulationType;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation;
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedDefinitionen;
@@ -158,7 +161,7 @@ public class TarmedLeistungService extends PersistenceService {
 		return findFromCode(code, date, null);
 	}
 
-	/**
+		/**
 	 * Query for a {@link TarmedLeistung} using the code. The returned
 	 * {@link TarmedLeistung} will be valid on date, and will be from the cataloge
 	 * specified by law.
@@ -166,17 +169,22 @@ public class TarmedLeistungService extends PersistenceService {
 	 * @param code
 	 * @param date
 	 * @param law
-	 * @return 
+	 * @return
 	 */
 	public static Optional<TarmedLeistung> findFromCode(final String code, TimeTool date, String law) {
 		if (date == null) {
 			date = new TimeTool();
 		}
 		JPAQuery<TarmedLeistung> query = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
-		query.add(TarmedLeistung_.code_, QUERY.EQUALS, code);
 		if (law != null) {
-			query.add(TarmedLeistung_.law, QUERY.EQUALS, law.toLowerCase());
+			if (!isAvailableLaw(law)) {
+				query.add(TarmedLeistung_.law, QUERY.EQUALS, "");
+				query.or(TarmedLeistung_.law, QUERY.EQUALS, null);
+			} else {
+				query.add(TarmedLeistung_.law, QUERY.EQUALS, law.toLowerCase());
+			}
 		}
+		query.add(TarmedLeistung_.code_, QUERY.EQUALS, code);
 		List<TarmedLeistung> leistungen = query.execute();
 		for (TarmedLeistung tarmedLeistung : leistungen) {
 			TimeTool validFrom = new TimeTool(tarmedLeistung.getGueltigVon());
@@ -186,6 +194,20 @@ public class TarmedLeistungService extends PersistenceService {
 				return Optional.of(tarmedLeistung);
 		}
 		return Optional.empty();
+	}
+
+	private static List<String> availableLawsCache;
+	
+	public static boolean isAvailableLaw(String law) {
+		if (availableLawsCache == null) {
+			availableLawsCache = getAvailableLaws();
+		}
+		for (String available : availableLawsCache) {
+			if (available.equalsIgnoreCase(law)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -388,6 +410,16 @@ public class TarmedLeistungService extends PersistenceService {
 			return ret;
 		}
 		return Collections.emptyList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<String> getAvailableLaws() {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			return em.createNativeQuery("SELECT DISTINCT law FROM TARMED where ID <> 'Version';").getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 	public static String getSparteAsText(TarmedLeistung tl) {
