@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.status.ObjectStatus;
@@ -765,7 +766,6 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						reductionVerrechnet.setDetail(TL, Double.toString(opVerrechenbar.getTL()));
 						reductionVerrechnet.setDetail(AL, Double.toString(0.0));
 						reductionVerrechnet.setPrimaryScaleFactor(-0.4);
-						saveVerrechnet();
 						notMappedCodes.remove(opVerrechnet);
 						isMapped = true;
 						break;
@@ -962,7 +962,11 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	}
 
 	private void saveVerrechnet() {
-		newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
+		if (newVerrechnet != null) {
+			newVerrechnet = (Verrechnet) VerrechnetService.save(newVerrechnet);
+		} else {
+			LoggerFactory.getLogger(TarmedOptifier.class).warn("Call on null", new Throwable("Diagnosis"));
+		}
 	}
 
 	/**
