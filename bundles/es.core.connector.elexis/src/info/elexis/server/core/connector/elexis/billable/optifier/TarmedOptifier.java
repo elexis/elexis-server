@@ -238,7 +238,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				newVerrechnet = new VerrechnetService.Builder(code, kons, 1, userContact).build();
 				mapOpReduction(verrechnet, newVerrechnet);
 			}
-			return Status.OK_STATUS;
+			return ObjectStatus.OK_STATUS(newVerrechnet);
 			// return new Result<IBillable>(null);
 		}
 
