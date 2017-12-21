@@ -138,6 +138,7 @@ public class TestDatabaseInitializer {
 			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/TarmedKumulation.sql");
 			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/TarmedExtension.sql");
 			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/TarmedGroup.sql");
+			isTarmedInitialized = initializeDbScript("/rsc/dbScripts/TarmedDefinitionen.sql");
 		}
 	}
 

@@ -27,11 +27,13 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tar
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.PhysioLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.jpa.test.eventHandler.TestEventHandler;
 import info.elexis.server.core.connector.elexis.services.AbstractServiceTest;
 import info.elexis.server.core.connector.elexis.services.ArtikelService;
 import info.elexis.server.core.connector.elexis.services.ArtikelstammItemService;
+import info.elexis.server.core.connector.elexis.services.BehandlungService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.Labor2009TarifService;
@@ -39,6 +41,7 @@ import info.elexis.server.core.connector.elexis.services.PersistenceService;
 import info.elexis.server.core.connector.elexis.services.PhysioLeistungService;
 import info.elexis.server.core.connector.elexis.services.StockEntryService;
 import info.elexis.server.core.connector.elexis.services.StockService;
+import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 
 public class BillingTest extends AbstractServiceTest {
@@ -394,5 +397,47 @@ public class BillingTest extends AbstractServiceTest {
 		assertEquals(50, vr.getScale2());
 	}
 
+	@Test
+	public void testBillingFor9510() {
+		TarmedLeistung pos1 = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null).get();
+		Optional<IBillable<?>> billable1 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos1);
+		IStatus status = billable1.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos2 = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0020", null).get();
+		Optional<IBillable<?>> billable2 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos2);
+		status = billable2.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos3 = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0030", null).get();
+		Optional<IBillable<?>> billable3 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos3);
+		status = billable3.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos4 = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0050", null).get();
+		Optional<IBillable<?>> billable4 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos4);
+		status = billable4.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos5 = (TarmedLeistung) TarmedLeistungService.findFromCode("00.1200", null).get();
+		Optional<IBillable<?>> billable5 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos5);
+		status = billable5.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos6 = (TarmedLeistung) TarmedLeistungService.findFromCode("04.0630", null).get();
+		Optional<IBillable<?>> billable6 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos6);
+		status = billable6.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos7 = (TarmedLeistung) TarmedLeistungService.findFromCode("04.0640", null).get();
+		Optional<IBillable<?>> billable7 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos7);
+		status = billable7.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		TarmedLeistung pos8 = (TarmedLeistung) TarmedLeistungService.findFromCode("35.0020", null).get();
+		Optional<IBillable<?>> billable8 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos8);
+		status = billable8.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+	}
 
 }

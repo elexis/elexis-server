@@ -181,7 +181,7 @@ public class TarmedLeistungService extends PersistenceService {
 				query.add(TarmedLeistung_.law, QUERY.EQUALS, "");
 				query.or(TarmedLeistung_.law, QUERY.EQUALS, null);
 			} else {
-				query.add(TarmedLeistung_.law, QUERY.EQUALS, law.toLowerCase());
+				query.add(TarmedLeistung_.law, QUERY.EQUALS, law.toUpperCase());
 			}
 		}
 		query.add(TarmedLeistung_.code_, QUERY.EQUALS, code);
