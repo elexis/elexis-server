@@ -1,6 +1,9 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.LoggerFactory;
 
 import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedKumulationType;
@@ -36,11 +39,15 @@ public class TarmedExclusion {
 		} else {
 			String parentId = tarmedLeistung.getParent();
 			if (parentId != null && !parentId.equals("NIL")) {
-				TarmedLeistung parent = TarmedLeistungService.load(parentId).get();
-				return isMatchingChapter(parent);
-			} else {
-				return false;
+				Optional<TarmedLeistung> parent = TarmedLeistungService.load(parentId);
+				if (parent.isPresent()) {
+					return isMatchingChapter(parent.get());
+				} else {
+					LoggerFactory.getLogger(TarmedExclusion.class)
+							.error("Parent [{}] for TarmedLeistung [{}] not resolvable, returning false.", parentId, tarmedLeistung);
+				}
 			}
+			return false;
 		}
 	}
 
