@@ -20,6 +20,7 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeist
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedExclusive;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedKumulationType;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation.LimitationUnit;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -407,6 +408,7 @@ public class TarmedLeistungService extends PersistenceService {
 			for (String line : lines) {
 				ret.add(TarmedLimitation.of(line).setTarmedLeistung(tarmedLeistung));
 			}
+			fix9533(ret);
 			return ret;
 		}
 		return Collections.emptyList();
@@ -433,4 +435,27 @@ public class TarmedLeistungService extends PersistenceService {
 		return "";
 	}
 
+	/**
+	 * Method marks {@link LimitationUnit#COVERAGE} {@link TarmedLimitation} as
+	 * skip if in combination with a {@link LimitationUnit#SESSION}. This is a
+	 * WORKAROUND and should be REMOVED after reason is fixed.
+	 * 
+	 * @param ret
+	 */
+	private static void fix9533(List<TarmedLimitation> ret) {
+		boolean sessionfound = false;
+		for (TarmedLimitation tarmedLimitation : ret) {
+			if (tarmedLimitation.getLimitationUnit() == LimitationUnit.SESSION) {
+				sessionfound = true;
+				break;
+			}
+		}
+		if (sessionfound) {
+			for (TarmedLimitation tarmedLimitation : ret) {
+				if (tarmedLimitation.getLimitationUnit() == LimitationUnit.COVERAGE) {
+					tarmedLimitation.setSkip(true);
+				}
+			}
+		}
+	}
 }

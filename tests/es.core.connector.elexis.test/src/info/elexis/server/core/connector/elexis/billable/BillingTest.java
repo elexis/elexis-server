@@ -440,4 +440,18 @@ public class BillingTest extends AbstractServiceTest {
 		assertTrue(status.isOK());
 	}
 
+	@Test
+	public void testBillingFor9533() {
+		TarmedLeistung pos1 = (TarmedLeistung) TarmedLeistungService.findFromCode("02.0010", null).get();
+		Optional<IBillable<?>> billable1 = BehandlungService.findBillableByAbstractDBObjectIdDeleted(pos1);
+		IStatus status = billable1.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+
+		status = billable1.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+		status = billable1.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+		status = billable1.get().add(testBehandlungen.get(0), userContact, mandator);
+		assertTrue(status.isOK());
+	}
 }
