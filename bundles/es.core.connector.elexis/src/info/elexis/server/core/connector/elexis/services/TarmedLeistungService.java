@@ -272,7 +272,7 @@ public class TarmedLeistungService extends PersistenceService {
 			MandantType type = getMandantType(mandator);
 			if (type == MandantType.PRACTITIONER) {
 				double alScaling = ServiceUtil.checkZeroDouble(ext.get(TarmedLeistung.EXT_FLD_F_AL_R));
-				if (scaling > 0.1) {
+				if (alScaling > 0.1) {
 					scaling *= alScaling;
 				}
 			}
