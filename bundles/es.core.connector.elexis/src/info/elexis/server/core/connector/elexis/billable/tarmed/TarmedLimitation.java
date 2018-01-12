@@ -347,7 +347,6 @@ public class TarmedLimitation {
 
 	private LocalDate getDuringStartDate(Behandlung kons) {
 		LocalDate konsDate = new TimeTool(kons.getDatum()).toLocalDate();
-		LocalDate leistungDate = tarmedLeistung.getGueltigVon();
 		LocalDate ret = null;
 		if (limitationUnit == LimitationUnit.WEEK) {
 			ret = konsDate.minus(limitationAmount, ChronoUnit.WEEKS);
@@ -356,10 +355,13 @@ public class TarmedLimitation {
 		} else if (limitationUnit == LimitationUnit.YEAR) {
 			ret = konsDate.minus(limitationAmount, ChronoUnit.YEARS);
 		}
-		if (ret != null && ret.isBefore(leistungDate)) {
-			return leistungDate;
+		if (tarmedLeistung != null && ret != null) {
+			LocalDate leistungDate = tarmedLeistung.getGueltigVon();
+			if (ret.isBefore(leistungDate)) {
+				ret = leistungDate;
+			}
 		}
-		return null;
+		return ret;
 	}
 
 	@SuppressWarnings("rawtypes")
