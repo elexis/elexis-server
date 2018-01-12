@@ -16,8 +16,8 @@ import io.swagger.annotations.AuthorizationScope;
 
 @Api(value = "/system", tags = { "system" })
 @Path("system/v1")
-@Component(service = SystemRestResource.class, immediate = true)
-public class SystemRestResource {
+@Component(service = RestResource.class, immediate = true)
+public class RestResource {
 
 	@GET
 	@Path("uptime")

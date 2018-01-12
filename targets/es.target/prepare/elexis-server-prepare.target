@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1512467631">
+<target name="Elexis-Server" sequenceNumber="1515501434">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.5.0.201711241053"/>
       <unit id="ch.elexis.core" version="3.5.0.201712040633"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.201707030925"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201709080831"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201712141559"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.201711031036"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.201711030958"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
@@ -83,13 +83,13 @@
       <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.3.9.v20160517/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.100.201712041223"/>
-      <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201712041223"/>
-      <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201712041223"/>
-      <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201712041223"/>
-      <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201712041223"/>
-      <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201712041223"/>
-      <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201712041223"/>
+      <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201712111318"/>
+      <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201712111318"/>
+      <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201712111318"/>
+      <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201712111318"/>
+      <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201712111318"/>
+      <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201712111318"/>
+      <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201712111318"/>
       <repository location="http://medevit.github.io/osgi-jax-rs-connector/5.3.100/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">

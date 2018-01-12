@@ -45,7 +45,8 @@ public class ElexisDBConnection {
 			}
 			String dbv = cDBV.getWert();
 			String elVersion = entityManager.find(Config.class, "ElexisVersion").getWert();
-			String created = entityManager.find(Config.class, "created").getWert();
+			Config createdConfig = entityManager.find(Config.class, "created");
+			String created = (createdConfig != null ) ? createdConfig.getWert() : "";
 			String statusInfo = "Elexis " + elVersion + " DBv " + dbv + ", created " + created + " [" + connectionString
 					+ "]";
 			return statusInfo;

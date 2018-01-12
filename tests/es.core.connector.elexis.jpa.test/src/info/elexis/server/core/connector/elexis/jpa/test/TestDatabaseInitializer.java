@@ -88,32 +88,32 @@ public class TestDatabaseInitializer {
 	private static boolean isAgendaInitialized = false;
 	private static boolean isRemindersInitialized = false;
 	private static boolean isLeistungsblockInitialized = false;
+	
+	public void initializeDb(DBConnection connection, boolean sqlOnly) throws IOException, SQLException {
+		Connection jdbcConnection = getJdbcConnection(connection).get();
+		try {
+			executeDbScript(jdbcConnection, "/rsc/createDB.script");
+			executeDbScript(jdbcConnection, "/rsc/dbScripts/User.sql");
+			executeDbScript(jdbcConnection, "/rsc/dbScripts/Role.sql");
+			executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
+			executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
+			executeDbScript(jdbcConnection, "/rsc/dbScripts/BillingVKPreise.sql");
+			if(!sqlOnly) {
+				ConfigInitializer.initializeConfiguration();
+			}
+			isDbInitialized = true;
+		} finally {
+			try {
+				jdbcConnection.close();
+			} catch (SQLException e) {
+				// ignore
+			}
+		}
+	}
 
 	public synchronized void initializeDb() throws IOException, SQLException {
 		if (!isDbInitialized) {
-			// initialize
-			Optional<Connection> connection = getJdbcConnection(TestDatabase.getDBConnection());
-			if (connection.isPresent()) {
-				Connection jdbcConnection = connection.get();
-				try {
-					executeDbScript(jdbcConnection, "/rsc/createDB.script");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/User.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/Role.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/BillingVKPreise.sql");
-					ConfigInitializer.initializeConfiguration();
-					isDbInitialized = true;
-				} finally {
-					try {
-						jdbcConnection.close();
-					} catch (SQLException e) {
-						// ignore
-					}
-				}
-			} else {
-				logger.error("No connection available!");
-			}
+			initializeDb(TestDatabase.getDBConnection(), false);
 		}
 	}
 

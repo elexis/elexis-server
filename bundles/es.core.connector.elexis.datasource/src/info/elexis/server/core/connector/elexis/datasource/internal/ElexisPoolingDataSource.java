@@ -14,36 +14,35 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.DBConnection;
 import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
 
-@Component(immediate = true, property = "osgi.jndi.service.name=jdbc/poolable")
 public class ElexisPoolingDataSource extends PoolingDataSource implements DataSource {
 
 	private static Logger log = LoggerFactory.getLogger(ElexisPoolingDataSource.class);
 
-	@Activate
-	public void activate() {
+	public IStatus activate() {
 		Optional<DBConnection> dbConnection = ElexisDBConnectionUtil.getConnection();
 		if (dbConnection.isPresent()) {
 			ObjectPool<Connection> connectionPool = createConnectionPool(dbConnection.get());
 			if (connectionPool != null) {
 				setPool(connectionPool);
-
-				try (Connection conn = getConnection()){
-					log.info("db pool initialization success");
+				try (Connection conn = getConnection()) {
+					return new Status(Status.OK, Activator.BUNDLE_ID, "db pool initialization success");
 				} catch (SQLException e) {
-					log.error("db pool initialization error", e);
+					return new Status(Status.ERROR, Activator.BUNDLE_ID, "db pool initialization error", e);
 				}
 			} else {
-				log.error("db pool initialization failed - no connection pool used");
+				return new Status(Status.ERROR, Activator.BUNDLE_ID,
+						"db pool initialization failed - no connection pool used");
 			}
 		}
+		return new Status(Status.ERROR, Activator.BUNDLE_ID, "No database connection available.");
 	}
 
 	private ObjectPool<Connection> createConnectionPool(DBConnection dbConnection) {

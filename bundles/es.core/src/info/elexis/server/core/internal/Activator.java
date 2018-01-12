@@ -13,7 +13,6 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 
 import info.elexis.server.core.security.ElexisServerCompositeRealm;
-import info.elexis.server.core.security.oauth2.internal.OAuthService;
 import info.elexis.server.core.security.oauth2.internal.TokenEndpoint;
 
 public class Activator implements BundleActivator {

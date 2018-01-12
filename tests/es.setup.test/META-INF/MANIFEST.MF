@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Elexis-Server Setup Test
+Bundle-SymbolicName: info.elexis.server.setup.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit;bundle-version="4.12.0",
+ com.google.gson;bundle-version="2.5.0",
+ org.h2;bundle-version="1.3.170",
+ info.elexis.server.core.connector.elexis.jpa.test
+Bundle-ClassPath: lib/okhttp-3.9.1.jar,
+ lib/okio-1.13.0.jar,
+ .
+Import-Package: ca.uhn.fhir.context;version="2.4.0",
+ ca.uhn.fhir.parser;version="2.4.0",
+ ch.elexis.core.common,
+ info.elexis.server.core.common.util,
+ info.elexis.server.core.connector.elexis.datasource.util,
+ org.hl7.fhir.dstu3.model;version="2.4.0",
+ org.hl7.fhir.instance.model.api;version="2.4.0",
+ org.osgi.framework;version="1.8.0"
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: info.elexis.server.setup.test.internal.Activator
