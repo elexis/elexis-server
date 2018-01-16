@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1516119171">
+<target name="Elexis-Server" sequenceNumber="1516119308">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -104,6 +104,15 @@
       <unit id="org.apache.shiro.ehcache" version="1.4.0"/>
       <unit id="org.apache.shiro.aspectj" version="1.4.0"/>
       <unit id="org.apache.shiro.jaxrs" version="1.4.0"/>
+      <unit id="org.apache.oltu.oauth2.common" version="1.0.2"/>
+      <unit id="org.apache.oltu.commons.encodedtoken" version="1.0.0"/>
+      <unit id="org.apache.oltu.commons.json" version="1.0.0"/>
+      <unit id="org.apache.oltu.oauth2.authzserver" version="1.0.2"/>
+      <unit id="org.apache.oltu.oauth2.jwt" version="1.0.3"/>
+      <unit id="org.apache.oltu.oauth2.resourceserver" version="1.0.2"/>
+      <unit id="org.apache.oltu.oauth2.resourceserver-filter" version="1.0.2"/>
+      <unit id="org.apache.oltu.oauth2.client" version="1.0.2"/>
+      <unit id="org.apache.oltu.oauth2.httpclient4" version="1.0.2"/>
       <unit id="org.apache.commons.collections" version="3.2.2.v201511171945"/>
       <unit id="org.apache.commons.collections4" version="4.1.0"/>
       <unit id="com.google.guava" version="18.0.0.v20161115-1643"/>

@@ -111,6 +111,15 @@ location "http://download.elexis.info/elexis-server/f8913/p2/target/" elexis-ser
 	org.apache.shiro.ehcache
 	org.apache.shiro.aspectj
 	org.apache.shiro.jaxrs
+	org.apache.oltu.oauth2.common
+	org.apache.oltu.commons.encodedtoken
+	org.apache.oltu.commons.json 
+	org.apache.oltu.oauth2.authzserver
+	org.apache.oltu.oauth2.jwt
+	org.apache.oltu.oauth2.resourceserver
+	org.apache.oltu.oauth2.resourceserver-filter
+	org.apache.oltu.oauth2.client
+	org.apache.oltu.oauth2.httpclient4
 	org.apache.commons.collections
 	org.apache.commons.collections4
 	com.google.guava
