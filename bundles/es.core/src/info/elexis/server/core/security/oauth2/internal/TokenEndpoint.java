@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 public class TokenEndpoint extends HttpServlet {
 
 	private static final long serialVersionUID = 7577335233265868814L;
-	public static final String ENDPOINT = "/login/oauth/token";
 
 	private Logger log = LoggerFactory.getLogger(TokenEndpoint.class);
 	private OAuthService oAuthService = new OAuthService();
@@ -67,7 +66,7 @@ public class TokenEndpoint extends HttpServlet {
 			try {
 				grantType = GrantType.valueOf(oAuthRequest.getGrantType().toUpperCase());
 			} catch (IllegalArgumentException iae) {
-				log.error("Illegal grant type [{}]", oAuthRequest.getGrantType());
+				log.error("Invalid grant type [{}]", oAuthRequest.getGrantType());
 				return ResponseUtils.processResponse(response, null,
 						ResponseUtils.responseInvalidRequest("invalid grant type"));
 			}

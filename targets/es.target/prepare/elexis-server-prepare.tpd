@@ -52,6 +52,12 @@ location "http://download.eclipse.org/eclipse/updates/4.6/" {
 	javax.annotation
 	javax.xml
 	javax.inject
+	// - JSP
+	org.eclipse.jdt.core
+	org.eclipse.core.resources
+	org.eclipse.core.filesystem
+	org.eclipse.text
+	org.eclipse.core.commands
 }
 
 location "http://download.eclipse.org/releases/neon" {
@@ -82,6 +88,10 @@ location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.3.9.v201
 	org.eclipse.jetty.deploy
 	org.eclipse.jetty.osgi-servlet-api
 	org.eclipse.jetty.osgi.httpservice
+	org.eclipse.jetty.osgi.boot.jsp //FragmentActivator Sets up support for jsp and jstl.
+	org.eclipse.jetty.plus
+	org.eclipse.jetty.annotations
+	org.eclipse.jetty.jndi
 }
 
 location "http://medevit.github.io/osgi-jax-rs-connector/5.3.100/" {
@@ -105,6 +115,11 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2017030718063
 	com.google.guava [18.0.0.v20161115-1643,18.0.0.v20161115-1643]
 	org.apache.commons.collections
 	org.apache.commons.codec [1.9.0.v20170208-1614,1.9.0.v20170208-1614]
+	// JSP
+	org.apache.xalan
+	org.apache.xml.serializer
+	javax.servlet.jsp.jstl
+	javax.servlet.jsp.jstl.impl
 }
 
 // for es.core.connector.elexis.jpa
@@ -150,6 +165,12 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.oltu.oauth2.resourceserver-filter [1.0.2,1.1.0]
 	org.apache.oltu.oauth2.client [1.0.2,1.1.0]
 	org.apache.oltu.oauth2.httpclient4 [1.0.2,1.1.0]
+	org.apache.oltu.oauth2.dynamicreg.common [1.0.2,1.1.0]
+	org.apache.oltu.oauth2.dynamicreg.server [1.0.2,1.1.0]
+	org.mitre.openid-connect-common [1.3.1,1.4.0)
+	org.mitre.openid-connect-server [1.3.1,1.4.0)
+	org.springframework.spring-core
+	org.springframework.spring-beans
 	org.apache.commons.collections4
 	se.ugli.bigqueue
 	// weird problems with com.mysql.jdbc >= 5.1.39
@@ -182,6 +203,21 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.slf4j.osgi-over-slf4j
 	org.springframework.spring-web
 	org.apache.commons.io
+	// Jetty JSP support
+	org.eclipse.jetty.apache-jsp [9.3.9.v20160517,9.3.9.v20160517]
+	org.mortbay.jasper.apache-el [8.0.33,8.0.33]
+	org.mortbay.jasper.apache-jsp [8.0.33,8.0.33]
+	org.apache.taglibs.taglibs-standard-spec [1.2.5,1.2.5]
+	org.apache.taglibs.standard-impl [1.2.5,1.2.5]
+	org.apache.aries.spifly.static.bundle
+	org.apache.aries.spifly.dynamic.bundle
+	org.apache.aries.spifly.org.apache.aries.spifly.core-internal
+	org.apache.aries.spifly.org.apache.aries.spifly.static.tool
+	org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal
+	org.apache.aries.util
+	org.glassfish.web.javax.servlet.jsp.jstl
+	org.objectweb.asm.commons
+	org.objectweb.asm.tree
 }
 
 // RestFuse

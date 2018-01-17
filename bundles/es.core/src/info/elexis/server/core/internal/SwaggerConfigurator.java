@@ -15,7 +15,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.security.oauth2.internal.TokenEndpoint;
+import info.elexis.server.core.security.oauth2.OAuth2ServiceConstants;
 
 @Component(immediate = true)
 public class SwaggerConfigurator {
@@ -57,7 +57,7 @@ public class SwaggerConfigurator {
 			properties.put("swagger.securityDefinition.type.esoauth", "oauth2");
 			properties.put("swagger.securityDefinition.esoauth.flow", "password");
 			properties.put("swagger.securityDefinition.esoauth.tokenUrl",
-					"https://" + hostName + ":8480" + TokenEndpoint.ENDPOINT);
+					"https://" + hostName + ":8480" + OAuth2ServiceConstants.TOKEN_ENDPOINT);
 			properties.put("swagger.securityDefinition.esoauth.scopes.0", "esadmin");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0.description", "Elexis-Server system admin");
 

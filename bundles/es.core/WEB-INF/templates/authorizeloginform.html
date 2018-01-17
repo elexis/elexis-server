@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+   <title></title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">  
+  </head>
+  
+  <body>
+  
+  <div class="col-xs-12" style="height:50px;"></div>
+  
+   <main role="main" class="container">
+   <div class="jumbotron">
+  			<h1><p th:text="#{authorizeloginform.hello}">Hi <span th:text="${user}"></span></p></h1>
+    			<p class="lead" th:text="#{authorizeloginform.intro}">An application would like to act on your behalf.</p>
+    			<p class="lead">Allow <b><span th:text="${client_id}"></b></span> access?</p>
+    			<form>
+    				<button type="button" class="btn btn-default">Deny</button>
+    				<button type="button" class="btn btn-success">Allow</button>
+    			</form>
+    </div>
+    </main>
+    
+  </body>
+
+</html>

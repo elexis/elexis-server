@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.common.DBConnection.DBType;
+import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.connector.elexis.datasource.internal.Activator;
 
@@ -36,7 +37,7 @@ public class ElexisDBConnectionUtil {
 			try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
 				connection = DBConnection.unmarshall(is);
 				log.info("Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
-				setConnection(connection);
+				StatusUtil.logStatus(log, setConnection(connection));
 			} catch (IOException | JAXBException e) {
 				log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
 			}

@@ -1,18 +1,14 @@
 package info.elexis.server.setup.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import ca.uhn.fhir.context.FhirContext;
-import ch.elexis.core.common.DBConnection;
-import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -20,6 +16,9 @@ import org.junit.runners.MethodSorters;
 
 import com.google.gson.Gson;
 
+import ca.uhn.fhir.context.FhirContext;
+import ch.elexis.core.common.DBConnection;
+import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -99,7 +98,7 @@ public class SetupTest {
 	}
 
 	@Test
-	public void _06_checkFhirMetadataResourceForSmartOnFhirInformation() throws IOException {
+	public void _06_accessFhirMetadataResourceForSmartOnFhirInformation() throws IOException {
 		Request request = new Request.Builder().url(BASE_URL + "/fhir/metadata?_format=json").build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_OK, response.code());
@@ -111,4 +110,6 @@ public class SetupTest {
 				securityServiceCoding.getCoding().get(0).getSystem());
 	}
 
+	
+	// Test access FHIR resource with fhir* permission only
 }

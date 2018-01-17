@@ -16,6 +16,9 @@ import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * OAuth2 Authenticating Resource filter
+ */
 public class AuthenticatingResourceFilter extends AuthenticatingFilter {
 
 	private Logger log = LoggerFactory.getLogger(AuthenticatingResourceFilter.class);

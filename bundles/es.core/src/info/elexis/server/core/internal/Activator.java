@@ -13,6 +13,7 @@ import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 
 import info.elexis.server.core.security.ElexisServerCompositeRealm;
+import info.elexis.server.core.security.oauth2.OAuth2ServiceConstants;
 import info.elexis.server.core.security.oauth2.internal.TokenEndpoint;
 
 public class Activator implements BundleActivator {
@@ -47,7 +48,7 @@ public class Activator implements BundleActivator {
 			public Object addingService(ServiceReference<HttpService> reference) {
 				HttpService httpService = (HttpService) this.context.getService(reference);
 				try {
-					httpService.registerServlet(TokenEndpoint.ENDPOINT, new TokenEndpoint(), null, null);
+					httpService.registerServlet(OAuth2ServiceConstants.TOKEN_ENDPOINT, new TokenEndpoint(), null, null);
 				} catch (Exception exception) {
 					exception.printStackTrace();
 				}
@@ -58,7 +59,7 @@ public class Activator implements BundleActivator {
 			public void removedService(ServiceReference<HttpService> reference, Object service) {
 				HttpService httpService = (HttpService) this.context.getService(reference);
 				try {
-					httpService.unregister(TokenEndpoint.ENDPOINT);
+					httpService.unregister(OAuth2ServiceConstants.TOKEN_ENDPOINT);
 				} catch (IllegalArgumentException exception) {
 					exception.printStackTrace();
 				}
