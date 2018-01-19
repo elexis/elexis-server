@@ -571,6 +571,9 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	private String checkAge(String limitsString, Behandlung kons) {
 		LocalDateTime consDate = new TimeTool(kons.getDatum()).toLocalDateTime();
 		Kontakt patient = kons.getFall().getPatient();
+		if (patient.getDob() == null) {
+			return "Patienten Alter nicht ok, kein Geburtsdatum angegeben";
+		}
 		long patientAgeDays = patient.getAgeAt(consDate, ChronoUnit.DAYS);
 
 		List<TarmedLeistungAge> ageLimits = TarmedLeistungAge.of(limitsString, consDate);
