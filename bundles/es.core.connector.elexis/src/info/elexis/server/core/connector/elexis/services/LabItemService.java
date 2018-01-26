@@ -41,11 +41,11 @@ public class LabItemService extends PersistenceService {
 	private static final Pattern varPattern = Pattern.compile(TextContainerConstants.MATCH_TEMPLATE);
 
 	public static class Builder extends AbstractBuilder<LabItem> {
-		public Builder(String code, String title, IContact laboratory, String refMale, String refFemale, String unit,
+		public Builder(String code, String name, IContact laboratory, String refMale, String refFemale, String unit,
 				LabItemTyp type, String group, int seq) {
 			object = new LabItem();
 			object.setCode(code);
-			object.setName(title);
+			object.setName(name);
 			object.setLabor((Kontakt) laboratory);
 			object.setReferenceMale(refMale);
 			object.setReferenceFemale(refFemale);
@@ -53,6 +53,7 @@ public class LabItemService extends PersistenceService {
 			object.setTyp(type);
 			object.setGroup(group);
 			object.setPriority(Integer.toString(seq));
+			object.setVisible(true);
 		}
 	}
 

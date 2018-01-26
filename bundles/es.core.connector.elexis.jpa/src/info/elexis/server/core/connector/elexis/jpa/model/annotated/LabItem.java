@@ -55,7 +55,7 @@ public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 	private String loinccode;
 
 	@Convert("booleanStringConverter")
-	private boolean visible;
+	private boolean visible = true;
 
 	@Convert(value = "IntegerStringConverter")
 	private int digits;
