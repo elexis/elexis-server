@@ -76,10 +76,19 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 				ci.println("--( " + new Date() + " )---[cmd: " + joinedArguments + "]"
 						+ getRelativeFixedLengthSeparator(joinedArguments, 100, "-"));
 				if (method.getParameterCount() > 0) {
+					Class<?> clazz = method.getParameterTypes()[0];
 					subArguments = Arrays.copyOfRange(arguments, counter, arguments.length);
-					NoThrowExceptionIterator<String> nullContinueIterator = new NoThrowExceptionIterator<String>(
-							Arrays.asList(subArguments).iterator());
-					result = method.invoke(this, nullContinueIterator);
+					if (clazz.equals(Iterator.class)) {
+						NoThrowExceptionIterator<String> nullContinueIterator = new NoThrowExceptionIterator<String>(
+								Arrays.asList(subArguments).iterator());
+						result = method.invoke(this, nullContinueIterator);
+					} else if (clazz.equals(List.class)) {
+						result = method.invoke(this, Arrays.asList(subArguments));
+					} else if (clazz.equals(String.class)) {
+						result = method.invoke(this, subArguments.length > 0 ? subArguments[0] : "");
+					} else {
+						ci.println("AbstractConsoleCommandProvider: invalid method");
+					}
 				} else {
 					result = method.invoke(this);
 				}
