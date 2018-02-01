@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
+import ch.elexis.core.types.PathologicDescription;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem;
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ public class LabResult_ {
     public static volatile SingularAttribute<LabResult, LocalDateTime> analysetime;
     public static volatile SingularAttribute<LabResult, LocalDateTime> observationtime;
     public static volatile SingularAttribute<LabResult, String> comment;
+    public static volatile SingularAttribute<LabResult, PathologicDescription> pathologicDescription;
     public static volatile SingularAttribute<LabResult, String> refFemale;
 
 }

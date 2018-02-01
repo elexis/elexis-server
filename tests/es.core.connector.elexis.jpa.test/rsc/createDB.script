@@ -513,7 +513,8 @@ CREATE TABLE LABORWERTE(
 	reffemale   VARCHAR(255),
 	OriginID    VARCHAR(25),
 	Kommentar	TEXT,
-	ExtInfo		BLOB
+	ExtInfo		BLOB,
+	pathodesc VARCHAR(128)
 );
 
 CREATE INDEX labor1 on LABORWERTE (PatientID);
