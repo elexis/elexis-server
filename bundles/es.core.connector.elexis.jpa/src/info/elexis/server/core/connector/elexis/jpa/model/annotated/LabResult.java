@@ -13,6 +13,9 @@ import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 
+import ch.elexis.core.types.PathologicDescription;
+import ch.elexis.core.types.PathologicDescription.Description;
+
 @Entity
 @Table(name = "laborwerte")
 public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
@@ -64,6 +67,9 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Column(length = 25)
 	private String originId;
+
+	@Column(length = 128, name = "pathoDesc")
+	private PathologicDescription pathologicDescription = new PathologicDescription(Description.UNKNOWN);
 
 	@Transient
 	public boolean isFlagged(final int flag) {
@@ -180,6 +186,14 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setFlags(int flags) {
 		this.flags = flags;
+	}
+
+	public PathologicDescription getPathologicDescription() {
+		return pathologicDescription;
+	}
+
+	public void setPathologicDescription(PathologicDescription pathologicDescription) {
+		this.pathologicDescription = pathologicDescription;
 	}
 
 	@Override
