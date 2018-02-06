@@ -7,14 +7,9 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.web.jaxrs.ShiroFeature;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.http.HttpService;
-import org.osgi.util.tracker.ServiceTracker;
 
 import info.elexis.server.core.security.ElexisServerCompositeRealm;
-import info.elexis.server.core.security.oauth2.OAuth2ServiceConstants;
-import info.elexis.server.core.security.oauth2.internal.TokenEndpoint;
 
 public class Activator implements BundleActivator {
 
@@ -23,8 +18,6 @@ public class Activator implements BundleActivator {
 	private static BundleContext context;
 
 	private ServiceRegistration<?> shiroFeatureRegistration;
-
-	private ServiceTracker<HttpService, Object> httpServiceTracker;
 
 	static BundleContext getContext() {
 		return context;
@@ -42,30 +35,6 @@ public class Activator implements BundleActivator {
 		SecurityUtils.setSecurityManager(new DefaultSecurityManager(new ElexisServerCompositeRealm()));
 
 		shiroFeatureRegistration = context.registerService(ShiroFeature.class.getName(), new ShiroFeature(), null);
-
-		httpServiceTracker = new ServiceTracker<HttpService, Object>(context, HttpService.class, null) {
-			@Override
-			public Object addingService(ServiceReference<HttpService> reference) {
-				HttpService httpService = (HttpService) this.context.getService(reference);
-				try {
-					httpService.registerServlet(OAuth2ServiceConstants.TOKEN_ENDPOINT, new TokenEndpoint(), null, null);
-				} catch (Exception exception) {
-					exception.printStackTrace();
-				}
-				return httpService;
-			}
-
-			@Override
-			public void removedService(ServiceReference<HttpService> reference, Object service) {
-				HttpService httpService = (HttpService) this.context.getService(reference);
-				try {
-					httpService.unregister(OAuth2ServiceConstants.TOKEN_ENDPOINT);
-				} catch (IllegalArgumentException exception) {
-					exception.printStackTrace();
-				}
-			}
-		};
-		httpServiceTracker.open();
 	}
 
 	/*
@@ -80,7 +49,6 @@ public class Activator implements BundleActivator {
 			shiroFeatureRegistration.unregister();
 			shiroFeatureRegistration = null;
 		}
-		httpServiceTracker.close();
 	}
 
 	public static URL loadResourceFile(String filename) {

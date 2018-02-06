@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.concurrent.TimeUnit;
 
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
@@ -36,6 +37,11 @@ public class SetupTest {
 
 	private Gson gson = new Gson();
 	private FhirContext fhirContext = FhirContext.forDstu3();
+
+	public SetupTest() {
+		client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS)
+				.readTimeout(30, TimeUnit.SECONDS).build();
+	}
 
 	@BeforeClass
 	public static void waitForService() throws IOException, InterruptedException {
@@ -110,6 +116,5 @@ public class SetupTest {
 				securityServiceCoding.getCoding().get(0).getSystem());
 	}
 
-	
 	// Test access FHIR resource with fhir* permission only
 }

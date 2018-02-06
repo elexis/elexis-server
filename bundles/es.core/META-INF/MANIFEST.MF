@@ -15,9 +15,12 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.200",
  org.apache.shiro.web;bundle-version="1.4.0",
  org.apache.oltu.oauth2.authzserver;bundle-version="1.0.2",
  org.apache.oltu.oauth2.resourceserver;bundle-version="1.0.2",
- com.eclipsesource.jaxrs.publisher;bundle-version="5.3.1"
+ com.eclipsesource.jaxrs.publisher;bundle-version="5.3.1",
+ org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.httpclient
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: io.swagger.annotations;version="1.5.17",
+Import-Package: com.google.gson;version="2.5.0",
+ io.swagger.annotations;version="1.5.17",
  javax.annotation.security;version="1.2.0",
  javax.inject;version="1.0.0",
  javax.servlet;version="3.1.0",
@@ -56,11 +59,11 @@ Service-Component: OSGI-INF/info.elexis.server.core.security.ElexisServerComposi
  OSGI-INF/info.elexis.server.core.internal.ConsoleCommandProvider.xml,
  OSGI-INF/info.elexis.server.core.service.internal.StoreToStringServiceImpl.xml
 Service-Component: OSGI-INF/info.elexis.server.core.security.ElexisServerCompositeRealm.xml,
- OSGI-INF/info.elexis.server.core.security.oauth2.internal.OAuthAuthorizingRealm.xml,
  OSGI-INF/info.elexis.server.core.security.SystemLocalAuthorizingRealm.xml,
  OSGI-INF/info.elexis.server.core.internal.ConsoleCommandProvider.xml,
  OSGI-INF/info.elexis.server.core.service.internal.StoreToStringServiceImpl.xml,
  OSGI-INF/info.elexis.server.core.security.internal.JaxRsServletConfiguration.xml,
  OSGI-INF/info.elexis.server.core.internal.SwaggerConfigurator.xml,
- OSGI-INF/info.elexis.server.core.rest.v1.RestResource.xml
+ OSGI-INF/info.elexis.server.core.rest.v1.RestResource.xml,
+ OSGI-INF/info.elexis.server.core.security.oauth2.internal.OAuth2AuthorizingRealm.xml
 Bundle-ActivationPolicy: lazy

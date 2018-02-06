@@ -73,8 +73,8 @@ public class ElexisDBConnectionUtil {
 
 	private static void doSetConnection(DBConnection connection) throws IOException, JAXBException {
 		ElexisDBConnectionUtil.connection = connection;
-		Activator.refreshDataSource();
 		persistDBConnection();
+		Activator.refreshDataSource();
 	}
 
 	private static void persistDBConnection() throws IOException, JAXBException {
