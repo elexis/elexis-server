@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1516345582">
+<target name="Elexis-Server" sequenceNumber="1517565618">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.5.0.201801091427"/>
-      <unit id="ch.elexis.core" version="3.5.0.201712040633"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.201707030925"/>
+      <unit id="ch.rgw.utility" version="3.5.0.201801291424"/>
+      <unit id="ch.elexis.core" version="3.5.0.201801251727"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.201801251727"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201712141559"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.201711031036"/>
-      <unit id="ch.elexis.core.findings.util" version="1.0.0.201711030958"/>
+      <unit id="ch.elexis.core.findings.util" version="1.0.0.201801220950"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.0"/>
@@ -23,9 +23,9 @@
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20171123-0917"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20170915-0846"/>
-      <unit id="at.medevit.atc_codes" version="3.1.0.20160519-0702"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180129-1123"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20180130-0728"/>
+      <unit id="at.medevit.atc_codes" version="3.1.0.20180129-1123"/>
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -132,6 +132,10 @@
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
       <repository location="http://download.eclipse.org/gemini/updates/naming/1.0.5/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.gemini.web.core" version="3.0.3.RELEASE"/>
+      <repository location="http://download.eclipse.org/gemini/updates/web/3.0.3/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.apache.commons.beanutils" version="1.9.2"/>

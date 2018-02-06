@@ -84,7 +84,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 		try {
 			httpService.registerServlet("/fhir/*", this, null, null);
-			String config = IOUtils.toString(this.getClass().getResourceAsStream("shiro-jaxrs.ini"),
+			String config = IOUtils.toString(this.getClass().getResourceAsStream("shiro-fhir.ini"),
 					Charset.forName("UTF-8"));
 			IniShiroFilter iniShiroFilter = new IniShiroFilter();
 			iniShiroFilter.setConfig(config);

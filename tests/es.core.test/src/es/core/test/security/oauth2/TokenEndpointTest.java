@@ -22,7 +22,6 @@ import org.junit.rules.ExpectedException;
 
 import info.elexis.server.core.constants.SecurityConstants;
 import info.elexis.server.core.security.LocalUserUtil;
-import info.elexis.server.core.security.oauth2.ClientUtil;
 
 public class TokenEndpointTest {
 
@@ -36,8 +35,8 @@ public class TokenEndpointTest {
 
 	@BeforeClass
 	public static void waitForService() throws IOException, InterruptedException {
-		CLIENT_SECRET_ADMIN_SCOPE = ClientUtil.addOrReplaceOauthClient(CLIENT_ID_ADMIN_SCOPE,
-				Collections.singleton(SecurityConstants.ES_ADMIN));
+//		CLIENT_SECRET_ADMIN_SCOPE = ClientUtil.addOrReplaceOauthClient(CLIENT_ID_ADMIN_SCOPE,
+//				Collections.singleton(SecurityConstants.ES_ADMIN));
 		assertNotNull(CLIENT_SECRET_ADMIN_SCOPE);
 		System.out.println("ClientSecret ["+CLIENT_SECRET_ADMIN_SCOPE+"]");
 

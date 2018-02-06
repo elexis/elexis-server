@@ -5,7 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.codec.DecoderException;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -15,10 +20,18 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import ca.uhn.fhir.context.FhirContext;
 import ch.elexis.core.common.DBConnection;
+import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
+import info.elexis.server.core.connector.elexis.services.UserService;
+import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,6 +49,11 @@ public class SetupTest {
 
 	private Gson gson = new Gson();
 	private FhirContext fhirContext = FhirContext.forDstu3();
+
+	public SetupTest() {
+		client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS)
+				.readTimeout(30, TimeUnit.SECONDS).build();
+	}
 
 	@BeforeClass
 	public static void waitForService() throws IOException, InterruptedException {
@@ -110,6 +128,35 @@ public class SetupTest {
 				securityServiceCoding.getCoding().get(0).getSystem());
 	}
 
-	
+	@Test
+	public void _07_dynamicRegisterOAuth2Client()
+			throws NoSuchAlgorithmException, InvalidKeySpecException, DecoderException, IOException {
+		Kontakt mandant = new KontaktService.PersonBuilder("Pickle", "Rick", LocalDate.of(1979, 07, 26), Gender.MALE)
+				.mandator().buildAndSave();
+		User prick = new UserService.Builder("prick", mandant).buildAndSave();
+		UserService.setPasswordForUser(prick, "password");
+
+		String credential = Credentials.basic("prick", "p4ssword");
+
+		JsonObject obj = new JsonObject();
+		obj.addProperty("client_name", "test_client");
+		JsonArray grantTypes = new JsonArray();
+		grantTypes.add("esadmin");
+		obj.add("grant_types", grantTypes);
+		JsonArray redirectUris = new JsonArray();
+		redirectUris.add("localhost");
+		obj.add("redirect_uris", grantTypes);
+		System.out.println(obj.toString());
+		RequestBody body = RequestBody.create(JSON, obj.toString());
+
+		
+		 // DOES NOT REQUIRE AUTH, WHY??
+		Request request = new Request.Builder().header("Authorization", credential).post(body)
+				.url(BASE_URL + "/openid/register").build();
+		response = client.newCall(request).execute();
+		assertEquals(HttpURLConnection.HTTP_CREATED, response.code());
+		System.out.println(response.body().string());
+	}
+
 	// Test access FHIR resource with fhir* permission only
 }

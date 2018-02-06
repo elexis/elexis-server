@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.core.security.oauth2.internal.OAuth2AuthorizingRealm">
+   <service>
+      <provide interface="info.elexis.server.core.common.security.ESAuthorizingRealm"/>
+   </service>
+   <implementation class="info.elexis.server.core.security.oauth2.internal.OAuth2AuthorizingRealm"/>
+</scr:component>

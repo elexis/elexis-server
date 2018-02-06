@@ -9,7 +9,7 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.UriType;
 
-import info.elexis.server.core.security.oauth2.OAuth2ServiceConstants;
+import info.elexis.server.core.Host;
 
 public class ServerCapabilityStatementProvider
 		extends org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider {
@@ -17,7 +17,8 @@ public class ServerCapabilityStatementProvider
 	@Override
 	public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
 		CapabilityStatement serverConformance = super.getServerConformance(theRequest);
-		serverConformance.getRest().get(0).setSecurity(getSmartOnFhirCapabilityStatementRestSecurityComponent(theRequest));
+		serverConformance.getRest().get(0)
+				.setSecurity(getSmartOnFhirCapabilityStatementRestSecurityComponent(theRequest));
 		return serverConformance;
 	}
 
@@ -32,18 +33,16 @@ public class ServerCapabilityStatementProvider
 		smartOnFhirConcept.addCoding(coding);
 		smartOnFhirConcept.setText("OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)");
 
-		String baseUrl = "https://"+theRequest.getLocalName()+":8443";
-		
 		Extension oauthExtension = new Extension();
 		oauthExtension.setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 		Extension oauthTokenExtension = new Extension();
 		oauthTokenExtension.setUrl("token");
-		oauthTokenExtension.setValue(new UriType(baseUrl + OAuth2ServiceConstants.TOKEN_ENDPOINT));
+		oauthTokenExtension.setValue(new UriType(Host.getOpenIDBaseUrlSecure() + "token"));
 		oauthExtension.getExtension().add(oauthTokenExtension);
-		
+
 		Extension oauthAuthorizeExtension = new Extension();
 		oauthAuthorizeExtension.setUrl("authorize");
-		oauthAuthorizeExtension.setValue(new UriType(baseUrl+OAuth2ServiceConstants.AUTHORIZE_ENDPOINT));
+		oauthAuthorizeExtension.setValue(new UriType(Host.getOpenIDBaseUrlSecure() + "authorize"));
 		oauthExtension.getExtension().add(oauthAuthorizeExtension);
 
 		csrsc.getService().add(smartOnFhirConcept);

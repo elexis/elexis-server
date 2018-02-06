@@ -1,8 +1,6 @@
 package info.elexis.server.core.internal;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -15,7 +13,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.security.oauth2.OAuth2ServiceConstants;
+import info.elexis.server.core.Host;
 
 @Component(immediate = true)
 public class SwaggerConfigurator {
@@ -41,14 +39,7 @@ public class SwaggerConfigurator {
 				properties.put(Constants.SERVICE_PID, SERVICE_PID);
 			}
 
-			String hostName = null;
-			try {
-				hostName = InetAddress.getLocalHost().getHostName();
-			} catch (UnknownHostException e) {
-				log.error("Error determining host name for swagger configuration.", e);
-			}
-
-			properties.put("swagger.host", hostName + ":8480");
+			properties.put("swagger.host", Host.getBaseUrlSecure());
 			properties.put("swagger.basePath", "/services");
 			properties.put("swagger.info.title", "Elexis-Server");
 			properties.put("swagger.info.version", "1.6");
@@ -56,8 +47,7 @@ public class SwaggerConfigurator {
 
 			properties.put("swagger.securityDefinition.type.esoauth", "oauth2");
 			properties.put("swagger.securityDefinition.esoauth.flow", "password");
-			properties.put("swagger.securityDefinition.esoauth.tokenUrl",
-					"https://" + hostName + ":8480" + OAuth2ServiceConstants.TOKEN_ENDPOINT);
+			properties.put("swagger.securityDefinition.esoauth.tokenUrl", Host.getOpenIDBaseUrlSecure() + "token");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0", "esadmin");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0.description", "Elexis-Server system admin");
 
