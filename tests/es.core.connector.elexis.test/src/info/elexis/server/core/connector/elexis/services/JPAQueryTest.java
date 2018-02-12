@@ -218,4 +218,22 @@ public class JPAQueryTest {
 
 		PersistenceService.remove(testPatient);
 	}
+
+	@Test
+	public void testRawJPAQuery() {
+		JPAQuery<LabOrder> qbe = new JPAQuery<>(LabOrder.class);
+		qbe.setRawQueryString("SELECT * FROM LABORDER WHERE DELETED = 0 AND ID != 'VERSION'");
+		List<LabOrder> execute = qbe.execute();
+		assertEquals(307, execute.size());
+		ScrollableCursor cursor = qbe.executeAsStream();
+		int i = 0;
+		while (cursor.hasNext()) {
+			i++;
+			cursor.next();
+			cursor.clear();
+		}
+		cursor.close();
+		assertEquals(307, i);
+	}
+
 }
