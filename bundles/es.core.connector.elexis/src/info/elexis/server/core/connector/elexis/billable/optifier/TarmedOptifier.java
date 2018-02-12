@@ -294,14 +294,14 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 					if (verrechenbar.get().getCode().equals("00.0750")
 							|| verrechenbar.get().getCode().equals("00.0010")) {
 						String excludeCode = null;
-						if (verrechenbar.get().getCode().equals("00.0010")) {
+						if ("00.0010".equals(verrechenbar.get().getCode())) {
 							excludeCode = "00.0750";
 						} else {
 							excludeCode = "00.0010";
 						}
 						for (Verrechnet v : lst) {
 							Optional<IBillable> vr = VerrechnetService.getVerrechenbar(v);
-							if (vr.isPresent() && vr.get().getCode().equals(excludeCode)) {
+							if (vr.isPresent() && excludeCode.equals(vr.get().getCode())) {
 								VerrechnetService.delete(newVerrechnet);
 								return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
 										"00.0750 ist nicht im Rahmen einer ärztlichen Beratung 00.0010 verrechnenbar.");
