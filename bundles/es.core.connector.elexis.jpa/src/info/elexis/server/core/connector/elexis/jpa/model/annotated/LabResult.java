@@ -39,10 +39,7 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Convert(value = "IntegerStringConverter")
 	private int flags;
-
-	@Column(length = 30)
-	private String origin;
-
+	
 	@Lob
 	@Column(name = "Kommentar")
 	private String comment;
@@ -65,8 +62,9 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 255)
 	private String refFemale;
 
-	@Column(length = 25)
-	private String originId;
+	@OneToOne
+	@JoinColumn(name = "originId")
+	private Kontakt origin;
 
 	@Column(length = 128, name = "pathoDesc")
 	private PathologicDescription pathologicDescription = new PathologicDescription(Description.UNKNOWN);
@@ -100,13 +98,7 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 		this.item = item;
 	}
 
-	public String getOrigin() {
-		return origin;
-	}
 
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
 
 	public String getComment() {
 		return comment;
@@ -140,12 +132,12 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 		this.refFemale = refFemale;
 	}
 
-	public String getOriginId() {
-		return originId;
+	public Kontakt getOrigin() {
+		return origin;
 	}
-
-	public void setOriginId(String originId) {
-		this.originId = originId;
+	
+	public void setOrigin(Kontakt origin) {
+		this.origin = origin;
 	}
 
 	public String getResult() {

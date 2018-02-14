@@ -29,6 +29,8 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabMapping;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabMapping_;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult_;
 import info.elexis.server.core.connector.elexis.map.PersistentObjectAttributeMapping;
@@ -175,6 +177,48 @@ public class LabItemService extends PersistenceService {
 			}
 		});
 		return results;
+	}
+
+	public static LabMapping findLabMappingByContactAndItemName(Kontakt origin, String itemName) {
+		JPAQuery<LabMapping> qbe = new JPAQuery<LabMapping>(LabMapping.class);
+		qbe.add(LabMapping_.origin, QUERY.EQUALS, origin);
+		qbe.add(LabMapping_.itemname, QUERY.EQUALS, itemName);
+		List<LabMapping> res = qbe.execute();
+		if (res.isEmpty()) {
+			return null;
+		} else {
+			if (res.size() > 1) {
+				throw new IllegalArgumentException(
+						String.format("Found more then 1 mapping for origin id [%s] - [%s]", origin.getId(), itemName)); //$NON-NLS-1$
+			}
+			return res.get(0);
+		}
+	}
+
+	public static String findItemNameForLabItemByOrigin(LabItem labItem, Kontakt origin) {
+		JPAQuery<LabMapping> qbe = new JPAQuery<LabMapping>(LabMapping.class);
+		qbe.add(LabMapping_.origin, QUERY.EQUALS, origin);
+		qbe.add(LabMapping_.labItem, QUERY.EQUALS, labItem);
+		List<LabMapping> res = qbe.execute();
+		if (res.size() == 1) {
+			return res.get(0).getItemname();
+		}
+		return null;
+	}
+
+	public static void addLabMapping(LabItem labItem, Kontakt origin, String itemName) {
+		LabMapping existing = findLabMappingByContactAndItemName(origin, itemName);
+		if (existing != null) {
+			throw new IllegalArgumentException(
+					String.format("Mapping for origin id [%s] - [%s] already exists can not create multiple instances.", //$NON-NLS-1$
+							origin.getId(), itemName));
+		}
+
+		LabMapping labMapping = new LabMapping();
+		labMapping.setItemname(itemName);
+		labMapping.setOrigin(origin);
+		labMapping.setLabItem(labItem);
+		PersistenceService.save(labMapping);
 	}
 
 }

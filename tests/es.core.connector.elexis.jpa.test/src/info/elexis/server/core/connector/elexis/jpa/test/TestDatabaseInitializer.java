@@ -62,6 +62,9 @@ public class TestDatabaseInitializer {
 
 	private static boolean isMandantInitialized = false;
 	private static Kontakt mandant;
+	
+	private Kontakt laboratory;
+	private Kontakt laboratory2;
 
 	private static boolean isFallInitialized = false;
 	private static Fall fall;
@@ -109,6 +112,7 @@ public class TestDatabaseInitializer {
 						jdbcConnection.close();
 					} catch (SQLException e) {
 						// ignore
+						e.printStackTrace();
 					}
 				}
 			} else {
@@ -155,10 +159,9 @@ public class TestDatabaseInitializer {
 			isLeistungsblockInitialized = initializeDbScript("/rsc/dbScripts/Leistungsblock.sql");
 		}
 	}
-	
+
 	/**
-	 * Initializes an intrinsic consistent set of LabItems, LabResults and
-	 * LabOrders
+	 * Initializes an intrinsic consistent set of LabItems, LabResults and LabOrders
 	 * 
 	 * @throws SQLException
 	 * @throws IOException
@@ -169,10 +172,10 @@ public class TestDatabaseInitializer {
 			isLaborItemsOrdersResultsInitialized = initializeDbScript("/rsc/dbScripts/LaborItemsWerteResults.sql");
 		}
 	}
-	
+
 	public synchronized void initializeReminders() throws IOException, SQLException {
 		initializeDb();
-		if(!isRemindersInitialized) {
+		if (!isRemindersInitialized) {
 			isRemindersInitialized = initializeDbScript("/rsc/dbScripts/Reminder.sql");
 		}
 	}
@@ -281,7 +284,7 @@ public class TestDatabaseInitializer {
 	 * 
 	 * @return
 	 */
-	public static Kontakt getPatient() {
+	public Kontakt getPatient() {
 		return patient;
 	}
 
@@ -448,8 +451,7 @@ public class TestDatabaseInitializer {
 	 * <li>Label: "Test Fall"</li>
 	 * <li>Reason: "reason"</li>
 	 * <li>BillingMethod: "method"</li>
-	 * <li>KostentrKontakt: {@link TestDatabaseInitializer#getOrganization()}
-	 * </li>
+	 * <li>KostentrKontakt: {@link TestDatabaseInitializer#getOrganization()}</li>
 	 * <li>VersNummer: 1234-5678</li>
 	 * <li>DatumVon: 1.9.2016</li>
 	 * 
@@ -522,15 +524,22 @@ public class TestDatabaseInitializer {
 			initializePatient();
 		}
 		if (!isLabResultInitialized) {
-			Kontakt laboratory = new KontaktService.OrganizationBuilder("Labor Test").laboratory().build();
+			laboratory = new KontaktService.OrganizationBuilder("Labor Test").laboratory().build();
 			laboratory.setDescription2("Test");
 			PersistenceService.save(laboratory);
 
+			laboratory2 = new KontaktService.OrganizationBuilder("Labor Test2").laboratory().build();
+			laboratory2.setDescription2("Test2");
+			PersistenceService.save(laboratory2);
+			XidService.setDomainId(laboratory2, XidConstants.XID_KONTAKT_LAB_SENDING_FACILITY, "ZURANA",
+					XidQuality.ASSIGNMENT_REGIONAL);
+
 			labItem = (LabItem) new LabItemService.Builder("TEST NUMERIC", "Test Laboratory", laboratory, ">1", "3-3.5",
-					"unit",
-					LabItemTyp.NUMERIC, "group", 1).build();
+					"unit", LabItemTyp.NUMERIC, "group", 1).build();
 			labItem.setExport("vitolabkey:1,2");
 			LabItemService.save(labItem);
+			
+			LabItemService.addLabMapping(labItem, laboratory2, "TEST_NUMERIC_EXT");
 
 			LabItem textLabItem = (LabItem) new LabItemService.Builder("TEST TEXT", "Test Laboratory", laboratory, null,
 					null, "unit", LabItemTyp.TEXT, "group", 2).build();
@@ -542,7 +551,7 @@ public class TestDatabaseInitializer {
 			labResult.setUnit("u");
 			labResult.setRefMale("<1");
 			labResult.setRefFemale("1-1.5");
-			labResult.setOriginId(laboratory.getId());
+			labResult.setOrigin(laboratory);
 			labResult.setResult("2");
 			labResult.setComment("no comment");
 			LabResultService.save(labResult);
@@ -550,7 +559,7 @@ public class TestDatabaseInitializer {
 
 			labResult = new LabResultService.Builder(labItem, patient).build();
 			labResult.setObservationtime(LocalDateTime.of(2016, Month.DECEMBER, 15, 10, 10, 30));
-			labResult.setOriginId(laboratory.getId());
+			labResult.setOrigin(laboratory);
 			labResult.setResult("2");
 			labResult.setComment("no comment");
 			LabResultService.save(labResult);
@@ -558,7 +567,7 @@ public class TestDatabaseInitializer {
 
 			labResult = new LabResultService.Builder(labItem, patient).build();
 			labResult.setObservationtime(LocalDateTime.of(2017, Month.FEBRUARY, 28, 12, 59, 23));
-			labResult.setOriginId(laboratory.getId());
+			labResult.setOrigin(laboratory);
 			labResult.setResult("124/79");
 			labResult.setUnit("Bloodpressure");
 			LabResultService.save(labResult);
@@ -566,7 +575,7 @@ public class TestDatabaseInitializer {
 
 			labResult = new LabResultService.Builder(textLabItem, patient).build();
 			labResult.setObservationtime(LocalDateTime.of(2017, Month.FEBRUARY, 28, 10, 02, 23));
-			labResult.setOriginId(laboratory.getId());
+			labResult.setOrigin(laboratory);
 			labResult.setResult("(Text)");
 			labResult.setComment("The Text Result ...");
 			LabResultService.save(labResult);
@@ -575,7 +584,19 @@ public class TestDatabaseInitializer {
 			isLabResultInitialized = true;
 		}
 	}
+	
+	public LabItem getLabItem() {
+		return labItem;
+	}
 
+	public Kontakt getLaboratory() {
+		return laboratory;
+	}
+	
+	public Kontakt getLaboratory2() {
+		return laboratory2;
+	}
+	
 	public static List<LabResult> getLabResults() {
 		return labResults;
 	}
