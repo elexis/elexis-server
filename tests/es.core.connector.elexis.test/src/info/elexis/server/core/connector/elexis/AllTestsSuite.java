@@ -27,6 +27,7 @@ public class AllTestsSuite {
 	public static void setupClass() throws IOException, SQLException {
 		initializer.initializeDb();
 
+		AllTestsSuite.getInitializer().initializePatient();
 		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();
 		AllTestsSuite.getInitializer().initializeAgendaTable();
 		AllTestsSuite.getInitializer().initializeArzttarifePhysioLeistungTables();
@@ -35,6 +36,7 @@ public class AllTestsSuite {
 		AllTestsSuite.getInitializer().initializeReminders();
 		AllTestsSuite.getInitializer().initializeLeistungsblockTables();
 		AllTestsSuite.getInitializer().initializeBehandlung();
+		AllTestsSuite.getInitializer().initializeLabResult();
 
 		Stock rowaStock = new StockService.Builder("RWA", 0).build();
 		rowaStock.setDriverUuid(MockStockCommissioningSystemDriverFactory.uuid.toString());

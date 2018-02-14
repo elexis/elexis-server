@@ -30,6 +30,7 @@
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder</class>
+		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabMapping</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult</class>
 		<class>info.elexis.server.core.connector.elexis.jpa.model.annotated.Labor2009Tarif</class>

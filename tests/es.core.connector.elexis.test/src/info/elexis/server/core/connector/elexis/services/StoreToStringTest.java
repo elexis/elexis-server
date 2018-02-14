@@ -15,6 +15,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import info.elexis.server.core.connector.elexis.AllTestsSuite;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.service.StoreToStringService;
 
@@ -42,9 +43,9 @@ public class StoreToStringTest {
 		StoreToStringService service = context.getService(serviceRef);
 		assertNotNull(service);
 
-		Optional<String> patientString = service.storeToString(TestDatabaseInitializer.getPatient());
+		Optional<String> patientString = service.storeToString(AllTestsSuite.getInitializer().getPatient());
 		assertTrue(patientString.isPresent());
-		assertEquals("ch.elexis.data.Patient::" + TestDatabaseInitializer.getPatient().getId(), patientString.get());
+		assertEquals("ch.elexis.data.Patient::" + AllTestsSuite.getInitializer().getPatient().getId(), patientString.get());
 	}
 
 	@Test
@@ -53,7 +54,7 @@ public class StoreToStringTest {
 		assertNotNull(service);
 
 		Optional<Object> patientObject = service
-				.createFromString("ch.elexis.data.Patient::" + TestDatabaseInitializer.getPatient().getId());
+				.createFromString("ch.elexis.data.Patient::" + AllTestsSuite.getInitializer().getPatient().getId());
 		assertTrue(patientObject.isPresent());
 	}
 }
