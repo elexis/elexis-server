@@ -18,9 +18,12 @@ import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 
 	private final TarmedLeistung tarmedLeistung;
-
+	private final TarmedOptifier tarmedOptifier;
+	private String siteToBill;
+	
 	public VerrechenbarTarmedLeistung(TarmedLeistung tarmedLeistung) {
 		this.tarmedLeistung = tarmedLeistung;
+		this.tarmedOptifier = new TarmedOptifier();
 	}
 
 	@Override
@@ -54,12 +57,16 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 
 	@Override
 	public IStatus add(Behandlung kons, Kontakt userContact, Kontakt mandatorContact, float count) {
-		return new TarmedOptifier().add(this, kons, userContact, mandatorContact, count);
+		tarmedOptifier.clearContext();
+		if (getSiteToBill() != null) {
+			tarmedOptifier.putContext(TarmedOptifier.SIDE, getSiteToBill());
+		}
+		return tarmedOptifier.add(this, kons, userContact, mandatorContact, count);
 	}
 
 	@Override
 	public IStatus removeFromConsultation(Verrechnet vr, Kontakt mandatorContact) {
-		return new TarmedOptifier().remove(vr);
+		return tarmedOptifier.remove(vr);
 	}
 
 	@Override
@@ -94,5 +101,13 @@ public class VerrechenbarTarmedLeistung implements IBillable<TarmedLeistung> {
 	public VatInfo getVatInfo() {
 		return VatInfo.VAT_CH_ISTREATMENT;
 	}
-
+	
+	public String getSiteToBill() {
+		return siteToBill;
+	}
+	
+	public void setSiteToBill(String siteToBill) {
+		this.siteToBill = siteToBill;
+	}
+	
 }
