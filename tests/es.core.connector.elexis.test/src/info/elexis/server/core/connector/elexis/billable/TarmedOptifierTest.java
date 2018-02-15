@@ -319,7 +319,7 @@ public class TarmedOptifierTest {
 
 		tl.getExtension().getLimits().put(TarmedLeistung.EXT_FLD_SERVICE_AGE, origAgeLimits);
 	}
-	
+
 	@Test
 	public void testWoBDate() {
 		TarmedLeistung tl = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0020", new TimeTool(), null).get();
@@ -431,6 +431,38 @@ public class TarmedOptifierTest {
 		assertEquals(957, amountAL);
 		amount = VerrechnetService.getNettoPreis(verrechnet);
 		assertEquals(17.76, amount.getAmount(), 0.01);
+	}
+
+	/**
+	 * Test exclusion with side.
+	 */
+	@Test
+	public void testSideExclusion() {
+		clearKons(konsGriss);
+
+		IStatus result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0930", new TimeTool()).get()),
+				konsGriss);
+		assertTrue(result.isOK());
+
+		result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0950", new TimeTool()).get()),
+				konsGriss);
+		assertFalse(result.isOK());
+
+		optifier.putContext(TarmedOptifier.SIDE, TarmedOptifier.SIDE_L);
+		result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0950", new TimeTool()).get()),
+				konsGriss);
+		assertFalse(result.isOK());
+
+		optifier.putContext(TarmedOptifier.SIDE, TarmedOptifier.SIDE_R);
+		result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0950", new TimeTool()).get()),
+				konsGriss);
+		assertTrue(result.isOK());
+
+		resetKons(konsGriss);
 	}
 
 	private void setUpDignitaet(Behandlung kons) {

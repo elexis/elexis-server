@@ -15,24 +15,29 @@ public class TarmedExclusion {
 
 	private String slaveCode;
 	private TarmedKumulationType slaveType;
+	private boolean validSide;
 
 	public TarmedExclusion(TarmedKumulation kumulation) {
 		slaveCode = kumulation.getSlaveCode();
 		slaveType = TarmedKumulationType.ofArt(kumulation.getSlaveArt());
+		validSide = "1".equals(kumulation.getValidSide());
 	}
 
 	public boolean isMatching(TarmedLeistung tarmedLeistung, TimeTool date) {
 		if (slaveType == TarmedKumulationType.CHAPTER) {
 			return isMatchingChapter(tarmedLeistung);
 		} else if (slaveType == TarmedKumulationType.SERVICE) {
-			return slaveCode.equals(tarmedLeistung.getCode());
+			return isMatchingService(tarmedLeistung);
 		} else if (slaveType == TarmedKumulationType.GROUP) {
 			List<String> groups = tarmedLeistung.getServiceGroups(date);
 			return groups.contains(slaveCode);
 		}
 		return false;
 	}
-
+	private boolean isMatchingService(TarmedLeistung tarmedLeistung){
+		return slaveCode.equals(tarmedLeistung.getCode());
+	}
+	
 	private boolean isMatchingChapter(TarmedLeistung tarmedLeistung) {
 		if (slaveCode.equals(tarmedLeistung.getCode())) {
 			return true;
@@ -56,6 +61,10 @@ public class TarmedExclusion {
 			return false;
 		}
 		return slaveCode.equals(tarmedGroup.getGroupName());
+	}
+	
+	public boolean isValidSide(){
+		return validSide;
 	}
 
 	@Override
