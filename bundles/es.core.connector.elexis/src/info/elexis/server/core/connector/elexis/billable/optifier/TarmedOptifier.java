@@ -78,6 +78,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	public static final int NOMOREVALID = 8;
 	public static final int PATIENTAGE = 9;
 	public static final int EXKLUSIVE = 10;
+	public static final int EXKLUSIONSIDE = 11;
 
 	public static final String SIDE = "Seite";
 	public static final String SIDE_L = "l";
@@ -94,6 +95,8 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	boolean bOptify = true;
 	private Verrechnet newVerrechnet;
 	private String newVerrechnetSide;
+
+	private Map<String, Object> contextMap;
 
 	/**
 	 * Hier kann eine Behandlung als Ganzes nochmal überprüft werden
@@ -112,6 +115,21 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public synchronized void putContext(String key, Object value) {
+		if (contextMap == null) {
+			contextMap = new HashMap<String, Object>();
+		}
+		contextMap.put(key, value);
+	}
+
+	@Override
+	public void clearContext() {
+		if (contextMap != null) {
+			contextMap.clear();
+		}
 	}
 
 	@Override
@@ -275,11 +293,11 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 						TarmedLeistung tarmed = (TarmedLeistung) verrechenbar.get().getEntity();
 						// check if new has an exclusion for this verrechnet
 						// tarmed
-						IStatus resCompatible = isCompatible(tarmed, newTarmed, kons);
+						IStatus resCompatible = isCompatible(v, tarmed, newVerrechnet, newTarmed, kons);
 						if (resCompatible.isOK()) {
 							// check if existing tarmed has exclusion for
 							// new one
-							resCompatible = isCompatible(newTarmed, tarmed, kons);
+							resCompatible = isCompatible(newVerrechnet, newTarmed, v, tarmed, kons);
 						}
 
 						if (!resCompatible.isOK()) {
@@ -529,6 +547,17 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		saveVerrechnet();
 
 		return ObjectStatus.OK_STATUS(newVerrechnet);
+	}
+
+	private boolean isContext(String key) {
+		return getContextValue(key) != null;
+	}
+
+	private Object getContextValue(String key) {
+		if (contextMap != null) {
+			return contextMap.get(key);
+		}
+		return null;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -856,6 +885,19 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			}
 		}
 
+		// if side is provided by context use that side
+		if (isContext(SIDE)) {
+			String side = (String) getContextValue(SIDE);
+			if (SIDE_L.equals(side) && countSideLeft > 0) {
+				newVerrechnet = leftVerrechnet;
+				newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
+			} else if (SIDE_R.equals(side) && countSideRight > 0) {
+				newVerrechnet = rightVerrechnet;
+				newVerrechnet.setZahl(newVerrechnet.getZahl() + 1);
+			}
+			return side;
+		}
+		// toggle side if no side provided by context
 		if (countSideLeft > 0 || countSideRight > 0) {
 			if ((countSideLeft > countSideRight) && rightVerrechnet != null) {
 				newVerrechnet = rightVerrechnet;
@@ -872,12 +914,20 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		return SIDE_L;
 	}
 
+	public IStatus isCompatible(TarmedLeistung tarmedCode, TarmedLeistung tarmed, Behandlung kons) {
+		return isCompatible(null, tarmedCode, null, tarmed, kons);
+	}
+
 	/**
 	 * check compatibility of one tarmed with another
 	 * 
+	 * @param tarmedCodeVerrechnet
+	 *            the {@link Verrechnet} representing tarmedCode
 	 * @param tarmedCode
 	 *            the tarmed and it's parents code are check whether they have to be
 	 *            excluded
+	 * @param tarmedVerrechnet
+	 *            the {@link Verrechnet} representing tarmed
 	 * @param tarmed
 	 *            TarmedLeistung who incompatibilities are examined
 	 * @param kons
@@ -885,11 +935,27 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	 * @return true OK if they are compatible, WARNING if it matches an exclusion
 	 *         case
 	 */
-	public IStatus isCompatible(TarmedLeistung tarmedCode, TarmedLeistung tarmed, Behandlung kons) {
+	public IStatus isCompatible(Verrechnet tarmedCodeVerrechnet, TarmedLeistung tarmedCode, Verrechnet tarmedVerrechnet,
+			TarmedLeistung tarmed, Behandlung kons) {
 		TimeTool date = new TimeTool(kons.getDatum());
 		List<TarmedExclusion> exclusions = TarmedLeistungService.getExclusions(tarmed, kons);
 		for (TarmedExclusion tarmedExclusion : exclusions) {
 			if (tarmedExclusion.isMatching(tarmedCode, date)) {
+				// exclude only if side matches
+				if (tarmedExclusion.isValidSide() && tarmedCodeVerrechnet != null && tarmedVerrechnet != null) {
+					String tarmedCodeSide = tarmedCodeVerrechnet.getDetail(SIDE);
+					String tarmedSide = tarmedVerrechnet.getDetail(SIDE);
+					if (tarmedSide != null && tarmedCodeSide != null) {
+						if (tarmedSide.equals(tarmedCodeSide)) {
+							return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
+									tarmed.getCode() + " nicht kombinierbar mit " + tarmedExclusion.toString()
+											+ " auf der selben Seite");
+						} else {
+							// no exclusion due to different side
+							continue;
+						}
+					}
+				}
 				return new Status(Status.WARNING, BundleConstants.BUNDLE_ID,
 						tarmed.getCode() + " nicht kombinierbar mit " + tarmedExclusion.toString());
 			}
