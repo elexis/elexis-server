@@ -42,6 +42,8 @@ import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer
 public class AllTests {
 	
 	private static IFindingsService iFindingsService;
+	
+	private static TestDatabaseInitializer testDatabaseInitializer = new TestDatabaseInitializer();
 
 	public static Date getDate(LocalDateTime localDateTime) {
 		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
@@ -92,9 +94,13 @@ public class AllTests {
 		IFindingsService iFindingsService = getFindingsService();
 		if (iFindingsService != null) {
 			for (IFinding iFinding : iFindingsService.getPatientsFindings(
-				TestDatabaseInitializer.getPatient().getId(), IFinding.class)) {
+				testDatabaseInitializer.getPatient().getId(), IFinding.class)) {
 				iFindingsService.deleteFinding(iFinding);
 			}
 		}
+	}
+	
+	public static TestDatabaseInitializer getTestDatabaseInitializer() {
+		return testDatabaseInitializer;
 	}
 }

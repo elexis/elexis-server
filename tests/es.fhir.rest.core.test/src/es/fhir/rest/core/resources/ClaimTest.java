@@ -28,6 +28,7 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
+import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
@@ -52,7 +53,7 @@ public class ClaimTest {
 		// items
 		Coverage coverage = new Coverage();
 		// minimal coverage information
-		coverage.setBeneficiary(new Reference(new IdDt("Patient", TestDatabaseInitializer.getPatient().getId())));
+		coverage.setBeneficiary(new Reference(new IdDt("Patient", AllTests.getTestDatabaseInitializer().getPatient().getId())));
 		coverage.setType(new CodeableConcept()
 				.addCoding(new Coding(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "KVG", "Test")));
 		MethodOutcome coverageOutcome = client.create().resource(coverage).execute();

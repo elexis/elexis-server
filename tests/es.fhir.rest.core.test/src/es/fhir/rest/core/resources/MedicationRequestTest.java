@@ -22,6 +22,7 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.util.ModelUtil;
+import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class MedicationRequestTest {
@@ -37,7 +38,7 @@ public class MedicationRequestTest {
 
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
-		patient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+		patient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
 				.execute();
 		assertNotNull(patient);
 	}
