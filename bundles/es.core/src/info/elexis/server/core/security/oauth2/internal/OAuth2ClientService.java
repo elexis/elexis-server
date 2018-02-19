@@ -2,7 +2,7 @@ package info.elexis.server.core.security.oauth2.internal;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -10,23 +10,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -39,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import info.elexis.server.core.Host;
+import info.elexis.server.core.common.util.CoreUtil;
 
 public class OAuth2ClientService {
 
@@ -50,7 +45,7 @@ public class OAuth2ClientService {
 	private boolean cacheNonExpiringTokens = false;
 	private boolean cacheTokens = true;
 
-	private CredentialsProvider credentialsProvider;
+	private String introspectionEndpointBasicAuthHeaderValue;
 
 	/**
 	 * Call the OpenID introspect end-point to check the provided access token
@@ -83,6 +78,11 @@ public class OAuth2ClientService {
 	 * @return
 	 */
 	public Set<String> getScopes(String accessToken) {
+		
+		// TODO https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/351
+		// Currently OpenID will simply allow all scopes and distribute them,
+		// so we have to check locally at the resource whether the are really valid
+		
 		TokenCacheObject cacheAuth = checkCache(accessToken);
 		if (cacheAuth != null) {
 			return cacheAuth.token.getScope();
@@ -97,18 +97,19 @@ public class OAuth2ClientService {
 	}
 
 	private String queryIntrospectEndpoint(String accessToken) {
+
 		try {
-			if (credentialsProvider == null) {
-				initCredentialsProvider();
+			if (introspectionEndpointBasicAuthHeaderValue == null) {
+				initIntrospectionEndpointBasicAuthHeaderValue();
 			}
 
 			List<NameValuePair> form = new ArrayList<>();
 			form.add(new BasicNameValuePair("token", accessToken));
 			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
 
-			try (CloseableHttpClient client = HttpClientBuilder.create()
-					.setDefaultCredentialsProvider(credentialsProvider).build()) {
-				HttpPost httpPost = new HttpPost(Host.getOpenIDBaseUrlSecure() + "introspect");
+			try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+				HttpPost httpPost = new HttpPost(Host.getLocalhostBaseUrl() + "openid/introspect");
+				httpPost.setHeader("Authorization", introspectionEndpointBasicAuthHeaderValue);
 				httpPost.setEntity(entity);
 				ResponseHandler<String> responseHandler = response -> {
 					int status = response.getStatusLine().getStatusCode();
@@ -129,23 +130,19 @@ public class OAuth2ClientService {
 		}
 	}
 
-	private void initCredentialsProvider() throws IOException {
-		UsernamePasswordCredentials credentials = null;
-		String fileName = Host.ESOAUTH_CLIENT_CREDENTIALS_FILE;
-		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-			Optional<String> credentialLine = stream.filter(l -> !l.startsWith("#")).findFirst();
-			if (credentialLine.isPresent()) {
-				String[] split = credentialLine.get().split(":");
-				if (split.length == 2 && StringUtils.isNoneBlank(split[0]) && StringUtils.isNoneBlank(split[1])) {
-					credentials = new UsernamePasswordCredentials(split[0], split[1]);
-				} else {
-					throw new IllegalArgumentException("Invalid credentials file [" + fileName + "]");
-				}
+	/**
+	 * Initialize the basic <code>Authorization</code> header value for the introspection endpoint.
+	 * This header is to be passed on every call
+	 * 
+	 * @throws IOException
+	 */
+	private void initIntrospectionEndpointBasicAuthHeaderValue() throws IOException {
+		Path fileName = CoreUtil.getHomeDirectory().resolve("es-introspection-client.auth");
+		List<String> readAllLines = Files.readAllLines(fileName);
+		for (String credentialLine : readAllLines) {
+			if (!credentialLine.startsWith("#")) {
+				introspectionEndpointBasicAuthHeaderValue = "Basic "+Base64.encodeBase64String(credentialLine.getBytes());
 			}
-		}
-		if (credentials != null) {
-			credentialsProvider = new BasicCredentialsProvider();
-			credentialsProvider.setCredentials(AuthScope.ANY, credentials);
 		}
 	}
 

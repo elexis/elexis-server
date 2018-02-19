@@ -107,7 +107,9 @@ public class TestDatabaseInitializer {
 				executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
 				executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
 				executeDbScript(jdbcConnection, "/rsc/dbScripts/BillingVKPreise.sql");
-				ConfigInitializer.initializeConfiguration();
+				if (!sqlOnly) {
+					ConfigInitializer.initializeConfiguration();
+				}
 				isDbInitialized = true;
 			} finally {
 				try {

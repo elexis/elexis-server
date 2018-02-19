@@ -1,20 +1,15 @@
 package info.elexis.server.core;
 
-import info.elexis.server.core.common.util.CoreUtil;
-
 public class Host {
-
-	public static final String ESOAUTH_CLIENT_CREDENTIALS_FILE = CoreUtil.getHomeDirectory()
-			+ "/esOAuthClient.credentials";
 
 	public static String getHostname() {
 		String hostName = "localhost";
-//		try {
-//			hostName = InetAddress.getLocalHost().getHostName();
-//		} catch (UnknownHostException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// hostName = InetAddress.getLocalHost().getHostName();
+		// } catch (UnknownHostException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		return hostName;
 	}
 
@@ -26,15 +21,15 @@ public class Host {
 		return "http://" + getHostname() + ":" + getHttpPort() + "/";
 	}
 
-	public static String getSecureHttpPort() {
+	public static String getHttpPort() {
 		String port = System.getProperty("jetty.http.port");
 		if (port == null) {
-			port = "8380";
+			port = "8381";
 		}
 		return port;
 	}
 
-	public static String getHttpPort() {
+	public static String getSecureHttpPort() {
 		String port = System.getProperty("jetty.ssl.port");
 		if (port == null) {
 			port = "8480";
@@ -48,6 +43,10 @@ public class Host {
 
 	public static String getOpenIDBaseUrlSecure() {
 		return getBaseUrlSecure() + "openid/";
+	}
+
+	public static String getLocalhostBaseUrl() {
+		return "http://localhost:" + getHttpPort() + "/";
 	}
 
 }
