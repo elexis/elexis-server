@@ -149,8 +149,7 @@ public class SetupTest {
 		System.out.println(obj.toString());
 		RequestBody body = RequestBody.create(JSON, obj.toString());
 
-		
-		 // DOES NOT REQUIRE AUTH, WHY??
+		// DOES NOT REQUIRE AUTH, WHY??
 		Request request = new Request.Builder().header("Authorization", credential).post(body)
 				.url(BASE_URL + "/openid/register").build();
 		response = client.newCall(request).execute();
