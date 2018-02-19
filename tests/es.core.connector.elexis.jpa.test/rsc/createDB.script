@@ -513,7 +513,8 @@ CREATE TABLE LABORWERTE(
 	reffemale   VARCHAR(255),
 	OriginID    VARCHAR(25),
 	Kommentar	TEXT,
-	ExtInfo		BLOB
+	ExtInfo		BLOB,
+	pathodesc VARCHAR(128)
 );
 
 CREATE INDEX labor1 on LABORWERTE (PatientID);
@@ -769,3 +770,17 @@ ALTER TABLE ZUSATZADRESSE ADD CONSTRAINT FK_ZUSATZADRESSE_KONTAKT_ID FOREIGN KEY
 
 INSERT INTO CONFIG (param,wert) VALUES ('dbversion','3.2.7');
 INSERT INTO CONFIG (param,wert) VALUES ('ElexisVersion','3.2.0');
+
+
+# ----
+
+CREATE TABLE at_medevit_elexis_labmap (
+    ID VARCHAR(25) PRIMARY KEY,
+    lastupdate BIGINT,
+    deleted CHAR(1) DEFAULT '0',
+    itemname VARCHAR(255),
+    originid VARCHAR(128),
+    labitemid VARCHAR(128),
+    charge CHAR(1)
+);
+CREATE INDEX loincmap1 ON at_medevit_elexis_labmap (originid);

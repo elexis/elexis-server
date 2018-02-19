@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,8 @@ import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeist
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedExclusive;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedKumulationType;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation;
+import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation.LimitationUnit;
+import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedDefinitionen;
@@ -158,7 +162,7 @@ public class TarmedLeistungService extends PersistenceService {
 		return findFromCode(code, date, null);
 	}
 
-	/**
+		/**
 	 * Query for a {@link TarmedLeistung} using the code. The returned
 	 * {@link TarmedLeistung} will be valid on date, and will be from the cataloge
 	 * specified by law.
@@ -166,17 +170,22 @@ public class TarmedLeistungService extends PersistenceService {
 	 * @param code
 	 * @param date
 	 * @param law
-	 * @return 
+	 * @return
 	 */
 	public static Optional<TarmedLeistung> findFromCode(final String code, TimeTool date, String law) {
 		if (date == null) {
 			date = new TimeTool();
 		}
 		JPAQuery<TarmedLeistung> query = new JPAQuery<TarmedLeistung>(TarmedLeistung.class);
-		query.add(TarmedLeistung_.code_, QUERY.EQUALS, code);
 		if (law != null) {
-			query.add(TarmedLeistung_.law, QUERY.EQUALS, law.toLowerCase());
+			if (!isAvailableLaw(law)) {
+				query.add(TarmedLeistung_.law, QUERY.EQUALS, "");
+				query.or(TarmedLeistung_.law, QUERY.EQUALS, null);
+			} else {
+				query.add(TarmedLeistung_.law, QUERY.EQUALS, law.toUpperCase());
+			}
 		}
+		query.add(TarmedLeistung_.code_, QUERY.EQUALS, code);
 		List<TarmedLeistung> leistungen = query.execute();
 		for (TarmedLeistung tarmedLeistung : leistungen) {
 			TimeTool validFrom = new TimeTool(tarmedLeistung.getGueltigVon());
@@ -186,6 +195,20 @@ public class TarmedLeistungService extends PersistenceService {
 				return Optional.of(tarmedLeistung);
 		}
 		return Optional.empty();
+	}
+
+	private static List<String> availableLawsCache;
+	
+	public static boolean isAvailableLaw(String law) {
+		if (availableLawsCache == null) {
+			availableLawsCache = getAvailableLaws();
+		}
+		for (String available : availableLawsCache) {
+			if (available.equalsIgnoreCase(law)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -249,7 +272,7 @@ public class TarmedLeistungService extends PersistenceService {
 			MandantType type = getMandantType(mandator);
 			if (type == MandantType.PRACTITIONER) {
 				double alScaling = ServiceUtil.checkZeroDouble(ext.get(TarmedLeistung.EXT_FLD_F_AL_R));
-				if (scaling > 0.1) {
+				if (alScaling > 0.1) {
 					scaling *= alScaling;
 				}
 			}
@@ -385,9 +408,20 @@ public class TarmedLeistungService extends PersistenceService {
 			for (String line : lines) {
 				ret.add(TarmedLimitation.of(line).setTarmedLeistung(tarmedLeistung));
 			}
+			fix9533(ret);
 			return ret;
 		}
 		return Collections.emptyList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<String> getAvailableLaws() {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			return em.createNativeQuery("SELECT DISTINCT law FROM TARMED where ID <> 'Version';").getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 	public static String getSparteAsText(TarmedLeistung tl) {
@@ -401,4 +435,27 @@ public class TarmedLeistungService extends PersistenceService {
 		return "";
 	}
 
+	/**
+	 * Method marks {@link LimitationUnit#COVERAGE} {@link TarmedLimitation} as
+	 * skip if in combination with a {@link LimitationUnit#SESSION}. This is a
+	 * WORKAROUND and should be REMOVED after reason is fixed.
+	 * 
+	 * @param ret
+	 */
+	private static void fix9533(List<TarmedLimitation> ret) {
+		boolean sessionfound = false;
+		for (TarmedLimitation tarmedLimitation : ret) {
+			if (tarmedLimitation.getLimitationUnit() == LimitationUnit.SESSION) {
+				sessionfound = true;
+				break;
+			}
+		}
+		if (sessionfound) {
+			for (TarmedLimitation tarmedLimitation : ret) {
+				if (tarmedLimitation.getLimitationUnit() == LimitationUnit.COVERAGE) {
+					tarmedLimitation.setSkip(true);
+				}
+			}
+		}
+	}
 }

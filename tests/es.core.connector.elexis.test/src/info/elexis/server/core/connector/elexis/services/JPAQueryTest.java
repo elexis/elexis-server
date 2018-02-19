@@ -36,7 +36,7 @@ public class JPAQueryTest {
 		assertTrue(result.size() > 0);
 		List<Kontakt> resultIncDeleted = new JPAQuery<Kontakt>(Kontakt.class, true).execute();
 		assertNotNull(resultIncDeleted);
-		assertEquals(7, resultIncDeleted.size());
+		assertEquals(10, resultIncDeleted.size());
 
 		long count = new JPAQuery<Kontakt>(Kontakt.class, true).count();
 		assertEquals(resultIncDeleted.size(), count);
@@ -71,14 +71,14 @@ public class JPAQueryTest {
 		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe.add(AbstractDBObject_.lastupdate, QUERY.GREATER_OR_EQUAL, 1470809122982l);
 		List<Kontakt> execute = qbe.execute();
-		assertEquals(6, execute.size());
-		assertEquals(6, qbe.count());
+		assertEquals(9, execute.size());
+		assertEquals(9, qbe.count());
 
 		JPAQuery<Kontakt> qbe2 = new JPAQuery<Kontakt>(Kontakt.class);
 		qbe2.add(AbstractDBObject_.lastupdate, QUERY.GREATER, 1470809122982l);
 		List<Kontakt> execute2 = qbe2.execute();
-		assertEquals(5, execute2.size());
-		assertEquals(5, qbe2.count());
+		assertEquals(8, execute2.size());
+		assertEquals(8, qbe2.count());
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class JPAQueryTest {
 		JPAQuery<Kontakt> qbeC = new JPAQuery<Kontakt>(Kontakt.class);
 		qbeC.add(Kontakt_.country, QUERY.NOT_EQUALS, null);
 		long count = qbeC.count();
-		assertEquals(2, count);
+		assertEquals(5, count);
 
 		JPAQuery<LabOrder> qbeO = new JPAQuery<LabOrder>(LabOrder.class);
 		count = qbeO.count();
@@ -218,4 +218,22 @@ public class JPAQueryTest {
 
 		PersistenceService.remove(testPatient);
 	}
+
+	@Test
+	public void testRawJPAQuery() {
+		JPAQuery<LabOrder> qbe = new JPAQuery<>(LabOrder.class);
+		qbe.setRawQueryString("SELECT * FROM LABORDER WHERE DELETED = 0 AND ID != 'VERSION'");
+		List<LabOrder> execute = qbe.execute();
+		assertEquals(307, execute.size());
+		ScrollableCursor cursor = qbe.executeAsStream();
+		int i = 0;
+		while (cursor.hasNext()) {
+			i++;
+			cursor.next();
+			cursor.clear();
+		}
+		cursor.close();
+		assertEquals(307, i);
+	}
+
 }

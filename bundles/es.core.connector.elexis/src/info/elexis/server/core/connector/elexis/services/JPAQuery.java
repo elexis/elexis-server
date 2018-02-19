@@ -10,9 +10,11 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.Session;
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	private boolean includeDeleted;
 
 	private final Class<T> clazz;
+	private Call rawQueryCall = null;
 
 	public JPAQuery(Class<T> clazz) {
 		this(clazz, false);
@@ -59,10 +62,15 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	private void initializeReadAllQuery() {
-		readAllQuery = new ReadAllQuery(clazz);
+		if (rawQueryCall != null) {
+			readAllQuery = new ReadAllQuery(clazz, rawQueryCall);
+		} else {
+			readAllQuery = new ReadAllQuery(clazz);
+		}
+
 		readAllQuery.setIsReadOnly(true);
 	}
-	
+
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
 		Expression predIn = derivePredicate(attribute, qt, object);
 
@@ -160,21 +168,23 @@ public class JPAQuery<T extends AbstractDBObject> {
 	public List<T> execute() {
 		initializeReadAllQuery();
 
-		if (!includeDeleted) {
-			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
-				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+		if (rawQueryCall == null) {
+			if (!includeDeleted) {
+				if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+					add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+				}
 			}
-		}
 
-		if (predicate != null) {
-			readAllQuery.setSelectionCriteria(predicate);
+			if (predicate != null) {
+				readAllQuery.setSelectionCriteria(predicate);
+			}
 		}
 
 		EntityManager entityManager = createEntityManager();
 		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
 				.getActiveSession();
 		try {
-			return (List) session.executeQuery(readAllQuery);
+			return (List<T>) session.executeQuery(readAllQuery);
 		} finally {
 			entityManager.close();
 		}
@@ -187,44 +197,48 @@ public class JPAQuery<T extends AbstractDBObject> {
 	 * @param order
 	 *            the order direction
 	 * @param offset
-	 *            the offset to start delivering results from or
-	 *            <code>null</code>
+	 *            the offset to start delivering results from or <code>null</code>
 	 * @param limit
-	 *            the maximum number of results to deliver (starting from
-	 *            offset, if applied) or <code>null</code>
+	 *            the maximum number of results to deliver (starting from offset, if
+	 *            applied) or <code>null</code>
 	 * @return
 	 */
 	public ScrollableCursor executeAsStream(@SuppressWarnings("rawtypes") SingularAttribute orderBy, ORDER order,
 			Integer offset, Integer limit) {
 		initializeReadAllQuery();
 
-		if (!includeDeleted) {
-			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
-				add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+		if (rawQueryCall == null) {
+			if (!includeDeleted) {
+				if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
+					add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+				}
 			}
-		}
 
-		if (predicate != null) {
-			readAllQuery.setSelectionCriteria(predicate);
+			if (predicate != null) {
+				readAllQuery.setSelectionCriteria(predicate);
+			}
 		}
 
 		EntityManager entityManager = createEntityManager();
 		readAllQuery.useScrollableCursor();
 		readAllQuery.dontMaintainCache();
-		if (orderBy != null && order != null) {
-			if (ORDER.DESC == order) {
-				readAllQuery.addDescendingOrdering(orderBy.getName());
-			} else {
-				readAllQuery.addAscendingOrdering(orderBy.getName());
-			}
-		}
 
-		if (offset != null) {
-			readAllQuery.setFirstResult(offset);
-		}
-		if (limit != null) {
-			int limitC = (offset != null) ? offset + limit : limit;
-			readAllQuery.setMaxRows(limitC);
+		if (rawQueryCall == null) {
+			if (orderBy != null && order != null) {
+				if (ORDER.DESC == order) {
+					readAllQuery.addDescendingOrdering(orderBy.getName());
+				} else {
+					readAllQuery.addAscendingOrdering(orderBy.getName());
+				}
+			}
+
+			if (offset != null) {
+				readAllQuery.setFirstResult(offset);
+			}
+			if (limit != null) {
+				int limitC = (offset != null) ? offset + limit : limit;
+				readAllQuery.setMaxRows(limitC);
+			}
 		}
 
 		Session session = ((org.eclipse.persistence.jpa.JpaEntityManager) entityManager.getDelegate())
@@ -248,8 +262,8 @@ public class JPAQuery<T extends AbstractDBObject> {
 	}
 
 	/**
-	 * Handle the results using a stream. Please be sure to clear the cursor on
-	 * each iteration in order to avoid a memory leak.
+	 * Handle the results using a stream. Please be sure to clear the cursor on each
+	 * iteration in order to avoid a memory leak.
 	 * 
 	 * @return
 	 */
@@ -271,6 +285,24 @@ public class JPAQuery<T extends AbstractDBObject> {
 			}
 		}
 		return Optional.empty();
+	}
+
+	/**
+	 * Set a raw SQL query string to be executed; no further adding of criteria
+	 * possible.<br>
+	 * Expects a query to return type T as set in the constructor.<br>
+	 * Full SQL statements required.<br>
+	 * Directly proceed to {@link #execute()} after setting this. <br>
+	 * <b>Warning</b> Allowing an unverified SQL string to be passed into this
+	 * method makes your application vulnerable to SQL injection attacks.
+	 * 
+	 * @param sqlString
+	 *            the query string to execute, e.g. if <code>T</code> is of type
+	 *            <code>LabOrder</code>:
+	 *            <code>SELECT * FROM LABORDER WHERE RESULT = 'resultId'</code>
+	 */
+	public void setRawQueryString(String sqlString) {
+		rawQueryCall = new SQLCall(sqlString);
 	}
 
 }

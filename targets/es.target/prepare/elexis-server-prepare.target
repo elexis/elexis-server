@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<<<<<<< HEAD
 <target name="Elexis-Server" sequenceNumber="1517565618">
+=======
+<target name="Elexis-Server" sequenceNumber="1518616397">
+>>>>>>> refs/heads/master
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.5.0.201801291424"/>
+<<<<<<< HEAD
       <unit id="ch.elexis.core" version="3.5.0.201801251727"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.201801251727"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201712141559"/>
+=======
+      <unit id="ch.elexis.core" version="3.5.0.201802141332"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.201802071403"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201802071403"/>
+>>>>>>> refs/heads/master
       <unit id="ch.elexis.core.findings" version="1.0.0.201711031036"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.201801220950"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>

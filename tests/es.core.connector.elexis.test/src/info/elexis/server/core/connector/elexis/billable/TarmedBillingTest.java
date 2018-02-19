@@ -6,8 +6,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -19,6 +21,7 @@ import org.osgi.service.event.Event;
 
 import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.status.ObjectStatus;
+import ch.rgw.tools.TimeTool;
 import info.elexis.server.core.connector.elexis.billable.optifier.TarmedOptifier;
 import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
@@ -371,5 +374,31 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		assertEquals(pos2.getId(), lst.get(1).getLeistungenCode());
 		assertEquals(pos3.getId(), lst.get(2).getLeistungenCode());
 	}
-
+	
+	@Test
+	public void testResolveTarmedViaLaw() {
+		// No UVG for 39.0021, find replacement
+		TimeTool date2017 = new TimeTool(LocalDate.of(2017, 12, 21));
+		Optional<TarmedLeistung> result = TarmedLeistungService.findFromCode("39.0020", date2017, "UVG");
+		assertTrue(result.isPresent());
+		assertEquals("39.0020-20141001", result.get().getId());
+		result = TarmedLeistungService.findFromCode("39.0020", date2017, "KVG");
+		assertTrue(result.isPresent());
+		assertEquals("39.0020-20141001-KVG", result.get().getId());
+		result = TarmedLeistungService.findFromCode("39.0020", date2017, null);
+		assertTrue(result.isPresent());
+		assertEquals("39.0020-20141001", result.get().getId());
+		
+		TimeTool date2018 = new TimeTool(LocalDate.of(2018, 12, 21));
+		result = TarmedLeistungService.findFromCode("39.0020", date2018, "UVG");
+		assertTrue(result.isPresent());
+		assertEquals("39.0020-20141001", result.get().getId());
+		result = TarmedLeistungService.findFromCode("39.0020", date2018, "KVG");
+		assertTrue(result.isPresent());
+		assertEquals("39.0020-20180101-KVG", result.get().getId());
+		result = TarmedLeistungService.findFromCode("39.0020", date2018, null);
+		assertTrue(result.isPresent());
+		assertEquals("39.0020-20141001", result.get().getId());
+	}
+	
 }

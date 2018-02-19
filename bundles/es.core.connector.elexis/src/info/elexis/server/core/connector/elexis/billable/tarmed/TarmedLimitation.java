@@ -36,6 +36,8 @@ public class TarmedLimitation {
 
 	private int electronicBilling;
 
+	private boolean skip = false;
+
 	private TarmedLeistung tarmedLeistung;
 	private TarmedGroup tarmedGroup;
 
@@ -345,14 +347,21 @@ public class TarmedLimitation {
 
 	private LocalDate getDuringStartDate(Behandlung kons) {
 		LocalDate konsDate = new TimeTool(kons.getDatum()).toLocalDate();
+		LocalDate ret = null;
 		if (limitationUnit == LimitationUnit.WEEK) {
-			return konsDate.minus(limitationAmount, ChronoUnit.WEEKS);
+			ret = konsDate.minus(limitationAmount, ChronoUnit.WEEKS);
 		} else if (limitationUnit == LimitationUnit.MONTH) {
-			return konsDate.minus(limitationAmount, ChronoUnit.MONTHS);
+			ret = konsDate.minus(limitationAmount, ChronoUnit.MONTHS);
 		} else if (limitationUnit == LimitationUnit.YEAR) {
-			return konsDate.minus(limitationAmount, ChronoUnit.YEARS);
+			ret = konsDate.minus(limitationAmount, ChronoUnit.YEARS);
 		}
-		return null;
+		if (tarmedLeistung != null && ret != null) {
+			LocalDate leistungDate = tarmedLeistung.getGueltigVon();
+			if (ret.isBefore(leistungDate)) {
+				ret = leistungDate;
+			}
+		}
+		return ret;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -395,6 +404,9 @@ public class TarmedLimitation {
 	}
 
 	private boolean shouldSkipTest(Kontakt mandatorContact) {
+		if (skip) {
+			return skip;
+		}
 		return shouldSkipElectronicBilling(mandatorContact);
 	}
 
@@ -414,5 +426,9 @@ public class TarmedLimitation {
 
 	public int getAmount() {
 		return amount;
+	}
+
+	public void setSkip(boolean value) {
+		this.skip = true;
 	}
 }

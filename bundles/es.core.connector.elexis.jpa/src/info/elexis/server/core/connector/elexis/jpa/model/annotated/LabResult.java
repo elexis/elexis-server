@@ -13,6 +13,9 @@ import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 
+import ch.elexis.core.types.PathologicDescription;
+import ch.elexis.core.types.PathologicDescription.Description;
+
 @Entity
 @Table(name = "laborwerte")
 public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
@@ -36,10 +39,7 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	@Convert(value = "IntegerStringConverter")
 	private int flags;
-
-	@Column(length = 30)
-	private String origin;
-
+	
 	@Lob
 	@Column(name = "Kommentar")
 	private String comment;
@@ -62,8 +62,12 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(length = 255)
 	private String refFemale;
 
-	@Column(length = 25)
-	private String originId;
+	@OneToOne
+	@JoinColumn(name = "originId")
+	private Kontakt origin;
+
+	@Column(length = 128, name = "pathoDesc")
+	private PathologicDescription pathologicDescription = new PathologicDescription(Description.UNKNOWN);
 
 	@Transient
 	public boolean isFlagged(final int flag) {
@@ -94,13 +98,7 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 		this.item = item;
 	}
 
-	public String getOrigin() {
-		return origin;
-	}
 
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
 
 	public String getComment() {
 		return comment;
@@ -134,12 +132,12 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 		this.refFemale = refFemale;
 	}
 
-	public String getOriginId() {
-		return originId;
+	public Kontakt getOrigin() {
+		return origin;
 	}
-
-	public void setOriginId(String originId) {
-		this.originId = originId;
+	
+	public void setOrigin(Kontakt origin) {
+		this.origin = origin;
 	}
 
 	public String getResult() {
@@ -180,6 +178,14 @@ public class LabResult extends AbstractDBObjectIdDeletedExtInfo {
 
 	public void setFlags(int flags) {
 		this.flags = flags;
+	}
+
+	public PathologicDescription getPathologicDescription() {
+		return pathologicDescription;
+	}
+
+	public void setPathologicDescription(PathologicDescription pathologicDescription) {
+		this.pathologicDescription = pathologicDescription;
 	}
 
 	@Override

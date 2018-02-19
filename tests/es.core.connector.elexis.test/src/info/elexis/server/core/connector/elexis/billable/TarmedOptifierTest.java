@@ -47,8 +47,8 @@ public class TarmedOptifierTest {
 	private static Kontakt userContact;
 	private static Kontakt mandator;
 	private static TarmedOptifier optifier;
-	private static Kontakt patGrissemann, patStermann, patOneYear;
-	private static Behandlung konsGriss, konsSter, konsOneYear;
+	private static Kontakt patGrissemann, patStermann, patOneYear, patBelow75, patWoBDate;
+	private static Behandlung konsGriss, konsSter, konsOneYear, konsBelow75, konsWobDate;
 	private static IBillable<TarmedLeistung> tlBaseFirst5Min, tlBaseXRay, tlBaseRadiologyHospital, tlUltrasound,
 			tlAgeTo1Month, tlAgeTo7Years, tlAgeFrom7Years, tlGroupLimit1, tlGroupLimit2;
 
@@ -116,6 +116,20 @@ public class TarmedOptifierTest {
 		konsOneYear = new BehandlungService.Builder(fallOneYear, mandator).buildAndSave();
 		resetKons(konsOneYear);
 
+		// Patient below75 with case and consultation
+		patBelow75 = new KontaktService.PersonBuilder("One", "Year", LocalDate.now().minusYears(74).minusDays(350),
+				Gender.MALE).patient().buildAndSave();
+		Fall fallBelow75 = new FallService.Builder(patBelow75, "TTestfall below 75",
+				Preferences.USR_DEFCASEREASON_DEFAULT, FallService.getAbrechnungsSysteme()[0]).buildAndSave();
+		konsBelow75 = new BehandlungService.Builder(fallBelow75, mandator).buildAndSave();
+		resetKons(konsBelow75);
+
+		// Patient with missing birtdate
+		patWoBDate = new KontaktService.PersonBuilder("No", "Birthdate", null, Gender.MALE).patient().buildAndSave();
+		Fall fallWoBDate = new FallService.Builder(patWoBDate, "TTestfall below 75",
+				Preferences.USR_DEFCASEREASON_DEFAULT, FallService.getAbrechnungsSysteme()[0]).buildAndSave();
+		konsWobDate = new BehandlungService.Builder(fallWoBDate, mandator).buildAndSave();
+		resetKons(konsWobDate);
 	}
 
 	private static void importTarmedReferenceData() throws FileNotFoundException {
@@ -290,6 +304,40 @@ public class TarmedOptifierTest {
 	}
 
 	@Test
+	public void testBelow75() {
+		TarmedLeistung tl = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0020", new TimeTool(), null).get();
+		// add age restriction to 75 years with 0 tolerance, for the test, like in
+		// tarmed 1.09
+		String origAgeLimits = tl.getExtension().getLimits().get(TarmedLeistung.EXT_FLD_SERVICE_AGE);
+		tl.getExtension().getLimits().put(TarmedLeistung.EXT_FLD_SERVICE_AGE,
+				origAgeLimits + (origAgeLimits.isEmpty() ? "-1|0|75|0|26[2006-04-01|2199-12-31]"
+						: ", -1|0|75|0|26[2006-04-01|2199-12-31]"));
+
+		IStatus result = optifier.add(new VerrechenbarTarmedLeistung(tl), konsBelow75);
+		assertTrue(result.isOK());
+		resetKons(konsBelow75);
+
+		tl.getExtension().getLimits().put(TarmedLeistung.EXT_FLD_SERVICE_AGE, origAgeLimits);
+	}
+
+	@Test
+	public void testWoBDate() {
+		TarmedLeistung tl = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0020", new TimeTool(), null).get();
+		// add age restriction to 75 years with 0 tolerance, for the test, like in
+		// tarmed 1.09
+		String origAgeLimits = tl.getExtension().getLimits().get(TarmedLeistung.EXT_FLD_SERVICE_AGE);
+		tl.getExtension().getLimits().put(TarmedLeistung.EXT_FLD_SERVICE_AGE,
+				origAgeLimits + (origAgeLimits.isEmpty() ? "-1|0|75|0|26[2006-04-01|2199-12-31]"
+						: ", -1|0|75|0|26[2006-04-01|2199-12-31]"));
+
+		IStatus result = optifier.add(new VerrechenbarTarmedLeistung(tl), konsWobDate);
+		assertFalse(result.isOK());
+		resetKons(konsWobDate);
+
+		tl.getExtension().getLimits().put(TarmedLeistung.EXT_FLD_SERVICE_AGE, origAgeLimits);
+	}
+
+	@Test
 	public void testGroupLimitation() {
 		// limit on group 31 is 48 times per week
 		resetKons(konsGriss);
@@ -383,6 +431,38 @@ public class TarmedOptifierTest {
 		assertEquals(957, amountAL);
 		amount = VerrechnetService.getNettoPreis(verrechnet);
 		assertEquals(17.76, amount.getAmount(), 0.01);
+	}
+
+	/**
+	 * Test exclusion with side.
+	 */
+	@Test
+	public void testSideExclusion() {
+		clearKons(konsGriss);
+
+		IStatus result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0930", new TimeTool()).get()),
+				konsGriss);
+		assertTrue(result.isOK());
+
+		result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0950", new TimeTool()).get()),
+				konsGriss);
+		assertFalse(result.isOK());
+
+		optifier.putContext(TarmedOptifier.SIDE, TarmedOptifier.SIDE_L);
+		result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0950", new TimeTool()).get()),
+				konsGriss);
+		assertFalse(result.isOK());
+
+		optifier.putContext(TarmedOptifier.SIDE, TarmedOptifier.SIDE_R);
+		result = optifier.add(
+				new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("09.0950", new TimeTool()).get()),
+				konsGriss);
+		assertTrue(result.isOK());
+
+		resetKons(konsGriss);
 	}
 
 	private void setUpDignitaet(Behandlung kons) {
