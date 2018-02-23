@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.article.IArticle;
+import ch.elexis.core.model.verrechnet.Constants;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;
 import ch.rgw.tools.Money;
@@ -265,6 +266,14 @@ public class VerrechnetService extends PersistenceService {
 		}
 		return Optional.empty();
 	}
+	
+	public static boolean isChangedPrice(Verrechnet verrechnet){
+		String value = verrechnet.getDetail(Constants.FLD_EXT_CHANGEDPRICE);
+		if (value != null) {
+			return value.equalsIgnoreCase("true");
+		}
+		return false;
+	}
 
 	/**
 	 * Get the AL points used to calculate the value of the {@link Verrechnet}. The
@@ -276,6 +285,11 @@ public class VerrechnetService extends PersistenceService {
 	 * @return
 	 */
 	public static int getAL(Verrechnet verrechnet) {
+		// if price was changed, use TP as AL
+		boolean changedPrice = VerrechnetService.isChangedPrice(verrechnet);
+		if (changedPrice) {
+			return verrechnet.getVk_tp();
+		}
 		String alString = (String) verrechnet.getDetail().get(Verrechnet.EXT_VERRRECHNET_AL);
 		if (alString != null) {
 			try {

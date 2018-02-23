@@ -22,6 +22,7 @@ import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedKumulation
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation;
 import info.elexis.server.core.connector.elexis.billable.tarmed.TarmedLimitation.LimitationUnit;
 import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
+import info.elexis.server.core.connector.elexis.jpa.POHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedDefinitionen;
@@ -162,7 +163,7 @@ public class TarmedLeistungService extends PersistenceService {
 		return findFromCode(code, date, null);
 	}
 
-		/**
+	/**
 	 * Query for a {@link TarmedLeistung} using the code. The returned
 	 * {@link TarmedLeistung} will be valid on date, and will be from the cataloge
 	 * specified by law.
@@ -266,18 +267,12 @@ public class TarmedLeistungService extends PersistenceService {
 	 * @return
 	 */
 	public static int getAL(TarmedLeistung tl, Kontakt mandator) {
-		double scaling = 100;
-		Map<String, String> ext = tl.getExtension().getLimits();
-		if (mandator != null) {
-			MandantType type = getMandantType(mandator);
-			if (type == MandantType.PRACTITIONER) {
-				double alScaling = ServiceUtil.checkZeroDouble(ext.get(TarmedLeistung.EXT_FLD_F_AL_R));
-				if (alScaling > 0.1) {
-					scaling *= alScaling;
-				}
-			}
+		TarmedExtension extension = tl.getExtension();
+		if (extension != null) {
+			return (int) Math.round(POHelper.checkZeroDouble(extension.getLimits().get(TarmedLeistung.EXT_FLD_TP_AL))
+					* tl.getALScaling(mandator));
 		}
-		return (int) Math.round(ServiceUtil.checkZeroDouble(ext.get(TarmedLeistung.EXT_FLD_TP_AL)) * scaling);
+		return 0;
 	}
 
 	public static Optional<TarmedGroup> findTarmedGroup(String groupName, String law, TimeTool validFrom) {
@@ -401,7 +396,11 @@ public class TarmedLeistungService extends PersistenceService {
 	}
 
 	public static List<TarmedLimitation> getLimitations(TarmedLeistung tarmedLeistung) {
-		String lim = (String) tarmedLeistung.getExtension().getLimits().get("limits"); //$NON-NLS-1$
+		TarmedExtension extension = tarmedLeistung.getExtension();
+		if (extension == null) {
+			return Collections.emptyList();
+		}
+		String lim = (String) extension.getLimits().get("limits"); //$NON-NLS-1$
 		if (lim != null && !lim.isEmpty()) {
 			List<TarmedLimitation> ret = new ArrayList<>();
 			String[] lines = lim.split("#"); //$NON-NLS-1$
@@ -436,9 +435,9 @@ public class TarmedLeistungService extends PersistenceService {
 	}
 
 	/**
-	 * Method marks {@link LimitationUnit#COVERAGE} {@link TarmedLimitation} as
-	 * skip if in combination with a {@link LimitationUnit#SESSION}. This is a
-	 * WORKAROUND and should be REMOVED after reason is fixed.
+	 * Method marks {@link LimitationUnit#COVERAGE} {@link TarmedLimitation} as skip
+	 * if in combination with a {@link LimitationUnit#SESSION}. This is a WORKAROUND
+	 * and should be REMOVED after reason is fixed.
 	 * 
 	 * @param ret
 	 */

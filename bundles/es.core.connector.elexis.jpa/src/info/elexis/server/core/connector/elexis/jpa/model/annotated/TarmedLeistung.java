@@ -14,12 +14,15 @@ import javax.persistence.Transient;
 
 import ch.elexis.core.model.ICodeElement;
 import ch.rgw.tools.TimeTool;
+import info.elexis.server.core.connector.elexis.jpa.POHelper;
 
 @Entity
 @Table(name = "TARMED")
 public class TarmedLeistung extends AbstractDBObjectIdDeleted implements ICodeElement {
 
 	public static final String CODESYSTEM_NAME = "Tarmed";
+
+	private static String MANDANT_TYPE_EXTINFO_KEY = "ch.elexis.data.tarmed.mandant.type";
 	
 	public enum MandantType {
 		SPECIALIST, PRACTITIONER
@@ -70,6 +73,14 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted implements ICodeEl
 	@JoinColumn(name = "id", insertable = false, updatable = false)
 	private TarmedExtension extension;
 
+	/**
+	 * Get the AL value of the {@link TarmedLeistung}.<br>
+	 * <b>IMPORTANT:</b> No scaling according to the Dignität of the {@link Mandant}
+	 * is performed. Use {@link TarmedLeistung#getAL(Mandant)} for AL value with
+	 * scaling included.
+	 * 
+	 * @return
+	 */
 	@Transient
 	public int getAL() {
 		if (extension != null) {
@@ -85,6 +96,44 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted implements ICodeEl
 		}
 		return 0;
 	}
+	
+	/**
+	 * Get the AL scaling value to be used when billing this {@link TarmedLeistung} for the provided
+	 * {@link Mandant}.
+	 * 
+	 * @param mandant
+	 * @return
+	 */
+	@Transient
+	public double getALScaling(Kontakt mandant){
+		double scaling = 100;
+		if (mandant != null) {
+			MandantType type = getMandantType(mandant);
+			if (type == MandantType.PRACTITIONER) {
+				double alScaling = POHelper.checkZeroDouble(getExtension().getLimits().get(EXT_FLD_F_AL_R));
+				if (alScaling > 0.1) {
+					scaling *= alScaling;
+				}
+			}
+		}
+		return scaling;
+	}
+	
+	/**
+	 * Get the {@link MandantType} of the {@link Mandant}. If not found the default value is
+	 * {@link MandantType#SPECIALIST}.
+	 * 
+	 * @param mandant
+	 * @return
+	 */
+	@Transient
+	public static MandantType getMandantType(Kontakt mandant){
+		Object typeObj = mandant.getExtInfoAsString(MANDANT_TYPE_EXTINFO_KEY);
+		if (typeObj instanceof String) {
+			return MandantType.valueOf((String) typeObj);
+		}
+		return MandantType.SPECIALIST;
+	}
 
 	@Transient
 	public int getTL() {
@@ -98,7 +147,6 @@ public class TarmedLeistung extends AbstractDBObjectIdDeleted implements ICodeEl
 					/* ignore */
 				}
 			}
-
 		}
 		return 0;
 	}
