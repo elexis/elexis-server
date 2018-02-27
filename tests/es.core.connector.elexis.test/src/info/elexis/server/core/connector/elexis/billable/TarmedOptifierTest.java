@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
+import static info.elexis.server.core.connector.elexis.billable.AllBillingTests.getTarmedVerrechenbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -52,6 +53,9 @@ public class TarmedOptifierTest {
 	private static IBillable<TarmedLeistung> tlBaseFirst5Min, tlBaseXRay, tlBaseRadiologyHospital, tlUltrasound,
 			tlAgeTo1Month, tlAgeTo7Years, tlAgeFrom7Years, tlGroupLimit1, tlGroupLimit2, tlAlZero;
 
+	private IBillable<TarmedLeistung> additionalService;
+	private IBillable<TarmedLeistung> mainService;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		optifier = new TarmedOptifier();
@@ -67,8 +71,7 @@ public class TarmedOptifierTest {
 		userContact = mandator;
 
 		// init some basic services
-		tlBaseFirst5Min = new VerrechenbarTarmedLeistung(
-				TarmedLeistungService.findFromCode("00.0010", new TimeTool()).get());
+		tlBaseFirst5Min = getTarmedVerrechenbar("00.0010");
 		tlBaseXRay = new VerrechenbarTarmedLeistung(
 				TarmedLeistungService.findFromCode("39.0020", new TimeTool()).get());
 		tlBaseRadiologyHospital = new VerrechenbarTarmedLeistung(
@@ -141,8 +144,6 @@ public class TarmedOptifierTest {
 				.setFromBoolean("ch.elexis.data.importer.TarmedReferenceDataImporter/referenceinfoavailable", true);
 	}
 
-	private IBillable<TarmedLeistung> additionalService;
-	private IBillable<TarmedLeistung> mainService;
 
 	@Test
 	public void testAddCompatibleAndIncompatible() {
@@ -480,6 +481,57 @@ public class TarmedOptifierTest {
 		assertTrue(result.isOK());
 
 		resetKons(konsGriss);
+	}
+
+	/**
+	 * Test cleanup after kumulation warning.
+	 */
+	@Test
+	public void testCleanUpAfterKumulation() {
+		clearKons(konsGriss);
+
+		IStatus result;
+		VerrechenbarTarmedLeistung vtl = new VerrechenbarTarmedLeistung(
+				TarmedLeistungService.findFromCode("00.0050", new TimeTool()).get());
+		for (int i = 0; i < 6; i++) {
+			result = BehandlungService.chargeBillableOnBehandlung(konsGriss, vtl);
+			assertTrue(result.isOK());
+		}
+
+		result = BehandlungService.chargeBillableOnBehandlung(konsGriss, vtl);
+		assertFalse(result.isOK());
+		BehandlungService.reload(konsGriss);
+		assertEquals(6, VerrechnetService.getVerrechnetForBehandlung(konsGriss, vtl).get().getZahl());
+
+		clearKons(konsGriss);
+		result = optifier.add(tlBaseFirst5Min, konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(getTarmedVerrechenbar("00.0020"), konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(getTarmedVerrechenbar("00.0020"), konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(getTarmedVerrechenbar("00.0030"), konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(tlBaseFirst5Min, konsGriss);
+		assertFalse(result.isOK());
+		assertEquals(1, getLeistungAmount("00.0010", konsGriss));
+		result = optifier.add(getTarmedVerrechenbar("00.0020"), konsGriss);
+		assertFalse(result.isOK());
+		assertEquals(2, getLeistungAmount("00.0020", konsGriss));
+
+		resetKons(konsGriss);
+	}
+
+	private int getLeistungAmount(String code, Behandlung kons) {
+		int ret = 0;
+		List<Verrechnet> allVerrechnetForBehandlung = VerrechnetService.getAllVerrechnetForBehandlung(kons);
+		for (Verrechnet leistung : allVerrechnetForBehandlung) {
+			Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(leistung);
+			if (verrechenbar.isPresent() && verrechenbar.get().getCode().equals(code)) {
+				ret += leistung.getZahl();
+			}
+		}
+		return ret;
 	}
 
 	private void setUpDignitaet(Behandlung kons) {
