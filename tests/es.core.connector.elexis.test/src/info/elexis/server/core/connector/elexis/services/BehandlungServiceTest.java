@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -16,6 +17,7 @@ import org.junit.Test;
 
 import ch.elexis.core.model.InvoiceState;
 import ch.rgw.tools.Money;
+import info.elexis.server.core.connector.elexis.AllTestsSuite;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis;
@@ -27,7 +29,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistu
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class BehandlungServiceTest extends AbstractServiceTest {
-	
+
 	@Before
 	public void initialize() {
 		createTestMandantPatientFallBehandlung();
@@ -142,7 +144,7 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		diagI48_2.setCode("I48");
 		diagI48_2.setText("Vorhofflattern und Vorhofflimmern");
 		diagI48_2.setDiagnosisClass("ch.elexis.data.ICD10");
-		
+
 		Diagnosis diagTCE7 = new Diagnosis();
 		diagTCE7.setCode("E7");
 		diagTCE7.setText("Hernien");
@@ -161,13 +163,22 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		JPAQuery<Diagnosis> query = new JPAQuery<>(Diagnosis.class);
 		query.add(Diagnosis_.code, QUERY.EQUALS, "I48");
 		assertEquals(1, query.count());
-		
+
 		assertTrue(kons.getDiagnoses().contains(kons2.getDiagnoses().toArray(new Diagnosis[0])[0]));
 
 		JPAQuery<Diagnosis> qre = new JPAQuery<>(Diagnosis.class);
 		qre.add(Diagnosis_.code, QUERY.EQUALS, diagI48.getCode());
 		qre.add(Diagnosis_.diagnosisClass, QUERY.EQUALS, diagI48.getDiagnosisClass());
 		assertEquals(1, qre.count());
+	}
+
+	@Test
+	public void testResolveAllCareProvidersForConsultation() {
+		Set<String> careProviderIds = BehandlungService
+				.getAllCareProviderIdsForConsultation(AllTestsSuite.getInitializer().getBehandlung());
+		assertEquals(2, careProviderIds.size());
+		assertTrue(careProviderIds.contains("Administrator"));
+		assertTrue(careProviderIds.contains("user"));
 	}
 
 }
