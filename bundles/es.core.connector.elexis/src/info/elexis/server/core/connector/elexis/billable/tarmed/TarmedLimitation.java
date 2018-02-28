@@ -360,8 +360,6 @@ public class TarmedLimitation {
 		}
 		if (limitationAmount == 1 && operator.equals("<=")) {
 			if (verrechnet.getZahl() > amount) {
-				verrechnet.setZahl(amount);
-				VerrechnetService.save(verrechnet);
 				ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 						false);
 			}

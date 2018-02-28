@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.service.event.Event;
 
@@ -42,6 +43,7 @@ public class TarmedBillingTest extends AbstractServiceTest {
 	private static Kontakt mandator;
 
 	private TarmedLeistung code_000010 = TarmedLeistungService.findFromCode("00.0010", null).get();
+	private TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null).get();
 	private TarmedLeistung code_000140 = TarmedLeistungService.findFromCode("00.0140", null).get();
 	private TarmedLeistung code_000510 = TarmedLeistungService.findFromCode("00.0510", null).get();
 
@@ -185,6 +187,9 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
 		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000010, userContact, myMandator);
 		assertTrue(os.isOK());
+		VerrechenbarTarmedLeistung vlt_000015 = new VerrechenbarTarmedLeistung(code_000015);
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000015, userContact, myMandator);
+		assertTrue(os.isOK());
 		VerrechenbarTarmedLeistung vlt_000140 = new VerrechenbarTarmedLeistung(code_000140);
 		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000140, userContact, myMandator);
 		assertTrue(os.isOK());
@@ -194,11 +199,14 @@ public class TarmedBillingTest extends AbstractServiceTest {
 
 		List<VerrechnetMatch> matches = new ArrayList<>();
 		matches.add(new VerrechnetMatch("00.0010-20010101", 1));
+		matches.add(new VerrechnetMatch("00.0015-20141001", 1));
 		matches.add(new VerrechnetMatch("00.0140-20010101", 1));
 		matches.add(new VerrechnetMatch("00.0510-20010101", 3));
 		VerrechnetMatch.assertVerrechnetMatch(behandlung, matches);
 
 		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000010, userContact, myMandator);
+		assertFalse(os.isOK());
+		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000015, userContact, myMandator);
 		assertFalse(os.isOK());
 		os = BehandlungService.chargeBillableOnBehandlung(behandlung, vlt_000140, userContact, myMandator);
 		assertTrue(os.isOK());
@@ -212,6 +220,7 @@ public class TarmedBillingTest extends AbstractServiceTest {
 
 		matches = new ArrayList<>();
 		matches.add(new VerrechnetMatch("00.0010-20010101", 1));
+		matches.add(new VerrechnetMatch("00.0015-20141001", 1));
 		matches.add(new VerrechnetMatch("00.0140-20010101", 1));
 		matches.add(new VerrechnetMatch("00.0510-20010101", 2));
 		VerrechnetMatch.assertVerrechnetMatch(behandlung, matches);
