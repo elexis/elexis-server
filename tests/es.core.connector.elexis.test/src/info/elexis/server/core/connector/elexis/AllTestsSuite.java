@@ -36,6 +36,7 @@ public class AllTestsSuite {
 		AllTestsSuite.getInitializer().initializeReminders();
 		AllTestsSuite.getInitializer().initializeLeistungsblockTables();
 		AllTestsSuite.getInitializer().initializeLabResult();
+		AllTestsSuite.getInitializer().initializeBehandlung();
 
 		Stock rowaStock = new StockService.Builder("RWA", 0).build();
 		rowaStock.setDriverUuid(MockStockCommissioningSystemDriverFactory.uuid.toString());
