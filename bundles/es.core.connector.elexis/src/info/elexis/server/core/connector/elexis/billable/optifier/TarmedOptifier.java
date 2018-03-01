@@ -12,6 +12,8 @@
 
 package info.elexis.server.core.connector.elexis.billable.optifier;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -67,6 +69,8 @@ import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	private static final String TL = "TL"; //$NON-NLS-1$
 	private static final String AL = "AL"; //$NON-NLS-1$
+	private static final String AL_NOTSCALED = "AL_NOTSCALED"; //$NON-NLS-1$
+	private static final String AL_SCALINGFACTOR = "AL_SCALINGFACTOR"; //$NON-NLS-1$
 	public static final int OK = 0;
 	public static final int PREISAENDERUNG = 1;
 	public static final int KUMULATION = 2;
@@ -329,6 +333,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 				}
 			}
 			newVerrechnet.setDetail(AL, Integer.toString(TarmedLeistungService.getAL(tc, kons.getMandant())));
+			setALScalingInfo(tc, newVerrechnet, kons.getMandant(), false);
 			newVerrechnet.setDetail(TL, Integer.toString(tc.getTL()));
 			lst.add(newVerrechnet);
 		}
@@ -338,13 +343,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			// lookup available masters
 			List<Verrechnet> masters = getPossibleMasters(newVerrechnet, lst);
 			if (masters.isEmpty()) {
-				int zahl = newVerrechnet.getZahl();
-				if (zahl > 1) {
-					newVerrechnet.setZahl(zahl - 1);
-					saveVerrechnet();
-				} else {
-					VerrechnetService.delete(newVerrechnet);
-				}
+				decrementOrDelete(newVerrechnet);
 				return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, "Für die Zuschlagsleistung "
 						+ code.getCode() + " konnte keine passende Hauptleistung gefunden werden.");
 			}
@@ -375,6 +374,7 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 
 		Result<IBillable> limitResult = checkLimitations(kons, tc, newVerrechnet);
 		if (!limitResult.isOK()) {
+			decrementOrDelete(newVerrechnet);
 			return new Status(Status.WARNING, BundleConstants.BUNDLE_ID, limitResult.toString());
 		}
 
@@ -549,6 +549,17 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 		return ObjectStatus.OK_STATUS(newVerrechnet);
 	}
 
+	private void decrementOrDelete(Verrechnet verrechnet) {
+		int zahl = verrechnet.getZahl();
+		if (zahl > 1) {
+			verrechnet.setZahl(zahl - 1);
+			VerrechnetService.save(verrechnet);
+		} else {
+			// TODO theres another method?
+			VerrechnetService.delete(verrechnet);
+		}
+	}
+
 	private boolean isContext(String key) {
 		return getContextValue(key) != null;
 	}
@@ -558,6 +569,22 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 			return contextMap.get(key);
 		}
 		return null;
+	}
+
+	/**
+	 * If there is a AL scaling used to calculate the AL value, provide original AL
+	 * and AL scaling factor in the ExtInfo of the {@link Verrechnet}.
+	 * 
+	 * @param tarmed
+	 * @param verrechnet
+	 * @param mandant
+	 */
+	private void setALScalingInfo(TarmedLeistung tarmed, Verrechnet verrechnet, Kontakt mandant, boolean isComposite) {
+		double scaling = tarmed.getALScaling(mandant);
+		if (scaling != 100) {
+			newVerrechnet.setDetail(AL_NOTSCALED, Integer.toString(tarmed.getAL()));
+			newVerrechnet.setDetail(AL_SCALINGFACTOR, Double.toString(scaling / 100));
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1047,13 +1074,14 @@ public class TarmedOptifier implements IOptifier<TarmedLeistung> {
 	@Override
 	public IStatus remove(Verrechnet code) {
 		Behandlung behandlung = code.getBehandlung();
-		List<Verrechnet> l = behandlung.getLeistungen();
+		List<Verrechnet> l = VerrechnetService.getAllVerrechnetForBehandlung(behandlung);
 		l.remove(code);
 		VerrechnetService.delete(code);
 		// if no more left, check for bezug and remove
 		List<Verrechnet> left = getVerrechnetMatchingCode(l, VerrechnetService.getCode(code));
 		if (left.isEmpty()) {
-			List<Verrechnet> verrechnetWithBezug = getVerrechnetWithBezugMatchingCode(behandlung.getLeistungen(),
+			List<Verrechnet> allVerrechnetForBehandlung = VerrechnetService.getAllVerrechnetForBehandlung(behandlung);
+			List<Verrechnet> verrechnetWithBezug = getVerrechnetWithBezugMatchingCode(allVerrechnetForBehandlung,
 					VerrechnetService.getCode(code));
 			for (Verrechnet verrechnet : verrechnetWithBezug) {
 				remove(verrechnet);

@@ -9,13 +9,11 @@ public class POHelper {
 	private static Logger log = LoggerFactory.getLogger(POHelper.class);
 
 	/**
-	 * return a numeric field making sure the call will not fail on illegal
-	 * values
+	 * return a numeric field making sure the call will not fail on illegal values
 	 * 
 	 * @param in
 	 *            name of the field
-	 * @return the value of the field as integer or 0 if it was null or not
-	 *         nomeric.
+	 * @return the value of the field as integer or 0 if it was null or not nomeric.
 	 */
 	public static int checkZero(final Object in) {
 		if (StringTool.isNothing(in)) {
@@ -26,8 +24,28 @@ public class POHelper {
 															// String at this
 															// point
 		} catch (NumberFormatException ex) {
-			log.warn("Error parsing number: " + ex.getMessage());
+			log.warn("Error parsing number [{}], returning 0. ", in);
 			return 0;
+		}
+	}
+
+	/**
+	 * return a numeric field making sure the call will not fail on illegal values
+	 * 
+	 * @param in
+	 *            name of the field
+	 * @return the value of the field as double or 0.0 if it was null or not a
+	 *         Double.
+	 */
+	public static double checkZeroDouble(final String in) {
+		if (StringTool.isNothing(in)) {
+			return 0.0;
+		}
+		try {
+			return Double.parseDouble(in.trim());
+		} catch (NumberFormatException ex) {
+			log.warn("Error parsing number [{}], returning 0.0. ", in);
+			return 0.0;
 		}
 	}
 }

@@ -504,7 +504,8 @@ public class TestDatabaseInitializer {
 			behandlung = new BehandlungService.Builder(getFall(), getMandant()).buildAndSave();
 			behandlung.setDatum(LocalDate.of(2016, Month.SEPTEMBER, 21));
 			VersionedResource vr = VersionedResource.load(null);
-			vr.update("Test consultation\nWith some test text.", "test remark");
+			vr.update("Test consultation\nWith some test text.", "Administrator");
+			vr.update("Test consultation\n pdate done by user", "user");
 			behandlung.setEintrag(vr);
 			BehandlungService.save(behandlung);
 			isBehandlungInitialized = true;

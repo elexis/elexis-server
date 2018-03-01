@@ -237,7 +237,6 @@ public class TarmedLimitation {
 					allVerrechnetOfGroup.addAll(getVerrechnetByCoverageAndCode(kons, code));
 				}
 				if (getVerrechnetCount(allVerrechnetOfGroup) > amount) {
-					reduceAmountOrDelete(verrechnet);
 					ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 							false);
 				}
@@ -257,7 +256,6 @@ public class TarmedLimitation {
 				List<Verrechnet> verrechnetByMandant = getVerrechnetByMandantAndCodeDuring(kons,
 						VerrechnetService.getVerrechenbar(verrechnet).get().getCode());
 				if (getVerrechnetCount(verrechnetByMandant) > amount) {
-					reduceAmountOrDelete(verrechnet);
 					ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 							false);
 				}
@@ -268,22 +266,12 @@ public class TarmedLimitation {
 					allVerrechnetOfGroup.addAll(getVerrechnetByMandantAndCodeDuring(kons, code));
 				}
 				if (getVerrechnetCount(allVerrechnetOfGroup) > amount) {
-					reduceAmountOrDelete(verrechnet);
 					ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 							false);
 				}
 			}
 		}
 		return ret;
-	}
-
-	private void reduceAmountOrDelete(Verrechnet verrechnet) {
-		if (verrechnet.getZahl() > 1) {
-			verrechnet.setZahl(verrechnet.getZahl() - 1);
-			VerrechnetService.save(verrechnet);
-		} else {
-			VerrechnetService.delete(verrechnet);
-		}
 	}
 
 	private int getVerrechnetCount(List<Verrechnet> verrechnete) {
@@ -372,8 +360,6 @@ public class TarmedLimitation {
 		}
 		if (limitationAmount == 1 && operator.equals("<=")) {
 			if (verrechnet.getZahl() > amount) {
-				verrechnet.setZahl(amount);
-				VerrechnetService.save(verrechnet);
 				ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 						false);
 			}
@@ -389,13 +375,11 @@ public class TarmedLimitation {
 		}
 		if (limitationAmount == 1 && operator.equals("<=")) {
 			if (verrechnet.getZahl() > amount) {
-				verrechnet.setZahl(amount);
-				VerrechnetService.save(verrechnet);
 				if (limitationUnit == LimitationUnit.SESSION) {
 					ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 							false);
 				} else if (limitationUnit == LimitationUnit.SIDE) {
-					return new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
+					ret = new Result<IBillable>(Result.SEVERITY.WARNING, TarmedOptifier.KUMULATION, toString(), null,
 							false);
 				}
 			}

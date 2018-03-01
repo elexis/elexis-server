@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.billable;
 
+import static info.elexis.server.core.connector.elexis.billable.AllBillingTests.getTarmedVerrechenbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -50,8 +51,11 @@ public class TarmedOptifierTest {
 	private static Kontakt patGrissemann, patStermann, patOneYear, patBelow75, patWoBDate;
 	private static Behandlung konsGriss, konsSter, konsOneYear, konsBelow75, konsWobDate;
 	private static IBillable<TarmedLeistung> tlBaseFirst5Min, tlBaseXRay, tlBaseRadiologyHospital, tlUltrasound,
-			tlAgeTo1Month, tlAgeTo7Years, tlAgeFrom7Years, tlGroupLimit1, tlGroupLimit2;
+			tlAgeTo1Month, tlAgeTo7Years, tlAgeFrom7Years, tlGroupLimit1, tlGroupLimit2, tlAlZero;
 
+	private IBillable<TarmedLeistung> additionalService;
+	private IBillable<TarmedLeistung> mainService;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		optifier = new TarmedOptifier();
@@ -67,8 +71,7 @@ public class TarmedOptifierTest {
 		userContact = mandator;
 
 		// init some basic services
-		tlBaseFirst5Min = new VerrechenbarTarmedLeistung(
-				TarmedLeistungService.findFromCode("00.0010", new TimeTool()).get());
+		tlBaseFirst5Min = getTarmedVerrechenbar("00.0010");
 		tlBaseXRay = new VerrechenbarTarmedLeistung(
 				TarmedLeistungService.findFromCode("39.0020", new TimeTool()).get());
 		tlBaseRadiologyHospital = new VerrechenbarTarmedLeistung(
@@ -87,6 +90,8 @@ public class TarmedOptifierTest {
 				TarmedLeistungService.findFromCode("02.0310", new TimeTool()).get());
 		tlGroupLimit2 = new VerrechenbarTarmedLeistung(
 				TarmedLeistungService.findFromCode("02.0340", new TimeTool()).get());
+
+		tlAlZero = new VerrechenbarTarmedLeistung(TarmedLeistungService.findFromCode("00.0716", new TimeTool()).get());
 
 		// Patient Grissemann with case and consultation
 		patGrissemann = new KontaktService.PersonBuilder("Grissemann", "Christoph", LocalDate.of(1966, 5, 17),
@@ -139,8 +144,6 @@ public class TarmedOptifierTest {
 				.setFromBoolean("ch.elexis.data.importer.TarmedReferenceDataImporter/referenceinfoavailable", true);
 	}
 
-	private IBillable<TarmedLeistung> additionalService;
-	private IBillable<TarmedLeistung> mainService;
 
 	@Test
 	public void testAddCompatibleAndIncompatible() {
@@ -416,11 +419,26 @@ public class TarmedOptifierTest {
 		amountAL = VerrechnetService.getAL(verrechnet);
 		assertEquals(969, amountAL);
 		amount = VerrechnetService.getNettoPreis(verrechnet);
-		assertEquals(14.84, amount.getAmount(), 0.01);
+		assertEquals(14.84, amount.getAmount(), 0.01); // 10.42 * 0.83 * 0.93 + 8.19 * 0.83
+		String alScalingFactor = verrechnet.getDetail("AL_SCALINGFACTOR");
+		assertEquals("0.93", alScalingFactor);
+		String alNotScaled = verrechnet.getDetail("AL_NOTSCALED");
+		assertEquals("1042", alNotScaled);
+		
+		result = (ObjectStatus) BehandlungService.chargeBillableOnBehandlung(kons, tlAlZero);
+		assertTrue(result.isOK());
+		verrechnet = (Verrechnet) result.getObject();
+		assertNotNull(verrechnet);
+		amountAL = VerrechnetService.getAL(verrechnet);
+		assertEquals(0, amountAL);
+		amount = VerrechnetService.getNettoPreis(verrechnet);
+		assertEquals(4.08, amount.getAmount(), 0.01); // 0.0 * 0.83 * 0.93 + 4.92 * 0.83
+		alScalingFactor = verrechnet.getDetail("AL_SCALINGFACTOR");
+		assertEquals("0.93", alScalingFactor);
 
 		tearDownDignitaet(kons);
 
-		// set the mandant type to practitioner
+		// set the mandant type to specialist
 		clearKons(kons);
 		TarmedLeistungService.setMandantType(kons.getMandant(), MandantType.SPECIALIST);
 		result = (ObjectStatus) BehandlungService.chargeBillableOnBehandlung(kons, tlBaseFirst5Min);
@@ -465,33 +483,92 @@ public class TarmedOptifierTest {
 		resetKons(konsGriss);
 	}
 
+	/**
+	 * Test cleanup after kumulation warning.
+	 */
+	@Test
+	public void testCleanUpAfterKumulation() {
+		clearKons(konsGriss);
+
+		IStatus result;
+		VerrechenbarTarmedLeistung vtl = new VerrechenbarTarmedLeistung(
+				TarmedLeistungService.findFromCode("00.0050", new TimeTool()).get());
+		for (int i = 0; i < 6; i++) {
+			result = BehandlungService.chargeBillableOnBehandlung(konsGriss, vtl);
+			assertTrue(result.isOK());
+		}
+
+		result = BehandlungService.chargeBillableOnBehandlung(konsGriss, vtl);
+		assertFalse(result.isOK());
+		BehandlungService.reload(konsGriss);
+		assertEquals(6, VerrechnetService.getVerrechnetForBehandlung(konsGriss, vtl).get().getZahl());
+
+		clearKons(konsGriss);
+		result = optifier.add(tlBaseFirst5Min, konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(getTarmedVerrechenbar("00.0020"), konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(getTarmedVerrechenbar("00.0020"), konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(getTarmedVerrechenbar("00.0030"), konsGriss);
+		assertTrue(result.isOK());
+		result = optifier.add(tlBaseFirst5Min, konsGriss);
+		assertFalse(result.isOK());
+		assertEquals(1, getLeistungAmount("00.0010", konsGriss));
+		result = optifier.add(getTarmedVerrechenbar("00.0020"), konsGriss);
+		assertFalse(result.isOK());
+		assertEquals(2, getLeistungAmount("00.0020", konsGriss));
+
+		resetKons(konsGriss);
+	}
+
+	private int getLeistungAmount(String code, Behandlung kons) {
+		int ret = 0;
+		List<Verrechnet> allVerrechnetForBehandlung = VerrechnetService.getAllVerrechnetForBehandlung(kons);
+		for (Verrechnet leistung : allVerrechnetForBehandlung) {
+			Optional<IBillable> verrechenbar = VerrechnetService.getVerrechenbar(leistung);
+			if (verrechenbar.isPresent() && verrechenbar.get().getCode().equals(code)) {
+				ret += leistung.getZahl();
+			}
+		}
+		return ret;
+	}
+
 	private void setUpDignitaet(Behandlung kons) {
 		Map<String, String> extension = tlBaseFirst5Min.getEntity().getExtension().getLimits();
 		// set reduce factor
 		extension.put(TarmedLeistung.EXT_FLD_F_AL_R, "0.93");
 		// the AL value
 		extension.put(TarmedLeistung.EXT_FLD_TP_AL, "10.42");
+		tlBaseFirst5Min.getEntity().getExtension().setLimits(extension);
+		extension = tlAlZero.getEntity().getExtension().getLimits();
+		// set reduce factor
+		extension.put(TarmedLeistung.EXT_FLD_F_AL_R, "0.93");
+		// no AL value
+		tlAlZero.getEntity().getExtension().setLimits(extension);
 		// add additional multiplier
 		LocalDate yesterday = LocalDate.now().minus(1, ChronoUnit.DAYS);
 		MultiplikatorList multis = new MultiplikatorList("VK_PREISE", FallService.getAbrechnungsSystem(kons.getFall()));
 		multis.insertMultiplikator(new TimeTool(yesterday), "0.83");
-
-		tlBaseFirst5Min.getEntity().getExtension().setLimits(extension);
 	}
 
 	private void tearDownDignitaet(Behandlung kons) {
 		Map<String, String> extension = tlBaseFirst5Min.getEntity().getExtension().getLimits();
 		// clear reduce factor
-		extension = tlBaseFirst5Min.getEntity().getExtension().getLimits();
 		extension.remove(TarmedLeistung.EXT_FLD_F_AL_R);
 		// reset AL value
 		extension.put(TarmedLeistung.EXT_FLD_TP_AL, "9.57");
+		tlBaseFirst5Min.getEntity().getExtension().setLimits(extension);		
+		
+		extension = tlAlZero.getEntity().getExtension().getLimits();
+		// clear reduce factor
+		extension.remove(TarmedLeistung.EXT_FLD_F_AL_R);
+		// no AL value
+		tlAlZero.getEntity().getExtension().setLimits(extension);
 		// remove additional multiplier
 		LocalDate yesterday = LocalDate.now().minus(1, ChronoUnit.DAYS);
 		MultiplikatorList multis = new MultiplikatorList("VK_PREISE", FallService.getAbrechnungsSystem(kons.getFall()));
 		multis.removeMultiplikator(new TimeTool(yesterday), "0.83");
-
-		tlBaseFirst5Min.getEntity().getExtension().setLimits(extension);
 	}
 
 	private static void clearKons(Behandlung kons) {

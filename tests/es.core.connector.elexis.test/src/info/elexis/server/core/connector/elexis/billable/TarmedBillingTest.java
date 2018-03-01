@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static info.elexis.server.core.connector.elexis.billable.AllBillingTests.getTarmedVerrechenbar;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -325,10 +327,8 @@ public class TarmedBillingTest extends AbstractServiceTest {
 
 	@Test
 	public void testChargeBillableAndChangeCountTicket5484() {
-		TarmedLeistung code_000020 = TarmedLeistungService.findFromCode("00.0020", null).get();
-		VerrechenbarTarmedLeistung vlt_000020 = new VerrechenbarTarmedLeistung(code_000020);
-		IStatus status = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(3), vlt_000020, userContact,
-				null);
+		IStatus status = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(3),
+				getTarmedVerrechenbar("00.0020"), userContact, null);
 		assertTrue(status.isOK());
 		ObjectStatus os = (ObjectStatus) status;
 		Verrechnet vr = (Verrechnet) os.getObject();
@@ -344,37 +344,34 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		assertEquals(1, allVerrechnetForBehandlung.size());
 		assertEquals(2, allVerrechnetForBehandlung.get(0).getZahl());
 
-		TarmedLeistung code_000510 = TarmedLeistungService.findFromCode("00.0510", null).get();
-		VerrechenbarTarmedLeistung vlt_000510 = new VerrechenbarTarmedLeistung(code_000510);
-		status = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(3), vlt_000510, userContact, null);
+		status = BehandlungService.chargeBillableOnBehandlung(testBehandlungen.get(3), getTarmedVerrechenbar("00.0510"),
+				userContact, null);
 		assertTrue(status.isOK());
 		os = (ObjectStatus) status;
 		vr = (Verrechnet) os.getObject();
 		ccStatus = VerrechnetService.changeCountValidated(vr, 3, null);
-
 		assertTrue(ccStatus.isOK());
 
-		allVerrechnetForBehandlung = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(3));
-		assertEquals(2, allVerrechnetForBehandlung.size());
-		assertEquals(3, allVerrechnetForBehandlung.get(1).getZahl());
+		List<VerrechnetMatch> matches = new ArrayList<>();
+		matches.add(new VerrechnetMatch("00.0510-20010101", 3));
+		matches.add(new VerrechnetMatch("00.0020-20010101", 2));
+
+		VerrechnetMatch.assertVerrechnetMatch(testBehandlungen.get(3), matches);
 	}
 
 	@Test
 	public void testAddAutoPositions() {
-		TarmedLeistung pos1 = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0590", null).get();
-		TarmedLeistung pos2 = (TarmedLeistung) TarmedLeistungService.findFromCode("39.2000", null).get();
-		TarmedLeistung pos3 = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
-		VerrechenbarTarmedLeistung v1 = new VerrechenbarTarmedLeistung(pos1);
-
-		IStatus status = v1.add(testBehandlungen.get(0), userContact, mandator);
+		IStatus status = getTarmedVerrechenbar("39.0590").add(testBehandlungen.get(0), userContact, mandator);
 		assertTrue(status.isOK());
-		List<Verrechnet> lst = VerrechnetService.getAllVerrechnetForBehandlung(testBehandlungen.get(0));
-		assertEquals(3, lst.size());
-		assertEquals(pos1.getId(), lst.get(0).getLeistungenCode());
-		assertEquals(pos2.getId(), lst.get(1).getLeistungenCode());
-		assertEquals(pos3.getId(), lst.get(2).getLeistungenCode());
+
+		List<VerrechnetMatch> matches = new ArrayList<>();
+		matches.add(new VerrechnetMatch("39.0590-20141001", 1));
+		matches.add(new VerrechnetMatch("39.2000-20141001", 1));
+		matches.add(new VerrechnetMatch("39.0020-20141001", 1));
+
+		VerrechnetMatch.assertVerrechnetMatch(testBehandlungen.get(0), matches);
 	}
-	
+
 	@Test
 	public void testResolveTarmedViaLaw() {
 		// No UVG for 39.0021, find replacement
@@ -388,7 +385,7 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		result = TarmedLeistungService.findFromCode("39.0020", date2017, null);
 		assertTrue(result.isPresent());
 		assertEquals("39.0020-20141001", result.get().getId());
-		
+
 		TimeTool date2018 = new TimeTool(LocalDate.of(2018, 12, 21));
 		result = TarmedLeistungService.findFromCode("39.0020", date2018, "UVG");
 		assertTrue(result.isPresent());
@@ -400,5 +397,5 @@ public class TarmedBillingTest extends AbstractServiceTest {
 		assertTrue(result.isPresent());
 		assertEquals("39.0020-20141001", result.get().getId());
 	}
-	
+
 }

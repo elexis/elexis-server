@@ -1,8 +1,10 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
@@ -10,6 +12,8 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 
 import ch.elexis.core.model.InvoiceState;
+import ch.rgw.tools.VersionedResource;
+import ch.rgw.tools.VersionedResource.ResourceItem;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikelstammItem;
@@ -206,6 +210,26 @@ public class BehandlungService extends PersistenceService {
 		diag = new DiagnosisService().findExistingOrCreate(diag);
 		cons.getDiagnoses().add(diag);
 		BehandlungService.save(cons);
+	}
+
+	/**
+	 * Retrieve all user id strings for all versioned-entries of a consultation.
+	 * These entries may or may not be resolvable via
+	 * {@link UserService#load(String)}
+	 * 
+	 * @param cons
+	 * @return
+	 */
+	public static Set<String> getAllCareProviderIdsForConsultation(Behandlung cons) {
+		Set<String> userIdString = new HashSet<>();
+		VersionedResource vr = cons.getEintrag();
+		int version = 0;
+		ResourceItem item;
+		while ((item = vr.getVersion(version)) != null) {
+			userIdString.add(item.remark);
+			version++;
+		}
+		return userIdString;
 	}
 
 }
