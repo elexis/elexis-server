@@ -139,10 +139,6 @@ location "http://download.eclipse.org/gemini/updates/naming/1.0.5/" {
 	org.eclipse.gemini.naming.feature.feature.group
 }
 
-location "http://download.eclipse.org/gemini/updates/web/3.0.3/" {
-	org.eclipse.gemini.web.core
-}
-
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
 location "http://download.elexis.info/elexis-server/elexis-server-dependencies/" {
 	org.apache.commons.beanutils [1.9.2,1.9.2]

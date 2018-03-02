@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1519994630">
+<target name="Elexis-Server" sequenceNumber="1519996762">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.5.0.201801291424"/>
@@ -132,10 +132,6 @@
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
       <repository location="http://download.eclipse.org/gemini/updates/naming/1.0.5/"/>
-    </location>
-    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.gemini.web.core" version="3.0.3.RELEASE"/>
-      <repository location="http://download.eclipse.org/gemini/updates/web/3.0.3/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.apache.commons.beanutils" version="1.9.2"/>
