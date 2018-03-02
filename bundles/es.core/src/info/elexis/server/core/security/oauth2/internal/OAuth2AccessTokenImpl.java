@@ -35,6 +35,7 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 	private String tokenString;
 	private Set<String> scopes = new HashSet<>();
 	private Date expireDate;
+	private String userId;
 
 	public OAuth2AccessTokenImpl(JsonObject introspectionResponse, String tokenString) {
 		this.setIntrospectionResponse(introspectionResponse);
@@ -45,6 +46,10 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 
 		if (introspectionResponse.get("exp") != null) {
 			expireDate = new Date(introspectionResponse.get("exp").getAsLong() * 1000L);
+		}
+		
+		if(introspectionResponse.get("user_id") != null) {
+			userId = introspectionResponse.get("user_id").getAsString();
 		}
 	}
 
@@ -92,6 +97,11 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 	@Override
 	public String getValue() {
 		return tokenString;
+	}
+	
+	@Override
+	public String getUserId() {
+		return userId;
 	}
 
 	/**

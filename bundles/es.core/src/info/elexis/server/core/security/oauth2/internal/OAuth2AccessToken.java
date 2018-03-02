@@ -84,5 +84,7 @@ public interface OAuth2AccessToken {
 	int getExpiresIn();
 
 	String getValue();
+	
+	String getUserId();
 
 }

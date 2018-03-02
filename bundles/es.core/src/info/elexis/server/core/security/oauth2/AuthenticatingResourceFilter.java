@@ -28,7 +28,7 @@ public class AuthenticatingResourceFilter extends AuthenticatingFilter {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		OAuthAccessResourceRequest oAuthAccessResourceRequest = new OAuthAccessResourceRequest(httpServletRequest);
 		String accessToken = oAuthAccessResourceRequest.getAccessToken();
-		return new OAuth2Token(accessToken, httpServletRequest);
+		return new AccessToken(accessToken, httpServletRequest);
 	}
 
 	@Override

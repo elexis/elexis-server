@@ -78,11 +78,7 @@ public class OAuth2ClientService {
 	 * @return
 	 */
 	public Set<String> getScopes(String accessToken) {
-		
-		// TODO https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/351
-		// Currently OpenID will simply allow all scopes and distribute them,
-		// so we have to check locally at the resource whether the are really valid
-		
+
 		TokenCacheObject cacheAuth = checkCache(accessToken);
 		if (cacheAuth != null) {
 			return cacheAuth.token.getScope();
@@ -253,5 +249,13 @@ public class OAuth2ClientService {
 				this.cacheExpire = cal.getTime();
 			}
 		}
+	}
+
+	protected OAuth2AccessToken getIntrospectionToken(String accessToken) {
+		TokenCacheObject tokenCacheObject = checkCache(accessToken);
+		if (tokenCacheObject != null) {
+			return tokenCacheObject.token;
+		}
+		throw new IllegalStateException("Could not find OAuth2AccessToken in cache");
 	}
 }

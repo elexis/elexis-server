@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,13 @@ import com.google.gson.Gson;
 
 import ca.uhn.fhir.context.FhirContext;
 import ch.elexis.core.common.DBConnection;
-import info.elexis.server.core.connector.elexis.jpa.test.TestEntities;
+import ch.elexis.core.types.Gender;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
+import info.elexis.server.core.connector.elexis.services.RoleService;
+import info.elexis.server.core.connector.elexis.services.UserService;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,32 +45,25 @@ import okhttp3.Response;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SetupTest {
 
-	 public static final String BASE_URL = "http://localhost:8381"; // Via TCP/IP
+	public static final String BASE_URL = "http://localhost:8381"; // Via TCP/IP
 	// Eclipse Monitor
 	// http://www.avajava.com/tutorials/lessons/how-do-i-monitor-http-communication-in-eclipse.html
-//	public static final String BASE_URL = "http://localhost:8380";
+	// public static final String BASE_URL = "http://localhost:8380";
 	public static final String REST_URL = BASE_URL + "/services";
-
 	public static final String OAUTH_TOKEN_LOCATION = BASE_URL + "/openid/token";
 	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
 
-	private OkHttpClient client = new OkHttpClient();
-	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+	public static final String USER_PASS_PRACTITIONER = "practitioner";
+	public static final String USER_PASS_ESADMIN = "esadmin";
 
+	private OkHttpClient client = new OkHttpClient();
 	private Gson gson = new Gson();
 	private FhirContext fhirContext = FhirContext.forDstu3();
+	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 	public SetupTest() {
 		client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS)
 				.readTimeout(30, TimeUnit.SECONDS).build();
-	}
-
-	@BeforeClass
-	public static void waitForService() throws IOException, InterruptedException {
-		do {
-			Thread.sleep(500);
-			System.out.println("Waiting for servlet ...");
-		} while (!AllTests.isReachable(REST_URL + "/system/v1/uptime"));
 	}
 
 	private Request getDBConnectionRequest = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection")
@@ -72,6 +72,14 @@ public class SetupTest {
 			.build();
 
 	private Response response;
+
+	@BeforeClass
+	public static void waitForService() throws IOException, InterruptedException {
+		do {
+			Thread.sleep(500);
+			System.out.println("Waiting for servlet ...");
+		} while (!AllTests.isReachable(REST_URL + "/system/v1/uptime"));
+	}
 
 	@Test
 	public void _01_startupWithoutDatabaseConnection() throws IOException {
@@ -92,6 +100,33 @@ public class SetupTest {
 		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
 		response = client.newCall(request).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
+		
+		initializeTestUsersAndRoles();
+	}
+	
+	private static void initializeTestUsersAndRoles() {
+		Role esadminRole = new Role();
+		esadminRole.setId("esadmin");
+		esadminRole.setSystemRole(true);
+		esadminRole = (Role) RoleService.save(esadminRole);
+
+		Role fhirRole = new Role();
+		fhirRole.setId("fhir");
+		fhirRole.setSystemRole(true);
+		fhirRole = (Role) RoleService.save(fhirRole);
+
+		Kontakt drGonzo = new KontaktService.PersonBuilder("Oscar", "Zeta Acosta", LocalDate.of(1935, 4, 8),
+				Gender.MALE).mandator().buildAndSave();
+
+		User practitioner = new UserService.Builder(USER_PASS_PRACTITIONER, drGonzo).build();
+		UserService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
+		practitioner.getRoles().add(fhirRole);
+		UserService.save(practitioner);
+
+		User esadmin = new UserService.Builder(USER_PASS_ESADMIN, drGonzo).build();
+		UserService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
+		esadmin.getRoles().add(esadminRole);
+		UserService.save(esadmin);
 	}
 
 	@Test
@@ -131,38 +166,34 @@ public class SetupTest {
 				securityServiceCoding.getCoding().get(0).getSystem());
 	}
 
-	private static String bearerAccessToken_Scopes_FhirEsadmin; // non-static variables are null after each test
-	private static String bearerAccessToken_Scopes_Esadmin;
-	
+	private static String bearerAccessToken_Scope_FHIR_Invalid; // non-static variables are null after each test
+	private static String bearerAccessToken_Scope_FHIR_Valid;
+
 	@Test
-	public void _07_fetchAccessTokenWithUnitTestClientAndAdminUserForScopeFhirAndEsadmin() throws Exception {
+	public void _07_fetchAccessTokenWithUnitTestClientTestUsersForScopeFhir() throws Exception {
 		OAuthClientRequest resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
-				.setGrantType(GrantType.PASSWORD).setUsername(TestEntities.USER_ADMINISTRATOR_ID)
-				.setPassword(TestEntities.USER_ADMINISTRATOR_PASS).setScope("fhir esadmin").buildQueryMessage();
+				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_PRACTITIONER)
+				.setPassword(USER_PASS_PRACTITIONER).setScope("fhir").buildQueryMessage();
 		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
 				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
 
-		bearerAccessToken_Scopes_FhirEsadmin = accessToken.getAccessToken();
+		bearerAccessToken_Scope_FHIR_Valid = accessToken.getAccessToken();
 		assertNotNull(accessToken);
-		assertNotNull(bearerAccessToken_Scopes_FhirEsadmin);
+		assertNotNull(bearerAccessToken_Scope_FHIR_Valid);
 		assertTrue(accessToken.getExpiresIn() <= 3600l);
 		assertEquals("Bearer", accessToken.getTokenType());
-		assertEquals("fhir esadmin", accessToken.getScope());
-		
+
 		resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
-				.setGrantType(GrantType.PASSWORD).setUsername(TestEntities.USER_USER_ID)
-				.setPassword(TestEntities.USER_USER_PASS).setScope("esadmin").buildQueryMessage();
+				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_ESADMIN).setPassword(USER_PASS_ESADMIN)
+				.setScope("fhir").buildQueryMessage();
 		accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
 				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
-		
-		bearerAccessToken_Scopes_Esadmin = accessToken.getAccessToken();
+
+		bearerAccessToken_Scope_FHIR_Invalid = accessToken.getAccessToken();
 		assertNotNull(accessToken);
-		assertNotNull(bearerAccessToken_Scopes_FhirEsadmin);
+		assertNotNull(bearerAccessToken_Scope_FHIR_Invalid);
 		assertTrue(accessToken.getExpiresIn() <= 3600l);
 		assertEquals("Bearer", accessToken.getTokenType());
-		assertEquals("esadmin", accessToken.getScope());
-		
-		// TODO mapping role to scope
 	}
 
 	private Map<String, String> prepareUnitTestClientAuthorizationHeaders() {
@@ -177,13 +208,15 @@ public class SetupTest {
 	@Test
 	public void _08_tryToAccessFHIRPatientResourceWithAccessToken_scopeFhir() throws IOException {
 		Request request = new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111")
-				.addHeader("Authorization", "Bearer " + bearerAccessToken_Scopes_FhirEsadmin).build();
+				.addHeader("Authorization", "Bearer " + bearerAccessToken_Scope_FHIR_Valid).build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_OK, response.code());
-		
+
 		request = new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111")
-				.addHeader("Authorization", "Bearer " + bearerAccessToken_Scopes_Esadmin).build();
+				.addHeader("Authorization", "Bearer " + bearerAccessToken_Scope_FHIR_Invalid).build();
 		response = client.newCall(request).execute();
+		// user has requested scope fhir, but does not have role fhir in Elexis - hence
+		// has to fail
 		assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, response.code());
 	}
 
