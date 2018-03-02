@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.DBConnection;
-import ch.elexis.core.status.ResponseStatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
 import io.swagger.annotations.Api;
