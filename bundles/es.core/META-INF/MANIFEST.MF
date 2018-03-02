@@ -49,22 +49,4 @@ Export-Package: info.elexis.server.core,
  info.elexis.server.core.security.oauth2,
  info.elexis.server.core.service
 Bundle-ClassPath: .
-Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/info.elexis.server.core.security.ElexisServerCompositeRealm.xml,
- OSGI-INF/info.elexis.server.core.security.oauth2.internal.OAuthAuthorizingRealm.xml,
- OSGI-INF/info.elexis.server.core.internal.security.rest.OAuth2AuthorizationEndpoint.xml,
- OSGI-INF/info.elexis.server.core.internal.security.rest.OAuth2TokenEndpoint.xml,
- OSGI-INF/info.elexis.server.core.internal.security.JaxRsServletConfiguration.xml,
- OSGI-INF/info.elexis.server.core.security.SystemLocalAuthorizingRealm.xml,
- OSGI-INF/info.elexis.server.core.rest.v1.SystemRestResource.xml,
- OSGI-INF/info.elexis.server.core.internal.ConsoleCommandProvider.xml,
- OSGI-INF/info.elexis.server.core.service.internal.StoreToStringServiceImpl.xml
-Service-Component: OSGI-INF/info.elexis.server.core.security.ElexisServerCompositeRealm.xml,
- OSGI-INF/info.elexis.server.core.security.SystemLocalAuthorizingRealm.xml,
- OSGI-INF/info.elexis.server.core.internal.ConsoleCommandProvider.xml,
- OSGI-INF/info.elexis.server.core.service.internal.StoreToStringServiceImpl.xml,
- OSGI-INF/info.elexis.server.core.security.internal.JaxRsServletConfiguration.xml,
- OSGI-INF/info.elexis.server.core.internal.SwaggerConfigurator.xml,
- OSGI-INF/info.elexis.server.core.rest.v1.RestResource.xml,
- OSGI-INF/info.elexis.server.core.security.oauth2.internal.OAuth2AuthorizingRealm.xml
-Bundle-ActivationPolicy: lazy
+

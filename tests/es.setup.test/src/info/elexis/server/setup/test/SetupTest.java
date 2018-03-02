@@ -45,10 +45,13 @@ import okhttp3.Response;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SetupTest {
 
-	public static final String BASE_URL = "http://localhost:8381"; // Via TCP/IP
-	// Eclipse Monitor
-	// http://www.avajava.com/tutorials/lessons/how-do-i-monitor-http-communication-in-eclipse.html
-	// public static final String BASE_URL = "http://localhost:8380";
+	/**
+	 * Eclipse Monitor
+	 * http://www.avajava.com/tutorials/lessons/how-do-i-monitor-http-communication-in-eclipse.html
+	 */
+	// public static final String BASE_URL = "http://localhost:8381"; // Via TCP/IP
+
+	public static final String BASE_URL = "http://localhost:8380";
 	public static final String REST_URL = BASE_URL + "/services";
 	public static final String OAUTH_TOKEN_LOCATION = BASE_URL + "/openid/token";
 	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
@@ -100,10 +103,10 @@ public class SetupTest {
 		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
 		response = client.newCall(request).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
-		
+
 		initializeTestUsersAndRoles();
 	}
-	
+
 	private static void initializeTestUsersAndRoles() {
 		Role esadminRole = new Role();
 		esadminRole.setId("esadmin");

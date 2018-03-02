@@ -44,26 +44,28 @@
       <feature id="info.elexis.server.core.connector.elexis.feature" installMode="root"/>
       <feature id="info.elexis.server.fhir.rest.core.feature" installMode="root"/>
       <feature id="info.elexis.server.findings.feature" installMode="root"/>
+      <feature id="info.elexis.server.openid.feature" version="1.0.0.qualifier"/>
+      <feature id="info.elexis.server.core.jsp.feature" version="1.0.0.qualifier"/>
    </features>
 
    <configurations>
       <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="0" />
       <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="0" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="0" />
+      <plugin id="info.elexis.server.core.connector.elexis.datasource" autoStart="true" startLevel="2" />
+      <plugin id="info.elexis.server.core.connector.elexis.jpa" autoStart="true" startLevel="3" />
+      <plugin id="javax.persistence" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.gemini.naming" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.jetty.osgi.boot" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.jetty.osgi.httpservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
-      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />      
-      <plugin id="javax.persistence" autoStart="true" startLevel="1" />      
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.gemini.naming" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
-      <plugin id="info.elexis.server.core.connector.elexis.datasource" autoStart="true" startLevel="2" />
-      <plugin id="info.elexis.server.core.connector.elexis.jpa" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
    </configurations>
 
    <repositories>
