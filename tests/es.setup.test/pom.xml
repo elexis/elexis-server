@@ -156,8 +156,13 @@
 							<version>0.0.0</version>
 						</dependency>
 						<dependency>
-							<type>eclipse-feature</type>
-							<artifactId>info.elexis.server.core.jsp.feature</artifactId>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.jetty.apache-jsp</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
 							<version>0.0.0</version>
 						</dependency>
 					</dependencies>
