@@ -12,7 +12,13 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
  org.apache.oltu.oauth2.client;bundle-version="1.0.2",
  com.squareup.okhttp3.okhttp;bundle-version="3.10.0",
- com.squareup.okio;bundle-version="1.14.0"
+ com.squareup.okio;bundle-version="1.14.0",
+ info.elexis.server.core.jetty.homebundle;bundle-version="1.0.0",
+ info.elexis.server.findings.fhir.jpa;bundle-version="1.0.0",
+ info.elexis.server.findings.fhir.jpa.service;bundle-version="1.0.0",
+ info.elexis.server.fhir.rest.core;bundle-version="1.0.0",
+ info.elexis.server.fhir.rest.core.model.util;bundle-version="1.0.0",
+ info.elexis.server.openid;bundle-version="1.0.0"
 Bundle-ClassPath: .
 Import-Package: ca.uhn.fhir.context;version="2.4.0",
  ca.uhn.fhir.parser;version="2.4.0",

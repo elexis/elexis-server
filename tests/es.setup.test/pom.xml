@@ -106,8 +106,28 @@
 					</bundleStartLevel>
 					<dependencies>
 						<dependency>
-							<type>eclipse-feature</type>
-							<artifactId>info.elexis.server.core.platform.feature</artifactId>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.equinox.console</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.jetty.osgi.boot</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.equinox.http.jetty</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.jetty.server</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.jetty.osgi.httpservice</artifactId>
 							<version>0.0.0</version>
 						</dependency>
 						<dependency>
@@ -122,22 +142,17 @@
 						</dependency>
 						<dependency>
 							<type>eclipse-plugin</type>
+							<artifactId>com.eclipsesource.jaxrs.provider.gson</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.gemini.naming</artifactId>
 							<version>0.0.0</version>
 						</dependency>
 						<dependency>
 							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.gemini.jpa</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-feature</type>
-							<artifactId>info.elexis.server.fhir.rest.core.feature</artifactId>
-							<version>0.0.0</version>
-						</dependency>
-						<dependency>
-							<type>eclipse-feature</type>
-							<artifactId>info.elexis.server.openid.feature</artifactId>
 							<version>0.0.0</version>
 						</dependency>
 						<dependency>
