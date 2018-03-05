@@ -110,6 +110,8 @@ location "http://download.elexis.info/elexis-server/f8913/p2/target/" elexis-ser
 	
 	org.eclipse.gemini.naming.feature.feature.group
 	
+	com.squareup.okhttp3.okhttp
+	com.squareup.okio
 	org.apache.commons.beanutils
 	com.mashape.unirest.java
 	org.apache.commons.logging
