@@ -24,7 +24,7 @@ public class Host {
 	public static String getHttpPort() {
 		String port = System.getProperty("jetty.http.port");
 		if (port == null) {
-			port = "8381";
+			port = "8380";
 		}
 		return port;
 	}

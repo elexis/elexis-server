@@ -48,7 +48,7 @@ public class Activator implements BundleActivator {
 	/**
 	 * Register the DataSource as OSGI Service
 	 */
-	public static void refreshDataSource() {
+	public static IStatus refreshDataSource() {
 		Dictionary<String, String> properties = new Hashtable<>();
 		properties.put("osgi.jndi.service.name", "jdbc/poolable");
 
@@ -63,6 +63,7 @@ public class Activator implements BundleActivator {
 		} else {
 			StatusUtil.logStatus(log, activate, true);
 		}
+		return activate;
 	}
 
 }

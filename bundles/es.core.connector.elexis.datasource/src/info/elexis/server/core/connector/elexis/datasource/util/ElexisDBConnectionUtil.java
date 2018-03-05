@@ -52,7 +52,7 @@ public class ElexisDBConnectionUtil {
 		IStatus status = verifyConnection(connection);
 		if (status.isOK()) {
 			try {
-				doSetConnection(connection);
+				status = doSetConnection(connection);
 			} catch (IOException | JAXBException e) {
 				return new Status(Status.ERROR, Activator.BUNDLE_ID, "error persisting database connection", e);
 			}
@@ -71,10 +71,10 @@ public class ElexisDBConnectionUtil {
 		return Status.OK_STATUS;
 	}
 
-	private static void doSetConnection(DBConnection connection) throws IOException, JAXBException {
+	private static IStatus doSetConnection(DBConnection connection) throws IOException, JAXBException {
 		ElexisDBConnectionUtil.connection = connection;
 		persistDBConnection();
-		Activator.refreshDataSource();
+		return Activator.refreshDataSource();
 	}
 
 	private static void persistDBConnection() throws IOException, JAXBException {

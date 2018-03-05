@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1519997102">
+<target name="Elexis-Server" sequenceNumber="1520236864">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -67,7 +67,7 @@
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201712111318"/>
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201712111318"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201712111318"/>
-      <unit id="ch.rgw.utility" version="3.5.0.201801291424"/>
+      <unit id="ch.rgw.utility" version="3.5.0.201803031406"/>
       <unit id="ch.elexis.core" version="3.5.0.201803021229"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.201802071403"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201802071403"/>
@@ -103,6 +103,8 @@
       <unit id="javax.validation" version="1.1.0.v201304101302"/>
       <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.201307051903"/>
       <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
+      <unit id="com.squareup.okhttp3.okhttp" version="3.10.0"/>
+      <unit id="com.squareup.okio" version="1.14.0"/>
       <unit id="org.apache.commons.beanutils" version="1.9.2"/>
       <unit id="com.mashape.unirest.java" version="1.4.7"/>
       <unit id="org.apache.commons.logging" version="1.2.0"/>

@@ -3,6 +3,7 @@ package info.elexis.server.setup.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -78,9 +79,14 @@ public class SetupTest {
 
 	@BeforeClass
 	public static void waitForService() throws IOException, InterruptedException {
+		int i = 0;
 		do {
 			Thread.sleep(500);
 			System.out.println("Waiting for servlet ...");
+			if(i++ == 50) {
+				fail("Could not connect to servlet");
+				return;
+			}
 		} while (!AllTests.isReachable(REST_URL + "/system/v1/uptime"));
 	}
 
@@ -103,6 +109,10 @@ public class SetupTest {
 		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
 		response = client.newCall(request).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
+		
+		response = client.newCall(getDBStatusInformation).execute();
+		assertTrue(response.isSuccessful());
+		assertTrue(response.body().string().startsWith("Elexis 3"));
 
 		initializeTestUsersAndRoles();
 	}
@@ -177,6 +187,10 @@ public class SetupTest {
 		OAuthClientRequest resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
 				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_PRACTITIONER)
 				.setPassword(USER_PASS_PRACTITIONER).setScope("fhir").buildQueryMessage();
+//		while(true) {
+//			Thread.sleep(500);
+//		}
+		
 		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
 				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
 
