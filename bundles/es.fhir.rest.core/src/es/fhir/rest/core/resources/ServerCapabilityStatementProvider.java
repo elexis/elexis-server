@@ -9,8 +9,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.UriType;
 
-import info.elexis.server.core.Host;
-
 public class ServerCapabilityStatementProvider
 		extends org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider {
 
@@ -33,22 +31,29 @@ public class ServerCapabilityStatementProvider
 		smartOnFhirConcept.addCoding(coding);
 		smartOnFhirConcept.setText("OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)");
 
+		String baseUrl = getBaseUrl(theRequest);
+
 		Extension oauthExtension = new Extension();
 		oauthExtension.setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 		Extension oauthTokenExtension = new Extension();
 		oauthTokenExtension.setUrl("token");
-		oauthTokenExtension.setValue(new UriType(Host.getOpenIDBaseUrlSecure() + "token"));
+		oauthTokenExtension.setValue(new UriType(baseUrl + "/openid/token"));
 		oauthExtension.getExtension().add(oauthTokenExtension);
 
 		Extension oauthAuthorizeExtension = new Extension();
 		oauthAuthorizeExtension.setUrl("authorize");
-		oauthAuthorizeExtension.setValue(new UriType(Host.getOpenIDBaseUrlSecure() + "authorize"));
+		oauthAuthorizeExtension.setValue(new UriType(baseUrl + "/openid/authorize"));
 		oauthExtension.getExtension().add(oauthAuthorizeExtension);
 
 		csrsc.getService().add(smartOnFhirConcept);
 		csrsc.getExtension().add(oauthExtension);
 
 		return csrsc;
+	}
+
+	private String getBaseUrl(HttpServletRequest theRequest) {
+		// TODO consider String XForwardedProto = theRequest.getHeader("X-Forwarded-Proto");
+		return theRequest.getScheme() + "://" + theRequest.getServerName() + ":" + theRequest.getServerPort();
 	}
 
 }

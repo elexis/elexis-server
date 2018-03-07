@@ -21,6 +21,8 @@ import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.UriType;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -83,7 +85,7 @@ public class SetupTest {
 		do {
 			Thread.sleep(500);
 			System.out.println("Waiting for servlet ...");
-			if(i++ == 50) {
+			if (i++ == 50) {
 				fail("Could not connect to servlet");
 				return;
 			}
@@ -109,7 +111,7 @@ public class SetupTest {
 		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
 		response = client.newCall(request).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
-		
+
 		response = client.newCall(getDBStatusInformation).execute();
 		assertTrue(response.isSuccessful());
 		assertTrue(response.body().string().startsWith("Elexis 3"));
@@ -177,6 +179,8 @@ public class SetupTest {
 		CodeableConcept securityServiceCoding = security.getService().get(0);
 		assertEquals("http://hl7.org/fhir/restful-security-service",
 				securityServiceCoding.getCoding().get(0).getSystem());
+		UriType extension = (UriType) security.getExtension().get(0).getExtension().get(0).getValue();
+		assertEquals("http://localhost:8380/openid/token", extension.getValueAsString());
 	}
 
 	private static String bearerAccessToken_Scope_FHIR_Invalid; // non-static variables are null after each test
@@ -187,10 +191,10 @@ public class SetupTest {
 		OAuthClientRequest resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
 				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_PRACTITIONER)
 				.setPassword(USER_PASS_PRACTITIONER).setScope("fhir").buildQueryMessage();
-//		while(true) {
-//			Thread.sleep(500);
-//		}
-		
+		// while(true) {
+		// Thread.sleep(500);
+		// }
+
 		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
 				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
 
