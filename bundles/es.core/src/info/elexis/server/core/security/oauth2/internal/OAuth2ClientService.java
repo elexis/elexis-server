@@ -255,6 +255,11 @@ public class OAuth2ClientService {
 		TokenCacheObject tokenCacheObject = checkCache(accessToken);
 		if (tokenCacheObject != null) {
 			return tokenCacheObject.token;
+		} else {
+			tokenCacheObject = parseToken(accessToken);
+			if (tokenCacheObject != null) {
+				return tokenCacheObject.token;
+			} 
 		}
 		throw new IllegalStateException("Could not find OAuth2AccessToken in cache");
 	}
