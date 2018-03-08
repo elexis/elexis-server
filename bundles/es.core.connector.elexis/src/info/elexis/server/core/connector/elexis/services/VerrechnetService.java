@@ -268,7 +268,7 @@ public class VerrechnetService extends PersistenceService {
 	}
 	
 	public static boolean isChangedPrice(Verrechnet verrechnet){
-		String value = verrechnet.getDetail(Constants.FLD_EXT_CHANGEDPRICE);
+		String value = verrechnet.getDetail("changedPrice");
 		if (value != null) {
 			return value.equalsIgnoreCase("true");
 		}
