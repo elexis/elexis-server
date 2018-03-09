@@ -35,6 +35,7 @@ public class ServerCapabilityStatementProvider
 
 		Extension oauthExtension = new Extension();
 		oauthExtension.setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
+		
 		Extension oauthTokenExtension = new Extension();
 		oauthTokenExtension.setUrl("token");
 		oauthTokenExtension.setValue(new UriType(baseUrl + "/openid/token"));
@@ -44,6 +45,11 @@ public class ServerCapabilityStatementProvider
 		oauthAuthorizeExtension.setUrl("authorize");
 		oauthAuthorizeExtension.setValue(new UriType(baseUrl + "/openid/authorize"));
 		oauthExtension.getExtension().add(oauthAuthorizeExtension);
+		
+		Extension oauthRegisterExtension = new Extension();
+		oauthRegisterExtension.setUrl("register");
+		oauthRegisterExtension.setValue(new UriType(baseUrl + "/openid/register"));
+		oauthExtension.getExtension().add(oauthRegisterExtension);
 		
 		Extension oauthManageExtension = new Extension();
 		oauthManageExtension.setUrl("manage");
