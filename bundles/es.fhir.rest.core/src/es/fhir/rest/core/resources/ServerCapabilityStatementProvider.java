@@ -44,7 +44,12 @@ public class ServerCapabilityStatementProvider
 		oauthAuthorizeExtension.setUrl("authorize");
 		oauthAuthorizeExtension.setValue(new UriType(baseUrl + "/openid/authorize"));
 		oauthExtension.getExtension().add(oauthAuthorizeExtension);
-
+		
+		Extension oauthManageExtension = new Extension();
+		oauthManageExtension.setUrl("manage");
+		oauthManageExtension.setValue(new UriType(baseUrl + "/openid/manage"));
+		oauthExtension.getExtension().add(oauthManageExtension);
+		
 		csrsc.getService().add(smartOnFhirConcept);
 		csrsc.getExtension().add(oauthExtension);
 
