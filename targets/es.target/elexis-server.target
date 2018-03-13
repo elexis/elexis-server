@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1512375201">
+<target name="Elexis-Server" sequenceNumber="1520940131">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -58,10 +58,10 @@
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201602281253"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201602281253"/>
-      <unit id="ch.rgw.utility" version="3.4.0.201711170932"/>
-      <unit id="ch.elexis.core" version="3.4.0.201711230916"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.201707030925"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201709080831"/>
+      <unit id="ch.rgw.utility" version="3.4.0.201803060630"/>
+      <unit id="ch.elexis.core" version="3.4.0.201803131013"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.201802151414"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.201802151414"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.201711031036"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.201711030958"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
@@ -74,7 +74,7 @@
       <unit id="ca.uhn.hapi.osgi-base" version="1.2.0"/>
       <unit id="org.apache.poi" version="3.0.2.FINAL"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20170915-0846"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20180228-1635"/>
       <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20171123-0917"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20160519-0702"/>
       <unit id="org.tukaani.xz" version="1.5.0.v20170111-1717"/>
