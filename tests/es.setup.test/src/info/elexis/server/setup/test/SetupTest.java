@@ -21,7 +21,6 @@ import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.UriType;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
