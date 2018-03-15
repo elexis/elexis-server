@@ -26,14 +26,16 @@ public class LabOrderService extends PersistenceService {
 		return query.executeGetSingleResult();
 	}
 
-	public static List<LabOrder> findAllLabOrdersInSameOrderIdGroup(LabOrder labOrder) {
-		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class);
-		query.add(LabOrder_.orderid, QUERY.EQUALS, labOrder.getOrderid());
-		return query.execute();
-	}
-
+	/**
+	 * Find all {@link LabOrder} that are equal to the provided {@link LabOrder#getOrderid()} and
+	 * {@link LabOrder#getPatient()}
+	 * 
+	 * @param labOrder
+	 * @return
+	 */
 	public static List<LabOrder> findAllLabOrdersInSameOrderIdGroupWithResults(LabOrder labOrder) {
 		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class);
+		query.add(LabOrder_.patient, QUERY.EQUALS, labOrder.getPatient());
 		query.add(LabOrder_.orderid, QUERY.EQUALS, labOrder.getOrderid());
 		query.add(LabOrder_.result, QUERY.NOT_EQUALS, null);
 		return query.execute();
