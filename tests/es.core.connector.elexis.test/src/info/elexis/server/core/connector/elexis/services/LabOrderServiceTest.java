@@ -1,8 +1,9 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -27,14 +28,6 @@ public class LabOrderServiceTest {
 	public void testFindLabOrderByLabResult() {
 		Optional<LabOrder> labOrder = LabOrderService.findLabOrderByLabResult(labresult);
 		assertTrue(labOrder.isPresent());
-	}
-
-	@Test
-	public void testFindAllLabOrdersInSameOrderIdGroup() {
-		Optional<LabOrder> labOrder = LabOrderService.findLabOrderByLabResult(labresult);
-		assertTrue(labOrder.isPresent());
-		List<LabOrder> laborderGroup = LabOrderService.findAllLabOrdersInSameOrderIdGroup(labOrder.get());
-		assertEquals(15, laborderGroup.size());
 	}
 
 }
