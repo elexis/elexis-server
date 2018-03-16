@@ -18,7 +18,10 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  info.elexis.server.findings.fhir.jpa.service;bundle-version="1.0.0",
  info.elexis.server.fhir.rest.core;bundle-version="1.0.0",
  info.elexis.server.fhir.rest.core.model.util;bundle-version="1.0.0",
- info.elexis.server.openid;bundle-version="1.0.0"
+ info.elexis.server.openid;bundle-version="1.0.0",
+ com.eclipsesource.jaxrs.consumer,
+ com.eclipsesource.jaxrs.provider.gson,
+ com.eclipsesource.jaxrs.jersey-min;bundle-version="2.24.1"
 Bundle-ClassPath: .
 Import-Package: ca.uhn.fhir.context;version="2.4.0",
  ca.uhn.fhir.parser;version="2.4.0",
@@ -29,4 +32,4 @@ Import-Package: ca.uhn.fhir.context;version="2.4.0",
  org.hl7.fhir.instance.model.api;version="2.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: info.elexis.server.setup.test.internal.Activator
+Bundle-Activator: info.elexis.server.core.rest.test.internal.Activator

@@ -1,5 +1,7 @@
-package info.elexis.server.setup.test;
+package info.elexis.server.core.rest.test.serversetup;
 
+import static info.elexis.server.core.rest.test.AllTests.BASE_URL;
+import static info.elexis.server.core.rest.test.AllTests.REST_URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -38,6 +40,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.RoleService;
 import info.elexis.server.core.connector.elexis.services.UserService;
+import info.elexis.server.core.rest.test.AllTests;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -47,14 +50,6 @@ import okhttp3.Response;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SetupTest {
 
-	/**
-	 * Eclipse Monitor
-	 * http://www.avajava.com/tutorials/lessons/how-do-i-monitor-http-communication-in-eclipse.html
-	 */
-	// public static final String BASE_URL = "http://localhost:8381"; // Via TCP/IP
-
-	public static final String BASE_URL = "http://localhost:8380";
-	public static final String REST_URL = BASE_URL + "/services";
 	public static final String OAUTH_TOKEN_LOCATION = BASE_URL + "/openid/token";
 	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
 

@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.jaxrs;
+package info.elexis.server.core.connector.elexis.rest.legacy;
 
 import javax.ws.rs.core.Response;
 

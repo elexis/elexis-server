@@ -25,7 +25,6 @@
 		<module>es.core.connector.elexis.datasource</module>
                	<module>es.core.connector.elexis</module>
                	<module>es.core.connector.elexis.jpa</module>
-	    	<module>es.core.connector.elexis.jaxrs</module>
 		<module>at.medevit.logback.pushnotification</module>
 		<module>at.medevit.logback.mattermost</module>
 		<module>es.fhir.rest.core</module>

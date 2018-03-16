@@ -1,4 +1,4 @@
-package info.elexis.server.setup.test;
+package info.elexis.server.core.rest.test;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,10 +15,21 @@ import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.common.DBConnection.DBType;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.core.rest.test.elexisinstances.AllElexisInstancesTests;
+import info.elexis.server.core.rest.test.serversetup.SetupTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ SetupTest.class })
+@SuiteClasses({ SetupTest.class, AllElexisInstancesTests.class })
 public class AllTests {
+	
+	/**
+	 * Eclipse Monitor
+	 * http://www.avajava.com/tutorials/lessons/how-do-i-monitor-http-communication-in-eclipse.html
+	 */
+	// public static final String BASE_URL = "http://localhost:8381"; // Via TCP/IP
+
+	public static final String BASE_URL = "http://localhost:8380";
+	public static final String REST_URL = BASE_URL + "/services";
 	
 	@BeforeClass
 	public static void setup() throws IOException, SQLException {

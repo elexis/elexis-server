@@ -1,4 +1,4 @@
-package info.elexis.server.setup.test.internal;
+package info.elexis.server.core.rest.test.internal;
 
 import java.io.File;
 
@@ -7,6 +7,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import info.elexis.server.core.common.util.CoreUtil;
+import info.elexis.server.core.connector.elexis.Properties;
 
 public class Activator implements BundleActivator {
 
@@ -19,6 +20,8 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Activator.bundleContext = context;
+		
+		System.setProperty(Properties.SYSTEM_PROPERTY_ACCEPT_MISSING_LOCKSERVICE_CONTRIBUTORS, Boolean.TRUE.toString());
 
 		if (esConnectionFileTestBackup.exists()) {
 			esConnectionFileTestBackup.delete();
