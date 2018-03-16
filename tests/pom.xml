@@ -18,7 +18,7 @@
 	<modules>
 		<module>es.core.connector.elexis.jpa.test</module>
 		<module>es.core.connector.elexis.test</module>
-		<module>es.setup.test</module>
+		<module>es.core.rest.test</module>
 	</modules>
 
 	<dependencies>
