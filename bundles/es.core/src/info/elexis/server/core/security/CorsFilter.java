@@ -26,6 +26,7 @@ public class CorsFilter extends AdviceFilter {
 		// set headers
 		//
 		HttpServletResponse httpResponse = WebUtils.toHttp(response);
+		// TODO limit (?)
 		httpResponse.setHeader("Access-Control-Allow-Origin", "*");
 		httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
 

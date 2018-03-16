@@ -34,6 +34,10 @@ public class RestResource {
 	@ApiOperation(value = "Get the system status in plaintext", authorizations = {
 			@Authorization(value = "esoauth", scopes = {
 					@AuthorizationScope(scope = "esadmin", description = "bla") }) })
+	/**
+	 * @return
+	 */
+	@Deprecated
 	public String getStatusPlaintext() {
 		return "PROTECTED RESOURCE";
 	}

@@ -1,5 +1,8 @@
 package info.elexis.server.core;
 
+/**
+ * TODO refactor - deprecate ?
+ */
 public class Host {
 
 	public static String getHostname() {
