@@ -55,6 +55,11 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
+							<id>org.eclipse.equinox.cm</id>
+							<level>2</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
 							<id>info.elexis.server.core.connector.elexis.datasource</id>
 							<level>2</level>
 							<autoStart>true</autoStart>

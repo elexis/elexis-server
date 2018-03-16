@@ -7,7 +7,8 @@ import org.junit.runners.MethodSorters;
 
 import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 
-import ch.elexis.core.common.InstanceStatus;
+import ch.elexis.core.common.ElexisEvent;
+import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.server.IEventService;
 import info.elexis.server.core.rest.test.AllTests;
 import info.elexis.server.core.rest.test.elexisinstances.ElexisServerClientConfig;
@@ -24,9 +25,12 @@ public class EventServiceTest {
 	}
 
 	@Test
-	public void _01_testUpdateStatus() {
-		InstanceStatus instanceStatus = new InstanceStatus();
-
+	public void _01_testPostEvent() {
+		ElexisEvent ee = new ElexisEvent();
+		ee.setTopic(ElexisEventTopics.PERSISTENCE_EVENT_CREATE);
+		ee.getProperties().put(ElexisEventTopics.PROPKEY_ID, "testObjectId");
+		ee.getProperties().put(ElexisEventTopics.PROPKEY_CLASS, String.class.getName());
+		eventService.postEvent(ee);
 	}
 
 }

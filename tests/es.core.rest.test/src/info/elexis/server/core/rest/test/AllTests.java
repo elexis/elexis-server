@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -17,11 +18,13 @@ import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.rest.test.elexisinstances.AllElexisInstancesTests;
 import info.elexis.server.core.rest.test.serversetup.SetupTest;
+import info.elexis.server.core.rest.test.swagger.SwaggerTest;
+import okhttp3.OkHttpClient;
 
 @RunWith(Suite.class)
-@SuiteClasses({ SetupTest.class, AllElexisInstancesTests.class })
+@SuiteClasses({ SetupTest.class, AllElexisInstancesTests.class, SwaggerTest.class })
 public class AllTests {
-	
+
 	/**
 	 * Eclipse Monitor
 	 * http://www.avajava.com/tutorials/lessons/how-do-i-monitor-http-communication-in-eclipse.html
@@ -30,13 +33,15 @@ public class AllTests {
 
 	public static final String BASE_URL = "http://localhost:8380";
 	public static final String REST_URL = BASE_URL + "/services";
-	
+
+	private static OkHttpClient defaultOkHttpClient = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS)
+			.writeTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
+
 	@BeforeClass
 	public static void setup() throws IOException, SQLException {
 		TestDatabaseInitializer tdi = new TestDatabaseInitializer();
 		tdi.initializeDb(getTestDatabaseConnection(), true);
 	}
-	
 
 	public static boolean isReachable(String targetUrl) throws MalformedURLException, IOException {
 		HttpURLConnection httpUrlConnection = (HttpURLConnection) new URL(targetUrl).openConnection();
@@ -49,10 +54,10 @@ public class AllTests {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Overwritten from {@link ElexisDBConnection}, we need a db that can be contacted by both this
-	 * server and openid
+	 * Overwritten from {@link ElexisDBConnection}, we need a db that can be
+	 * contacted by both this server and openid
 	 */
 	public static DBConnection getTestDatabaseConnection() {
 		DBConnection retVal = new DBConnection();
@@ -61,5 +66,9 @@ public class AllTests {
 		retVal.username = "sa";
 		retVal.password = "";
 		return retVal;
-	}	
+	}
+
+	public static OkHttpClient getDefaultOkHttpClient() {
+		return defaultOkHttpClient;
+	}
 }

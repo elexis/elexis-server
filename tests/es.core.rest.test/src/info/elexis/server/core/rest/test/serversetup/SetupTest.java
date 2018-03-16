@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
@@ -56,15 +55,10 @@ public class SetupTest {
 	public static final String USER_PASS_PRACTITIONER = "practitioner";
 	public static final String USER_PASS_ESADMIN = "esadmin";
 
-	private OkHttpClient client = new OkHttpClient();
+	private OkHttpClient client = AllTests.getDefaultOkHttpClient();
 	private Gson gson = new Gson();
 	private FhirContext fhirContext = FhirContext.forDstu3();
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-	public SetupTest() {
-		client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS)
-				.readTimeout(30, TimeUnit.SECONDS).build();
-	}
 
 	private Request getDBConnectionRequest = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection")
 			.build();
