@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import javax.sql.DataSource;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.jetty.osgi.boot.OSGiServerConstants;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.osgi.service.component.annotations.Activate;
@@ -33,7 +34,7 @@ public class WebappStarter {
 		String warFile =FileLocator.toFileURL(Activator.getContext().getBundle().getEntry("lib/openid.war")).getPath();
 		props.put("war", warFile);
 		props.put("contextPath", "/openid");
-		props.put("managedServerName", "defaultJettyServer");
+		props.put(OSGiServerConstants.MANAGED_JETTY_SERVER_NAME, OSGiServerConstants.MANAGED_JETTY_SERVER_DEFAULT_NAME);
 		Activator.getContext().registerService(ContextHandler.class.getName(), webapp, props);
 	}
 

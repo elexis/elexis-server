@@ -16,6 +16,7 @@ Bundle-Vendor: info.elexis
 Bundle-Activator: info.elexis.server.openid.internal.Activator
 Import-Package: javax.servlet;version="2.4.0",
  org.eclipse.core.runtime;version="3.5.0",
+ org.eclipse.jetty.osgi.boot;version="9.3.9",
  org.eclipse.jetty.util.component;version="9.3.9",
  org.osgi.framework;version="1.8.0",
  org.osgi.service.component.annotations;version="1.2.0"
