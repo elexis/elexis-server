@@ -62,7 +62,7 @@ public class TestDatabaseInitializer {
 
 	private static boolean isMandantInitialized = false;
 	private static Kontakt mandant;
-	
+
 	private Kontakt laboratory;
 	private Kontakt laboratory2;
 
@@ -93,31 +93,34 @@ public class TestDatabaseInitializer {
 	private static boolean isLeistungsblockInitialized = false;
 
 	public synchronized void initializeDb() throws IOException, SQLException {
+		initializeDb(TestDatabase.getDBConnection(), false);
+	}
+
+	public void initializeDb(DBConnection connection, boolean sqlOnly) throws IOException, SQLException {
 		if (!isDbInitialized) {
 			// initialize
-			Optional<Connection> connection = getJdbcConnection(TestDatabase.getDBConnection());
-			if (connection.isPresent()) {
-				Connection jdbcConnection = connection.get();
-				try {
-					executeDbScript(jdbcConnection, "/rsc/createDB.script");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/User.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/Role.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
-					executeDbScript(jdbcConnection, "/rsc/dbScripts/BillingVKPreise.sql");
+			Connection jdbcConnection = getJdbcConnection(connection).get();
+			try {
+				executeDbScript(jdbcConnection, "/rsc/createDB.script");
+				executeDbScript(jdbcConnection, "/rsc/dbScripts/User.sql");
+				executeDbScript(jdbcConnection, "/rsc/dbScripts/Role.sql");
+				executeDbScript(jdbcConnection, "/rsc/dbScripts/ArtikelstammItem.sql");
+				executeDbScript(jdbcConnection, "/rsc/dbScripts/sampleContacts.sql");
+				executeDbScript(jdbcConnection, "/rsc/dbScripts/BillingVKPreise.sql");
+				if (!sqlOnly) {
 					ConfigInitializer.initializeConfiguration();
-					isDbInitialized = true;
-				} finally {
-					try {
-						jdbcConnection.close();
-					} catch (SQLException e) {
-						// ignore
-						e.printStackTrace();
-					}
 				}
-			} else {
-				logger.error("No connection available!");
+				isDbInitialized = true;
+			} finally {
+				try {
+					jdbcConnection.close();
+				} catch (SQLException e) {
+					// ignore
+					e.printStackTrace();
+				}
 			}
+		} else {
+			logger.error("No connection available!");
 		}
 	}
 
@@ -539,7 +542,7 @@ public class TestDatabaseInitializer {
 					"unit", LabItemTyp.NUMERIC, "group", 1).build();
 			labItem.setExport("vitolabkey:1,2");
 			LabItemService.save(labItem);
-			
+
 			LabItemService.addLabMapping(labItem, laboratory2, "TEST_NUMERIC_EXT");
 
 			LabItem textLabItem = (LabItem) new LabItemService.Builder("TEST TEXT", "Test Laboratory", laboratory, null,
@@ -585,7 +588,7 @@ public class TestDatabaseInitializer {
 			isLabResultInitialized = true;
 		}
 	}
-	
+
 	public LabItem getLabItem() {
 		return labItem;
 	}
@@ -593,11 +596,11 @@ public class TestDatabaseInitializer {
 	public Kontakt getLaboratory() {
 		return laboratory;
 	}
-	
+
 	public Kontakt getLaboratory2() {
 		return laboratory2;
 	}
-	
+
 	public static List<LabResult> getLabResults() {
 		return labResults;
 	}

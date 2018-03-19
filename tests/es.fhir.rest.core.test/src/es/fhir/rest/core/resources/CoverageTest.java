@@ -42,7 +42,7 @@ public class CoverageTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeFall();
 
-		List<Fall> faelle = TestDatabaseInitializer.getPatient().getFaelle();
+		List<Fall> faelle = AllTests.getTestDatabaseInitializer().getPatient().getFaelle();
 		assertFalse(faelle.isEmpty());
 
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
@@ -51,7 +51,7 @@ public class CoverageTest {
 
 	@Test
 	public void getCoverage() {
-		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
 				.execute();
 		// search by BENEFICIARY
 		Bundle results = client.search().forResource(Coverage.class)
@@ -72,7 +72,7 @@ public class CoverageTest {
 	public void createCoverage() {
 		Coverage coverage = new Coverage();
 		// minimal coverage information
-		coverage.setBeneficiary(new Reference(new IdDt("Patient", TestDatabaseInitializer.getPatient().getId())));
+		coverage.setBeneficiary(new Reference(new IdDt("Patient", AllTests.getTestDatabaseInitializer().getPatient().getId())));
 		coverage.setType(
 				new CodeableConcept().addCoding(new Coding(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "KVG", "")));
 		
@@ -101,7 +101,7 @@ public class CoverageTest {
 
 		Reference beneficiary = readCoverage.getBeneficiary();
 		assertNotNull(beneficiary);
-		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(),
+		assertEquals("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(),
 				beneficiary.getReference());
 		List<Reference> payors = readCoverage.getPayor();
 		assertNotNull(payors);

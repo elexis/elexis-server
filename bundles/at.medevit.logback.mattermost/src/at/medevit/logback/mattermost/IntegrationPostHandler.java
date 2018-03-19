@@ -65,10 +65,10 @@ public class IntegrationPostHandler {
 			StringBuilder sbBody = new StringBuilder();
 			switch (logLevel.levelInt) {
 			case Level.ERROR_INT:
-				sbBody.append(":exclamation:");
+				sbBody.append(":exclamation: ");
 				break;
 			case Level.WARN_INT:
-				sbBody.append(":warning:");
+				sbBody.append(":warning: ");
 			default:
 				break;
 			}

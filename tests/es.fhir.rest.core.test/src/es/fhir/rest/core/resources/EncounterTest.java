@@ -54,7 +54,7 @@ public class EncounterTest {
 
 	@Test
 	public void getEncounter() {
-		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
 				.execute();
 		// search by patient
 		Bundle results = client.search().forResource(Encounter.class)
@@ -99,7 +99,7 @@ public class EncounterTest {
 		Condition problem = new Condition();
 		problem.setCode(
 				new CodeableConcept().addCoding(new Coding("http://hl7.org/fhir/sid/icpc-2", "A04", "Müdigkeit")));
-		problem.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		problem.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		problem.addCategory().addCoding(new Coding(ConditionCategory.PROBLEMLISTITEM.getSystem(),
 				ConditionCategory.PROBLEMLISTITEM.toCode(), ConditionCategory.PROBLEMLISTITEM.getDisplay()));
 		MethodOutcome problemOutcome = client.create().resource(problem).execute();
@@ -110,7 +110,7 @@ public class EncounterTest {
 		encounter.addParticipant(participant);
 		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
 				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
-		encounter.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		encounter.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 
 		encounter.addDiagnosis().setCondition(
 				new Reference(new IdType(problem.getResourceType().name(), problemOutcome.getId().getIdPart())));
@@ -129,7 +129,7 @@ public class EncounterTest {
 		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
 		subjective.setText(narrative);
-		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		subjective.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		subjective.addCategory().addCoding(new Coding(IdentifierSystem.ELEXIS_SOAP.getSystem(),
 				ObservationCategory.SOAP_SUBJECTIVE.getCode(), ObservationCategory.SOAP_SUBJECTIVE.getLocalized()));
 		subjective.setContext(new Reference(new IdType(encounter.getResourceType().name(), encounter.getId())));
@@ -156,7 +156,7 @@ public class EncounterTest {
 		Encounter encounter = (Encounter) entries.get(0).getResource();
 
 		assertEquals(TestDatabaseInitializer.getMandant().getId(), getMandatorId(encounter));
-		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), encounter.getSubject().getReference());
+		assertEquals("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), encounter.getSubject().getReference());
 		List<CodeableConcept> typeConcepts = encounter.getType();
 		assertNotNull(typeConcepts);
 		assertFalse(typeConcepts.isEmpty());

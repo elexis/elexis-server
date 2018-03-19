@@ -1,10 +1,15 @@
 package es.fhir.rest.core.servlets;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.shiro.web.servlet.IniShiroFilter;
+import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -21,6 +26,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
+import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 
 @Component(service = CoreFhirRestServlet.class)
 public class CoreFhirRestServlet extends RestfulServer {
@@ -67,13 +73,23 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	public CoreFhirRestServlet() {
 		super(FhirContext.forDstu3());
+		setServerName("Elexis-Server FHIR");
+		setServerVersion("1.0");
+		setServerConformanceProvider(new ServerCapabilityStatementProvider());
 	}
 
 	@Activate
 	public void activate() {
+		Thread.currentThread().setContextClassLoader(CoreFhirRestServlet.class.getClassLoader());
+		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 		try {
 			httpService.registerServlet("/fhir/*", this, null, null);
-		} catch (ServletException | NamespaceException e) {
+			String config = IOUtils.toString(this.getClass().getResourceAsStream("shiro-fhir.ini"),
+					Charset.forName("UTF-8"));
+			IniShiroFilter iniShiroFilter = new IniShiroFilter();
+			iniShiroFilter.setConfig(config);
+			extHttpService.registerFilter("/fhir", iniShiroFilter, null, null);
+		} catch (ServletException | NamespaceException | IOException e) {
 			logger.error("Could not register FHIR servlet.", e);
 		}
 	}

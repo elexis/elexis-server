@@ -40,7 +40,7 @@ public class FamilyMemberHistoryTest {
 		IFamilyMemberHistory familyMemberHistory =
 			AllTests.getFindingsService().create(IFamilyMemberHistory.class);
 		familyMemberHistory.setText("Family Member History test 1");
-		familyMemberHistory.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		familyMemberHistory.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 		
 		AllTests.getFindingsService().saveFinding(familyMemberHistory);
 
@@ -55,7 +55,7 @@ public class FamilyMemberHistoryTest {
 	public void testFamilyMemberHistory(){
 		// search for encounter
 		Bundle results = client.search().forResource(FamilyMemberHistory.class)
-			.where(FamilyMemberHistory.PATIENT.hasId(TestDatabaseInitializer.getPatient().getId()))
+			.where(FamilyMemberHistory.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 			.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();

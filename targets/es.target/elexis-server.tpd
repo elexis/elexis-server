@@ -1,6 +1,6 @@
 target "Elexis-Server" with source allEnvironments
 
-location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
+location "http://download.elexis.info/elexis-server/f8913/p2/target/" elexis-server {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
 	org.eclipse.emf.common.feature.group
@@ -22,6 +22,11 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	javax.annotation
 	javax.xml
 	javax.inject
+	org.eclipse.jdt.core
+	org.eclipse.core.resources
+	org.eclipse.core.filesystem
+	org.eclipse.text
+	org.eclipse.core.commands
 	
 	ch.qos.logback.classic
 	ch.qos.logback.core
@@ -50,6 +55,10 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.eclipse.jetty.deploy
 	org.eclipse.jetty.osgi-servlet-api
 	org.eclipse.jetty.osgi.httpservice
+	org.eclipse.jetty.osgi.boot.jsp //FragmentActivator Sets up support for jsp and jstl.
+	org.eclipse.jetty.plus
+	org.eclipse.jetty.annotations
+	org.eclipse.jetty.jndi
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
@@ -86,6 +95,10 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	javax.transaction // required by org.eclipse.persistence.jpars
 	javax.xml.rpc // required by org.eclipse.persistence.jpars
 	javax.xml.soap // required by org.eclipse.persistence.jpars
+	org.apache.xalan
+	org.apache.xml.serializer
+	javax.servlet.jsp.jstl
+	javax.servlet.jsp.jstl.impl
 	
 	org.eclipse.persistence.jpa.feature.group 
 	org.eclipse.persistence.moxy.feature.group
@@ -97,6 +110,8 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	
 	org.eclipse.gemini.naming.feature.feature.group
 	
+	com.squareup.okhttp3.okhttp
+	com.squareup.okio
 	org.apache.commons.beanutils
 	com.mashape.unirest.java
 	org.apache.commons.logging
@@ -111,6 +126,15 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.apache.shiro.ehcache
 	org.apache.shiro.aspectj
 	org.apache.shiro.jaxrs
+	org.apache.oltu.oauth2.common
+	org.apache.oltu.commons.encodedtoken
+	org.apache.oltu.commons.json 
+	org.apache.oltu.oauth2.authzserver
+	org.apache.oltu.oauth2.jwt
+	org.apache.oltu.oauth2.resourceserver
+	org.apache.oltu.oauth2.resourceserver-filter
+	org.apache.oltu.oauth2.client
+	org.apache.oltu.oauth2.httpclient4
 	org.apache.commons.collections
 	org.apache.commons.collections4
 	com.google.guava
@@ -134,6 +158,20 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.attoparser
 	org.unbescape
 	org.springframework.spring-web
+	org.eclipse.jetty.apache-jsp [9.3.9.v20160517,9.3.9.v20160517]
+	org.mortbay.jasper.apache-el [8.0.33,8.0.33]
+	org.mortbay.jasper.apache-jsp [8.0.33,8.0.33]
+	org.apache.taglibs.taglibs-standard-spec [1.2.5,1.2.5]
+	org.apache.taglibs.standard-impl [1.2.5,1.2.5]
+	org.apache.aries.spifly.static.bundle
+	org.apache.aries.spifly.dynamic.bundle
+	org.apache.aries.spifly.org.apache.aries.spifly.core-internal
+	org.apache.aries.spifly.org.apache.aries.spifly.static.tool
+	org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal
+	org.apache.aries.util
+	org.glassfish.web.javax.servlet.jsp.jstl
+	org.objectweb.asm.commons
+	org.objectweb.asm.tree
 	
 	com.eclipsesource.restfuse
 }

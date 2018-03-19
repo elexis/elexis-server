@@ -9,6 +9,7 @@ import java.util.Locale;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.sql.DataSource;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -32,6 +33,11 @@ public class ElexisEntityManager {
 	private static EntityManagerFactoryBuilder factoryBuilder;
 	private static EntityManagerFactory factory;
 
+	@Reference(service = DataSource.class, cardinality = ReferenceCardinality.MANDATORY)
+	protected synchronized void bindDataSource(DataSource dataSource) {
+		// indicate data-source dependency to osgi
+	}
+	
 	@Reference(service = EntityManagerFactoryBuilder.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, target = "(osgi.unit.name=elexis)")
 	protected synchronized void bind(EntityManagerFactoryBuilder factoryBuilder) {
 		log.debug("Binding " + factoryBuilder.getClass().getName());

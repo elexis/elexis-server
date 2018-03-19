@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenID Connect for Elexis Server
+Bundle-SymbolicName: info.elexis.server.openid;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.apache.commons.lang,
+ info.elexis.server.core.connector.elexis.datasource;bundle-version="1.0.0",
+ org.eclipse.jetty.apache-jsp;bundle-version="9.3.9",
+ org.mortbay.jasper.apache-jsp;bundle-version="8.0.33",
+ org.eclipse.jetty.server;bundle-version="9.3.9",
+ org.eclipse.jetty.webapp;bundle-version="9.3.9",
+ org.eclipse.jetty.servlet;bundle-version="9.3.9"
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: info.elexis
+Bundle-Activator: info.elexis.server.openid.internal.Activator
+Import-Package: javax.servlet;version="2.4.0",
+ org.eclipse.core.runtime;version="3.5.0",
+ org.eclipse.jetty.osgi.boot;version="9.3.9",
+ org.eclipse.jetty.util.component;version="9.3.9",
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.component.annotations;version="1.2.0"
+Service-Component: OSGI-INF/info.elexis.server.openid.internal.WebappStarter.xml

@@ -4,3 +4,4 @@ Bundle-Name: Jetty Configuration Home Bundle
 Bundle-SymbolicName: info.elexis.server.core.jetty.homebundle
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: elexis.info
+Eclipse-BundleShape: dir

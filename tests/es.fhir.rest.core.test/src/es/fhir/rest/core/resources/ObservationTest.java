@@ -66,21 +66,21 @@ public class ObservationTest {
 		persAnam.setCategory(ObservationCategory.SOCIALHISTORY);
 		persAnam.setCoding(Collections.singletonList(new TransientCoding(ObservationCode.ANAM_PERSONAL)));
 		persAnam.setText("Pers Anamnese 1");
-		persAnam.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		persAnam.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 		IObservation risk = AllTests.getFindingsService().create(IObservation.class);
 		risk.setCategory(ObservationCategory.SOCIALHISTORY);
 		risk.setCoding(Collections.singletonList(new TransientCoding(ObservationCode.ANAM_RISK)));
 		risk.setText("Risiken 1");
-		risk.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		risk.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 
 		IEncounter encounter = AllTests.getFindingsService().create(IEncounter.class);
 		encounter.setConsultationId(TestDatabaseInitializer.getBehandlung().getId());
-		encounter.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		encounter.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 
 		IObservation iObservation = AllTests.getFindingsService().create(IObservation.class);
 		iObservation.setCategory(ObservationCategory.SOAP_SUBJECTIVE);
 		iObservation.setText("Encounter test 1");
-		iObservation.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		iObservation.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 		iObservation.setEncounter(encounter);
 
 		IObservation vitalSign = AllTests.getFindingsService().create(IObservation.class);
@@ -96,7 +96,7 @@ public class ObservationTest {
 		componentB.setNumericValue(new BigDecimal("78"));
 		componentB.setNumericValueUnit("mmHg");
 		vitalSign.addComponent(componentB);
-		vitalSign.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		vitalSign.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 		vitalSign.setEncounter(encounter);
 		new UpdateFindingTextCommand(vitalSign).execute();
 		
@@ -128,7 +128,7 @@ public class ObservationTest {
 
 		// search by patient and category
 		Bundle results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Condition.CATEGORY.exactly().code("laboratory"))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
@@ -138,7 +138,7 @@ public class ObservationTest {
 		assertEquals(observation.getIdElement().getIdPart(), labResults.get(0).getId());
 
 		results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Condition.CATEGORY.exactly().code("abc"))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
@@ -147,7 +147,7 @@ public class ObservationTest {
 
 		// search with date parameter
 		results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Observation.DATE.exactly()
 						.day(AllTests.getDate(LocalDateTime.of(2016, Month.DECEMBER, 14, 17, 44, 25))))
 				.returnBundle(Bundle.class).execute();
@@ -156,7 +156,7 @@ public class ObservationTest {
 		assertFalse(entries.isEmpty());
 
 		results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Observation.DATE.exactly()
 						.day(AllTests.getDate(LocalDateTime.of(2016, Month.DECEMBER, 1, 0, 0, 0))))
 				.returnBundle(Bundle.class).execute();
@@ -166,7 +166,7 @@ public class ObservationTest {
 
 		// search with date parameter and code
 		results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Observation.CODE.exactly()
 						.systemAndCode(CodingSystem.ELEXIS_LOCAL_LABORATORY_VITOLABKEY.getSystem(), "2"))
 				.returnBundle(Bundle.class).execute();
@@ -177,7 +177,7 @@ public class ObservationTest {
 		// search for pers anamnesis
 		results =
 			client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Observation.CODE.exactly()
 					.systemAndCode(ObservationCode.ANAM_PERSONAL.getIdentifierSystem().getSystem(),
 						ObservationCode.ANAM_PERSONAL.getCode()))
@@ -192,7 +192,7 @@ public class ObservationTest {
 		
 		// search for risk factors
 		results = client.search().forResource(Observation.class)
-			.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+			.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 			.and(Observation.CODE.exactly().systemAndCode(
 				ObservationCode.ANAM_RISK.getIdentifierSystem().getSystem(),
 				ObservationCode.ANAM_RISK.getCode()))
@@ -206,7 +206,7 @@ public class ObservationTest {
 		
 		// search for vital signs
 		results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Observation.CATEGORY.exactly().code(ObservationCategory.VITALSIGNS.getCode()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
@@ -216,7 +216,7 @@ public class ObservationTest {
 
 		// search for encounter
 		results = client.search().forResource(Observation.class)
-			.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+			.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 			.and(Observation.CONTEXT.hasId(findingsCreated.get(2).getId()))
 			.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
@@ -228,7 +228,7 @@ public class ObservationTest {
 	public void lobaratoryObservations() throws FHIRException {
 		// search by patient and category
 		Bundle results = client.search().forResource(Observation.class)
-				.where(Observation.SUBJECT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Condition.CATEGORY.exactly().code("laboratory")).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		assertFalse(results.getEntry().isEmpty());

@@ -40,7 +40,7 @@ public class AllergyIntoleranceTest {
 		IAllergyIntolerance allergyIntolerance =
 			AllTests.getFindingsService().create(IAllergyIntolerance.class);
 		allergyIntolerance.setText("Allergy Intolerance test 1");
-		allergyIntolerance.setPatientId(TestDatabaseInitializer.getPatient().getId());
+		allergyIntolerance.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 		
 		AllTests.getFindingsService().saveFinding(allergyIntolerance);
 	}
@@ -53,7 +53,7 @@ public class AllergyIntoleranceTest {
 	@Test
 	public void testAllergyIntolerance(){
 		Bundle results = client.search().forResource(AllergyIntolerance.class)
-			.where(AllergyIntolerance.PATIENT.hasId(TestDatabaseInitializer.getPatient().getId()))
+			.where(AllergyIntolerance.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 			.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="info.elexis.server.core.connector.elexis.rest.v1.RestResource">
+   <service>
+      <provide interface="info.elexis.server.core.connector.elexis.rest.v1.RestResource"/>
+   </service>
+   <implementation class="info.elexis.server.core.connector.elexis.rest.v1.RestResource"/>
+</scr:component>

@@ -46,7 +46,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __system_status() {
-		return Application.getStatus();
+		return Application.uptime();
 	}
 
 	public void __system_logTestError() {
@@ -59,8 +59,12 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		ok();
 	}
 
-	public void __scheduler() {
-		ci.println(getHelp(1));
+	public String __system_security() {
+		return getHelp(2);
+	}
+
+	public String __system_security_user() {
+		return getHelp(3);
 	}
 
 	/**

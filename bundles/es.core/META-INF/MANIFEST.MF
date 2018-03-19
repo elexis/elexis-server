@@ -5,29 +5,36 @@ Bundle-SymbolicName: info.elexis.server.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: info.elexis.server.core.internal.Activator
 Bundle-Vendor: elexis.info
-Require-Bundle: javax.servlet,
- org.eclipse.equinox.ds;bundle-version="1.4.200",
- org.eclipse.equinox.cm;bundle-version="1.1.100",
- org.eclipse.osgi.services,
- org.eclipse.core.runtime,
- com.eclipsesource.jaxrs.publisher;bundle-version="5.0.0",
- org.apache.commons.codec;bundle-version="1.6.0",
- org.apache.commons.io;bundle-version="2.2.0",
+Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.200",
+ org.eclipse.osgi.services;bundle-version="3.5.100",
+ org.eclipse.core.runtime;bundle-version="3.12.0",
  info.elexis.server.core.common;bundle-version="1.0.0",
  ch.qos.logback.classic;bundle-version="1.0.7",
  ch.qos.logback.core;bundle-version="1.0.7",
- org.apache.commons.collections;bundle-version="3.2.2",
  org.apache.shiro.jaxrs;bundle-version="1.4.0",
- org.apache.shiro.web;bundle-version="1.4.0"
+ org.apache.shiro.web;bundle-version="1.4.0",
+ org.apache.oltu.oauth2.authzserver;bundle-version="1.0.2",
+ org.apache.oltu.oauth2.resourceserver;bundle-version="1.0.2",
+ com.eclipsesource.jaxrs.publisher;bundle-version="5.3.1",
+ org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.httpclient
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation.security;version="1.2.0",
+Import-Package: com.google.gson;version="2.5.0",
+ io.swagger.annotations;version="1.5.17",
+ javax.annotation.security;version="1.2.0",
  javax.inject;version="1.0.0",
+ javax.servlet;version="3.1.0",
  javax.servlet.http;version="2.4.0",
  javax.ws.rs;version="2.0.0",
+ javax.ws.rs.client;version="2.0.0",
  javax.ws.rs.container;version="2.0.0",
  javax.ws.rs.core;version="2.0.0",
  javax.ws.rs.ext;version="1.1.1",
  org.apache.commons.beanutils;version="1.8.0",
+ org.apache.commons.codec.binary;version="1.9.0",
+ org.apache.commons.collections4.map;version="4.1.0",
+ org.apache.commons.io;version="2.5.0",
+ org.apache.commons.lang3;version="3.3.2",
  org.eclipse.equinox.http.servlet;version="1.2.0",
  org.osgi.framework;version="1.8.0",
  org.osgi.service.component;version="1.2.2",
@@ -36,8 +43,9 @@ Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
 Export-Package: info.elexis.server.core,
  info.elexis.server.core.console,
- info.elexis.server.core.constants,
  info.elexis.server.core.contrib,
  info.elexis.server.core.security,
+ info.elexis.server.core.security.oauth2,
  info.elexis.server.core.service
 Bundle-ClassPath: .
+

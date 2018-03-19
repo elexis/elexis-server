@@ -25,12 +25,12 @@
 		<module>es.core.connector.elexis.datasource</module>
                	<module>es.core.connector.elexis</module>
                	<module>es.core.connector.elexis.jpa</module>
-	    	<module>es.core.connector.elexis.jaxrs</module>
 		<module>at.medevit.logback.pushnotification</module>
 		<module>at.medevit.logback.mattermost</module>
 		<module>es.fhir.rest.core</module>
 		<module>es.fhir.rest.core.model.util</module>
 		<module>es.findings.fhir.jpa</module>
 		<module>es.findings.fhir.jpa.service</module>
+		<module>es.openid</module>
        </modules>
 </project>

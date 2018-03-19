@@ -24,6 +24,7 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.util.ModelUtil;
+import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class ConditionTest {
@@ -42,7 +43,7 @@ public class ConditionTest {
 
 	@Test
 	public void getCondition() {
-		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
 				.execute();
 				
 		// search by patient
@@ -81,7 +82,7 @@ public class ConditionTest {
 		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
 		condition.setText(narrative);
-		condition.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		condition.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		condition.addCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
 				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
 
@@ -103,7 +104,7 @@ public class ConditionTest {
 	 */
 	@Test
 	public void getConditionProperties() {
-		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
 				.execute();
 
 		// search by patient and category
@@ -116,7 +117,7 @@ public class ConditionTest {
 		Condition condition = (Condition) entries.get(0).getResource();
 		assertNotNull(condition);
 
-		assertEquals("Patient/" + TestDatabaseInitializer.getPatient().getId(), condition.getSubject().getReference());
+		assertEquals("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), condition.getSubject().getReference());
 		assertNotNull(condition.getCategory());
 		assertNotNull(condition.getCategory().get(0).getCoding());
 		assertFalse(condition.getCategory().get(0).getCoding().isEmpty());

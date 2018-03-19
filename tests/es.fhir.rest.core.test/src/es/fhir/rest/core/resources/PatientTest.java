@@ -74,7 +74,7 @@ public class PatientTest {
 	 */
 	@Test
 	public void getPatientProperties() {
-		Patient readPatient = client.read().resource(Patient.class).withId(TestDatabaseInitializer.getPatient().getId())
+		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
 				.execute();
 		assertNotNull(readPatient);
 		List<HumanName> names = readPatient.getName();

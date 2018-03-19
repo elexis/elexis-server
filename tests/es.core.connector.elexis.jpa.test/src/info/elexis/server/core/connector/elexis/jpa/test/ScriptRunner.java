@@ -148,7 +148,7 @@ public class ScriptRunner {
 	private void execCommand(Connection conn, StringBuffer command, LineNumberReader lineReader) throws SQLException {
 		Statement statement = conn.createStatement();
 
-		logger.debug(command.toString());
+		logger.trace(command.toString());
 
 		boolean hasResults = false;
 		try {

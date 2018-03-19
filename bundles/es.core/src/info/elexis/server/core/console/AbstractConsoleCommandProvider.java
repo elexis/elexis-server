@@ -126,9 +126,9 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 	public String ok() {
 		return "OK";
 	}
-	
+
 	public String ok(Object object) {
-		return "OK ["+object+"]";
+		return "OK [" + object + "]";
 	}
 
 	public String missingArgument(String string) {
@@ -154,9 +154,18 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 							parameters.add(splitMethodNames[1]);
 						}
 					} else if (level == 2) {
-						if (arguments[0].equalsIgnoreCase(splitMethodNames[0])
-								&& arguments[1].equalsIgnoreCase(splitMethodNames[1])) {
-							parameters.add(splitMethodNames[2]);
+						if (arguments[0].equalsIgnoreCase(splitMethodNames[0])) {
+							if (arguments[1].equalsIgnoreCase(splitMethodNames[1])) {
+								parameters.add(splitMethodNames[2]);
+							}
+						}
+					} else if (level == 3) {
+						if (arguments[0].equalsIgnoreCase(splitMethodNames[0])) {
+							if (arguments[1].equalsIgnoreCase(splitMethodNames[1])) {
+								if (arguments[2].equalsIgnoreCase(splitMethodNames[2])) {
+									parameters.add(splitMethodNames[3]);
+								}
+							}
 						}
 					}
 				}
@@ -180,8 +189,8 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 	}
 
 	/**
-	 * An {@link Iterator} that does not throw a {@link NoSuchElementException}
-	 * but simply returns <code>null</code>.
+	 * An {@link Iterator} that does not throw a {@link NoSuchElementException} but
+	 * simply returns <code>null</code>.
 	 *
 	 * @param <E>
 	 */

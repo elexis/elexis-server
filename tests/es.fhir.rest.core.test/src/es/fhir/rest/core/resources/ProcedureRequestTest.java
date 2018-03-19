@@ -58,7 +58,7 @@ public class ProcedureRequestTest {
 		Condition problem = new Condition();
 		problem.setCode(
 				new CodeableConcept().addCoding(new Coding("http://hl7.org/fhir/sid/icpc-2", "A04", "Müdigkeit")));
-		problem.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		problem.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		problem.addCategory().addCoding(new Coding(ConditionCategory.PROBLEMLISTITEM.getSystem(),
 				ConditionCategory.PROBLEMLISTITEM.toCode(), ConditionCategory.PROBLEMLISTITEM.getDisplay()));
 		MethodOutcome problemOutcome = client.create().resource(problem).execute();
@@ -70,7 +70,7 @@ public class ProcedureRequestTest {
 		encounter
 				.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atStartOfDay()))
 						.setEnd(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atTime(23, 59, 59))));
-		encounter.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		encounter.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 
 		encounter.addDiagnosis().setCondition(
 				new Reference(new IdType(problem.getResourceType().name(), problemOutcome.getId().getIdPart())));
@@ -89,7 +89,7 @@ public class ProcedureRequestTest {
 		String divEncodedText = "Subjective\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
 		subjective.setText(narrative);
-		subjective.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		subjective.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		subjective.addCategory().addCoding(new Coding(IdentifierSystem.ELEXIS_SOAP.getSystem(),
 				ObservationCategory.SOAP_SUBJECTIVE.getCode(), ObservationCategory.SOAP_SUBJECTIVE.getLocalized()));
 		subjective.setContext(
@@ -103,7 +103,7 @@ public class ProcedureRequestTest {
 		divEncodedText = "Procedure\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
 		procedureRequest.setText(narrative);
-		procedureRequest.setSubject(new Reference("Patient/" + TestDatabaseInitializer.getPatient().getId()));
+		procedureRequest.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		procedureRequest
 				.setContext(new Reference(
 						new IdType(encounter.getResourceType().name(), encounterOutcome.getId().getIdPart())));
@@ -126,7 +126,7 @@ public class ProcedureRequestTest {
 		// check if the consultation text has been updated
 		// search by patient and date
 		Bundle results = client.search().forResource(Encounter.class)
-				.where(Encounter.PATIENT.hasId(TestDatabaseInitializer.getPatient().getId()))
+				.where(Encounter.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.and(Encounter.DATE.exactly()
 						.day(AllTests.getDate(LocalDate.of(2016, Month.DECEMBER, 1).atStartOfDay())))
 				.returnBundle(Bundle.class).execute();

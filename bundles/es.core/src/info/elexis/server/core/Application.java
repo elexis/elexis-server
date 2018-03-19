@@ -26,7 +26,6 @@ public class Application implements IApplication {
 
 	private static final Date startTime = new Date();
 
-	
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		log.info("Starting " + Application.class.getName() + "...");
@@ -80,8 +79,8 @@ public class Application implements IApplication {
 	 * Restart the server
 	 * 
 	 * @param force
-	 * @return <code>null</code> if restart initiated, or a veto reason denying
-	 *         the request
+	 * @return <code>null</code> if restart initiated, or a veto reason denying the
+	 *         request
 	 */
 	public static String restart(boolean force) {
 		String veto = checkVeto();
@@ -97,8 +96,8 @@ public class Application implements IApplication {
 	 * Shutdown the server
 	 * 
 	 * @param force
-	 * @return <code>null</code> if shutdown initiated, or a veto reason denying
-	 *         the request
+	 * @return <code>null</code> if shutdown initiated, or a veto reason denying the
+	 *         request
 	 */
 	public static String shutdown(boolean force) {
 		String veto = checkVeto();
@@ -110,12 +109,8 @@ public class Application implements IApplication {
 		return null;
 	}
 
-	public static Date getStarttime() {
-		return startTime;
-	}
-
-	public static String getStatus() {
-		long millis = new Date().getTime() - Application.getStarttime().getTime();
+	public static String uptime() {
+		long millis = new Date().getTime() - startTime.getTime();
 
 		long days = TimeUnit.MILLISECONDS.toDays(millis);
 		millis -= TimeUnit.DAYS.toMillis(days);
@@ -125,6 +120,6 @@ public class Application implements IApplication {
 		millis -= TimeUnit.MINUTES.toMillis(minutes);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
 
-		return "Uptime: " + String.format("%d days, %d hours, %d min, %d sec", days, hours, minutes, seconds);
+		return String.format("%d days, %d hours, %d min, %d sec", days, hours, minutes, seconds);
 	}
 }
