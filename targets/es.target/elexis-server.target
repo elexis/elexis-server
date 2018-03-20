@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1521447126">
+<target name="Elexis-Server" sequenceNumber="1521530678">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.12.0.v20170209-1843"/>
@@ -96,10 +96,10 @@
       <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
       <unit id="javax.servlet.jsp.jstl" version="1.2.0.v201105211821"/>
       <unit id="javax.servlet.jsp.jstl.impl" version="1.2.0.v201210211230"/>
-      <unit id="org.eclipse.persistence.jpa.feature.group" version="2.6.4.v20160829-44060b6"/>
-      <unit id="org.eclipse.persistence.moxy.feature.group" version="2.6.4.v20160829-44060b6"/>
+      <unit id="org.eclipse.persistence.jpa.feature.group" version="2.6.5.v20170607-b3d05bd"/>
+      <unit id="org.eclipse.persistence.moxy.feature.group" version="2.6.5.v20170607-b3d05bd"/>
       <unit id="org.eclipse.persistence.jpars" version="2.6.0.v20150309-bf26070"/>
-      <unit id="org.eclipse.persistence.dbws.feature.group" version="2.6.4.v20160829-44060b6"/>
+      <unit id="org.eclipse.persistence.dbws.feature.group" version="2.6.5.v20170607-b3d05bd"/>
       <unit id="javax.validation" version="1.1.0.v201304101302"/>
       <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.201307051903"/>
       <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
