@@ -59,14 +59,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		ok();
 	}
 
-	public String __system_security() {
-		return getHelp(2);
-	}
-
-	public String __system_security_user() {
-		return getHelp(3);
-	}
-
 	/**
 	 * Reconfigures the system logger by reloading all log configuration files
 	 * 
