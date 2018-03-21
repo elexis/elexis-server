@@ -1,6 +1,8 @@
 #!/bin/bash
 trap 'shut_down' TERM INT
 
+# register a termination handler, that cleans up
+# on exiting the container
 shut_down(){
 	# we have to fetch the child java task and send
 	# SIGTERM to it for correct app shutdown, the
@@ -24,6 +26,9 @@ shut_down(){
 	fi
 }
 
+mkdir -p /elexis/elexis-server/logs
+
+# If the container was started with -e DEMO_MODE='true' we start a demo-instance
 if [ ! -z $DEMO_MODE ]; then
 	echo "Activating demo database"
 
@@ -54,6 +59,7 @@ EOF
 	
 fi
 
+# Start-up the elexis-server
 /opt/elexis-server/elexis-server -console 7234 &
 PID=$!
 
