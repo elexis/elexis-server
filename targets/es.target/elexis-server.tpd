@@ -40,6 +40,15 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.hamcrest.library
 	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
 	
+	// override bundles from updates/4.7
+	org.eclipse.jetty.http
+	org.eclipse.jetty.continuation 
+	org.eclipse.jetty.security 
+	org.eclipse.jetty.io
+	org.eclipse.jetty.server
+	org.eclipse.jetty.servlet
+	org.eclipse.jetty.util
+	// additional bundles
 	org.eclipse.jetty.servlets
 	org.eclipse.jetty.webapp
 	org.eclipse.jetty.xml
@@ -59,6 +68,8 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.eclipse.jetty.plus
 	org.eclipse.jetty.annotations
 	org.eclipse.jetty.jndi
+	org.eclipse.jetty.apache-jsp
+	
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
 	com.eclipsesource.jaxrs.provider.security.feature.feature.group
@@ -70,6 +81,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	
 	ch.rgw.utility
 	ch.elexis.core
+	ch.elexis.core.l10n
 	ch.elexis.core.importer.div
 	ch.elexis.core.hl7.v2x
 	ch.elexis.core.findings
@@ -158,11 +170,10 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.attoparser
 	org.unbescape
 	org.springframework.spring-web
-	org.eclipse.jetty.apache-jsp [9.3.9.v20160517,9.3.9.v20160517]
-	org.mortbay.jasper.apache-el [8.0.33,8.0.33]
-	org.mortbay.jasper.apache-jsp [8.0.33,8.0.33]
-	org.apache.taglibs.taglibs-standard-spec [1.2.5,1.2.5]
-	org.apache.taglibs.standard-impl [1.2.5,1.2.5]
+	org.mortbay.jasper.apache-el
+	org.mortbay.jasper.apache-jsp
+	org.apache.taglibs.taglibs-standard-spec
+	org.apache.taglibs.standard-impl
 	org.apache.aries.spifly.static.bundle
 	org.apache.aries.spifly.dynamic.bundle
 	org.apache.aries.spifly.org.apache.aries.spifly.core-internal

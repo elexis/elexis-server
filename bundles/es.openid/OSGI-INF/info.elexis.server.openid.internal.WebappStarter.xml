@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="info.elexis.server.openid.internal.WebappStarter">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="info.elexis.server.openid.internal.WebappStarter">
    <reference bind="bindDataSource" cardinality="1..1" interface="javax.sql.DataSource" name="DataSource"/>
    <implementation class="info.elexis.server.openid.internal.WebappStarter"/>
 </scr:component>
