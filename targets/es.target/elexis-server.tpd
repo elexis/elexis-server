@@ -72,7 +72,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	
 	
 	com.eclipsesource.jaxrs.connector.feature.feature.group
-	com.eclipsesource.jaxrs.provider.security.feature.feature.group
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
 	com.eclipsesource.jaxrs.provider.gson.feature.feature.group
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group

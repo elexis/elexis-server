@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1522736434">
+<target name="Elexis-Server" sequenceNumber="1522742492">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.3.v20180301-1149"/>
@@ -69,7 +69,6 @@
       <unit id="org.eclipse.jetty.jndi" version="9.4.9.v20180320"/>
       <unit id="org.eclipse.jetty.apache-jsp" version="9.4.9.v20180320"/>
       <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>

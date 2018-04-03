@@ -50,7 +50,7 @@
 
    <configurations>
       <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="0" />
-      <plugin id="com.eclipsesource.jaxrs.provider.security" autoStart="true" startLevel="0" />
+      <plugin id="com.eclipsesource.jaxrs.provider.swagger" autoStart="true" startLevel="0" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="0" />
       <plugin id="info.elexis.server.core.connector.elexis.datasource" autoStart="true" startLevel="2" />
       <plugin id="info.elexis.server.core.connector.elexis.jpa" autoStart="true" startLevel="3" />

@@ -108,7 +108,6 @@ location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.9.v201
 
 location "http://medevit.github.io/osgi-jax-rs-connector/5.3.100/" {
 	com.eclipsesource.jaxrs.connector.feature.feature.group
-	com.eclipsesource.jaxrs.provider.security.feature.feature.group
 	com.eclipsesource.jaxrs.provider.sse.feature.feature.group
 	com.eclipsesource.jaxrs.provider.gson.feature.feature.group
 	com.eclipsesource.jaxrs.provider.moxy.feature.feature.group
