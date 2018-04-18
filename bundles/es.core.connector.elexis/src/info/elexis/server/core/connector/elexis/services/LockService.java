@@ -139,7 +139,7 @@ public class LockService implements ILockService {
 
 				return LockResponse.OK(lockInfo);
 			} else {
-				log.warn("Could not acquire locksLock in #acquireLock (request not handled), denying lock",
+				log.warn("Could not acquire locksLock in #acquireLock (request not handled), denying lock [{}]", lockInfo,
 						new Throwable("Diagnosis"));
 				return LockResponse.DENIED(lockInfo);
 			}
