@@ -36,9 +36,9 @@ if [ ! -z $DEMO_MODE ]; then
 		# fetch the demo database
 		echo "Downloading demo database to /elexis/demoDB"
 		cd /elexis/
-		wget http://download.elexis.info/elexis/demoDB/demoDB_elexis_3.4.2.zip
-		unzip demoDB_elexis_3.4.2.zip
-		rm demoDB_elexis_3.4.2.zip
+		wget http://download.elexis.info/elexis/demoDB/demoDB_elexis_3.6.0.zip
+		unzip demoDB_elexis_3.6.0.zip
+		rm demoDB_elexis_3.6.0.zip
 	fi
 	
 	cd /elexis/elexis-server/
