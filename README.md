@@ -16,11 +16,11 @@ Documented in [es.core.product.runtime](products/es.core.product.runtime/Readme.
 Use the following command to start an elexis-server docker image, omit (for latest) or replace `:tag` with the [tag](https://hub.docker.com/r/medevit/elexis-server/tags/) to use. 
 
 ```bash
-docker run -e DEMO_MODE='true' -p 8380:8380 -p 8480:8480 -p 7234:7234 medevit/elexis-server:tag
+docker run -e DEMO_MODE='true' -e TZ=Europe/Zurich -p 8380:8380 -p 8480:8480 -p 7234:7234 medevit/elexis-server:tag
 ```
 
 After initially creating a container out of this image (which is what the `run` command does), note
 the ID of the created instance, in order to restart it again afterwards. Repeatedly executing this command, always leaves
 you with a newly generated container.
 
-After startup point your browser to http://localhost:8380/fhir/Patient?name=TestPatient and you should see the details of two test patients.
+After startup point your browser to http://localhost:8380/services/elexis/connector/v1/status to get information on the database ES is connected to.
