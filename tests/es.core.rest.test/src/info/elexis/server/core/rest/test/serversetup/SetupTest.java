@@ -123,11 +123,13 @@ public class SetupTest {
 
 		User practitioner = new UserService.Builder(USER_PASS_PRACTITIONER, drGonzo).build();
 		UserService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
+		practitioner.setAllowExternal(true);
 		practitioner.getRoles().add(fhirRole);
 		UserService.save(practitioner);
 
 		User esadmin = new UserService.Builder(USER_PASS_ESADMIN, drGonzo).build();
 		UserService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
+		esadmin.setAllowExternal(true);
 		esadmin.getRoles().add(esadminRole);
 		UserService.save(esadmin);
 	}
@@ -179,10 +181,7 @@ public class SetupTest {
 		OAuthClientRequest resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
 				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_PRACTITIONER)
 				.setPassword(USER_PASS_PRACTITIONER).setScope("fhir").buildQueryMessage();
-		// while(true) {
-		// Thread.sleep(500);
-		// }
-
+		
 		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
 				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
 

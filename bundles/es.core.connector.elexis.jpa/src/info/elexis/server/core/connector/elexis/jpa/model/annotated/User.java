@@ -40,12 +40,16 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 	@Column(name = "is_administrator")
 	protected boolean administrator;
 
+	@Convert("booleanStringConverter")
+	@Column(name = "allow_external")
+	protected boolean allowExternal;
+	
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
 	protected String keystore;
 	
-	@Column(length = 64)
-	protected String apiKey;
+	@Column(length = 16)
+	protected String totp;
 
 	@ManyToMany
 	@JoinTable(name = "USER_ROLE_JOINT", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
@@ -90,6 +94,14 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 	public void setAdministrator(boolean administrator) {
 		this.administrator = administrator;
 	}
+	
+	public boolean isAllowExternal() {
+		return allowExternal;
+	}
+	
+	public void setAllowExternal(boolean allowExternal) {
+		this.allowExternal = allowExternal;
+	}
 
 	public String getKeystore() {
 		return keystore;
@@ -99,12 +111,12 @@ public class User extends AbstractDBObjectIdDeletedExtInfo {
 		this.keystore = keystore;
 	}
 	
-	public String getApiKey() {
-		return apiKey;
+	public String getTotp() {
+		return totp;
 	}
 	
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
+	public void setTotp(String totp) {
+		this.totp = totp;
 	}
 
 	public Collection<Role> getRoles() {

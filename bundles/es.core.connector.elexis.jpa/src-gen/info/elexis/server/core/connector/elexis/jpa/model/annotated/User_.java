@@ -11,13 +11,14 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(User.class)
 public class User_ { 
 
+    public static volatile SingularAttribute<User, String> totp;
     public static volatile SingularAttribute<User, Boolean> administrator;
     public static volatile SingularAttribute<User, String> salt;
-    public static volatile SingularAttribute<User, String> apiKey;
     public static volatile SingularAttribute<User, String> hashedPassword;
     public static volatile CollectionAttribute<User, Role> roles;
     public static volatile SingularAttribute<User, Kontakt> kontakt;
     public static volatile SingularAttribute<User, Boolean> active;
+    public static volatile SingularAttribute<User, Boolean> allowExternal;
     public static volatile SingularAttribute<User, String> keystore;
 
 }
