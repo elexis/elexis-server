@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1522431595">
+<target name="Elexis-Server" sequenceNumber="1524815016">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.6.0.20180326-1354"/>
-      <unit id="ch.elexis.core" version="3.6.0.20180330-0815"/>
-      <unit id="ch.elexis.core.l10n" version="3.6.0.20180326-1606"/>
+      <unit id="ch.rgw.utility" version="3.6.0.20180425-0924"/>
+      <unit id="ch.elexis.core" version="3.6.0.20180425-1200"/>
+      <unit id="ch.elexis.core.l10n" version="3.6.0.20180425-1200"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20180326-1354"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180326-1354"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20180326-1354"/>
@@ -30,7 +30,7 @@
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.3.v20180301-1149"/>
+      <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
       <unit id="org.eclipse.core.runtime.feature.feature.group" version="1.2.2.v20180210-1608"/>
       <unit id="org.eclipse.emf.common.feature.group" version="2.13.0.v20170609-0707"/>
       <unit id="org.eclipse.emf.ecore.feature.group" version="2.13.0.v20170609-0707"/>
@@ -51,7 +51,7 @@
       <unit id="org.junit" version="4.12.0.v201504281640"/>
       <unit id="javax.annotation" version="1.2.0.v201602091430"/>
       <unit id="javax.inject" version="1.0.0.v20091030"/>
-      <unit id="org.eclipse.jdt.core" version="3.13.101.v20180215-0725"/>
+      <unit id="org.eclipse.jdt.core" version="3.13.102.v20180330-0919"/>
       <unit id="org.eclipse.core.resources" version="3.12.0.v20170417-1558"/>
       <unit id="org.eclipse.core.filesystem" version="1.7.0.v20170406-1337"/>
       <unit id="org.eclipse.text" version="3.6.100.v20170203-0814"/>
@@ -102,7 +102,6 @@
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>
