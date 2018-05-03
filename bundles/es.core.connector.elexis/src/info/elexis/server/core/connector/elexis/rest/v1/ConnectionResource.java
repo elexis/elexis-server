@@ -17,13 +17,15 @@ import org.osgi.service.component.annotations.Component;
 import ch.elexis.core.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
+import info.elexis.server.core.rest.ResponseStatusUtil;
+import info.elexis.server.core.security.RestPermission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(value = "/elexis/connector", tags = { "elexis-connector" })
+@Api(tags = { "elexis-connector/connection" })
 @Path("/elexis/connector/v1")
-@Component(service = RestResource.class, immediate = true)
-public class RestResource {
+@Component(service = ConnectionResource.class, immediate = true)
+public class ConnectionResource {
 
 	@GET
 	@Path("status")
@@ -32,15 +34,15 @@ public class RestResource {
 	public String getDatabaseStatusInformation() {
 		return ElexisDBConnection.getDatabaseInformationString();
 	}
-	
+
 	@GET
 	@Path("connection")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "retrieve the elexis-database-connection")
 	public DBConnection getDBConnection() {
 		Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
-		if(connection.isPresent()) {
-			SecurityUtils.getSubject().checkPermission("elexis-server.admin.read");	
+		if (connection.isPresent()) {
+			SecurityUtils.getSubject().checkPermission(RestPermission.ADMIN_READ);
 		}
 		return connection.isPresent() ? connection.get() : null;
 	}
@@ -51,10 +53,11 @@ public class RestResource {
 	@ApiOperation(value = "set the elexis-database-connection")
 	public Response setDBConnection(DBConnection dbConnection) {
 		if (ElexisDBConnectionUtil.getConnection().isPresent()) {
-			SecurityUtils.getSubject().checkPermission("elexis-server.admin.write");	
+			SecurityUtils.getSubject().checkPermission(RestPermission.ADMIN_WRITE);
 		}
 		IStatus status = ElexisDBConnectionUtil.setConnection(dbConnection);
 		return ResponseStatusUtil.convert(status);
 	}
+
 
 }
