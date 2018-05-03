@@ -1,7 +1,9 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
@@ -9,6 +11,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 
 public class ConfigServiceTest {
 
@@ -54,6 +58,12 @@ public class ConfigServiceTest {
 	}
 
 	@Test
+	public void testFindAllEntries() {
+		List<Config> findAllEntries = ConfigService.findAllEntries();
+		assertEquals(34, findAllEntries.size());
+	}
+
+	@Test
 	@Ignore
 	public void testMultipleParallelSetAndGet() {
 		int LIMIT = 1000000;
@@ -93,7 +103,7 @@ public class ConfigServiceTest {
 					s.acquireUninterruptibly();
 					System.out.println("[T2] Reading " + currentValue);
 					String value = ConfigService.INSTANCE.get(TEST_VALUE, "-999999");
-//					assertEquals(currentValue, Integer.parseInt(value));
+					// assertEquals(currentValue, Integer.parseInt(value));
 					currentValue++;
 					s.release();
 				}
@@ -101,11 +111,11 @@ public class ConfigServiceTest {
 		});
 
 		t1.start();
-//		t2.start();
+		// t2.start();
 
 		try {
 			t1.join();
-//			t2.join();
+			// t2.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

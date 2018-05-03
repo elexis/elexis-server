@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.rest.v1;
+package info.elexis.server.core.rest;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -6,7 +6,6 @@ import javax.ws.rs.core.Response;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-@Deprecated
 public class ResponseStatusUtil {
 
 	/**

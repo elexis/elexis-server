@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,5 +41,11 @@ public class UserconfigServiceTest {
 
 		assertEquals(userConfig.getValue(), kontakt.getUserconfig().get(0).getValue());
 		assertEquals(userConfig.getValue(), UserconfigService.get(kontakt, "ExistingPref", (String) null));
+	}
+	
+	@Test
+	public void testFindAllEntries() {
+		List<Userconfig> findAllEntries = UserconfigService.findAllEntries();
+		assertEquals(1, findAllEntries.size());
 	}
 }
