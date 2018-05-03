@@ -20,7 +20,7 @@ public class Host {
 	static {
 		try {
 			InetAddress myHost = InetAddress.getLocalHost();
-			HOSTNAME = myHost.getHostName();
+			HOSTNAME = myHost.getCanonicalHostName();
 
 			String httpPort = System.getProperty("jetty.http.port");
 			if (StringUtils.isNumeric(httpPort)) {

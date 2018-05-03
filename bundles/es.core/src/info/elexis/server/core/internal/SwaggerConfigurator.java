@@ -47,8 +47,8 @@ public class SwaggerConfigurator {
 
 			properties.put("swagger.securityDefinition.type.esoauth", "oauth2");
 			properties.put("swagger.securityDefinition.esoauth.flow", "implicit");
-			properties.put("swagger.securityDefinition.esoauth.authorizationUrl", Host.getOpenIDBaseUrl() + "authorize");
-			properties.put("swagger.securityDefinition.esoauth.tokenUrl", Host.getOpenIDBaseUrl() + "token");
+			properties.put("swagger.securityDefinition.esoauth.authorizationUrl", Host.getOpenIDBaseUrlSecure() + "authorize");
+			properties.put("swagger.securityDefinition.esoauth.tokenUrl", Host.getOpenIDBaseUrlSecure() + "token");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0", "esadmin");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0.description", "Elexis-Server system admin");
 
