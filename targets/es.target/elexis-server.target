@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1524815719">
+<target name="Elexis-Server" sequenceNumber="1526457972">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
@@ -74,9 +74,9 @@
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201803161213"/>
-      <unit id="ch.rgw.utility" version="3.6.0.20180425-0924"/>
-      <unit id="ch.elexis.core" version="3.6.0.20180425-1200"/>
-      <unit id="ch.elexis.core.l10n" version="3.6.0.20180425-1200"/>
+      <unit id="ch.rgw.utility" version="3.6.0.20180515-1235"/>
+      <unit id="ch.elexis.core" version="3.6.0.20180515-1235"/>
+      <unit id="ch.elexis.core.l10n" version="3.6.0.20180509-1303"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20180326-1354"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180326-1354"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20180326-1354"/>
