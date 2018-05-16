@@ -1,4 +1,4 @@
-package es.fhir.rest.core.test;
+package info.elexis.server.fhir.rest.core.test;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,32 +17,33 @@ import org.osgi.framework.ServiceReference;
 
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
-import es.fhir.rest.core.resources.AllergyIntoleranceTest;
-import es.fhir.rest.core.resources.ClaimTest;
-import es.fhir.rest.core.resources.CodesySystemTest;
-import es.fhir.rest.core.resources.ConditionTest;
-import es.fhir.rest.core.resources.CoverageTest;
-import es.fhir.rest.core.resources.EncounterTest;
-import es.fhir.rest.core.resources.FamilyMemberHistoryTest;
-import es.fhir.rest.core.resources.MedicationRequestTest;
-import es.fhir.rest.core.resources.ObservationTest;
-import es.fhir.rest.core.resources.OrganizationTest;
-import es.fhir.rest.core.resources.PatientTest;
-import es.fhir.rest.core.resources.PractitionerRoleTest;
-import es.fhir.rest.core.resources.ProcedureRequestTest;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.fhir.rest.core.resources.AllergyIntoleranceTest;
+import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
+import info.elexis.server.fhir.rest.core.resources.ClaimTest;
+import info.elexis.server.fhir.rest.core.resources.CodesySystemTest;
+import info.elexis.server.fhir.rest.core.resources.ConditionTest;
+import info.elexis.server.fhir.rest.core.resources.CoverageTest;
+import info.elexis.server.fhir.rest.core.resources.EncounterTest;
+import info.elexis.server.fhir.rest.core.resources.FamilyMemberHistoryTest;
+import info.elexis.server.fhir.rest.core.resources.MedicationRequestTest;
+import info.elexis.server.fhir.rest.core.resources.ObservationTest;
+import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
+import info.elexis.server.fhir.rest.core.resources.PatientTest;
+import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
+import info.elexis.server.fhir.rest.core.resources.ProcedureRequestTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-	MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
-	PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
-	ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class,
-	FamilyMemberHistoryTest.class, AllergyIntoleranceTest.class
-})
+@SuiteClasses({ MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
+		PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
+		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
+		AllergyIntoleranceTest.class, AppointmentTest.class })
 public class AllTests {
-	
+
 	private static IFindingsService iFindingsService;
 	
+	public static final String GENERIC_CLIENT_URL = "http://localhost:8380/fhir";
+
 	private static TestDatabaseInitializer testDatabaseInitializer = new TestDatabaseInitializer();
 
 	public static Date getDate(LocalDateTime localDateTime) {
@@ -76,30 +77,29 @@ public class AllTests {
 		}
 		return false;
 	}
-	
-	public static IFindingsService getFindingsService(){
+
+	public static IFindingsService getFindingsService() {
 		if (iFindingsService != null) {
 			return iFindingsService;
 		}
 		BundleContext bundleContext = FrameworkUtil.getBundle(AllTests.class).getBundleContext();
-		ServiceReference<IFindingsService> serviceReference =
-			bundleContext.getServiceReference(IFindingsService.class);
+		ServiceReference<IFindingsService> serviceReference = bundleContext.getServiceReference(IFindingsService.class);
 		if (serviceReference != null) {
 			iFindingsService = bundleContext.getService(serviceReference);
 		}
 		return iFindingsService;
 	}
-	
-	public static void deleteAllFindings(){
+
+	public static void deleteAllFindings() {
 		IFindingsService iFindingsService = getFindingsService();
 		if (iFindingsService != null) {
-			for (IFinding iFinding : iFindingsService.getPatientsFindings(
-				testDatabaseInitializer.getPatient().getId(), IFinding.class)) {
+			for (IFinding iFinding : iFindingsService.getPatientsFindings(testDatabaseInitializer.getPatient().getId(),
+					IFinding.class)) {
 				iFindingsService.deleteFinding(iFinding);
 			}
 		}
 	}
-	
+
 	public static TestDatabaseInitializer getTestDatabaseInitializer() {
 		return testDatabaseInitializer;
 	}

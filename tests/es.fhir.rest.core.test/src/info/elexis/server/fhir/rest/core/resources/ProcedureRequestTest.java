@@ -1,4 +1,4 @@
-package es.fhir.rest.core.resources;
+package info.elexis.server.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,10 +35,10 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.findings.util.ModelUtil;
-import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.services.BehandlungService;
+import info.elexis.server.fhir.rest.core.test.AllTests;
 
 public class ProcedureRequestTest {
 

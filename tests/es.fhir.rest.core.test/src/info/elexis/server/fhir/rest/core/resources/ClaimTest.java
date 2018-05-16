@@ -1,4 +1,4 @@
-package es.fhir.rest.core.resources;
+package info.elexis.server.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -28,10 +28,10 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
-import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
+import info.elexis.server.fhir.rest.core.test.AllTests;
 
 public class ClaimTest {
 

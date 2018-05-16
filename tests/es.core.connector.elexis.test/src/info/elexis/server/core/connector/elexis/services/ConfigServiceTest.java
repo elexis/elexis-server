@@ -60,7 +60,7 @@ public class ConfigServiceTest {
 	@Test
 	public void testFindAllEntries() {
 		List<Config> findAllEntries = ConfigService.findAllEntries();
-		assertEquals(34, findAllEntries.size());
+		assertEquals(36, findAllEntries.size());
 	}
 
 	@Test

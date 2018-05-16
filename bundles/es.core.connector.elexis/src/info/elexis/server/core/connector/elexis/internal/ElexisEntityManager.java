@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.Preferences;
-import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
+import info.elexis.server.core.common.test.TestSystemPropertyConstants;
 import info.elexis.server.core.connector.elexis.jpa.ProvidedEntityManager;
 import info.elexis.server.core.connector.elexis.services.ConfigService;
 
@@ -51,7 +51,7 @@ public class ElexisEntityManager {
 		factory = ElexisEntityManager.factoryBuilder.createEntityManagerFactory(props);
 		ProvidedEntityManager.setEntityManagerFactory(factory);
 		
-		if (!ElexisDBConnection.isTestMode()) {
+		if (!TestSystemPropertyConstants.systemIsInTestMode()) {
 			executeStartupTasksRequiringEntityManager();
 		}
 	}

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.common.DBConnection.DBType;
 import ch.elexis.core.status.StatusUtil;
+import info.elexis.server.core.common.test.TestSystemPropertyConstants;
 import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.connector.elexis.datasource.internal.Activator;
 
@@ -30,7 +31,7 @@ public class ElexisDBConnectionUtil {
 
 	static {
 		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
-		if (isTestMode()) {
+		if (TestSystemPropertyConstants.systemIsInTestMode()) {
 			connection = ElexisDBConnectionUtil.getTestDatabaseConnection();
 			setConnection(connection);
 		} else if (connectionConfigPath.toFile().exists()) {
@@ -83,16 +84,6 @@ public class ElexisDBConnectionUtil {
 				connection.marshall(fos);
 			}
 		}
-	}
-
-	public static boolean isTestMode() {
-		String testMode = System.getProperty("es.test");
-		if (testMode != null && !testMode.isEmpty()) {
-			if (testMode.equalsIgnoreCase("true")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

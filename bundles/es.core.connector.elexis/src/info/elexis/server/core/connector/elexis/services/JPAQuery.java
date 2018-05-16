@@ -36,7 +36,7 @@ public class JPAQuery<T extends AbstractDBObject> {
 	protected static Logger log = LoggerFactory.getLogger(JPAQuery.class);
 
 	public static enum QUERY {
-		LIKE, EQUALS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS, GREATER_OR_EQUAL
+		LIKE, EQUALS, LESS, LESS_OR_EQUAL, GREATER, NOT_LIKE, NOT_EQUALS, GREATER_OR_EQUAL
 	};
 
 	public static enum ORDER {
@@ -118,6 +118,8 @@ public class JPAQuery<T extends AbstractDBObject> {
 			return exp.like(value.toString());
 		case EQUALS:
 			return exp.equal(value);
+		case LESS:
+			return exp.lessThan(value);
 		case LESS_OR_EQUAL:
 			return exp.lessThanEqual(value);
 		case GREATER:

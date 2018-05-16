@@ -1,4 +1,4 @@
-package es.fhir.rest.core.resources;
+package info.elexis.server.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,9 +42,9 @@ import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
-import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.fhir.rest.core.test.AllTests;
 
 public class ObservationTest {
 

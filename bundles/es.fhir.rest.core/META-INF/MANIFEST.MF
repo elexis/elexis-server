@@ -26,5 +26,6 @@ Require-Bundle: hapi-fhir-osgi-core;bundle-version="2.4.0",
  woodstox-core-asl;bundle-version="4.4.1",
  org.thymeleaf;bundle-version="2.1.4",
  net.sf.saxon.Saxon-HE;bundle-version="9.6.0",
- ch.elexis.core.findings;bundle-version="1.0.0"
+ ch.elexis.core.findings;bundle-version="1.0.0",
+ info.elexis.server.core.common;bundle-version="1.0.0"
 Export-Package: es.fhir.rest.core

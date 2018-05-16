@@ -1,4 +1,4 @@
-package es.fhir.rest.core.resources;
+package info.elexis.server.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

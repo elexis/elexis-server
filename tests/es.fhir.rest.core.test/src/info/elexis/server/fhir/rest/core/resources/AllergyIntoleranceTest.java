@@ -1,4 +1,4 @@
-package es.fhir.rest.core.resources;
+package info.elexis.server.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.FamilyMemberHistory;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,12 +19,12 @@ import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
-import ch.elexis.core.findings.IFamilyMemberHistory;
+import ch.elexis.core.findings.IAllergyIntolerance;
 import ch.elexis.core.findings.util.ModelUtil;
-import es.fhir.rest.core.test.AllTests;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.fhir.rest.core.test.AllTests;
 
-public class FamilyMemberHistoryTest {
+public class AllergyIntoleranceTest {
 	
 	private static IGenericClient client;
 	
@@ -37,13 +37,12 @@ public class FamilyMemberHistoryTest {
 		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 		
-		IFamilyMemberHistory familyMemberHistory =
-			AllTests.getFindingsService().create(IFamilyMemberHistory.class);
-		familyMemberHistory.setText("Family Member History test 1");
-		familyMemberHistory.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
+		IAllergyIntolerance allergyIntolerance =
+			AllTests.getFindingsService().create(IAllergyIntolerance.class);
+		allergyIntolerance.setText("Allergy Intolerance test 1");
+		allergyIntolerance.setPatientId(AllTests.getTestDatabaseInitializer().getPatient().getId());
 		
-		AllTests.getFindingsService().saveFinding(familyMemberHistory);
-
+		AllTests.getFindingsService().saveFinding(allergyIntolerance);
 	}
 	
 	@AfterClass
@@ -52,10 +51,9 @@ public class FamilyMemberHistoryTest {
 	}
 	
 	@Test
-	public void testFamilyMemberHistory(){
-		// search for encounter
-		Bundle results = client.search().forResource(FamilyMemberHistory.class)
-			.where(FamilyMemberHistory.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+	public void testAllergyIntolerance(){
+		Bundle results = client.search().forResource(AllergyIntolerance.class)
+			.where(AllergyIntolerance.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 			.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
@@ -63,24 +61,24 @@ public class FamilyMemberHistoryTest {
 	}
 	
 	@Test
-	public void createFamilyMemberHistory(){
-		FamilyMemberHistory familyMemberHistory = new FamilyMemberHistory();
+	public void createAllergyIntolerance(){
+		AllergyIntolerance allergyIntolerance = new AllergyIntolerance();
 		
 		Narrative narrative = new Narrative();
 		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
 		narrative.setDivAsString(divEncodedText);
-		familyMemberHistory.setText(narrative);
+		allergyIntolerance.setText(narrative);
 		
-		MethodOutcome outcome = client.create().resource(familyMemberHistory).execute();
+		MethodOutcome outcome = client.create().resource(allergyIntolerance).execute();
 		assertNotNull(outcome);
 		assertTrue(outcome.getCreated());
 		assertNotNull(outcome.getId());
 		
-		FamilyMemberHistory readFamilyMemberHistory =
-			client.read().resource(FamilyMemberHistory.class).withId(outcome.getId()).execute();
-		assertNotNull(readFamilyMemberHistory);
+		AllergyIntolerance readAllergyIntolerance =
+			client.read().resource(AllergyIntolerance.class).withId(outcome.getId()).execute();
+		assertNotNull(readAllergyIntolerance);
 		assertEquals(outcome.getId().getIdPart(),
-			readFamilyMemberHistory.getIdElement().getIdPart());
+			readAllergyIntolerance.getIdElement().getIdPart());
 	}
 	
 }
