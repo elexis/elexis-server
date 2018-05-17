@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Annotation;
+import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Dosage;
@@ -40,6 +41,8 @@ import info.elexis.server.core.connector.elexis.services.PrescriptionService;
 
 @Component
 public class MedicationRequestPrescriptionTransformer implements IFhirTransformer<MedicationRequest, Prescription> {
+
+	public static final String EXTENSION_PRESCRIPTION_ENTRYTYPE_URL = "www.elexis.info/extensions/prescription/entrytype";
 
 	private PrescriptionEntryTypeFactory entryTypeFactory = new PrescriptionEntryTypeFactory();
 
@@ -75,8 +78,6 @@ public class MedicationRequestPrescriptionTransformer implements IFhirTransforme
 		medication.setText(textBuilder.toString());
 		fhirObject.setMedication(medication);
 
-
-
 		MedicationRequestDispenseRequestComponent dispenseRequest = new MedicationRequestDispenseRequestComponent();
 		Period dispensePeriod = new Period();
 		LocalDateTime dateFrom = localObject.getDateFrom();
@@ -97,7 +98,6 @@ public class MedicationRequestPrescriptionTransformer implements IFhirTransforme
 		}
 		dispenseRequest.setValidityPeriod(dispensePeriod);
 		fhirObject.setDispenseRequest(dispenseRequest);
-
 
 		if (dateUntil != null) {
 			if (dateUntil.isBefore(LocalDateTime.now()) || dateUntil.isEqual(dateFrom)) {
@@ -136,7 +136,7 @@ public class MedicationRequestPrescriptionTransformer implements IFhirTransforme
 		fhirObject.setText(narrative);
 
 		Extension elexisEntryType = new Extension();
-		elexisEntryType.setUrl("www.elexis.info/extensions/prescription/entrytype");
+		elexisEntryType.setUrl(EXTENSION_PRESCRIPTION_ENTRYTYPE_URL);
 		elexisEntryType
 				.setValue(new Enumeration<>(entryTypeFactory, EntryType.byNumeric(getNumericEntryType(localObject))));
 		fhirObject.addExtension(elexisEntryType);
@@ -242,7 +242,22 @@ public class MedicationRequestPrescriptionTransformer implements IFhirTransforme
 
 			localObject.setBemerkung(getMedicationRequestRemark(fhirObject));
 
-			return Optional.of( (Prescription) PrescriptionService.save(localObject));
+			Optional<String> prescriptionType = getMedicationRequestPrescriptionType(fhirObject);
+			prescriptionType.ifPresent(p -> localObject.setPrescriptionType(p));
+
+			return Optional.of((Prescription) PrescriptionService.save(localObject));
+		}
+		return Optional.empty();
+	}
+
+	private Optional<String> getMedicationRequestPrescriptionType(MedicationRequest fhirObject) {
+		List<Extension> extensionsEntryType = fhirObject.getExtensionsByUrl(EXTENSION_PRESCRIPTION_ENTRYTYPE_URL);
+		for (Extension extension : extensionsEntryType) {
+			try {
+				EntryType entryType = EntryType.valueOf(((CodeType) extension.getValue()).getValue());
+				return Optional.of(Integer.toString(entryType.numericValue()));
+			} catch (IllegalArgumentException iae) {
+			}
 		}
 		return Optional.empty();
 	}
