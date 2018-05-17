@@ -33,6 +33,9 @@ public class Application implements IApplication {
 		TimeZone tzone = TimeZone.getTimeZone("CET");
 		TimeZone.setDefault(tzone);
 
+		log.info("Settings: TimeZone [{}], user.language [{}], user.region [{}]", tzone.getID(),
+				System.getProperty("user.language"), System.getProperty("user.region"));
+
 		context.applicationRunning();
 		while (!restart && !shutdown) {
 			Thread.sleep(2000);
