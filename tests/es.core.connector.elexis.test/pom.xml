@@ -58,6 +58,13 @@
 							<autoStart>true</autoStart>
 						</bundle>
 					</bundleStartLevel>
+					<dependencies>
+						<dependency>
+							<type>eclipse-feature</type>
+							<artifactId>info.elexis.server.core.platform.feature</artifactId>
+							<version>1.0.0</version>
+						</dependency>
+					</dependencies>
 				</configuration>
 			</plugin>
 		</plugins>
