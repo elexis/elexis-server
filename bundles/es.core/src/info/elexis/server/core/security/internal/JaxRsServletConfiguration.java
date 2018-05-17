@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import com.eclipsesource.jaxrs.publisher.ServletConfiguration;
 
+import info.elexis.server.core.SystemPropertyConstants;
+
 /**
  * Register the {@link ShiroFilter} with OSGI Jax RS in order to enforce our
  * security requirements
@@ -40,6 +42,7 @@ public class JaxRsServletConfiguration implements ServletConfiguration {
 			iniShiroFilter.setConfig(config);
 			// TODO fetch configured root path
 			extHttpService.registerFilter("/services", iniShiroFilter, getInitParams(extHttpService, rootPath), null);
+			iniShiroFilter.setEnabled(!SystemPropertyConstants.isDisableWebSecurity());
 			log.info("Registered IniShiroFilter filter for /services");
 		} catch (ServletException | NamespaceException | IOException e) {
 			log.error("Error registering shiro filter", e);

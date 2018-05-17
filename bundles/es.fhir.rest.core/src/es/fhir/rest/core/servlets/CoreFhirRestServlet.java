@@ -27,13 +27,13 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
-import info.elexis.server.core.common.test.TestSystemPropertyConstants;
+import info.elexis.server.core.SystemPropertyConstants;
 
 @Component(service = CoreFhirRestServlet.class)
 public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final String FHIR_BASE_URL = "/fhir";
-	
+
 	private static Logger logger = LoggerFactory.getLogger(CoreFhirRestServlet.class);
 
 	private static final long serialVersionUID = -4760702567124041329L;
@@ -86,20 +86,13 @@ public class CoreFhirRestServlet extends RestfulServer {
 		Thread.currentThread().setContextClassLoader(CoreFhirRestServlet.class.getClassLoader());
 		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 		try {
-			httpService.registerServlet(FHIR_BASE_URL+"/*", this, null, null);
+			httpService.registerServlet(FHIR_BASE_URL + "/*", this, null, null);
 			String config = IOUtils.toString(this.getClass().getResourceAsStream("shiro-fhir.ini"),
 					Charset.forName("UTF-8"));
 			IniShiroFilter iniShiroFilter = new IniShiroFilter();
 			iniShiroFilter.setConfig(config);
 			extHttpService.registerFilter(FHIR_BASE_URL, iniShiroFilter, null, null);
-			
-			boolean deactivateSecurity = FHIR_BASE_URL
-					.equals(System.getProperty(TestSystemPropertyConstants.TEST_MODE_DISABLE_REST_SECURITY));
-			if (deactivateSecurity && TestSystemPropertyConstants.systemIsInTestMode()) {
-				logger.error("Security Filter for [{}] deactivated.", FHIR_BASE_URL);
-				iniShiroFilter.setEnabled(false);
-			}
-	
+			iniShiroFilter.setEnabled(!SystemPropertyConstants.isDisableWebSecurity());
 		} catch (ServletException | NamespaceException | IOException e) {
 			logger.error("Could not register FHIR servlet.", e);
 		}
@@ -107,21 +100,20 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	@Deactivate
 	public void deactivate() {
-		httpService.unregister(FHIR_BASE_URL+"/*");
+		httpService.unregister(FHIR_BASE_URL + "/*");
 	}
 
 	/**
-	 * The initialize method is automatically called when the servlet is
-	 * starting up, so it can be used to configure the servlet to define
-	 * resource providers, or set up configuration, interceptors, etc.
+	 * The initialize method is automatically called when the servlet is starting
+	 * up, so it can be used to configure the servlet to define resource providers,
+	 * or set up configuration, interceptors, etc.
 	 */
 	@Override
 	protected void initialize() throws ServletException {
 		/*
-		 * This server interceptor causes the server to return nicely formatter
-		 * and coloured responses instead of plain JSON/XML if the request is
-		 * coming from a browser window. It is optional, but can be nice for
-		 * testing.
+		 * This server interceptor causes the server to return nicely formatter and
+		 * coloured responses instead of plain JSON/XML if the request is coming from a
+		 * browser window. It is optional, but can be nice for testing.
 		 */
 		registerInterceptor(new ResponseHighlighterInterceptor());
 
