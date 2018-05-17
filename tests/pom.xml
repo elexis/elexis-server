@@ -1,44 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-	<modelVersion>4.0.0</modelVersion>
-
-	<artifactId>info.elexis.server.tests</artifactId>
-	<name>Elexis-Server tests</name>
-	<packaging>pom</packaging>
-
-	<parent>
-		<groupId>info.elexis.server</groupId>
-		<artifactId>info.elexis.server.parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../releng/es.parent</relativePath>
-	</parent>
-
-	<modules>
-		<module>es.core.connector.elexis.jpa.test</module>
-		<module>es.core.connector.elexis.test</module>
-		<module>es.core.rest.test</module>
-	</modules>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.9.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>info.elexis.server</groupId>
-			<artifactId>info.elexis.server.core.platform.feature</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>info.elexis.server.tests</artifactId>
+  <name>Elexis-Server tests</name>
+  <packaging>pom</packaging>
+  <parent>
+    <groupId>info.elexis.server</groupId>
+    <artifactId>info.elexis.server.parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../releng/es.parent</relativePath>
+  </parent>
+  <modules>
+    <module>es.core.connector.elexis.jpa.test</module>
+    <module>es.core.connector.elexis.test</module>
+    <module>es.core.rest.test</module>
+    <module>es.fhir.rest.core.test</module>
+  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.elexis.server</groupId>
+      <artifactId>info.elexis.server.core.platform.feature</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.elexis.server</groupId>
+      <artifactId>info.elexis.server.core.jsp.feature</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.elexis.server</groupId>
+      <artifactId>info.elexis.server.core.connector.elexis.feature</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.elexis.server</groupId>
+      <artifactId>info.elexis.server.fhir.rest.core.feature</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.elexis.server</groupId>
+      <artifactId>info.elexis.server.openid.feature</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
