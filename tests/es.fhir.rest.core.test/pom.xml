@@ -75,6 +75,31 @@
 						</bundle>
 					</bundleStartLevel>
 					<dependencies>
+						<dependency>
+							<type>eclipse-feature</type>
+							<artifactId>info.elexis.server.core.platform.feature</artifactId>
+							<version>1.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-feature</type>
+							<artifactId>info.elexis.server.core.jsp.feature</artifactId>
+							<version>1.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-feature</type>
+							<artifactId>	info.elexis.server.fhir.rest.core.feature</artifactId>
+							<version>1.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-feature</type>
+							<artifactId>info.elexis.server.core.connector.elexis.feature</artifactId>
+							<version>1.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-feature</type>
+							<artifactId>	info.elexis.server.openid.feature</artifactId>
+							<version>1.0.0</version>
+						</dependency>
 					</dependencies>
 				</configuration>
 			</plugin>
