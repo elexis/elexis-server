@@ -73,7 +73,7 @@ location "http://download.eclipse.org/releases/oxygen" {
 }
 
 // Jetty p2 repo for (updated) Oxygen.3 included version
-location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.9.v20180320/" {
+location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.10.v20180503/" {
 	// override bundles from updates/4.7
 	org.eclipse.jetty.http
 	org.eclipse.jetty.continuation
