@@ -3,6 +3,7 @@ package info.elexis.server.core.rest.test.serversetup;
 import static info.elexis.server.core.rest.test.AllTests.BASE_URL;
 import static info.elexis.server.core.rest.test.AllTests.REST_URL;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -32,6 +33,7 @@ import com.google.gson.Gson;
 
 import ca.uhn.fhir.context.FhirContext;
 import ch.elexis.core.common.DBConnection;
+import ch.elexis.core.common.DBConnection.DBType;
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
@@ -92,7 +94,27 @@ public class SetupTest {
 	}
 
 	@Test
-	public void _02_setTestDatabaseConnection() throws IOException {
+	public void _02_0_setInvalidTestDatabaseConnection() throws IOException {
+		DBConnection dbc = new DBConnection();
+		dbc.hostName="localhost";
+		dbc.connectionString="jdbc:mysql://localhost:3306/invalidDatabase";
+		dbc.port="3306";
+		dbc.password="elexis";
+		dbc.username="elexis";
+		dbc.rdbmsType=DBType.MySQL;
+		
+		String dbcJson = new Gson().toJson(dbc);
+		RequestBody body = RequestBody.create(JSON, dbcJson);
+		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
+		response = client.newCall(request).execute();
+		assertFalse(response.isSuccessful());
+		assertEquals(422, response.code());
+		String responseBody = response.body().string();
+		assertTrue(responseBody, responseBody.startsWith("Access denied"));
+	}
+	
+	@Test
+	public void _02_1_setValidTestDatabaseConnection() throws IOException {
 		DBConnection dbc = AllTests.getTestDatabaseConnection();
 		String dbcJson = new Gson().toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
@@ -138,7 +160,7 @@ public class SetupTest {
 	public void _03_getDatabaseConnectionInformation() throws IOException, InterruptedException {
 		response = client.newCall(getDBStatusInformation).execute();
 		assertTrue(response.isSuccessful());
-		assertTrue(response.body().string().startsWith("Elexis 3.2.0 DBv 3.2.7"));
+		assertTrue(response.body().string().startsWith("Elexis 3."));
 	}
 
 	@Test

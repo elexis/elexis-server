@@ -17,10 +17,11 @@ import org.osgi.service.component.annotations.Component;
 import ch.elexis.core.common.DBConnection;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
-import info.elexis.server.core.rest.ResponseStatusUtil;
 import info.elexis.server.core.security.RestPermission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(tags = { "elexis-connector/connection" })
 @Path("/elexis/connector/v1")
@@ -51,13 +52,18 @@ public class ConnectionResource {
 	@Path("connection")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "set the elexis-database-connection")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "success"),
+			@ApiResponse(code = 422, message = "error connecting to requested database, see error string"),
+			@ApiResponse(code = 401, message = "a connection was already set, and the request does lack the right to change it") })
 	public Response setDBConnection(DBConnection dbConnection) {
 		if (ElexisDBConnectionUtil.getConnection().isPresent()) {
 			SecurityUtils.getSubject().checkPermission(RestPermission.ADMIN_WRITE);
 		}
 		IStatus status = ElexisDBConnectionUtil.setConnection(dbConnection);
-		return ResponseStatusUtil.convert(status);
+		if (status.isOK()) {
+			return Response.ok().build();
+		}
+		return Response.status(422).type(MediaType.TEXT_PLAIN).entity(status.getMessage()).build();
 	}
-
 
 }
