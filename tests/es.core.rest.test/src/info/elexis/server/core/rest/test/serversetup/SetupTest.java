@@ -109,8 +109,6 @@ public class SetupTest {
 		response = client.newCall(request).execute();
 		assertFalse(response.isSuccessful());
 		assertEquals(422, response.code());
-		String responseBody = response.body().string();
-		assertTrue(responseBody, responseBody.startsWith("Access denied"));
 	}
 	
 	@Test
