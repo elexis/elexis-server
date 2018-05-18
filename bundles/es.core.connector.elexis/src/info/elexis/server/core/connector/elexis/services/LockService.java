@@ -43,7 +43,7 @@ public class LockService implements ILockService {
 		Boolean acceptMissingContributors = Boolean
 				.valueOf(System.getProperty(Properties.SYSTEM_PROPERTY_ACCEPT_MISSING_LOCKSERVICE_CONTRIBUTORS));
 		if (acceptMissingContributors) {
-			log.warn("!!! WILL ACCEPT MISSING LOCK SERVICE CONTRIBUTORS !!!");
+			log.error("!!! WILL ACCEPT MISSING LOCK SERVICE CONTRIBUTORS !!!");
 			requiredContributors = Collections.emptySet();
 		} else {
 			requiredContributors = LocalProperties
@@ -139,8 +139,8 @@ public class LockService implements ILockService {
 
 				return LockResponse.OK(lockInfo);
 			} else {
-				log.warn("Could not acquire locksLock in #acquireLock (request not handled), denying lock [{}]", lockInfo,
-						new Throwable("Diagnosis"));
+				log.warn("Could not acquire locksLock in #acquireLock (request not handled), denying lock [{}]",
+						lockInfo, new Throwable("Diagnosis"));
 				return LockResponse.DENIED(lockInfo);
 			}
 		} finally {
@@ -237,10 +237,12 @@ public class LockService implements ILockService {
 						lockInfo.getElementStoreToString());
 				if (isAcquire) {
 					response = (lockServiceContributorClass != null)
-							? acquireLock(lockInfo, lockServiceContributorClass) : acquireLock(lockInfo);
+							? acquireLock(lockInfo, lockServiceContributorClass)
+							: acquireLock(lockInfo);
 				} else {
 					response = (lockServiceContributorClass != null)
-							? releaseLock(lockInfo, lockServiceContributorClass) : releaseLock(lockInfo);
+							? releaseLock(lockInfo, lockServiceContributorClass)
+							: releaseLock(lockInfo);
 				}
 				if (response.getStatus() == LockResponse.Status.DENIED_PERMANENT) {
 					return response;
@@ -285,8 +287,7 @@ public class LockService implements ILockService {
 	}
 
 	/**
-	 * Removes all locks without performing the respective releaseLock
-	 * operations
+	 * Removes all locks without performing the respective releaseLock operations
 	 */
 	public static void clearAllLocks() {
 		locks.clear();
