@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.web.servlet.IniShiroFilter;
+import org.apache.shiro.web.servlet.ShiroFilter;
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -28,6 +29,7 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import info.elexis.server.core.SystemPropertyConstants;
+import info.elexis.server.core.security.oauth2.AuthenticatingResourceFilter;
 
 @Component(service = CoreFhirRestServlet.class)
 public class CoreFhirRestServlet extends RestfulServer {
@@ -86,13 +88,14 @@ public class CoreFhirRestServlet extends RestfulServer {
 		Thread.currentThread().setContextClassLoader(CoreFhirRestServlet.class.getClassLoader());
 		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 		try {
+			String shiroConfig = (SystemPropertyConstants.isDisableWebSecurity()) ? "shiro-fhir-nosec.ini"
+					: "shiro-fhir.ini";
 			httpService.registerServlet(FHIR_BASE_URL + "/*", this, null, null);
-			String config = IOUtils.toString(this.getClass().getResourceAsStream("shiro-fhir.ini"),
+			String config = IOUtils.toString(this.getClass().getResourceAsStream(shiroConfig),
 					Charset.forName("UTF-8"));
 			IniShiroFilter iniShiroFilter = new IniShiroFilter();
 			iniShiroFilter.setConfig(config);
 			extHttpService.registerFilter(FHIR_BASE_URL, iniShiroFilter, null, null);
-			iniShiroFilter.setEnabled(!SystemPropertyConstants.isDisableWebSecurity());
 		} catch (ServletException | NamespaceException | IOException e) {
 			logger.error("Could not register FHIR servlet.", e);
 		}

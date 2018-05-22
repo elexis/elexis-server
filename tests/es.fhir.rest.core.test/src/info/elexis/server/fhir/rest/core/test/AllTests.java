@@ -20,6 +20,7 @@ import ch.elexis.core.findings.IFindingsService;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.resources.AllergyIntoleranceTest;
 import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
+import info.elexis.server.fhir.rest.core.resources.CORSTest;
 import info.elexis.server.fhir.rest.core.resources.ClaimTest;
 import info.elexis.server.fhir.rest.core.resources.CodesySystemTest;
 import info.elexis.server.fhir.rest.core.resources.ConditionTest;
@@ -34,7 +35,7 @@ import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
 import info.elexis.server.fhir.rest.core.resources.ProcedureRequestTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
+@SuiteClasses({ CORSTest.class, MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
 		PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
 		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
 		AllergyIntoleranceTest.class, AppointmentTest.class })
