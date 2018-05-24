@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.rest.v1;
+package info.elexis.server.core.connector.elexis.rest;
 
 import java.util.Optional;
 
@@ -23,8 +23,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = { "elexis-connector/connection" })
-@Path("/elexis/connector/v1")
+@Api(tags = { "elexisconnector.connection" })
+@Path("/elexis/connector")
 @Component(service = ConnectionResource.class, immediate = true)
 public class ConnectionResource {
 
@@ -38,7 +38,6 @@ public class ConnectionResource {
 
 	@GET
 	@Path("connection")
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "retrieve the elexis-database-connection")
 	public DBConnection getDBConnection() {
 		Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
@@ -65,5 +64,4 @@ public class ConnectionResource {
 		}
 		return Response.status(422).type(MediaType.TEXT_PLAIN).entity(status.getMessage()).build();
 	}
-
 }

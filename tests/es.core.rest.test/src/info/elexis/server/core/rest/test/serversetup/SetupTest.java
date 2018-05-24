@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -57,15 +56,16 @@ public class SetupTest {
 	public static final String USER_PASS_PRACTITIONER = "practitioner";
 	public static final String USER_PASS_ESADMIN = "esadmin";
 
+	public static final String CONNECTOR_CONNECTION_LOCATION = "/elexis/connector/connection";
+
 	private OkHttpClient client = AllTests.getDefaultOkHttpClient();
 	private Gson gson = new Gson();
 	private FhirContext fhirContext = FhirContext.forDstu3();
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-	private Request getDBConnectionRequest = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection")
+	private Request getDBConnectionRequest = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION)
 			.build();
-	private Request getDBStatusInformation = new Request.Builder().url(REST_URL + "/elexis/connector/v1/status")
-			.build();
+	private Request getDBStatusInformation = new Request.Builder().url(REST_URL + "/elexis/connector/status").build();
 
 	private Response response;
 
@@ -76,8 +76,7 @@ public class SetupTest {
 			Thread.sleep(500);
 			System.out.println("Waiting for servlet ...");
 			if (i++ == 50) {
-				fail("Could not connect to servlet");
-				return;
+				throw new IOException("Could not connect to servlet");
 			}
 		} while (!AllTests.isReachable(REST_URL + "/system/v1/uptime"));
 	}
@@ -96,27 +95,27 @@ public class SetupTest {
 	@Test
 	public void _02_0_setInvalidTestDatabaseConnection() throws IOException {
 		DBConnection dbc = new DBConnection();
-		dbc.hostName="localhost";
-		dbc.connectionString="jdbc:mysql://localhost:3306/invalidDatabase";
-		dbc.port="3306";
-		dbc.password="elexis";
-		dbc.username="elexis";
-		dbc.rdbmsType=DBType.MySQL;
-		
+		dbc.hostName = "localhost";
+		dbc.connectionString = "jdbc:mysql://localhost:3306/invalidDatabase";
+		dbc.port = "3306";
+		dbc.password = "elexis";
+		dbc.username = "elexis";
+		dbc.rdbmsType = DBType.MySQL;
+
 		String dbcJson = new Gson().toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
-		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
+		Request request = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
 		response = client.newCall(request).execute();
 		assertFalse(response.isSuccessful());
 		assertEquals(422, response.code());
 	}
-	
+
 	@Test
 	public void _02_1_setValidTestDatabaseConnection() throws IOException {
 		DBConnection dbc = AllTests.getTestDatabaseConnection();
 		String dbcJson = new Gson().toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
-		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
+		Request request = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
 		response = client.newCall(request).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
 
@@ -166,7 +165,7 @@ public class SetupTest {
 		DBConnection dbc = AllTests.getTestDatabaseConnection();
 		String dbcJson = gson.toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
-		Request request = new Request.Builder().url(REST_URL + "/elexis/connector/v1/connection").post(body).build();
+		Request request = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, response.code());
 	}
@@ -201,7 +200,7 @@ public class SetupTest {
 		OAuthClientRequest resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
 				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_PRACTITIONER)
 				.setPassword(USER_PASS_PRACTITIONER).setScope("fhir").buildQueryMessage();
-		
+
 		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
 				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
 
