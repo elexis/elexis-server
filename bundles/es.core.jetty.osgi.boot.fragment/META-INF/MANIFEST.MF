@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OSGI Boot configuration contributor
+Bundle-SymbolicName: info.elexis.server.core.jetty.osgi.boot.fragment
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Fragment-Host: org.eclipse.jetty.osgi.boot;bundle-version="9.4.10"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.jetty.util,
+ info.elexis.server.core.common
