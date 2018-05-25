@@ -180,6 +180,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal
 	org.apache.aries.util
 	org.glassfish.web.javax.servlet.jsp.jstl
+	org.objectweb.asm
 	org.objectweb.asm.commons
 	org.objectweb.asm.tree
 	

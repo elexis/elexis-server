@@ -10,7 +10,13 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +42,7 @@ public class ConfigService {
 	}
 
 	/**
-	 * Get a stored value for a given key, or return the value provided as
-	 * default
+	 * Get a stored value for a given key, or return the value provided as default
 	 * 
 	 * @param key
 	 * @param defValue
@@ -59,8 +64,8 @@ public class ConfigService {
 	}
 
 	/**
-	 * Get a stored value for a given key as boolean, or return the value
-	 * provided as default
+	 * Get a stored value for a given key as boolean, or return the value provided
+	 * as default
 	 * 
 	 * @param key
 	 * @param b
@@ -191,6 +196,25 @@ public class ConfigService {
 		Set<String> valueSet = new HashSet<String>(propertySet);
 		valueSet.add(value);
 		setFromSet(key, valueSet);
+	}
+
+	/**
+	 * Return all elements
+	 * 
+	 * @return
+	 */
+	public static List<Config> findAllEntries() {
+		EntityManager em = ElexisEntityManager.createEntityManager();
+		try {
+			CriteriaBuilder qb = em.getCriteriaBuilder();
+			CriteriaQuery<Config> c = qb.createQuery(Config.class);
+			TypedQuery<Config> q = em.createQuery(c);
+			q.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+			q.setHint(QueryHints.REFRESH, HintValues.TRUE);
+			return q.getResultList();
+		} finally {
+			em.close();
+		}
 	}
 
 }

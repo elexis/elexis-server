@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.web.servlet.IniShiroFilter;
+import org.apache.shiro.web.servlet.ShiroFilter;
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -27,9 +28,13 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
+import info.elexis.server.core.SystemPropertyConstants;
+import info.elexis.server.core.security.oauth2.AuthenticatingResourceFilter;
 
 @Component(service = CoreFhirRestServlet.class)
 public class CoreFhirRestServlet extends RestfulServer {
+
+	private static final String FHIR_BASE_URL = "/fhir";
 
 	private static Logger logger = LoggerFactory.getLogger(CoreFhirRestServlet.class);
 
@@ -83,12 +88,14 @@ public class CoreFhirRestServlet extends RestfulServer {
 		Thread.currentThread().setContextClassLoader(CoreFhirRestServlet.class.getClassLoader());
 		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 		try {
-			httpService.registerServlet("/fhir/*", this, null, null);
-			String config = IOUtils.toString(this.getClass().getResourceAsStream("shiro-fhir.ini"),
+			String shiroConfig = (SystemPropertyConstants.isDisableWebSecurity()) ? "shiro-fhir-nosec.ini"
+					: "shiro-fhir.ini";
+			httpService.registerServlet(FHIR_BASE_URL + "/*", this, null, null);
+			String config = IOUtils.toString(this.getClass().getResourceAsStream(shiroConfig),
 					Charset.forName("UTF-8"));
 			IniShiroFilter iniShiroFilter = new IniShiroFilter();
 			iniShiroFilter.setConfig(config);
-			extHttpService.registerFilter("/fhir", iniShiroFilter, null, null);
+			extHttpService.registerFilter(FHIR_BASE_URL, iniShiroFilter, null, null);
 		} catch (ServletException | NamespaceException | IOException e) {
 			logger.error("Could not register FHIR servlet.", e);
 		}
@@ -96,21 +103,20 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	@Deactivate
 	public void deactivate() {
-		httpService.unregister("/fhir/*");
+		httpService.unregister(FHIR_BASE_URL + "/*");
 	}
 
 	/**
-	 * The initialize method is automatically called when the servlet is
-	 * starting up, so it can be used to configure the servlet to define
-	 * resource providers, or set up configuration, interceptors, etc.
+	 * The initialize method is automatically called when the servlet is starting
+	 * up, so it can be used to configure the servlet to define resource providers,
+	 * or set up configuration, interceptors, etc.
 	 */
 	@Override
 	protected void initialize() throws ServletException {
 		/*
-		 * This server interceptor causes the server to return nicely formatter
-		 * and coloured responses instead of plain JSON/XML if the request is
-		 * coming from a browser window. It is optional, but can be nice for
-		 * testing.
+		 * This server interceptor causes the server to return nicely formatter and
+		 * coloured responses instead of plain JSON/XML if the request is coming from a
+		 * browser window. It is optional, but can be nice for testing.
 		 */
 		registerInterceptor(new ResponseHighlighterInterceptor());
 

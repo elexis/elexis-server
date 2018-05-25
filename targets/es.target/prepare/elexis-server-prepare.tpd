@@ -73,7 +73,7 @@ location "http://download.eclipse.org/releases/oxygen" {
 }
 
 // Jetty p2 repo for (updated) Oxygen.3 included version
-location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.9.v20180320/" {
+location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.10.v20180503/" {
 	// override bundles from updates/4.7
 	org.eclipse.jetty.http
 	org.eclipse.jetty.continuation
@@ -216,8 +216,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.springframework.spring-web
 	org.apache.commons.io
 	// Jetty JSP support
-	org.mortbay.jasper.apache-el [8.5.23,8.5.23]
-	org.mortbay.jasper.apache-jsp [8.5.23,8.5.23]
+	org.mortbay.jasper.apache-el [8.5.24,8.5.24]
+	org.mortbay.jasper.apache-jsp [8.5.24,8.5.24]
 	org.apache.taglibs.taglibs-standard-spec [1.2.5,1.2.5]
 	org.apache.taglibs.standard-impl [1.2.5,1.2.5]
 	org.apache.aries.spifly.static.bundle
@@ -227,8 +227,9 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal
 	org.apache.aries.util
 	org.glassfish.web.javax.servlet.jsp.jstl
-	org.objectweb.asm.commons
-	org.objectweb.asm.tree
+	org.objectweb.asm [6.1.1,6.1.1]
+	org.objectweb.asm.commons [6.1.1,6.1.1]
+	org.objectweb.asm.tree [6.1.1,6.1.1]
 }
 
 // RestFuse

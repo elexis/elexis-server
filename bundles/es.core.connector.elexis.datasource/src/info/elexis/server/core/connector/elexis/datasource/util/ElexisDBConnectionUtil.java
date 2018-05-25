@@ -6,6 +6,11 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
@@ -15,9 +20,12 @@ import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vdurmont.semver4j.Semver;
+
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.common.DBConnection.DBType;
 import ch.elexis.core.status.StatusUtil;
+import info.elexis.server.core.common.test.TestSystemPropertyConstants;
 import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.connector.elexis.datasource.internal.Activator;
 
@@ -28,9 +36,11 @@ public class ElexisDBConnectionUtil {
 
 	private static Logger log = LoggerFactory.getLogger(ElexisDBConnectionUtil.class);
 
+	public static final Semver MINIMUM_REQUIRED_DB_VERSION = new Semver("3.6.0");
+
 	static {
 		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
-		if (isTestMode()) {
+		if (TestSystemPropertyConstants.systemIsInTestMode()) {
 			connection = ElexisDBConnectionUtil.getTestDatabaseConnection();
 			setConnection(connection);
 		} else if (connectionConfigPath.toFile().exists()) {
@@ -61,14 +71,68 @@ public class ElexisDBConnectionUtil {
 	}
 
 	/**
-	 * Verify if the provided connection matches the Elexis-Server requirements
+	 * Verify if the provided connection matches the Elexis-Server requirements.
 	 * 
 	 * @param connection
 	 * @return
 	 */
 	private static IStatus verifyConnection(DBConnection connection) {
-		// TODO Auto-generated method stub
-		return Status.OK_STATUS;
+		if (connection == null) {
+			return new Status(Status.ERROR, Activator.BUNDLE_ID, "Connection is null");
+		}
+
+		Connection dbConnection = null;
+		try {
+			switch (connection.rdbmsType) {
+			case H2:
+				Class.forName("org.h2.Driver");
+				break;
+			case MySQL:
+				Class.forName("com.mysql.jdbc.Driver");
+				break;
+			case PostgreSQL:
+				Class.forName("org.postgresql.Driver");
+				break;
+			default:
+				break;
+			}
+
+			dbConnection = DriverManager.getConnection(connection.connectionString, connection.username,
+					connection.password);
+			Statement statement;
+			String validationQuery = "SELECT wert FROM config WHERE param = 'dbversion'";
+
+			statement = dbConnection.createStatement();
+
+			ResultSet executeQuery = statement.executeQuery(validationQuery);
+			if (executeQuery.next()) {
+				String dbVersionValue = executeQuery.getString(1);
+				if (dbVersionValue == null || dbVersionValue.length() < 4) {
+					return new Status(Status.ERROR, Activator.BUNDLE_ID,
+							"Invalid database version [" + dbVersionValue + "] found.");
+				}
+				Semver dbVersion = new Semver(dbVersionValue);
+				if (dbVersion.isGreaterThanOrEqualTo(MINIMUM_REQUIRED_DB_VERSION)) {
+					return Status.OK_STATUS;
+				} else {
+					return new Status(Status.ERROR, Activator.BUNDLE_ID, "Minimum required db version is ["
+							+ MINIMUM_REQUIRED_DB_VERSION + "] found db version [" + dbVersionValue + "]");
+				}
+			} else {
+				return new Status(Status.ERROR, Activator.BUNDLE_ID, "No dbversion entry found in config table.");
+			}
+
+		} catch (ClassNotFoundException | SQLException cnfe) {
+			return new Status(Status.ERROR, Activator.BUNDLE_ID, cnfe.getMessage());
+		} finally {
+			if (dbConnection != null) {
+				try {
+					dbConnection.close();
+				} catch (SQLException e) {
+					log.error("Error closing dbConnection", e);
+				}
+			}
+		}
 	}
 
 	private static IStatus doSetConnection(DBConnection connection) throws IOException, JAXBException {
@@ -83,16 +147,6 @@ public class ElexisDBConnectionUtil {
 				connection.marshall(fos);
 			}
 		}
-	}
-
-	public static boolean isTestMode() {
-		String testMode = System.getProperty("es.test");
-		if (testMode != null && !testMode.isEmpty()) {
-			if (testMode.equalsIgnoreCase("true")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

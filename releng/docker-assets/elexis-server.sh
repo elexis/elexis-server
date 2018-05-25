@@ -59,8 +59,15 @@ EOF
 	
 fi
 
+JAVA_PROPERTIES=""
+
+if [ ! -z $DISABLE_WEB_SECURITY ]; then
+	echo "Starting with disabled web security"
+	JAVA_PROPERTIES+="-Ddisable.web.security=true "
+fi
+
 # Start-up the elexis-server
-/opt/elexis-server/elexis-server -console 7234 &
+/opt/elexis-server/elexis-server -console 7234 --launcher.appendVmargs -vmargs ${JAVA_PROPERTIES} &
 PID=$!
 
 echo "Started Elexis-Server launcher with PID [$PID]"

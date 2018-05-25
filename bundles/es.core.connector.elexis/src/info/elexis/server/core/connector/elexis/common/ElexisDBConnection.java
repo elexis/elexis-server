@@ -19,10 +19,6 @@ public class ElexisDBConnection {
 		return ElexisDBConnectionUtil.getConnection();
 	}
 
-	public static boolean isTestMode() {
-		return ElexisDBConnectionUtil.isTestMode();
-	}
-
 	public static IStatus getDatabaseInformation() {
 		String statusInfo = getDatabaseInformationString();
 		return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);

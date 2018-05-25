@@ -30,6 +30,9 @@ CREATE INDEX pattern on AGNTERMINE (PatID);
 CREATE INDEX agnbereich on AGNTERMINE (Bereich);
 INSERT INTO AGNTERMINE (ID, PatId) VALUES (1, '');
 
+INSERT INTO `config` VALUES (NULL, 'agenda/bereiche', 'Praxis,Claudia Einstein,Michael Wildhauser,Arzt 1,Kiril Checkov, Julian Marti');
+INSERT INTO `config` VALUES (NULL, 'agenda/bereich/Michael Wildhauser/type', 'CONTACT/h2c1172107ce2df95065');
+
 INSERT INTO `agntermine` VALUES ('db53461227956f74f012',1400066773685,NULL,'Praxis','20140514','0','480',NULL,'23334446;geplant','gesperrt','-',NULL,'23334446','23334446',0,NULL,'0',NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `agntermine` VALUES ('fb76a641cd860db4f013',1400066773688,NULL,'Praxis','20140514','1080','359',NULL,'23334446;geplant','gesperrt','-',NULL,'23334446','23334446',0,NULL,'0',NULL,NULL,NULL,NULL,NULL,NULL);
 INSERT INTO `agntermine` VALUES ('x550af987275f379901070',1479133043762,NULL,'Praxis','20161114','0','480',NULL,'24652217;geplant','gesperrt','-',NULL,'24652217','24652217',0,NULL,'0',NULL,NULL,NULL,NULL,NULL,NULL);

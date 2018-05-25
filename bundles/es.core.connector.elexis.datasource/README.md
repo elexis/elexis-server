@@ -1,0 +1,1 @@
+This bundle uses the semver4j library source code, which is provided under MIT license in https://github.com/vdurmont/semver4j.

@@ -39,14 +39,15 @@ public class SwaggerConfigurator {
 				properties.put(Constants.SERVICE_PID, SERVICE_PID);
 			}
 
-			properties.put("swagger.host", Host.getBaseUrlSecure());
 			properties.put("swagger.basePath", "/services");
 			properties.put("swagger.info.title", "Elexis-Server");
 			properties.put("swagger.info.version", "1.6");
 			properties.put("swagger.scheme.https", "");
+			properties.put("swagger.scheme.http", "");
 
 			properties.put("swagger.securityDefinition.type.esoauth", "oauth2");
-			properties.put("swagger.securityDefinition.esoauth.flow", "password");
+			properties.put("swagger.securityDefinition.esoauth.flow", "implicit");
+			properties.put("swagger.securityDefinition.esoauth.authorizationUrl", Host.getOpenIDBaseUrlSecure() + "authorize");
 			properties.put("swagger.securityDefinition.esoauth.tokenUrl", Host.getOpenIDBaseUrlSecure() + "token");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0", "esadmin");
 			properties.put("swagger.securityDefinition.esoauth.scopes.0.description", "Elexis-Server system admin");
@@ -54,7 +55,6 @@ public class SwaggerConfigurator {
 			config.update(properties);
 		} catch (IOException e) {
 			log.error("Error configuring swagger", e);
-			e.printStackTrace();
 		}
 	}
 

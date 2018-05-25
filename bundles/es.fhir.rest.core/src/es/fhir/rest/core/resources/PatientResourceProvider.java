@@ -65,7 +65,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Patient> findPatientByIndetifier(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+	public List<Patient> findPatientByIdentifier(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null) {
 			if (identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
 				Optional<Kontakt> patient = KontaktService

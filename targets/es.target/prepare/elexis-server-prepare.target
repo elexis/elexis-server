@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1524815016">
+<target name="Elexis-Server" sequenceNumber="1526632021">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.6.0.20180425-0924"/>
-      <unit id="ch.elexis.core" version="3.6.0.20180425-1200"/>
-      <unit id="ch.elexis.core.l10n" version="3.6.0.20180425-1200"/>
+      <unit id="ch.rgw.utility" version="3.6.0.20180515-1235"/>
+      <unit id="ch.elexis.core" version="3.6.0.20180516-1342"/>
+      <unit id="ch.elexis.core.l10n" version="3.6.0.20180509-1303"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20180326-1354"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180326-1354"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20180326-1354"/>
@@ -71,34 +71,34 @@
       <repository location="http://download.eclipse.org/releases/oxygen"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.jetty.http" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.continuation" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.security" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.io" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.server" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.servlet" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.util" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.servlets" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.webapp" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.xml" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.util.ajax" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.common" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.api" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.server" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.servlet" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.javax.websocket" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.javax.websocket.server" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.websocket.client" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.osgi.boot" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.deploy" version="9.4.9.v20180320"/>
+      <unit id="org.eclipse.jetty.http" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.continuation" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.security" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.io" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.server" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.servlet" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.util" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.servlets" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.webapp" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.xml" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.util.ajax" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.common" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.api" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.server" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.servlet" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.javax.websocket" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.javax.websocket.server" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.websocket.client" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.osgi.boot" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.deploy" version="9.4.10.v20180503"/>
       <unit id="org.eclipse.jetty.osgi-servlet-api" version="3.1.0.M3"/>
-      <unit id="org.eclipse.jetty.osgi.httpservice" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.osgi.boot.jsp" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.plus" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.annotations" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.jndi" version="9.4.9.v20180320"/>
-      <unit id="org.eclipse.jetty.apache-jsp" version="9.4.9.v20180320"/>
-      <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.9.v20180320/"/>
+      <unit id="org.eclipse.jetty.osgi.httpservice" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.osgi.boot.jsp" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.plus" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.annotations" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.jndi" version="9.4.10.v20180503"/>
+      <unit id="org.eclipse.jetty.apache-jsp" version="9.4.10.v20180503"/>
+      <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.10.v20180503/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201803161213"/>
@@ -203,8 +203,8 @@
       <unit id="org.slf4j.osgi-over-slf4j" version="1.7.2"/>
       <unit id="org.springframework.spring-web" version="4.3.8.RELEASE"/>
       <unit id="org.apache.commons.io" version="2.5.0"/>
-      <unit id="org.mortbay.jasper.apache-el" version="8.5.23"/>
-      <unit id="org.mortbay.jasper.apache-jsp" version="8.5.23"/>
+      <unit id="org.mortbay.jasper.apache-el" version="8.5.24"/>
+      <unit id="org.mortbay.jasper.apache-jsp" version="8.5.24"/>
       <unit id="org.apache.taglibs.taglibs-standard-spec" version="1.2.5"/>
       <unit id="org.apache.taglibs.standard-impl" version="1.2.5"/>
       <unit id="org.apache.aries.spifly.static.bundle" version="1.0.10"/>
@@ -214,8 +214,9 @@
       <unit id="org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal" version="1.0.10"/>
       <unit id="org.apache.aries.util" version="1.0.0"/>
       <unit id="org.glassfish.web.javax.servlet.jsp.jstl" version="1.2.5.b03"/>
-      <unit id="org.objectweb.asm.commons" version="6.0.0"/>
-      <unit id="org.objectweb.asm.tree" version="6.0.0"/>
+      <unit id="org.objectweb.asm" version="6.1.1"/>
+      <unit id="org.objectweb.asm.commons" version="6.1.1"/>
+      <unit id="org.objectweb.asm.tree" version="6.1.1"/>
       <repository location="http://download.elexis.info/elexis-server/elexis-server-dependencies/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
