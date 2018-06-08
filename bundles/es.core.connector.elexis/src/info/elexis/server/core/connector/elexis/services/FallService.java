@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.model.FallConstants;
+import ch.elexis.core.model.ch.BillingLaw;
 import ch.rgw.tools.StringTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
@@ -130,6 +131,30 @@ public class FallService extends PersistenceService {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 
+	 * @param billingSystemName
+	 * @param attributeName
+	 * @param defaultIfNotDefined
+	 * @return
+	 * @since 1.6
+	 */
+	public static String getConfigurationValue(String billingSystemName, String attributeName,
+			String defaultIfNotDefined) {
+		String ret = ConfigService.INSTANCE.get(Preferences.LEISTUNGSCODES_CFG_KEY + "/" //$NON-NLS-1$
+				+ billingSystemName + "/" + attributeName, defaultIfNotDefined); //$NON-NLS-1$
+		return ret;
+	}
+
+	/**
+	 * @return the {@link BillingLaw} set for the {@link BillingSystem} applied to
+	 *         this {@link Fall}
+	 * @since 1.6
+	 */
+	public static BillingLaw getConfiguredBillingSystemLaw(String billingSystem) {
+		return BillingLaw.valueOf(getConfigurationValue(billingSystem, "defaultBillingLaw", BillingLaw.KVG.name()));
 	}
 
 }
