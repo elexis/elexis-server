@@ -1,11 +1,12 @@
-FROM openjdk:8-jre
+FROM openjdk:8-jre-alpine
 MAINTAINER MEDEVIT <office@medevit.at>
 ARG BRANCH=master
 
-RUN apt-get update && apt-get install -y openvpn && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN adduser --disabled-password --gecos "" --home /elexis elexis && \
+RUN apk add --no-cache tzdata openvpn iptables bash libc6-compat 
+ENV TZ=Europe/Zurich
+RUN addgroup elexis && adduser -S -G elexis -g "" -h /elexis elexis && mkdir -p /opt/elexis-server && \
     wget http://download.elexis.info/elexis-server/${BRANCH}/products/info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
-    unzip info.elexis.server.runtime.product-linux.gtk.x86_64.zip -d /opt/elexis-server && \
+    unzip -d /opt/elexis-server/ info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
     rm info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
     	mkdir -p /elexis/elexis-server/logs && \
     	chown -R elexis:elexis /opt/elexis-server /elexis
