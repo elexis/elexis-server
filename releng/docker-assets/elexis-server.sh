@@ -1,4 +1,9 @@
 #!/bin/bash
+
+if [ "$DEBUG" == "1" ]; then
+  set -x
+fi
+
 trap 'shut_down' TERM INT
 
 # register a termination handler, that cleans up
@@ -26,6 +31,12 @@ shut_down(){
 	fi
 }
 
+# Initialize OpenVPN connection
+sudo /startopenvpn.sh
+
+#
+# Start Elexis-Server
+#
 mkdir -p /elexis/elexis-server/logs
 
 # If the container was started with -e DEMO_MODE='true' we start a demo-instance
@@ -59,6 +70,7 @@ EOF
 	
 fi
 
+# Handle ES properties
 JAVA_PROPERTIES=""
 
 if [ ! -z $DISABLE_WEB_SECURITY ]; then
