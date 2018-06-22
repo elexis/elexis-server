@@ -2,7 +2,7 @@ FROM openjdk:8-jre-alpine
 MAINTAINER MEDEVIT <office@medevit.at>
 ARG BRANCH=master
 
-RUN apk add --no-cache tzdata openvpn iptables sudo bash libc6-compat certbot
+RUN apk add --no-cache tzdata openvpn iptables sudo bash libc6-compat certbot openssl
 ENV TZ=Europe/Zurich
 RUN addgroup elexis && adduser -S -u 1000 -G elexis -g "" -h /elexis elexis && \
     mkdir -p /opt/elexis-server && \
