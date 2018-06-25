@@ -31,14 +31,16 @@ shut_down(){
 	fi
 }
 
-# Initialize OpenVPN connection
+# dependencies
+mkdir -p /elexis/letsencrypt
+mkdir -p /elexis/elexis-server/logs
+
+# Initialize OpenVPN connection, care for letsencrypt
 sudo /startopenvpn.sh
 
 #
 # Start Elexis-Server
 #
-mkdir -p /elexis/elexis-server/logs
-
 # If the container was started with -e DEMO_MODE='true' we start a demo-instance
 if [ ! -z $DEMO_MODE ]; then
 	echo "Activating demo database"
