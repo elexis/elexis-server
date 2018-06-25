@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 MAINTAINER MEDEVIT <office@medevit.at>
-ARG BRANCH=master
+ARG BRANCH=1.6
 
 RUN apk add --no-cache tzdata openvpn iptables sudo bash libc6-compat certbot openssl bind-tools
 ENV TZ=Europe/Zurich
