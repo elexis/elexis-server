@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1526632021">
+<target name="Elexis-Server" sequenceNumber="1529926924">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.6.0.20180515-1235"/>
-      <unit id="ch.elexis.core" version="3.6.0.20180516-1342"/>
-      <unit id="ch.elexis.core.l10n" version="3.6.0.20180509-1303"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.20180326-1354"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180326-1354"/>
+      <unit id="ch.rgw.utility" version="3.7.0.20180622-0722"/>
+      <unit id="ch.elexis.core" version="3.7.0.20180622-0722"/>
+      <unit id="ch.elexis.core.l10n" version="3.7.0.20180622-0735"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.20180614-1238"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180620-0812"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20180326-1354"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20180127-1021"/>
       <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
@@ -18,13 +18,13 @@
       <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
       <unit id="bouncycastle.bcprov-jdk14" version="138.0.0"/>
       <unit id="com.ibm.icu" version="58.2.0.v20170418-1837"/>
-      <unit id="ca.uhn.hapi.osgi-base" version="1.2.0"/>
+      <unit id="ca.uhn.hapi.osgi-base" version="2.3.0"/>
       <unit id="org.apache.poi" version="3.0.2.FINAL"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180309-1216"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180614-0933"/>
       <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20180309-1216"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20180309-1216"/>
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
