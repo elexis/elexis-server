@@ -17,6 +17,12 @@ import ch.rgw.tools.StringTool;
 @Table(name = "laboritems")
 public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 
+	/**
+	 * Denotes that a labitem does not have a reference value, and hence by
+	 * definition always is considered non-pathologic (e.g. eye color - blue)
+	 */
+	public static final String REFVAL_INCONCLUSIVE = "inconclusive";
+
 	@Column(name = "kuerzel", length = 80)
 	private String code;
 
@@ -64,8 +70,8 @@ public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 	private String formula;
 
 	/**
-	 * @return the variable name of this LabItem as used in LabItems of type
-	 *         formula for cross-reference
+	 * @return the variable name of this LabItem as used in LabItems of type formula
+	 *         for cross-reference
 	 */
 	@Transient
 	public String getVariableName() {
@@ -265,6 +271,11 @@ public class LabItem extends AbstractDBObjectIdDeleted implements ILabItem {
 		}
 		sb.append("[").append(getGroup()).append(", ").append(getPriority()).append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public boolean isNoReferenceValueItem() {
+		return (REFVAL_INCONCLUSIVE.equals(getReferenceMale()) && REFVAL_INCONCLUSIVE.equals(getReferenceFemale()));
 	}
 
 }
