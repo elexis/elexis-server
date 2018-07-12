@@ -43,7 +43,6 @@ public class SwaggerConfigurator {
 			properties.put("swagger.info.title", "Elexis-Server");
 			properties.put("swagger.info.version", "1.6");
 			properties.put("swagger.scheme.https", "");
-			properties.put("swagger.scheme.http", "");
 
 			properties.put("swagger.securityDefinition.type.esoauth", "oauth2");
 			properties.put("swagger.securityDefinition.esoauth.flow", "implicit");
