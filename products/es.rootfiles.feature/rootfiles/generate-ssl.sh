@@ -1,6 +1,6 @@
 #!/bin/bash
 # MEDEVIT <office@medevit.at>
-# Jetty Keystore generation script
+# Jetty Keystore self-signed-certificate generation script
 HOSTNAME=$(hostname) 
 PROGDIR=$(pwd)
 STOREDIR=$HOME/elexis-server/ssl
