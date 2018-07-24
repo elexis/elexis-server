@@ -39,6 +39,9 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "garantID")
 	private Kontakt garantKontakt;
 
+	/**
+	 * @since 1.6 resp. 3.6 contains the biling system
+	 */
 	@Column(length = 20)
 	private String gesetz;
 
