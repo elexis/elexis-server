@@ -20,15 +20,22 @@ public class LabOrderService extends PersistenceService {
 		return PersistenceService.load(LabOrder.class, id).map(v -> (LabOrder) v);
 	}
 
+	/**
+	 * Find the LabOrder for a given LabResult, does not consider whether this
+	 * LabOrder was marked deleted
+	 * 
+	 * @param labresult
+	 * @return
+	 */
 	public static Optional<LabOrder> findLabOrderByLabResult(LabResult labresult) {
-		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class);
+		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class, true);
 		query.add(LabOrder_.result, QUERY.EQUALS, labresult);
 		return query.executeGetSingleResult();
 	}
 
 	/**
-	 * Find all {@link LabOrder} that are equal to the provided {@link LabOrder#getOrderid()} and
-	 * {@link LabOrder#getPatient()}
+	 * Find all {@link LabOrder} that are equal to the provided
+	 * {@link LabOrder#getOrderid()} and {@link LabOrder#getPatient()}
 	 * 
 	 * @param labOrder
 	 * @return
