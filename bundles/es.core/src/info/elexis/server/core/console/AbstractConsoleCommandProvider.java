@@ -204,7 +204,7 @@ public abstract class AbstractConsoleCommandProvider implements CommandProvider 
 
 		@Override
 		public boolean hasNext() {
-			return true;
+			return iterator.hasNext();
 		}
 
 		@Override
