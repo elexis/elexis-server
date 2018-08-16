@@ -42,12 +42,12 @@ public class ElexisDBConnectionUtil {
 		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
 		if (TestSystemPropertyConstants.systemIsInTestMode()) {
 			connection = ElexisDBConnectionUtil.getTestDatabaseConnection();
-			setConnection(connection);
+			setConnection(connection); // openid requires this file
 		} else if (connectionConfigPath.toFile().exists()) {
 			try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
 				connection = DBConnection.unmarshall(is);
 				log.info("Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
-				StatusUtil.logStatus(log, setConnection(connection));
+				StatusUtil.logStatus(log, verifyConnection(connection));
 			} catch (IOException | JAXBException e) {
 				log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
 			}
