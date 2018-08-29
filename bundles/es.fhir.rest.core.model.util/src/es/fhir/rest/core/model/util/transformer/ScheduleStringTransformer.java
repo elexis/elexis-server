@@ -2,8 +2,8 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
@@ -13,18 +13,17 @@ import org.osgi.service.component.annotations.Component;
 import ca.uhn.fhir.model.dstu.resource.Condition.Location;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
+import es.fhir.rest.core.resources.util.TerminUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
 public class ScheduleStringTransformer implements IFhirTransformer<Schedule, String> {
 
-	private TerminHelper terminHelper = new TerminHelper();
-
 	@Override
 	public Optional<Schedule> getFhirObject(String localObject) {
-		return Optional.ofNullable(getSchedules().get(localObject));
+		Schedule schedule = getSchedules().get(localObject);
+		return Optional.ofNullable(schedule);
 	}
 
 	@Override
@@ -38,10 +37,12 @@ public class ScheduleStringTransformer implements IFhirTransformer<Schedule, Str
 	private Map<String, Schedule> getSchedules() {
 		Map<String, Schedule> schedules = new HashMap<>();
 
-		Set<String> agendaAreas = TerminService.getAgendaAreas();
-		for (String area : agendaAreas) {
+		Map<String, String> agendaAreas = TerminUtil.getAgendaAreas();
+		for (Entry<String, String> entry : agendaAreas.entrySet()) {
 			Schedule schedule = new Schedule();
-			String areaId = terminHelper.getIdForBereich(area);
+			String areaId = entry.getKey();
+			String area = entry.getValue();
+			// id might not be rest compatible, if we use the plain area name
 
 			Optional<Kontakt> assignedContact = TerminService.resolveAssignedContact(area);
 			Reference actor;

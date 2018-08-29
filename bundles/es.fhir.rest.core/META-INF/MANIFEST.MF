@@ -28,4 +28,5 @@ Require-Bundle: hapi-fhir-osgi-core;bundle-version="2.4.0",
  net.sf.saxon.Saxon-HE;bundle-version="9.6.0",
  ch.elexis.core.findings;bundle-version="1.0.0",
  info.elexis.server.core.common;bundle-version="1.0.0"
-Export-Package: es.fhir.rest.core
+Export-Package: es.fhir.rest.core,
+ es.fhir.rest.core.resources.util

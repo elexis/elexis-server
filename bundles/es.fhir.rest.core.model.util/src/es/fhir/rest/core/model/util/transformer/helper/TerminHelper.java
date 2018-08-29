@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.hl7.fhir.dstu3.model.Appointment.AppointmentStatus;
 import org.hl7.fhir.dstu3.model.Slot.SlotStatus;
 
@@ -74,10 +73,6 @@ public class TerminHelper {
 		}
 
 		return Optional.empty();
-	}
-
-	public String getIdForBereich(String area) {
-		return DigestUtils.md5Hex(area);
 	}
 
 }

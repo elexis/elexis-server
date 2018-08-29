@@ -12,6 +12,7 @@ import ca.uhn.fhir.model.dstu2.resource.Schedule;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
+import es.fhir.rest.core.resources.util.TerminUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 import info.elexis.server.core.connector.elexis.services.TerminService;
 
@@ -27,7 +28,7 @@ public class SlotTerminTransformer implements IFhirTransformer<Slot, Termin> {
 		slot.setId(new IdDt(Slot.class.getSimpleName(), localObject.getId()));
 
 		slot.setSchedule(new Reference(
-				new IdType(Schedule.class.getSimpleName(), terminHelper.getIdForBereich(localObject.getBereich()))));
+				new IdType(Schedule.class.getSimpleName(), TerminUtil.getIdForBereich(localObject.getBereich()))));
 
 		slot.setStatus(terminHelper.getSlotStatus(localObject));
 
