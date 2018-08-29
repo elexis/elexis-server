@@ -47,6 +47,9 @@ public class JPAQuery<T extends AbstractDBObject> {
 	private ReadAllQuery readAllQuery;
 	private Expression predicate;
 
+	private Expression expressionGroup;
+	private boolean isInGroup = false;
+
 	private boolean includeDeleted;
 
 	private final Class<T> clazz;
@@ -74,43 +77,77 @@ public class JPAQuery<T extends AbstractDBObject> {
 	public void add(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, Object object) {
 		Expression predIn = derivePredicate(attribute, qt, object);
 
-		if (predicate == null) {
-			predicate = predIn;
+		and(predIn);
+	}
+
+	private void and(Expression predIn) {
+		if (isInGroup) {
+			if (expressionGroup == null) {
+				expressionGroup = predIn;
+			} else {
+				expressionGroup = expressionGroup.and(predIn);
+			}
 		} else {
-			predicate = predicate.and(predIn);
+			if (predicate == null) {
+				predicate = predIn;
+			} else {
+				predicate = predicate.and(predIn);
+			}
+		}
+	}
+
+	private void or(Expression predIn) {
+		if (isInGroup) {
+			if (expressionGroup == null) {
+				expressionGroup = predIn;
+			} else {
+				expressionGroup = expressionGroup.or(predIn);
+			}
+		} else {
+			if (predicate == null) {
+				predicate = predIn;
+			} else {
+				predicate = predicate.or(predIn);
+			}
 		}
 	}
 
 	public void add(SingularAttribute<?, Boolean> attribute, QUERY qt, boolean bool) {
 		Expression predIn = derivePredicate(attribute, qt, bool);
 
-		if (predicate == null) {
-			predicate = predIn;
-		} else {
-			predicate = predicate.and(predIn);
-		}
+		and(predIn);
 	}
 
 	public void addLikeNormalized(@SuppressWarnings("rawtypes") SingularAttribute attribute, String value) {
 		Expression predIn = emp.get(attribute.getName()).likeIgnoreCase(value.toString());
-		if (predicate == null) {
-			predicate = predIn;
-		} else {
-			predicate = predicate.and(predIn);
-		}
+
+		and(predIn);
 	}
 
 	public void or(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt, String string) {
 		Expression predIn = derivePredicate(attribute, qt, string);
 
-		if (predicate == null) {
-			predicate = predIn;
-		} else {
-			predicate = predicate.or(predIn);
-		}
+		or(predIn);
 	}
 
-	private Expression derivePredicate(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt,
+	public void startGroup() {
+		isInGroup = true;
+		expressionGroup = null;
+	}
+
+	public void endGroup_And() {
+		isInGroup = false;
+		and(expressionGroup);
+		expressionGroup = null;
+	}
+
+	public void endGroup_Or() {
+		isInGroup = false;
+		or(expressionGroup);
+		expressionGroup = null;
+	}
+
+	public Expression derivePredicate(@SuppressWarnings("rawtypes") SingularAttribute attribute, QUERY qt,
 			Object value) {
 		Expression exp = emp.get(attribute.getName());
 		switch (qt) {

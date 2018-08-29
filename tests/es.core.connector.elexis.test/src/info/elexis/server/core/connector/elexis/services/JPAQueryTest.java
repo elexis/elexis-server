@@ -236,4 +236,26 @@ public class JPAQueryTest {
 		assertEquals(307, i);
 	}
 
+	@Test
+	public void testJpaQueryWithOrGroup() {
+		Kontakt a = new KontaktService.PersonBuilder("FirstName", "Alpha", LocalDate.now(), Gender.MALE).patient()
+				.buildAndSave();
+		Kontakt a2 = new KontaktService.PersonBuilder("FirstName", "Beta", LocalDate.now(), Gender.MALE).patient()
+				.buildAndSave();
+		Kontakt a3 = new KontaktService.PersonBuilder("FirstName", "Beta", LocalDate.now(), Gender.FEMALE).patient()
+				.buildAndSave();
+
+		JPAQuery<Kontakt> qbe = new JPAQuery<Kontakt>(Kontakt.class);
+		qbe.add(Kontakt_.gender, QUERY.EQUALS, Gender.MALE);
+		qbe.startGroup();
+		qbe.or(Kontakt_.description1, QUERY.EQUALS, "Alpha");
+		qbe.or(Kontakt_.description1, QUERY.EQUALS, "Beta");
+		qbe.endGroup_And();
+		assertEquals(2, qbe.execute().size());
+
+		PersistenceService.remove(a);
+		PersistenceService.remove(a2);
+		PersistenceService.remove(a3);
+	}
+
 }
