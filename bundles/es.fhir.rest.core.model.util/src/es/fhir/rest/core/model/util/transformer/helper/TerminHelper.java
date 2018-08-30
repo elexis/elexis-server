@@ -17,18 +17,35 @@ public class TerminHelper {
 	public AppointmentStatus getStatus(Termin localObject) {
 		String terminStatus = localObject.getTerminStatus();
 
-		// TODO we need a mapping in the core, which
+		// TODO we need a dynamic mapping in the core, like it
 		// is already present for RH, for example:
-		if ("eingetroffen".equalsIgnoreCase(terminStatus)) {
+		switch (terminStatus) {
+		case "eingetroffen":
 			return AppointmentStatus.ARRIVED;
+		case "erledigt":
+			return AppointmentStatus.FULFILLED;
+		case "abgesagt":
+			return AppointmentStatus.CANCELLED;
+		case "nicht erschienen":
+			return AppointmentStatus.NOSHOW;
+		default:
+			return AppointmentStatus.BOOKED;
 		}
-
-		return AppointmentStatus.BOOKED;
 	}
 
 	public SlotStatus getSlotStatus(Termin localObject) {
-		// it already is an appointment, so it has to be busy
-		return SlotStatus.BUSY;
+		String terminTyp = localObject.getTerminTyp();
+
+		// TODO we need a dynamic mapping in the core, like it
+		// is already present for RH, for example:
+		switch (terminTyp) {
+		case "frei":
+			return SlotStatus.FREE;
+		case "gesperrt":
+			return SlotStatus.BUSYUNAVAILABLE;
+		default:
+			return SlotStatus.BUSY;
+		}
 	}
 
 	public String getDescription(Termin localObject) {
