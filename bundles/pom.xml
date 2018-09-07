@@ -28,6 +28,7 @@
                	<module>es.core.connector.elexis.jpa</module>
 		<module>at.medevit.logback.pushnotification</module>
 		<module>at.medevit.logback.mattermost</module>
+		<module>es.hapi.fhir</module>
 		<module>es.fhir.rest.core</module>
 		<module>es.fhir.rest.core.model.util</module>
 		<module>es.findings.fhir.jpa</module>

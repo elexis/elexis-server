@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="info.elexis.server.fhir.rest.core.feature"
-      label="FHIR Core"
-      version="1.0.0.qualifier">
+      label="FHIR Core including HAPI FHIR libraries"
+      version="2.0.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -23,13 +23,6 @@
 
    <plugin
          id="info.elexis.server.fhir.rest.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="hapi-fhir-osgi-core"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -135,6 +128,13 @@
 
    <plugin
          id="ch.elexis.core.findings.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="info.elexis.server.hapi.fhir"
          download-size="0"
          install-size="0"
          version="0.0.0"
