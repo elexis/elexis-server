@@ -2,6 +2,8 @@ package info.elexis.server.fhir.rest.core.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -13,6 +15,8 @@ import org.hl7.fhir.dstu3.model.Appointment.AppointmentParticipantComponent;
 import org.hl7.fhir.dstu3.model.Appointment.AppointmentStatus;
 import org.hl7.fhir.dstu3.model.Appointment.ParticipantRequired;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Schedule;
@@ -21,9 +25,10 @@ import org.hl7.fhir.dstu3.model.Slot.SlotStatus;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
-import ch.elexis.core.findings.util.ModelUtil;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class AppointmentTest {
 
@@ -34,7 +39,7 @@ public class AppointmentTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeAgendaTable();
 
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 
@@ -84,6 +89,36 @@ public class AppointmentTest {
 				.where(Appointment.DATE.afterOrEquals().day("2014-05-14"))
 				.and(Appointment.DATE.before().day("2016-11-15")).returnBundle(Bundle.class).execute();
 		assertEquals(8, results.getEntry().size());
+	}
+
+	@Test
+	public void testSearchByDateParamsAndSlot() {
+		// http://localhost:8380/fhir/Schedule/5495888f8aae05023409b5cf853bbbce Praxis
+		Bundle results = client.search().forResource(Appointment.class)
+				.where(Appointment.DATE.afterOrEquals().day("2016-12-01"))
+				.and(Appointment.DATE.before().day("2016-12-30"))
+				.and(Appointment.ACTOR.hasId("Schedule/68a891b86923dd1740345627dbb92c9f"))
+				.returnBundle(Bundle.class).execute();
+		assertEquals(2, results.getEntry().size());
+		for (BundleEntryComponent entry : results.getEntry()) {
+			Appointment appointment = (Appointment) entry.getResource();
+			assertTrue(appointment.getParticipant().get(0).getActor().getReference().startsWith("Patient/"));
+			assertNull(appointment.getParticipant().get(0).getActorTarget());
+		}
+	}
+
+	@Test
+	public void testSearchByDateParamsAndSlotAndIncludePatientReference() {
+		// http://localhost:8380/fhir/Schedule/5495888f8aae05023409b5cf853bbbce Praxis
+		Bundle results = client.search().forResource(Appointment.class)
+				.where(Appointment.DATE.afterOrEquals().day("2016-12-01"))
+				.and(Appointment.DATE.before().day("2016-12-30"))
+				.and(Appointment.ACTOR.hasId("Schedule/68a891b86923dd1740345627dbb92c9f"))
+				.include(Appointment.INCLUDE_PATIENT.asNonRecursive()).returnBundle(Bundle.class).execute();
+		System.out.println(results);
+		assertEquals(4, results.getEntry().size());
+
+	    System.out.println(FhirUtil.serializeToString(results));
 	}
 
 }

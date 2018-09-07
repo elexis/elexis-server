@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Observation;
-import org.hl7.fhir.instance.model.valuesets.ObservationCategory;
+import org.hl7.fhir.dstu3.model.codesystems.ObservationCategory;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.primitive.IdDt;

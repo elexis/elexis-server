@@ -24,11 +24,11 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
-import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class PatientTest {
 
@@ -39,7 +39,7 @@ public class PatientTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializePatient();
 
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 
 	}

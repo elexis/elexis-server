@@ -183,6 +183,7 @@ public class CustomNarrativeGenerator implements ca.uhn.fhir.narrative.INarrativ
 			this.fhirContext = theContext;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected void doProcess(ITemplateContext theContext, IProcessableElementTag theTag,
 				AttributeName theAttributeName, String theAttributeValue,
 				IElementTagStructureHandler theStructureHandler) {

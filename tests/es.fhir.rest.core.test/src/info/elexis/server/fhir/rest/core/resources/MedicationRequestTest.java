@@ -21,11 +21,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.IGenericClient;
-import ch.elexis.core.findings.util.ModelUtil;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.model.prescription.EntryType;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class MedicationRequestTest {
 
@@ -38,7 +38,7 @@ public class MedicationRequestTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializePrescription();
 
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 		patient = client.read().resource(Patient.class)
 				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId()).execute();

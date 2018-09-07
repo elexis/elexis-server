@@ -10,12 +10,12 @@ import org.hl7.fhir.dstu3.model.Appointment.AppointmentParticipantComponent;
 import org.hl7.fhir.dstu3.model.Appointment.ParticipantRequired;
 import org.hl7.fhir.dstu3.model.Appointment.ParticipationStatus;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Slot;
 import org.osgi.service.component.annotations.Component;
 
-import ca.uhn.fhir.model.dstu.resource.Claim.Patient;
-import ca.uhn.fhir.model.dstu.resource.Practitioner;
-import ca.uhn.fhir.model.dstu.resource.Slot;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;

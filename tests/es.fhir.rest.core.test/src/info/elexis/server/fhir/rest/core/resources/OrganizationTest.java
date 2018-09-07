@@ -17,9 +17,9 @@ import org.hl7.fhir.dstu3.model.Organization;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
-import ch.elexis.core.findings.util.ModelUtil;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class OrganizationTest {
 
@@ -30,7 +30,7 @@ public class OrganizationTest {
 		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
 		initializer.initializeOrganization();
 
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 

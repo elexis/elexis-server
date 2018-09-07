@@ -19,6 +19,10 @@ public class FhirUtil {
 		return getJsonParser().parseResource(jsonResource);
 	}
 
+	public static String serializeToString(IBaseResource baseResource) {
+		return context.newJsonParser().setPrettyPrint(true).encodeResourceToString(baseResource);
+	}
+
 	public static IGenericClient getGenericClient(String theServerBase) {
 		// Create a logging interceptor
 		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();

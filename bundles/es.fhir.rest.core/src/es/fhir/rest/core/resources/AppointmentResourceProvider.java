@@ -1,13 +1,17 @@
 package es.fhir.rest.core.resources;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.Appointment;
+import org.hl7.fhir.dstu3.model.Appointment.AppointmentParticipantComponent;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
@@ -17,8 +21,10 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -32,10 +38,12 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.QueryUtil;
 import es.fhir.rest.core.resources.util.TerminUtil;
 import info.elexis.server.core.common.converter.DateConverter;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin_;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
+import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
@@ -86,7 +94,8 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 	@Search
 	public List<Appointment> findAppointmentsByDateAndOptionallyArea(
 			@RequiredParam(name = Appointment.SP_DATE) DateRangeParam dateParam,
-			@Description(shortDefinition = "Only supports Schedule/identifier") @OptionalParam(name = Appointment.SP_ACTOR) ReferenceOrListParam actors) {
+			@Description(shortDefinition = "Only supports Schedule/identifier") @OptionalParam(name = Appointment.SP_ACTOR) ReferenceOrListParam actors,
+			@IncludeParam(allow = { "Appointment:patient" }) Set<Include> theIncludes) {
 		JPAQuery<Termin> query = new JPAQuery<>(Termin.class);
 
 		DateConverter dateConverter = new DateConverter();
@@ -119,12 +128,37 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 			query.endGroup_And();
 		}
 
-		List<Termin> appointments = query.execute();
-		if (!appointments.isEmpty()) {
-			return appointments.parallelStream().map(a -> getTransformer().getFhirObject(a).get())
-					.collect(Collectors.toList());
+		List<Termin> termine = query.execute();
+		if (termine.isEmpty()) {
+			return Collections.emptyList();
 		}
-		return Collections.emptyList();
+
+		List<Appointment> appointments = termine.parallelStream().map(a -> getTransformer().getFhirObject(a).get())
+				.collect(Collectors.toCollection(ArrayList::new));
+
+		if (theIncludes.contains(new Include("Appointment:patient"))) {
+			@SuppressWarnings("unchecked")
+			IFhirTransformer<Patient, Kontakt> kontaktTransformer = (IFhirTransformer<Patient, Kontakt>) transformerRegistry
+					.getTransformerFor(Patient.class, Kontakt.class);
+			// TODO parallelStream?
+
+			for (Appointment appointment : appointments) {
+				List<AppointmentParticipantComponent> participants = appointment.getParticipant();
+				for (AppointmentParticipantComponent participant : participants) {
+					String reference = participant.getActor().getReference();
+					if (reference.startsWith(Patient.class.getSimpleName())) {
+						String patientId = reference.substring(reference.indexOf('/') + 1);
+						KontaktService.load(patientId).ifPresent(kontakt -> {
+							Patient actorTarget = kontaktTransformer.getFhirObject(kontakt).orElse(null);
+							participant.getActor().setResource(actorTarget);
+						});
+					}
+				}
+			}
+		}
+
+		return appointments;
+
 	}
 
 }

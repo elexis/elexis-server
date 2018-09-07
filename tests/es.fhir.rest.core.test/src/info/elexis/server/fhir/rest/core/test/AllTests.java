@@ -33,12 +33,13 @@ import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
 import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
 import info.elexis.server.fhir.rest.core.resources.ProcedureRequestTest;
+import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ CORSTest.class, MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
 		PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
 		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
-		AllergyIntoleranceTest.class, AppointmentTest.class })
+		AllergyIntoleranceTest.class, AppointmentTest.class, ScheduleTest.class })
 public class AllTests {
 
 	private static IFindingsService iFindingsService;

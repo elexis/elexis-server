@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.osgi.service.component.annotations.Component;
 
-import ca.uhn.fhir.model.dstu2.resource.Schedule;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;

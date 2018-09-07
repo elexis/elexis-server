@@ -12,7 +12,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
+import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -66,8 +66,8 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Encounter, IEncounter> getTransformer() {
-		return (IFhirTransformer<Encounter, IEncounter>) transformerRegistry
-					.getTransformerFor(Encounter.class, IEncounter.class);
+		return (IFhirTransformer<Encounter, IEncounter>) transformerRegistry.getTransformerFor(Encounter.class,
+				IEncounter.class);
 	}
 
 	@Read
@@ -84,8 +84,8 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	}
 
 	/**
-	 * Search for all encounters by the patient id. Optional the date range of
-	 * the returned encounters can be specified.
+	 * Search for all encounters by the patient id. Optional the date range of the
+	 * returned encounters can be specified.
 	 * 
 	 * @param thePatientId
 	 * @param dates
@@ -99,18 +99,15 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate encounters first
-					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
-						IEncounter.class, null);
+					migratorService.migratePatientsFindings(thePatientId.getIdPart(), IEncounter.class, null);
 
-					List<IEncounter> findings = findingsService
-						.getPatientsFindings(patient.get().getId(),
+					List<IEncounter> findings = findingsService.getPatientsFindings(patient.get().getId(),
 							IEncounter.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Encounter> ret = new ArrayList<Encounter>();
 
 						for (IEncounter iFinding : findings) {
-							Optional<Encounter> fhirEncounter =
-								getTransformer().getFhirObject(iFinding);
+							Optional<Encounter> fhirEncounter = getTransformer().getFhirObject(iFinding);
 							fhirEncounter.ifPresent(fe -> {
 								if (dates != null) {
 									if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(), dates)) {
@@ -139,10 +136,9 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
 				&& !identifier.getValue().isEmpty()) {
-			migratorService.migrateConsultationsFindings(identifier.getValue().getValue(), IEncounter.class);
+			migratorService.migrateConsultationsFindings(identifier.getValue(), IEncounter.class);
 
-			List<IEncounter> findings = findingsService
-				.getConsultationsFindings(identifier.getValue().getValue(),
+			List<IEncounter> findings = findingsService.getConsultationsFindings(identifier.getValue(),
 					IEncounter.class);
 			if (findings != null && !findings.isEmpty()) {
 				List<Encounter> ret = new ArrayList<Encounter>();

@@ -29,7 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.exceptions.ElexisException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
@@ -39,12 +39,12 @@ import ch.elexis.core.findings.IObservation.ObservationCode;
 import ch.elexis.core.findings.IObservation.ObservationType;
 import ch.elexis.core.findings.ObservationComponent;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class ObservationTest {
 
@@ -59,7 +59,7 @@ public class ObservationTest {
 		initializer.initializeBehandlung();
 		initializer.initializeMandant();
 
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 
 		IObservation persAnam = AllTests.getFindingsService().create(IObservation.class);

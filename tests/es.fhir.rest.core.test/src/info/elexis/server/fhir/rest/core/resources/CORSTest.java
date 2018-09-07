@@ -11,12 +11,12 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.IHttpRequest;
 import ca.uhn.fhir.rest.client.api.IHttpResponse;
-import ca.uhn.fhir.rest.method.HttpGetClientInvocation;
-import ca.uhn.fhir.rest.method.MethodUtil;
-import ch.elexis.core.findings.util.ModelUtil;
+import ca.uhn.fhir.rest.client.method.HttpGetClientInvocation;
+import ca.uhn.fhir.rest.client.method.MethodUtil;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class CORSTest {
 
@@ -24,7 +24,7 @@ public class CORSTest {
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 	

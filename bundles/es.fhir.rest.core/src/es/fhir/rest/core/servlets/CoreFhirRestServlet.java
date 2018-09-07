@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.web.servlet.IniShiroFilter;
-import org.apache.shiro.web.servlet.ShiroFilter;
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -29,7 +28,6 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import info.elexis.server.core.SystemPropertyConstants;
-import info.elexis.server.core.security.oauth2.AuthenticatingResourceFilter;
 
 @Component(service = CoreFhirRestServlet.class)
 public class CoreFhirRestServlet extends RestfulServer {

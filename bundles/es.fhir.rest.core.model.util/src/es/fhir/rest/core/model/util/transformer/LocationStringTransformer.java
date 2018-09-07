@@ -3,8 +3,8 @@ package es.fhir.rest.core.model.util.transformer;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Location;
-import org.hl7.fhir.instance.model.IdType;
 import org.osgi.service.component.annotations.Component;
 
 import es.fhir.rest.core.IFhirTransformer;

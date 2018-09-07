@@ -30,12 +30,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
-import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class EncounterTest {
 
@@ -47,7 +47,7 @@ public class EncounterTest {
 		initializer.initializeBehandlung();
 		initializer.initializeMandant();
 
-		client = ModelUtil.getGenericClient("http://localhost:8380/fhir");
+		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 
 	}
