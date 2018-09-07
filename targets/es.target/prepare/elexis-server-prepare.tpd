@@ -152,6 +152,8 @@ location "http://download.eclipse.org/gemini/updates/naming/1.0.5/" {
 
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
 location "http://download.elexis.info/elexis-server/elexis-server-dependencies/" {
+	com.google.code.gson
+	jcl.over.slf4j
 	com.squareup.okhttp3.okhttp [3.10.0,3.10.0]
 	com.squareup.okio [1.14.0,1.14.0]
 	org.apache.commons.beanutils [1.9.2,1.9.2]
