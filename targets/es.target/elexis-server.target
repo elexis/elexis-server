@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<<<<<<< Upstream, based on branch 'master' of https://github.com/elexis/elexis-server.git
-<target name="Elexis-Server" sequenceNumber="1532417453">
-=======
-<target name="Elexis-Server" sequenceNumber="1536304685">
->>>>>>> 10b0137 Update productive target
+<target name="Elexis-Server" sequenceNumber="1536304739">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
