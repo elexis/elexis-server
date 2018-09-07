@@ -22,7 +22,10 @@ Require-Bundle: com.google.gson;bundle-version="2.5.0",
  net.sf.saxon.Saxon-HE;bundle-version="9.6.0",
  com.phloc.commons;bundle-version="4.4.6",
  com.phloc.schematron;bundle-version="2.7.1",
- stax2-api;bundle-version="3.1.4"
+ stax2-api;bundle-version="3.1.4",
+ javassist;bundle-version="3.10.0",
+ org.apache.httpcomponents.httpclient;bundle-version="4.5.2",
+ org.apache.httpcomponents.httpcore;bundle-version="4.4.6"
 Export-Package: ca.uhn.fhir.context,
  ca.uhn.fhir.context.api,
  ca.uhn.fhir.context.support,
