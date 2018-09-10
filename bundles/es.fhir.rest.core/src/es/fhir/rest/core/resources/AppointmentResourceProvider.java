@@ -93,6 +93,10 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 			@Description(shortDefinition = "Only supports Schedule/identifier") @OptionalParam(name = Appointment.SP_ACTOR) ReferenceOrListParam actors,
 			@IncludeParam(allow = { "Appointment:patient" }) Set<Include> theIncludes) {
 		JPAQuery<Termin> query = new JPAQuery<>(Termin.class);
+		
+		// gesperrte termine sind keine Termine - es sind nicht verfügbare Slots
+		// TODO configurable
+		query.add(Termin_.terminTyp, QUERY.NOT_EQUALS, "gesperrt");
 
 		DateConverter dateConverter = new DateConverter();
 
