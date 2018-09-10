@@ -3,6 +3,7 @@ package es.fhir.rest.core.model.util.transformer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.CodeSystem;
@@ -10,6 +11,7 @@ import org.hl7.fhir.dstu3.model.CodeSystem.ConceptDefinitionComponent;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.codes.ICodingService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -32,7 +34,7 @@ public class CodeSystemStringTransformer implements IFhirTransformer<CodeSystem,
 	}
 
 	@Override
-	public Optional<CodeSystem> getFhirObject(String localObject) {
+	public Optional<CodeSystem> getFhirObject(String localObject, Set<Include> includes) {
 		CodeSystem ret = null;
 		Optional<String> idString = CodeSystemHelper.getIdForString(localObject);
 		Optional<String> systemString = CodeSystemHelper.getSystemForId(idString.get());

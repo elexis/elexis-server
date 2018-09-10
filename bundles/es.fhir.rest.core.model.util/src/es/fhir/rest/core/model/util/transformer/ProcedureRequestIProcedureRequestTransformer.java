@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -12,6 +13,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
@@ -54,7 +56,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 	}
 
 	@Override
-	public Optional<ProcedureRequest> getFhirObject(IProcedureRequest localObject) {
+	public Optional<ProcedureRequest> getFhirObject(IProcedureRequest localObject, Set<Include> includes) {
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((ProcedureRequest) resource.get());

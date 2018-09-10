@@ -3,12 +3,14 @@ package es.fhir.rest.core.model.util.transformer;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.Period;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.model.FallConstants;
 import es.fhir.rest.core.IFhirTransformer;
@@ -25,7 +27,7 @@ public class CoverageFallTransformer implements IFhirTransformer<Coverage, Fall>
 	private FallHelper fallHelper = new FallHelper();
 
 	@Override
-	public Optional<Coverage> getFhirObject(Fall localObject) {
+	public Optional<Coverage> getFhirObject(Fall localObject, Set<Include> includes) {
 		Coverage coverage = new Coverage();
 
 		coverage.setId(new IdDt("Coverage", localObject.getId()));

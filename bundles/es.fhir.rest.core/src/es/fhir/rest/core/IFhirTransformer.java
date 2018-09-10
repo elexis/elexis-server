@@ -1,9 +1,12 @@
 package es.fhir.rest.core;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Identifier;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.IdentifierSystem;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 
@@ -21,12 +24,20 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBOb
  */
 public interface IFhirTransformer<F, L> {
 	/**
-	 * Create a new FHIR object representing the localObject.
+	 * Create a new FHIR object representing the localObject, optionally including
+	 * referenced resources.
 	 * 
 	 * @param localObject
+	 * @param includes
+	 *            the resources to <a href=
+	 *            "http://hapifhir.io/doc_rest_operations.html#Resource_Includes__include">include</a>
 	 * @return
 	 */
-	public Optional<F> getFhirObject(L localObject);
+	public Optional<F> getFhirObject(L localObject, Set<Include> includes);
+
+	public default Optional<F> getFhirObject(L localObject) {
+		return getFhirObject(localObject, Collections.emptySet());
+	}
 
 	/**
 	 * Search for the local Object matching the FHIR object.
@@ -41,8 +52,8 @@ public interface IFhirTransformer<F, L> {
 	 * 
 	 * @param fhirObject
 	 * @param localObject
-	 * @return the updated local Object, possibly not same as localObject
-	 *         parameter, empty if nothing changed
+	 * @return the updated local Object, possibly not same as localObject parameter,
+	 *         empty if nothing changed
 	 */
 	public Optional<L> updateLocalObject(F fhirObject, L localObject);
 

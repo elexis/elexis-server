@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Annotation;
 import org.hl7.fhir.dstu3.model.CodeType;
@@ -24,6 +25,7 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.model.prescription.Constants;
 import ch.elexis.core.model.prescription.EntryType;
@@ -47,7 +49,7 @@ public class MedicationRequestPrescriptionTransformer implements IFhirTransforme
 	private PrescriptionEntryTypeFactory entryTypeFactory = new PrescriptionEntryTypeFactory();
 
 	@Override
-	public Optional<MedicationRequest> getFhirObject(Prescription localObject) {
+	public Optional<MedicationRequest> getFhirObject(Prescription localObject, Set<Include> includes) {
 		MedicationRequest fhirObject = new MedicationRequest();
 		MedicationRequestStatus statusEnum = MedicationRequestStatus.ACTIVE;
 

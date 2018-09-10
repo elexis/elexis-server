@@ -1,6 +1,7 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -10,6 +11,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -33,7 +35,7 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 	}
 
 	@Override
-	public Optional<Encounter> getFhirObject(IEncounter localObject) {
+	public Optional<Encounter> getFhirObject(IEncounter localObject, Set<Include> includes) {
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Encounter) resource.get());

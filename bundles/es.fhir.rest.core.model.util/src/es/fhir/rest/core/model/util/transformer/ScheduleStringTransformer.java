@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.Practitioner;
@@ -11,6 +12,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.resources.util.TerminUtil;
@@ -21,7 +23,7 @@ import info.elexis.server.core.connector.elexis.services.TerminService;
 public class ScheduleStringTransformer implements IFhirTransformer<Schedule, String> {
 
 	@Override
-	public Optional<Schedule> getFhirObject(String localObject) {
+	public Optional<Schedule> getFhirObject(String localObject, Set<Include> includes) {
 		Schedule schedule = getSchedules().get(localObject);
 		return Optional.ofNullable(schedule);
 	}

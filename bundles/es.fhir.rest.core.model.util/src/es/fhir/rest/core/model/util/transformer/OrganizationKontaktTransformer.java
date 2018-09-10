@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
@@ -9,6 +10,7 @@ import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Organization;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.KontaktHelper;
@@ -20,7 +22,7 @@ public class OrganizationKontaktTransformer implements IFhirTransformer<Organiza
 	private KontaktHelper kontaktHelper = new KontaktHelper();
 
 	@Override
-	public Optional<Organization> getFhirObject(Kontakt localObject) {
+	public Optional<Organization> getFhirObject(Kontakt localObject, Set<Include> includes) {
 		Organization organization = new Organization();
 
 		organization.setId(new IdDt("Organization", localObject.getId()));

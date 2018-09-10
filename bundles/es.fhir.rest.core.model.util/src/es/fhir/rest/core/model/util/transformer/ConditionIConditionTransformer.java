@@ -1,6 +1,7 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -9,6 +10,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -29,7 +31,7 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 	}
 
 	@Override
-	public Optional<Condition> getFhirObject(ICondition localObject) {
+	public Optional<Condition> getFhirObject(ICondition localObject, Set<Include> includes) {
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Condition) resource.get());

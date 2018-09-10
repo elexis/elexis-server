@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.dstu3.model.Appointment.AppointmentParticipantComponent;
 import org.hl7.fhir.dstu3.model.Appointment.ParticipantRequired;
@@ -15,9 +17,13 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
+import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
@@ -29,8 +35,15 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 
 	private TerminHelper terminHelper = new TerminHelper();
 
+	private IFhirTransformerRegistry transformerRegistry;
+
+	@org.osgi.service.component.annotations.Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+		this.transformerRegistry = transformerRegistry;
+	}
+
 	@Override
-	public Optional<Appointment> getFhirObject(Termin localObject) {
+	public Optional<Appointment> getFhirObject(Termin localObject, Set<Include> includes) {
 		Appointment appointment = new Appointment();
 
 		appointment.setId(new IdDt(Appointment.class.getSimpleName(), localObject.getId()));
@@ -61,14 +74,21 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 		}
 
 		String patientIdOrSomeString = localObject.getPatId();
-		if (patientIdOrSomeString != null) {
-			Optional<Kontakt> contact = KontaktService.load(patientIdOrSomeString);
-			if (contact.isPresent()) {
+		if (StringUtils.isNotEmpty(patientIdOrSomeString)) {
+			Optional<Kontakt> patientContact = KontaktService.load(patientIdOrSomeString);
+			if (patientContact.isPresent()) {
 				AppointmentParticipantComponent patient = new AppointmentParticipantComponent();
 				patient.setActor(new Reference(new IdDt(Patient.class.getSimpleName(), patientIdOrSomeString)));
 				patient.setRequired(ParticipantRequired.REQUIRED);
 				patient.setStatus(ParticipationStatus.ACCEPTED);
 				participant.add(patient);
+
+				if (includes.contains(new Include("Appointment:patient"))) {
+					@SuppressWarnings("unchecked")
+					IFhirTransformer<Patient, Kontakt> patientTransformer = (IFhirTransformer<Patient, Kontakt>) transformerRegistry
+							.getTransformerFor(Patient.class, Kontakt.class);
+					patient.getActor().setResource(patientTransformer.getFhirObject(patientContact.get()).get());
+				}
 			} else {
 				// TODO there is another string inside - where to put it? is it relevant?
 			}

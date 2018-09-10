@@ -1,6 +1,8 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
+import java.util.Set;
+
 import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
@@ -8,6 +10,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.IAllergyIntolerance;
 import ch.elexis.core.findings.IFindingsService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -29,7 +32,7 @@ public class AllergyIntoleranceIAllergyIntoleranceTransformer
 	}
 
 	@Override
-	public Optional<AllergyIntolerance> getFhirObject(IAllergyIntolerance localObject){
+	public Optional<AllergyIntolerance> getFhirObject(IAllergyIntolerance localObject, Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((AllergyIntolerance) resource.get());

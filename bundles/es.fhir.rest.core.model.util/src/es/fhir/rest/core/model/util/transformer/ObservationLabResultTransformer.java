@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
@@ -9,6 +10,7 @@ import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.codesystems.ObservationCategory;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.LabResultHelper;
@@ -20,7 +22,7 @@ public class ObservationLabResultTransformer implements IFhirTransformer<Observa
 	private LabResultHelper labResultHelper = new LabResultHelper();
 
 	@Override
-	public Optional<Observation> getFhirObject(LabResult localObject) {
+	public Optional<Observation> getFhirObject(LabResult localObject, Set<Include> includes) {
 		Observation observation = new Observation();
 
 		observation.setId(new IdDt("Observation", localObject.getId()));

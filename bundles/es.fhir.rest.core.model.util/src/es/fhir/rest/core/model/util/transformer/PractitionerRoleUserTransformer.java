@@ -2,12 +2,14 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.MandantHelper;
@@ -20,7 +22,7 @@ public class PractitionerRoleUserTransformer implements IFhirTransformer<Practit
 	private MandantHelper mandantHelper = new MandantHelper();
 
 	@Override
-	public Optional<PractitionerRole> getFhirObject(User localObject) {
+	public Optional<PractitionerRole> getFhirObject(User localObject, Set<Include> includes) {
 		PractitionerRole practitionerRole = new PractitionerRole();
 		practitionerRole.setId(new IdDt("PractitionerRole", localObject.getId()));
 

@@ -3,6 +3,7 @@ package es.fhir.rest.core.model.util.transformer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.hl7.fhir.dstu3.model.Claim;
@@ -22,6 +23,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
@@ -54,7 +56,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 	}
 
 	@Override
-	public Optional<Claim> getFhirObject(List<Verrechnet> localObject) {
+	public Optional<Claim> getFhirObject(List<Verrechnet> localObject, Set<Include> includes) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
 	}

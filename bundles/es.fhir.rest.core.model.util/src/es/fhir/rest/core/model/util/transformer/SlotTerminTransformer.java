@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Reference;
@@ -9,6 +10,7 @@ import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
@@ -22,7 +24,7 @@ public class SlotTerminTransformer implements IFhirTransformer<Slot, Termin> {
 	private TerminHelper terminHelper = new TerminHelper();
 
 	@Override
-	public Optional<Slot> getFhirObject(Termin localObject) {
+	public Optional<Slot> getFhirObject(Termin localObject, Set<Include> includes) {
 		Slot slot = new Slot();
 
 		slot.setId(new IdDt(Slot.class.getSimpleName(), localObject.getId()));

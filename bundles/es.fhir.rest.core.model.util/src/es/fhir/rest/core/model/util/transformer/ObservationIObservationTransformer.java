@@ -1,6 +1,7 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -9,6 +10,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
@@ -31,7 +33,7 @@ public class ObservationIObservationTransformer
 	}
 
 	@Override
-	public Optional<Observation> getFhirObject(IObservation localObject) {
+	public Optional<Observation> getFhirObject(IObservation localObject, Set<Include> includes) {
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Observation) resource.get());

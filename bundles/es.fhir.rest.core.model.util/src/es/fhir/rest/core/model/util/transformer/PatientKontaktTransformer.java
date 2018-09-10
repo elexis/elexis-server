@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.ContactPoint;
@@ -11,6 +12,7 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.osgi.service.component.annotations.Component;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.IdentifierSystem;
 import es.fhir.rest.core.IFhirTransformer;
@@ -24,7 +26,7 @@ public class PatientKontaktTransformer implements IFhirTransformer<Patient, Kont
 	private KontaktHelper kontaktHelper = new KontaktHelper();
 
 	@Override
-	public Optional<Patient> getFhirObject(Kontakt localObject) {
+	public Optional<Patient> getFhirObject(Kontakt localObject, Set<Include> includes) {
 		Patient patient = new Patient();
 
 		patient.setId(new IdDt("Patient", localObject.getId()));
