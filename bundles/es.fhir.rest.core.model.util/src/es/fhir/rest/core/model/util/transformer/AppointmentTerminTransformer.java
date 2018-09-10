@@ -47,8 +47,9 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 		Appointment appointment = new Appointment();
 
 		appointment.setId(new IdDt(Appointment.class.getSimpleName(), localObject.getId()));
-
-		appointment.setStatus(terminHelper.getStatus(localObject));
+		appointment.getMeta().setVersionId(localObject.getLastupdate().toString());
+		
+		terminHelper.mapApplyAppointmentStatus(appointment, localObject);
 
 		appointment.setDescription(terminHelper.getDescription(localObject));
 
@@ -108,6 +109,11 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 
 	@Override
 	public Optional<Termin> updateLocalObject(Appointment fhirObject, Termin localObject) {
+		
+		terminHelper.mapApplyAppointmentStatus(localObject, fhirObject);
+		// TODO more
+		
+		TerminService.save(localObject);
 		return Optional.empty();
 	}
 

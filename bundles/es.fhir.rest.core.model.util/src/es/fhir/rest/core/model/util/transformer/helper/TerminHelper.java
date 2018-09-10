@@ -7,31 +7,13 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
+import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.dstu3.model.Appointment.AppointmentStatus;
 import org.hl7.fhir.dstu3.model.Slot.SlotStatus;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
 
 public class TerminHelper {
-
-	public AppointmentStatus getStatus(Termin localObject) {
-		String terminStatus = localObject.getTerminStatus();
-
-		// TODO we need a dynamic mapping in the core, like it
-		// is already present for RH, for example:
-		switch (terminStatus) {
-		case "eingetroffen":
-			return AppointmentStatus.ARRIVED;
-		case "erledigt":
-			return AppointmentStatus.FULFILLED;
-		case "abgesagt":
-			return AppointmentStatus.CANCELLED;
-		case "nicht erschienen":
-			return AppointmentStatus.NOSHOW;
-		default:
-			return AppointmentStatus.BOOKED;
-		}
-	}
 
 	public SlotStatus getSlotStatus(Termin localObject) {
 		String terminTyp = localObject.getTerminTyp();
@@ -90,6 +72,56 @@ public class TerminHelper {
 		}
 
 		return Optional.empty();
+	}
+
+	public void mapApplyAppointmentStatus(Appointment target, Termin source) {
+		String terminStatus = source.getTerminStatus();
+
+		// TODO we need a dynamic mapping in the core, like it
+		// is already present for RH, for example:
+		switch (terminStatus) {
+		case "eingetroffen":
+			target.setStatus(AppointmentStatus.ARRIVED);
+			return;
+		case "erledigt":
+			target.setStatus(AppointmentStatus.FULFILLED);
+			return;
+		case "abgesagt":
+			target.setStatus(AppointmentStatus.CANCELLED);
+			return;
+		case "nicht erschienen":
+			target.setStatus(AppointmentStatus.NOSHOW);
+			return;
+		default:
+			target.setStatus(AppointmentStatus.BOOKED);
+		}
+	}
+
+	/**
+	 * Map and apply the source status to the target status
+	 * 
+	 * @param target
+	 * @param source
+	 */
+	public void mapApplyAppointmentStatus(Termin target, Appointment source) {
+		AppointmentStatus status = source.getStatus();
+		switch (status) {
+		case FULFILLED:
+			target.setTerminStatus("erledigt");
+			return;
+		case ARRIVED:
+			target.setTerminStatus("eingetroffen");
+			return;
+		case CANCELLED:
+			target.setTerminStatus("abgesagt");
+			return;
+		case NOSHOW:
+			target.setTerminStatus("nicht erschienen");
+			return;
+		default:
+			target.setTerminStatus("-");
+		}
+
 	}
 
 }

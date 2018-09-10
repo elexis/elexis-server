@@ -45,7 +45,6 @@ public class AppointmentTest {
 	public void testDirectLoadAppointmentInContactAssignedArea() {
 		Appointment result = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
 		assertNotNull(result);
-		assertEquals(AppointmentStatus.BOOKED, result.getStatus());
 		assertEquals(1484116200000l, result.getStart().getTime());
 		assertEquals(1484121600000l, result.getEnd().getTime());
 		assertEquals(90, result.getMinutesDuration());
@@ -119,4 +118,14 @@ public class AppointmentTest {
 	    System.out.println(FhirUtil.serializeToString(results));
 	}
 
+	@Test
+	public void updateAppointmentTest() {
+		Appointment result = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
+		assertEquals(AppointmentStatus.BOOKED, result.getStatus());
+		result.setStatus(AppointmentStatus.FULFILLED);	
+		client.update().resource(result).execute();
+		Appointment resultUpdated = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
+		assertEquals(AppointmentStatus.FULFILLED, resultUpdated.getStatus());
+	}
+	
 }

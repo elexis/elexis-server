@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
@@ -26,10 +27,14 @@ import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.Update;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceOrListParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -93,7 +98,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 			@Description(shortDefinition = "Only supports Schedule/identifier") @OptionalParam(name = Appointment.SP_ACTOR) ReferenceOrListParam actors,
 			@IncludeParam(allow = { "Appointment:patient" }) Set<Include> theIncludes) {
 		JPAQuery<Termin> query = new JPAQuery<>(Termin.class);
-		
+
 		// gesperrte termine sind keine Termine - es sind nicht verfügbare Slots
 		// TODO configurable
 		query.add(Termin_.terminTyp, QUERY.NOT_EQUALS, "gesperrt");
@@ -135,6 +140,30 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 
 		return termine.parallelStream().map(a -> getTransformer().getFhirObject(a, theIncludes).get())
 				.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	@Update
+	public MethodOutcome updateAppointment(@IdParam IdType theId, @ResourceParam Appointment appointment) {
+		String versionId = theId.getVersionIdPart();
+
+		Optional<Termin> localObject = getTransformer().getLocalObject(appointment);
+		MethodOutcome outcome = new MethodOutcome();
+		if (localObject.isPresent()) {
+			if(versionId == null) {
+				log.warn("Version agnostic update on {}", localObject.get());
+			}
+			if (versionId != null && !versionId.equals(localObject.get().getLastupdate().toString())) {
+				throw new ResourceVersionConflictException(
+						"Expected version " + localObject.get().getLastupdate().toString());
+			}
+			getTransformer().updateLocalObject(appointment, localObject.get());
+		} else {
+			OperationOutcome issueOutcome = new OperationOutcome();
+			issueOutcome.addIssue().setDiagnostics("No local object found");
+			outcome.setOperationOutcome(issueOutcome);
+		}
+
+		return outcome;
 	}
 
 }
