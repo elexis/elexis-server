@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.shiro.SecurityUtils;
 import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -150,7 +151,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 		MethodOutcome outcome = new MethodOutcome();
 		if (localObject.isPresent()) {
 			if (versionId == null) {
-				log.warn("Version agnostic update on {}", localObject.get());
+				log.warn("[{}] Version agnostic update on {}", SecurityUtils.getSubject().getPrincipal(), localObject.get());
 			}
 			if (versionId != null && !versionId.equals(localObject.get().getLastupdate().toString())) {
 				throw new ResourceVersionConflictException(

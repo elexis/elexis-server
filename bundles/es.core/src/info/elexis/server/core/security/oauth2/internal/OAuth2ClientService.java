@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -51,10 +49,9 @@ public class OAuth2ClientService {
 	 * Call the OpenID introspect end-point to check the provided access token
 	 * 
 	 * @param accessToken
-	 * @param httpServletRequest
 	 * @return
 	 */
-	public boolean checkAccessToken(String accessToken, HttpServletRequest httpServletRequest) {
+	public boolean checkAccessToken(String accessToken) {
 		// First check if the in memory cache has an Authentication object, and
 		// that it is still valid
 		// If Valid, return true

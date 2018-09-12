@@ -34,8 +34,7 @@ public class OAuth2AuthorizingRealm extends AuthorizingRealm implements ESAuthor
 			@Override
 			public boolean doCredentialsMatch(AuthenticationToken accessToken, AuthenticationInfo info) {
 				if (accessToken instanceof AccessToken) {
-					boolean result = oidClientService.checkAccessToken((String) accessToken.getCredentials(),
-							((AccessToken) accessToken).getHttpServletRequest());
+					boolean result = oidClientService.checkAccessToken((String) accessToken.getCredentials());
 					return result;
 				}
 				return false;
@@ -47,6 +46,11 @@ public class OAuth2AuthorizingRealm extends AuthorizingRealm implements ESAuthor
 	@Override
 	public AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken accessToken) throws AuthenticationException {
 		if (accessToken instanceof AccessToken) {
+			// enrich Access Token with username
+			OAuth2AccessToken primaryPrincipal = oidClientService
+					.getIntrospectionToken((String) accessToken.getCredentials());
+			((AccessToken) accessToken).setUserId(primaryPrincipal.getUserId());
+			
 			return new SimpleAuthenticationInfo(accessToken, null, REALM_NAME);
 		}
 		return null;
