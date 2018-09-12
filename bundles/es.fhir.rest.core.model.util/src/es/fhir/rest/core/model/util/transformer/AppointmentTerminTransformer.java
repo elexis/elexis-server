@@ -27,6 +27,7 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.util.Converters;
 import info.elexis.server.core.connector.elexis.services.KontaktService;
 import info.elexis.server.core.connector.elexis.services.TerminService;
 
@@ -34,6 +35,7 @@ import info.elexis.server.core.connector.elexis.services.TerminService;
 public class AppointmentTerminTransformer implements IFhirTransformer<Appointment, Termin> {
 
 	private TerminHelper terminHelper = new TerminHelper();
+	private Converters converters = new Converters();
 
 	private IFhirTransformerRegistry transformerRegistry;
 
@@ -48,7 +50,8 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 
 		appointment.setId(new IdDt(Appointment.class.getSimpleName(), localObject.getId()));
 		appointment.getMeta().setVersionId(localObject.getLastupdate().toString());
-		
+		appointment.getMeta().setLastUpdated(converters.getLastUpdateAsDate(localObject).orElse(null));
+
 		terminHelper.mapApplyAppointmentStatus(appointment, localObject);
 
 		appointment.setDescription(terminHelper.getDescription(localObject));

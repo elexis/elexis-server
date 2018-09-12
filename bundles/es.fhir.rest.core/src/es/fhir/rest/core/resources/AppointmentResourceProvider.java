@@ -149,7 +149,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 		Optional<Termin> localObject = getTransformer().getLocalObject(appointment);
 		MethodOutcome outcome = new MethodOutcome();
 		if (localObject.isPresent()) {
-			if(versionId == null) {
+			if (versionId == null) {
 				log.warn("Version agnostic update on {}", localObject.get());
 			}
 			if (versionId != null && !versionId.equals(localObject.get().getLastupdate().toString())) {
@@ -157,6 +157,11 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 						"Expected version " + localObject.get().getLastupdate().toString());
 			}
 			getTransformer().updateLocalObject(appointment, localObject.get());
+
+			Optional<Appointment> updatedObject = getTransformer().getFhirObject(localObject.get());
+			outcome.setId(updatedObject.get().getIdElement());
+			outcome.setResource(updatedObject.get());
+
 		} else {
 			OperationOutcome issueOutcome = new OperationOutcome();
 			issueOutcome.addIssue().setDiagnostics("No local object found");
