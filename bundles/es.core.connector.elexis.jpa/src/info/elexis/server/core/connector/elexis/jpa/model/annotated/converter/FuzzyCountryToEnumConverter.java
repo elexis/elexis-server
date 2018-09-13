@@ -38,9 +38,12 @@ public class FuzzyCountryToEnumConverter implements Converter {
 
 	@Override
 	public Country convertDataValueToObjectValue(Object dataValue, Session session) {
+		if(dataValue == null) {
+			return Country.NDF;
+		}
 		try {
 			return Country.valueOf((String) dataValue);
-		} catch (IllegalArgumentException | NullPointerException e) {
+		} catch (IllegalArgumentException e) {
 			return Country.NDF;
 		} 
 	}
