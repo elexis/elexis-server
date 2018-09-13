@@ -202,9 +202,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 	@JoinColumn(name = "PatientID", updatable = false, insertable = false, nullable = false)
 	protected List<Fall> faelle = new ArrayList<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-	protected List<Userconfig> userconfig = new ArrayList<>();
-
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", orphanRemoval = true)
 	@MapKey(name = "id")
 	protected Map<String, ZusatzAdresse> addresses = new HashMap<>();
@@ -400,14 +397,6 @@ public class Kontakt extends AbstractDBObjectIdDeletedExtInfo implements Seriali
 
 	public void setRelatedByContacts(Collection<KontaktAdressJoint> relatedByContacts) {
 		this.relatedByContacts = relatedByContacts;
-	}
-
-	public List<Userconfig> getUserconfig() {
-		return userconfig;
-	}
-
-	public void setUserconfig(List<Userconfig> userconfig) {
-		this.userconfig = userconfig;
 	}
 
 	public String getPhone2() {

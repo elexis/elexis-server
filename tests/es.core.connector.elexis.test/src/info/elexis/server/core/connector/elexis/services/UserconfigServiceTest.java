@@ -37,9 +37,9 @@ public class UserconfigServiceTest {
 		Userconfig userConfig = new UserconfigService.Builder(kontakt, "ExistingPref", "test").buildAndSave();
 
 		kontakt = KontaktService.reload(kontakt);
-		assertEquals(1, kontakt.getUserconfig().size());
+		assertEquals(1, UserconfigService.findAllEntries(kontakt).size());
 
-		assertEquals(userConfig.getValue(), kontakt.getUserconfig().get(0).getValue());
+		assertEquals(userConfig.getValue(), UserconfigService.findAllEntries(kontakt).get(0).getValue());
 		assertEquals(userConfig.getValue(), UserconfigService.get(kontakt, "ExistingPref", (String) null));
 	}
 	

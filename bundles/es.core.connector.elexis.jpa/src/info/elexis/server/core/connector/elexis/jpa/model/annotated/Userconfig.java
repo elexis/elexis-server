@@ -3,9 +3,8 @@ package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+import javax.persistence.IdClass;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Cache;
@@ -13,12 +12,13 @@ import org.eclipse.persistence.annotations.CacheType;
 
 @Entity
 @Table(name = "userconfig")
+@IdClass(UserconfigId.class)
 @Cache(type=CacheType.NONE)
 public class Userconfig extends AbstractDBObject {
 
-	@ManyToOne()
-	@JoinColumn(name = "UserID")
-	private Kontakt owner;
+	@Id
+	@Column(name = "UserID")
+	private String ownerId;
 	
 	@Id
 	@Column(unique = true, nullable = false, length = 80)
@@ -27,12 +27,12 @@ public class Userconfig extends AbstractDBObject {
 	@Lob
 	private String value;
 
-	public Kontakt getOwner() {
-		return owner;
+	public String getOwnerId() {
+		return ownerId;
 	}
 
-	public void setOwner(Kontakt owner) {
-		this.owner = owner;
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	public String getParam() {

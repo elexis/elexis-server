@@ -16,6 +16,7 @@ import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig_;
+import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class UserconfigService {
 
@@ -24,7 +25,7 @@ public class UserconfigService {
 
 		public Builder(Kontakt owner, String param, String value) {
 			object = new Userconfig();
-			object.setOwner(owner);
+			object.setOwnerId(owner.getId());
 			object.setParam(param);
 			object.setValue(value);
 		}
@@ -48,7 +49,9 @@ public class UserconfigService {
 
 	public static boolean get(Kontakt userContact, String param, boolean defValue) {
 		JPAQuery<Userconfig> query = new JPAQuery<Userconfig>(Userconfig.class);
-		query.add(Userconfig_.owner, JPAQuery.QUERY.EQUALS, userContact);
+		if (userContact != null) {
+			query.add(Userconfig_.ownerId, JPAQuery.QUERY.EQUALS, userContact.getId());
+		}
 		query.add(Userconfig_.param, JPAQuery.QUERY.EQUALS, param);
 		Optional<Userconfig> result = query.executeGetSingleResult();
 		if (result.isPresent()) {
@@ -61,7 +64,7 @@ public class UserconfigService {
 
 	public static String get(Kontakt userContact, String param, String defValue) {
 		JPAQuery<Userconfig> query = new JPAQuery<Userconfig>(Userconfig.class);
-		query.add(Userconfig_.owner, JPAQuery.QUERY.EQUALS, userContact);
+		query.add(Userconfig_.ownerId, JPAQuery.QUERY.EQUALS, userContact.getId());
 		query.add(Userconfig_.param, JPAQuery.QUERY.EQUALS, param);
 		Optional<Userconfig> result = query.executeGetSingleResult();
 		if (result.isPresent()) {
@@ -83,5 +86,28 @@ public class UserconfigService {
 		} finally {
 			em.close();
 		}
+	}
+
+	/**
+	 * Get all nodes starting with nodePrefix
+	 * 
+	 * @param nodePrefix
+	 * @param contact
+	 *            the contact to get the nodes for. Can be <code>null</code>
+	 * @return
+	 */
+	public static List<Userconfig> getNodes(String nodePrefix, Kontakt contact) {
+		JPAQuery<Userconfig> query = new JPAQuery<Userconfig>(Userconfig.class);
+		if (nodePrefix != null) {
+			query.add(Userconfig_.param, JPAQuery.QUERY.LIKE, nodePrefix + "%");
+		}
+		if (contact != null) {
+			query.add(Userconfig_.ownerId, QUERY.EQUALS, contact.getId());
+		}
+		return query.execute();
+	}
+
+	public static List<Userconfig> findAllEntries(Kontakt contact) {
+		return getNodes("", contact);
 	}
 }

@@ -17,7 +17,6 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User_;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 
 public class UserService extends PersistenceService {
 
@@ -137,5 +136,13 @@ public class UserService extends PersistenceService {
 		}
 
 	}
-	
+
+	public static Optional<Kontakt> findKontaktByUserId(String userId) {
+		Optional<User> user = UserService.load(userId);
+		if (user.isPresent()) {
+			return Optional.ofNullable(user.get().getKontakt());
+		}
+		return Optional.empty();
+	}
+
 }

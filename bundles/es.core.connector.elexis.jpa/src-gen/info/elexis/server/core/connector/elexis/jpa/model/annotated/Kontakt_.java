@@ -4,7 +4,6 @@ import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.KontaktAdressJoint;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Userconfig;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ZusatzAdresse;
 import java.time.LocalDate;
 import javax.annotation.Generated;
@@ -42,7 +41,6 @@ public class Kontakt_ {
     public static volatile SingularAttribute<Kontakt, Boolean> mandator;
     public static volatile SingularAttribute<Kontakt, String> zip;
     public static volatile SingularAttribute<Kontakt, String> website;
-    public static volatile ListAttribute<Kontakt, Userconfig> userconfig;
     public static volatile SingularAttribute<Kontakt, String> diagnosen;
     public static volatile SingularAttribute<Kontakt, String> mobile;
     public static volatile SingularAttribute<Kontakt, String> anschrift;
