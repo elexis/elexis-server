@@ -21,8 +21,10 @@ import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
+import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
+import info.elexis.server.core.connector.elexis.services.ConfigService;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.LockService;
@@ -91,6 +93,21 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return Boolean.toString(LockService.clearLock(args.next()));
 		} else {
 			return missingArgument("elementId");
+		}
+	}
+
+	public String __config() {
+		return getHelp(1);
+	}
+
+	public void __config_list(Iterator<String> args) {
+		String nodePrefix = args.next();
+		if (StringUtils.isEmpty(nodePrefix)) {
+			nodePrefix = "";
+		}
+		List<Config> nodes = ConfigService.INSTANCE.getNodes(nodePrefix);
+		for (Config config : nodes) {
+			ci.println(config);
 		}
 	}
 
