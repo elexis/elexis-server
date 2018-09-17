@@ -30,10 +30,7 @@ public class Application implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		log.info("Starting " + Application.class.getName() + "...");
 
-		TimeZone tzone = TimeZone.getTimeZone("CET");
-		TimeZone.setDefault(tzone);
-
-		log.info("Settings: TimeZone [{}], user.language [{}], user.region [{}]", tzone.getID(),
+		log.info("Settings: TimeZone [{}], user.language [{}], user.region [{}]", TimeZone.getDefault().getID(),
 				System.getProperty("user.language"), System.getProperty("user.region"));
 
 		context.applicationRunning();
