@@ -23,8 +23,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = { "elexisconnector.connection" })
-@Path("/elexis/connector")
+@Api(tags = { "elexis-connector" })
+@Path("/elexis-connector/connection")
 @Component(service = ConnectionResource.class, immediate = true)
 public class ConnectionResource {
 
@@ -37,7 +37,6 @@ public class ConnectionResource {
 	}
 
 	@GET
-	@Path("connection")
 	@ApiOperation(value = "retrieve the elexis-database-connection")
 	public DBConnection getDBConnection() {
 		Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
@@ -48,7 +47,6 @@ public class ConnectionResource {
 	}
 
 	@POST
-	@Path("connection")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@ApiOperation(value = "set the elexis-database-connection")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "success"),

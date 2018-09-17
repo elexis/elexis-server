@@ -56,7 +56,7 @@ public class SetupTest {
 	public static final String USER_PASS_PRACTITIONER = "practitioner";
 	public static final String USER_PASS_ESADMIN = "esadmin";
 
-	public static final String CONNECTOR_CONNECTION_LOCATION = "/elexis/connector/connection";
+	public static final String CONNECTOR_CONNECTION_LOCATION = "/elexis-connector/connection";
 
 	private OkHttpClient client = AllTests.getDefaultOkHttpClient();
 	private Gson gson = new Gson();
@@ -65,7 +65,8 @@ public class SetupTest {
 
 	private Request getDBConnectionRequest = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION)
 			.build();
-	private Request getDBStatusInformation = new Request.Builder().url(REST_URL + "/elexis/connector/status").build();
+	private Request getDBStatusInformation = new Request.Builder()
+			.url(REST_URL + CONNECTOR_CONNECTION_LOCATION + "/status").build();
 
 	private Response response;
 
@@ -88,8 +89,9 @@ public class SetupTest {
 		assertEquals(204, response.code());
 
 		response = client.newCall(getDBStatusInformation).execute();
-		assertTrue(response.isSuccessful());
-		assertEquals("Entity Manager is null.", response.body().string());
+		String responseString = response.body().string();
+		assertTrue(responseString, response.isSuccessful());
+		assertEquals("Entity Manager is null.", responseString);
 	}
 
 	@Test
