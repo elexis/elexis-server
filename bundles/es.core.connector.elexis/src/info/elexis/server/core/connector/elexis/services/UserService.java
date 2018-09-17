@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,9 +139,11 @@ public class UserService extends PersistenceService {
 	}
 
 	public static Optional<Kontakt> findKontaktByUserId(String userId) {
-		Optional<User> user = UserService.load(userId);
-		if (user.isPresent()) {
-			return Optional.ofNullable(user.get().getKontakt());
+		if (StringUtils.isNotEmpty(userId)) {
+			Optional<User> user = UserService.load(userId);
+			if (user.isPresent()) {
+				return Optional.ofNullable(user.get().getKontakt());
+			}
 		}
 		return Optional.empty();
 	}
