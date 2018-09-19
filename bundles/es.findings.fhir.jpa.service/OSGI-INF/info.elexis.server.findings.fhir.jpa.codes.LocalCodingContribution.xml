@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.findings.fhir.jpa.codes.LocalCodingContribution">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="info.elexis.server.findings.fhir.jpa.codes.LocalCodingContribution">
    <service>
       <provide interface="ch.elexis.core.findings.codes.ICodingContribution"/>
    </service>
+   <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService"/>
    <implementation class="info.elexis.server.findings.fhir.jpa.codes.LocalCodingContribution"/>
 </scr:component>

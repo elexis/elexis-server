@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" output="target/classes" path="src">
+	<classpathentry excluding="es/fhir/rest/core/resources/AllergyIntoleranceResourceProvider.java|es/fhir/rest/core/resources/AppointmentResourceProvider.java|es/fhir/rest/core/resources/ClaimResourceProvider.java|es/fhir/rest/core/resources/ConditionResourceProvider.java|es/fhir/rest/core/resources/CoverageResourceProvider.java|es/fhir/rest/core/resources/EncounterResourceProvider.java|es/fhir/rest/core/resources/FamilyMemberHistoryResourceProvider.java|es/fhir/rest/core/resources/LocationResourceProvider.java|es/fhir/rest/core/resources/MedicationRequestResourceProvider.java|es/fhir/rest/core/resources/ObservationResourceProvider.java|es/fhir/rest/core/resources/ProcedureRequestResourceProvider.java|es/fhir/rest/core/resources/ScheduleResourceProvider.java|es/fhir/rest/core/resources/SlotResourceProvider.java|es/fhir/rest/core/resources/util/TerminUtil.java|es/fhir/rest/core/resources/util/QueryUtil.java|es/fhir/rest/core/resources/PractitionerResourceProvider.java|es/fhir/rest/core/resources/PractitionerRoleResourceProvider.java" kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

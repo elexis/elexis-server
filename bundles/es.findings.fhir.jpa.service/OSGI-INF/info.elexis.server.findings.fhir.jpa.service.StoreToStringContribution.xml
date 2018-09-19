@@ -3,6 +3,6 @@
    <service>
       <provide interface="info.elexis.server.core.service.StoreToStringContribution"/>
    </service>
-   <reference bind="bindIFindingsService" cardinality="1..1" interface="ch.elexis.core.findings.IFindingsService" name="IFindingsService" policy="static"/>
+   <reference bind="bindIFindingsService" interface="ch.elexis.core.findings.IFindingsService" name="IFindingsService"/>
    <implementation class="info.elexis.server.findings.fhir.jpa.service.StoreToStringContribution"/>
 </scr:component>

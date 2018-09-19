@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.model.article.Constants;
 import ch.elexis.core.model.eigenartikel.EigenartikelTyp;
 import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;

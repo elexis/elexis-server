@@ -19,23 +19,27 @@ import ca.uhn.fhir.rest.client.method.MethodUtil;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class CORSTest {
-
+	
 	private static IGenericClient client;
-
+	
 	@BeforeClass
-	public static void setupClass() throws IOException, SQLException {
+	public static void setupClass() throws IOException, SQLException{
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
 	
 	@Test
-	public void testCorsIsAvailable() throws IOException {
-		HttpGetClientInvocation invocation = MethodUtil.createConformanceInvocation(client.getFhirContext());
+	public void testCorsIsAvailable() throws IOException{
+		HttpGetClientInvocation invocation =
+			MethodUtil.createConformanceInvocation(client.getFhirContext());
 		invocation.addHeader("Origin", "localhost"); // to enable CORS Filter
-		IHttpRequest httpRequest = invocation.asHttpRequest(client.getServerBase(), null, null, true);
+		IHttpRequest httpRequest =
+			invocation.asHttpRequest(client.getServerBase(), null, null, true);
 		IHttpResponse response = httpRequest.execute();
+		assertEquals(response.getStatus(), 200, response.getStatus());
 		Map<String, List<String>> allHeaders = response.getAllHeaders();
 		List<String> list = allHeaders.get("access-control-allow-origin");
+		assertNotNull(allHeaders.toString(), list);
 		assertEquals("*", list.get(0));
 	}
 	

@@ -1,16 +1,21 @@
 package info.elexis.server.core.connector.elexis.internal;
 
-import org.osgi.framework.Bundle;
+import java.util.Optional;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObject;
+import ch.elexis.core.common.DBConnection;
+import ch.elexis.core.services.IElexisDataSource;
+import ch.elexis.core.utils.OsgiServiceUtil;
+import info.elexis.server.core.connector.elexis.common.ElexisDBConnectionUtil;
 import info.elexis.server.core.contrib.ApplicationShutdownRegistrar;
 import info.elexis.server.core.contrib.IApplicationShutdownListener;
 
 public class Activator implements BundleActivator {
 
+	public static final String BUNDLE_ID = "info.elexis.server.core.connector.elexis";
+	
 	private static BundleContext context;
 	private static IApplicationShutdownListener iasl = new ApplicationShutdownListener();
 
@@ -22,10 +27,12 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-
-		Bundle bundle = FrameworkUtil.getBundle(AbstractDBObject.class);
-		if (bundle.getState() != Bundle.ACTIVE) {
-			bundle.start();
+		
+		Optional<IElexisDataSource> datasource =
+				OsgiServiceUtil.getService(IElexisDataSource.class);
+		Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
+		if(connection.isPresent()) {
+			datasource.get().setDBConnection(connection.get());
 		}
 
 		ApplicationShutdownRegistrar.addShutdownListener(iasl);

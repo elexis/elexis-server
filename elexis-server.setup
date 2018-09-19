@@ -17,7 +17,7 @@
   <setupTask
       xsi:type="setup.p2:P2Task">
     <requirement
-        name="fr.obeo.releng.targetplatform-feature.feature.group"/>
+        name="org.eclipse.cbi.targetplatform-feature.feature.group"/>
     <requirement
         name="org.sonatype.tycho.m2e.feature.feature.group"/>
     <requirement

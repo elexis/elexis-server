@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.ElexisEvent;
 import ch.elexis.core.common.ElexisEventTopics;
-import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import ch.elexis.core.model.Identifiable;
 import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component
@@ -47,11 +46,12 @@ public class EventService {
 		}
 	}
 
-	public static void postCreationEvent(AbstractDBObjectIdDeleted entity, String userId) {
+	public static void postCreationEvent(Identifiable entity, String userId) {
 		ElexisEvent ee = new ElexisEvent();
 		ee.setTopic(ElexisEventTopics.PERSISTENCE_EVENT_CREATE);
 		ee.getProperties().put(ElexisEventTopics.PROPKEY_ID, entity.getId());
-		ee.getProperties().put(ElexisEventTopics.PROPKEY_CLASS, ElexisTypeMap.getKeyForObject(entity));
+//		ee.getProperties().put(ElexisEventTopics.PROPKEY_CLASS, ElexisTypeMap.getKeyForObject(entity));
+		// TODO fix this
 		if (userId == null) {
 			userId = LockService.elexisServerAgentUser;
 		}

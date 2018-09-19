@@ -112,7 +112,7 @@ public class MigratorService implements IMigratorService {
 
 	private void migrateEncounter(Behandlung b) {
 		String patientId = b.getFall().getPatientKontakt().getId();
-		JPAQuery<Encounter> query = new JPAQuery<>(Encounter.class);
+		JPAQuery<Encounter> query = modelService.getQuery(Encounter.class);
 		query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
 		query.add(Encounter_.consultationid, JPAQuery.QUERY.EQUALS, b.getId());
 		List<Encounter> encounters = query.execute();

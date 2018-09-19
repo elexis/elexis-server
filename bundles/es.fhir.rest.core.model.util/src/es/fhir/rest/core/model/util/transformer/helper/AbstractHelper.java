@@ -17,7 +17,7 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import ch.elexis.core.model.Identifiable;
 import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 
 public class AbstractHelper {
@@ -38,11 +38,11 @@ public class AbstractHelper {
 		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
 
-	public Reference getReference(String resourceType, AbstractDBObjectIdDeleted dbObject) {
+	public Reference getReference(String resourceType, Identifiable dbObject) {
 		return new Reference(new IdDt("Patient", dbObject.getId()));
 	}
 
-	public static void acquireAndReleaseLock(AbstractDBObjectIdDeleted dbObj) {
+	public static void acquireAndReleaseLock(Identifiable dbObj) {
 		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(dbObj, 5);
 		if (lr.isPresent()) {
 			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
@@ -54,7 +54,7 @@ public class AbstractHelper {
 		}
 	}
 
-	public static Optional<LockInfo> acquireLock(AbstractDBObjectIdDeleted dbObj) {
+	public static Optional<LockInfo> acquireLock(Identifiable dbObj) {
 		return LockServiceInstance.INSTANCE.acquireLockBlocking(dbObj, 5);
 	}
 

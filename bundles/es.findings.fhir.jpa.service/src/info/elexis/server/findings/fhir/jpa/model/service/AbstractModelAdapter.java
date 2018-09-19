@@ -16,8 +16,12 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.util.ModelUtil;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 
 public abstract class AbstractModelAdapter<T> implements IFinding {
+	
+	IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
 
 	private T model;
 

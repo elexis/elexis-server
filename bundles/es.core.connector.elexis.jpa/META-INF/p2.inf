@@ -1,2 +1,0 @@
-instructions.configure = setStartLevel(startLevel:2);markStarted(started: true);
-instructions.unconfigure = setStartLevel(startLevel:2);markStarted(started: true);

@@ -10,32 +10,34 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.eclipse.persistence.queries.ScrollableCursor;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.model.IConfig;
+import ch.elexis.core.model.IStock;
+import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.model.stock.ICommissioningSystemDriver;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted_;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Stock;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.StockEntry;
 import info.elexis.server.core.connector.elexis.services.ConfigService;
-import info.elexis.server.core.connector.elexis.services.JPAQuery;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
 import info.elexis.server.core.connector.elexis.services.LockService;
-import info.elexis.server.core.connector.elexis.services.StockCommissioningSystemService;
-import info.elexis.server.core.connector.elexis.services.StockEntryService;
-import info.elexis.server.core.connector.elexis.services.StockService;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
+	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	private IModelService modelService;
+	
+	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	private IStockCommissioningSystemService stockCommissioningSystemService;
+	
 	public void _es_elc(CommandInterpreter ci) {
 		executeCommand(ci);
 	}
@@ -105,8 +107,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		if (StringUtils.isEmpty(nodePrefix)) {
 			nodePrefix = "";
 		}
-		List<Config> nodes = ConfigService.INSTANCE.getNodes(nodePrefix);
-		for (Config config : nodes) {
+		List<IConfig> nodes = ConfigService.INSTANCE.getNodes(nodePrefix);
+		for (IConfig config : nodes) {
 			ci.println(config);
 		}
 	}
@@ -115,62 +117,62 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return getHelp(1);
 	}
 
-	@SuppressWarnings("unchecked")
-	public String __entities_list(Iterator<String> args) {
-		String entity = args.next();
-		if(StringUtils.isEmpty(entity)) {
-			return missingArgument("Entity");
-		}
-		
-		String includeDeletedString = args.next();
-		boolean includeDeleted = true;
-		if (!StringUtils.isAlpha(entity)) {
-			return getHelp(2);
-		}
-		if (StringUtils.isNotEmpty(includeDeletedString)) {
-			includeDeleted = Boolean.valueOf(includeDeletedString);
-		}
-
-		entity = StringUtils.capitalize(entity);
-
-		Class<?> clazz;
-		try {
-			String PREFIX = "info.elexis.server.core.connector.elexis.jpa.model.annotated";
-			clazz = ConsoleCommandProvider.class.getClassLoader().loadClass(PREFIX + "." + entity);
-			if (AbstractDBObjectIdDeleted.class.isAssignableFrom(clazz)) {
-				// replace with JPAQuery cursor, honor CTRL+C??
-
-				@SuppressWarnings("rawtypes")
-				JPAQuery<? extends AbstractDBObjectIdDeleted> query = new JPAQuery(clazz);
-				if (!includeDeleted) {
-					query.add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
-				}
-				long count = query.count();
-				ScrollableCursor cursor = query.executeAsStream();
-				while (cursor.hasNext()) {
-					ci.println(cursor.next());
-					cursor.clear();
-				}
-				cursor.close();
-				return "-- " + count + " entries found, including deleted = " + Boolean.toString(includeDeleted);
-			} else {
-				return "Not instance of AbstractDBObjectIdDeleted";
-			}
-		} catch (ClassNotFoundException e) {
-			return e.getMessage();
-		}
-	}
+//	@SuppressWarnings("unchecked")
+//	public String __entities_list(Iterator<String> args) {
+//		String entity = args.next();
+//		if(StringUtils.isEmpty(entity)) {
+//			return missingArgument("Entity");
+//		}
+//		
+//		String includeDeletedString = args.next();
+//		boolean includeDeleted = true;
+//		if (!StringUtils.isAlpha(entity)) {
+//			return getHelp(2);
+//		}
+//		if (StringUtils.isNotEmpty(includeDeletedString)) {
+//			includeDeleted = Boolean.valueOf(includeDeletedString);
+//		}
+//
+//		entity = StringUtils.capitalize(entity);
+//
+//		Class<?> clazz;
+//		try {
+//			String PREFIX = "info.elexis.server.core.connector.elexis.jpa.model.annotated";
+//			clazz = ConsoleCommandProvider.class.getClassLoader().loadClass(PREFIX + "." + entity);
+//			if (Identifiable.class.isAssignableFrom(clazz)) {
+//				// replace with JPAQuery cursor, honor CTRL+C??
+//
+//				@SuppressWarnings("rawtypes")
+//				modelService.getQuery(clazz);
+//				if (!includeDeleted) {
+//					query.add(AbstractDBObjectIdDeleted_.deleted, QUERY.EQUALS, false);
+//				}
+//				long count = query.count();
+//				ScrollableCursor cursor = query.executeAsStream();
+//				while (cursor.hasNext()) {
+//					ci.println(cursor.next());
+//					cursor.clear();
+//				}
+//				cursor.close();
+//				return "-- " + count + " entries found, including deleted = " + Boolean.toString(includeDeleted);
+//			} else {
+//				return "Not instance of AbstractDBObjectIdDeleted";
+//			}
+//		} catch (ClassNotFoundException e) {
+//			return e.getMessage();
+//		}
+//	}
 
 	public String __stock() {
 		return getHelp(1);
 	}
 
 	public String __stock_list() {
-		List<Stock> stocks = StockService.findAll(true);
-		for (Stock stock : stocks) {
+		List<IStock> stocks = modelService.getQuery(IStock.class).execute();
+		for (IStock stock : stocks) {
 			ci.println(stock.getLabel());
 			if (stock.isCommissioningSystem()) {
-				ICommissioningSystemDriver instance = new StockCommissioningSystemService()
+				ICommissioningSystemDriver instance = stockCommissioningSystemService
 						.getDriverInstanceForStock(stock);
 				ci.print("\t [  isCommissioningSystem  ] ");
 				if (instance != null) {
@@ -192,39 +194,39 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return missingArgument("stockId (start | stop)");
 		}
 
-		Optional<Stock> findById = StockService.load(stockId);
+		Optional<IStock> findById = modelService.load(stockId, IStock.class);
 		if (!findById.isPresent()) {
 			return "Stock not found [" + stockId + "]";
 		}
 		IStatus status;
 		if ("start".equalsIgnoreCase(action)) {
-			status = new StockCommissioningSystemService().initializeStockCommissioningSystem(findById.get());
+			status = stockCommissioningSystemService.initializeStockCommissioningSystem(findById.get());
 		} else {
-			status = new StockCommissioningSystemService().shutdownStockCommissioningSytem(findById.get());
+			status = stockCommissioningSystemService.shutdownStockCommissioningSytem(findById.get());
 		}
 		return StatusUtil.printStatus(status);
 	}
 
-	public String __stock_listForStock(Iterator<String> args) {
-		if (args.hasNext()) {
-			Optional<Stock> stock = StockService.load(args.next());
-			if (stock.isPresent()) {
-				new StockService().findAllStockEntriesForStock(stock.get()).stream()
-						.forEach(se -> ci.print(se.getLabel() + "\n"));
-				return ok();
-			} else {
-				return "Invalid stock id";
-			}
-		} else {
-			return missingArgument("stockId");
-		}
-	}
+//	public String __stock_listForStock(Iterator<String> args) {
+//		if (args.hasNext()) {
+//			Optional<IStock> stock = modelService.load(args.next(), IStock.class);
+//			if (stock.isPresent()) {
+//				new StockService().findAllStockEntriesForStock(stock.get()).stream()
+//						.forEach(se -> ci.print(se.getLabel() + "\n"));
+//				return ok();
+//			} else {
+//				return "Invalid stock id";
+//			}
+//		} else {
+//			return missingArgument("stockId");
+//		}
+//	}
 
 	public String __stock_seCsOut(Iterator<String> args) {
 		if (args.hasNext()) {
-			Optional<StockEntry> se = StockEntryService.load(args.next());
+			Optional<IStockEntry> se = modelService.load(args.next(), IStockEntry.class);
 			if (se.isPresent()) {
-				IStatus performArticleOutlay = new StockCommissioningSystemService().performArticleOutlay(se.get(), 1,
+				IStatus performArticleOutlay = stockCommissioningSystemService.performArticleOutlay(se.get(), 1,
 						null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {
@@ -237,9 +239,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public String __stock_stockSyncCs(Iterator<String> args) {
 		if (args.hasNext()) {
-			Optional<Stock> se = StockService.load(args.next());
+			Optional<IStock> se = modelService.load(args.next(), IStock.class);
 			if (se.isPresent()) {
-				IStatus performArticleOutlay = new StockCommissioningSystemService().synchronizeInventory(se.get(),
+				IStatus performArticleOutlay = stockCommissioningSystemService.synchronizeInventory(se.get(),
 						Collections.emptyList(), null);
 				return StatusUtil.printStatus(performArticleOutlay);
 			} else {

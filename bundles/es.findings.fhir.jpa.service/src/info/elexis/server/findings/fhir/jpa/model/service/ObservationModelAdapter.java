@@ -161,7 +161,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 	@Override
 	public List<IObservation> getSourceObservations(ObservationLinkType type) {
 		ObservationService observationService = new ObservationService();
-		JPAQuery<ObservationLink> query = new JPAQuery<>(ObservationLink.class);
+		JPAQuery<ObservationLink> query = modelService.getQuery(ObservationLink.class);
 		query.add(ObservationLink_.targetid, QUERY.EQUALS, getId());
 		query.add(ObservationLink_.type, QUERY.EQUALS, type.name());
 
@@ -188,7 +188,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 
 	@Override
 	public void removeSourceObservation(IObservation source, ObservationLinkType type) {
-		JPAQuery<ObservationLink> qbe = new JPAQuery<>(ObservationLink.class);
+		JPAQuery<ObservationLink> qbe = modelService.getQuery(ObservationLink.class);
 		qbe.add(ObservationLink_.targetid, QUERY.EQUALS, getId());
 		qbe.add(ObservationLink_.sourceid, QUERY.EQUALS, source.getId());
 		qbe.add(ObservationLink_.type, QUERY.EQUALS, type.name());
@@ -203,7 +203,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 	@Override
 	public List<IObservation> getTargetObseravtions(ObservationLinkType type) {
 		ObservationService observationService = new ObservationService();
-		JPAQuery<ObservationLink> query = new JPAQuery<>(ObservationLink.class);
+		JPAQuery<ObservationLink> query = modelService.getQuery(ObservationLink.class);
 		query.add(ObservationLink_.sourceid, QUERY.EQUALS, getId());
 		query.add(ObservationLink_.type, QUERY.EQUALS, type.name());
 
@@ -230,7 +230,7 @@ public class ObservationModelAdapter extends AbstractModelAdapter<Observation> i
 
 	@Override
 	public void removeTargetObservation(IObservation target, ObservationLinkType type) {
-		JPAQuery<ObservationLink> qbe = new JPAQuery<>(ObservationLink.class);
+		JPAQuery<ObservationLink> qbe = modelService.getQuery(ObservationLink.class);
 		qbe.add(ObservationLink_.sourceid, QUERY.EQUALS, getId());
 		qbe.add(ObservationLink_.targetid, QUERY.EQUALS, target.getId());
 		qbe.add(ObservationLink_.type, QUERY.EQUALS, type.name());

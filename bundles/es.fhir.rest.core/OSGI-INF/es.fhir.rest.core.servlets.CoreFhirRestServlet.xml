@@ -4,6 +4,6 @@
       <provide interface="es.fhir.rest.core.servlets.CoreFhirRestServlet"/>
    </service>
    <reference bind="bindFhirProvider" cardinality="1..n" interface="es.fhir.rest.core.IFhirResourceProvider" name="FhirProvider" policy="dynamic" policy-option="greedy" unbind="unbindFhirProvider"/>
-   <reference bind="bindHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unbindHttpService"/>
+   <reference bind="bindHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" unbind="unbindHttpService"/>
    <implementation class="es.fhir.rest.core.servlets.CoreFhirRestServlet"/>
 </scr:component>

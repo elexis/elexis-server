@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
+import ch.elexis.core.model.IArticle;
 import ch.elexis.core.model.Identifiable;
-import ch.elexis.core.model.article.IArticle;
 import ch.elexis.core.model.verrechnet.Constants;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;

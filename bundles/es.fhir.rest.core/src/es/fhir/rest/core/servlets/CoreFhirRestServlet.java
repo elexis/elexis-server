@@ -17,6 +17,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -101,6 +102,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	@Deactivate
 	public void deactivate() {
+		logger.debug("Deactivating CoreFhirRestServlet");
 		httpService.unregister(FHIR_BASE_URL + "/*");
 	}
 

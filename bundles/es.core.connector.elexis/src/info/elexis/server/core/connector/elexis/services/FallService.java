@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -12,20 +11,19 @@ import ch.elexis.core.model.ch.BillingLaw;
 import ch.rgw.tools.StringTool;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 
 public class FallService extends PersistenceService {
 
-	public static class Builder extends AbstractBuilder<Fall> {
-		public Builder(Kontakt patient, String label, String reason, String billingMethod) {
-			object = new Fall();
-			object.setPatientKontakt(patient);
-			object.setBezeichnung(label);
-			object.setGrund(reason);
-			object.setDatumVon(LocalDate.now());
-			object.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
-		}
-	}
+//	public static class Builder extends AbstractBuilder<Fall> {
+//		public Builder(Kontakt patient, String label, String reason, String billingMethod) {
+//			object = new Fall();
+//			object.setPatientKontakt(patient);
+//			object.setBezeichnung(label);
+//			object.setGrund(reason);
+//			object.setDatumVon(LocalDate.now());
+//			object.setExtInfoValue(FallConstants.FLD_EXTINFO_BILLING, billingMethod);
+//		}
+//	}
 
 	/**
 	 * convenience method

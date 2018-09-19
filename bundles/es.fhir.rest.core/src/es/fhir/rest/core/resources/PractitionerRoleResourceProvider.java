@@ -15,73 +15,70 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ch.elexis.core.model.IUser;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IQuery;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.CodeTypeUtil;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt_;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
-import info.elexis.server.core.connector.elexis.services.JPAQuery;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
-import info.elexis.server.core.connector.elexis.services.UserService;
 
 @Component
 public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
-
+	
+	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	private IModelService modelService;
+	
+	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	private IFhirTransformerRegistry transformerRegistry;
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return PractitionerRole.class;
 	}
-
-	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<PractitionerRole, User> getTransformer() {
-		return (IFhirTransformer<PractitionerRole, User>) transformerRegistry.getTransformerFor(PractitionerRole.class,
-				User.class);
+	public IFhirTransformer<PractitionerRole, IUser> getTransformer(){
+		return (IFhirTransformer<PractitionerRole, IUser>) transformerRegistry
+			.getTransformerFor(PractitionerRole.class, IUser.class);
 	}
-
+	
 	@Read
-	public PractitionerRole getResourceById(@IdParam IdType theId) {
+	public PractitionerRole getResourceById(@IdParam IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<User> user = UserService.load(idPart);
+			Optional<IUser> user = modelService.load(idPart, IUser.class);
 			if (user.isPresent()) {
-				Optional<PractitionerRole> fhirPractitionerRole = getTransformer().getFhirObject(user.get());
+				Optional<PractitionerRole> fhirPractitionerRole =
+					getTransformer().getFhirObject(user.get());
 				return fhirPractitionerRole.get();
 			}
 		}
 		return null;
 	}
-
+	
 	@Search()
 	public List<PractitionerRole> findPractitionerRole(
-			@RequiredParam(name = PractitionerRole.SP_ROLE) CodeType roleCode) {
+		@RequiredParam(name = PractitionerRole.SP_ROLE) CodeType roleCode){
 		if (roleCode != null) {
 			Optional<String> codeSystem = CodeTypeUtil.getSystem(roleCode);
 			Optional<String> codeCode = CodeTypeUtil.getCode(roleCode);
 			List<PractitionerRole> allPractitionerRoles = getAllPractitionerRoles();
-			return allPractitionerRoles.stream().filter(pr -> practitionerRoleHasCode(pr, codeSystem, codeCode))
-					.collect(Collectors.toList());
+			return allPractitionerRoles.stream()
+				.filter(pr -> practitionerRoleHasCode(pr, codeSystem, codeCode))
+				.collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
-
+	
 	private boolean practitionerRoleHasCode(PractitionerRole pr, Optional<String> codeSystem,
-			Optional<String> codeCode) {
+		Optional<String> codeCode){
 		List<CodeableConcept> roles = pr.getCode();
 		for (CodeableConcept code : roles) {
 			List<Coding> codings = code.getCoding();
@@ -101,20 +98,17 @@ public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 		}
 		return false;
 	}
-
-	private List<PractitionerRole> getAllPractitionerRoles() {
+	
+	private List<PractitionerRole> getAllPractitionerRoles(){
 		// all Kontakt marked as user
-		JPAQuery<Kontakt> query = new JPAQuery<>(Kontakt.class);
-		query.add(Kontakt_.user, QUERY.EQUALS, true);
-		List<Kontakt> practitioners = query.execute();
+		IQuery<IUser> query = modelService.getQuery(IUser.class);
+		List<IUser> practitioners = query.execute();
 		List<PractitionerRole> ret = new ArrayList<PractitionerRole>();
 		if (!practitioners.isEmpty()) {
-			for (Kontakt kontakt : practitioners) {
-				Optional<User> user = UserService.findByKontakt(kontakt);
-				user.ifPresent(u -> {
-					Optional<PractitionerRole> fhirPractitionerRole = getTransformer().getFhirObject(u);
-					fhirPractitionerRole.ifPresent(fp -> ret.add(fp));
-				});
+			for (IUser user : practitioners) {
+				Optional<PractitionerRole> fhirPractitionerRole =
+					getTransformer().getFhirObject(user);
+				fhirPractitionerRole.ifPresent(fp -> ret.add(fp));				
 			}
 		}
 		return ret;

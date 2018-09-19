@@ -52,7 +52,7 @@ public class InitializationUpdate24 {
 		// with category SUBJECTIVE
 		int progress = 0;
 		LoggerFactory.getLogger(getClass()).info("Start converting Condition to Observation ...");
-		JPAQuery<Condition> conditionQuery = new JPAQuery<>(Condition.class, true);
+		JPAQuery<Condition> conditionQuery = modelService.getQuery(Condition.class, true);
 		ScrollableCursor cursor = conditionQuery.executeAsStream();
 		while (cursor.hasNext()) {
 			progress++;
@@ -102,7 +102,7 @@ public class InitializationUpdate24 {
 		LoggerFactory.getLogger(getClass()).info("Converting Condition to Observation done");
 		LoggerFactory.getLogger(getClass()).info("Start transforming Encounter ...");
 		// transform all encounters
-		JPAQuery<Encounter> encounterQuery = new JPAQuery<>(Encounter.class, true);
+		JPAQuery<Encounter> encounterQuery = modelService.getQuery(Encounter.class, true);
 		cursor = encounterQuery.executeAsStream();
 		while (cursor.hasNext()) {
 			progress++;
@@ -134,7 +134,7 @@ public class InitializationUpdate24 {
 		LoggerFactory.getLogger(getClass()).info("Transforming Encounter done");
 		LoggerFactory.getLogger(getClass()).info("Start transforming Condition ...");
 		// transform all conditions
-		conditionQuery = new JPAQuery<>(Condition.class, true);
+		conditionQuery = modelService.getQuery(Condition.class, true);
 		cursor = conditionQuery.executeAsStream();
 		while (cursor.hasNext()) {
 			progress++;
@@ -166,7 +166,7 @@ public class InitializationUpdate24 {
 		LoggerFactory.getLogger(getClass()).info("Transforming Condition done");
 		LoggerFactory.getLogger(getClass()).info("Start transforming ProcedureRequest ...");
 		// transform all procedurerequests
-		JPAQuery<ProcedureRequest> prodecureRequestQuery = new JPAQuery<>(ProcedureRequest.class, true);
+		JPAQuery<ProcedureRequest> prodecureRequestQuery = modelService.getQuery(ProcedureRequest.class, true);
 		cursor = prodecureRequestQuery.executeAsStream();
 		while (cursor.hasNext()) {
 			progress++;
@@ -199,7 +199,7 @@ public class InitializationUpdate24 {
 	}
 
 	private Optional<Encounter> findEncounterWithCondition(Condition condition) {
-		JPAQuery<Encounter> encounterQuery = new JPAQuery<>(Encounter.class, true);
+		JPAQuery<Encounter> encounterQuery = modelService.getQuery(Encounter.class, true);
 		encounterQuery.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, condition.getPatientId());
 		List<Encounter> allEncounters = encounterQuery.execute();
 		for (Encounter encounter : allEncounters) {

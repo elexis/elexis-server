@@ -6,17 +6,23 @@ import java.util.List;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.codes.ICodingContribution;
 import ch.elexis.core.findings.util.model.TransientCoding;
+import ch.elexis.core.services.IModelService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.VKPreis;
 import info.elexis.server.core.connector.elexis.services.JPAQuery;
 
 @Component
 public class CoverageTypeCodingContribution implements ICodingContribution {
 
+	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	private IModelService modelService;
+		
 	private List<ICoding> codes;
 
 	@Override
@@ -34,7 +40,7 @@ public class CoverageTypeCodingContribution implements ICodingContribution {
 
 	private List<ICoding> loadTypes() {
 		List<ICoding> ret = new ArrayList<>();
-		JPAQuery<VKPreis> query = new JPAQuery<>(VKPreis.class);
+		JPAQuery<VKPreis> query = modelService.getQuery(VKPreis.class);
 		List<VKPreis> preise = query.execute();
 		HashSet<String> uniqueTypes = new HashSet<>();
 		for (VKPreis vkPreis : preise) {

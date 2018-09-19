@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.model.article.IArticle;
+import ch.elexis.core.model.IArticle;
 import ch.elexis.core.status.ObjectStatus;
 import info.elexis.server.core.connector.elexis.billable.IBillable;
 import info.elexis.server.core.connector.elexis.billable.VerrechenbarArtikel;

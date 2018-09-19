@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 
-import ch.elexis.core.model.article.IArticle;
+import ch.elexis.core.model.IArticle;
 import ch.elexis.core.services.IArticleService;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.ArtikelstammItem;
 
