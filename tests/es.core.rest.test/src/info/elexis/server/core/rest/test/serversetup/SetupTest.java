@@ -33,13 +33,15 @@ import com.google.gson.Gson;
 import ca.uhn.fhir.context.FhirContext;
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.common.DBConnection.DBType;
+import ch.elexis.core.model.IPerson;
+import ch.elexis.core.model.IRole;
+import ch.elexis.core.model.IUser;
+import ch.elexis.core.model.builder.IContactBuilder;
+import ch.elexis.core.model.builder.IUserBuilder;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Role;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
-import info.elexis.server.core.connector.elexis.services.RoleService;
-import info.elexis.server.core.connector.elexis.services.UserService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.rest.test.AllTests;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -49,6 +51,9 @@ import okhttp3.Response;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SetupTest {
+	
+	private static IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
+	private static IUserService userService = OsgiServiceUtil.getService(IUserService.class).get();
 
 	public static final String OAUTH_TOKEN_LOCATION = BASE_URL + "/openid/token";
 	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
@@ -128,31 +133,31 @@ public class SetupTest {
 		initializeTestUsersAndRoles();
 	}
 
-	private static void initializeTestUsersAndRoles() {
-		Role esadminRole = new Role();
+	private static void initializeTestUsersAndRoles() {		
+		IRole esadminRole = modelService.create(IRole.class);
 		esadminRole.setId("esadmin");
 		esadminRole.setSystemRole(true);
-		esadminRole = (Role) RoleService.save(esadminRole);
-
-		Role fhirRole = new Role();
+		modelService.save(esadminRole);
+		
+		IRole fhirRole = modelService.create(IRole.class);
 		fhirRole.setId("fhir");
 		fhirRole.setSystemRole(true);
-		fhirRole = (Role) RoleService.save(fhirRole);
+		modelService.save(fhirRole);
 
-		Kontakt drGonzo = new KontaktService.PersonBuilder("Oscar", "Zeta Acosta", LocalDate.of(1935, 4, 8),
+		IPerson drGonzo = new IContactBuilder.PersonBuilder(modelService, "Oscar", "Zeta Acosta", LocalDate.of(1935, 4, 8),
 				Gender.MALE).mandator().buildAndSave();
 
-		User practitioner = new UserService.Builder(USER_PASS_PRACTITIONER, drGonzo).build();
-		UserService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
+		IUser practitioner = new IUserBuilder(modelService, USER_PASS_PRACTITIONER, drGonzo).build();
+		userService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
 		practitioner.setAllowExternal(true);
 		practitioner.getRoles().add(fhirRole);
-		UserService.save(practitioner);
+		modelService.save(practitioner);
 
-		User esadmin = new UserService.Builder(USER_PASS_ESADMIN, drGonzo).build();
-		UserService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
+		IUser esadmin = new IUserBuilder(modelService, USER_PASS_ESADMIN, drGonzo).build();
+		userService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
 		esadmin.setAllowExternal(true);
 		esadmin.getRoles().add(esadminRole);
-		UserService.save(esadmin);
+		modelService.save(esadmin);
 	}
 
 	@Test
