@@ -149,6 +149,7 @@ location "http://download.eclipse.org/rt/eclipselink/updates/" {
 	org.eclipse.persistence.jpars
 	org.eclipse.persistence.dbws.feature.group
 	javax.validation
+	javax.activation
 }
 
 location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {

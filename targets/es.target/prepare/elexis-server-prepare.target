@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1537526261">
+<target name="Elexis-Server" sequenceNumber="1537532374">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.7.0.20180730-1329"/>
@@ -138,6 +138,7 @@
       <unit id="org.eclipse.persistence.jpars" version="2.6.0.v20150309-bf26070"/>
       <unit id="org.eclipse.persistence.dbws.feature.group" version="2.7.3.v20180807-4be1041"/>
       <unit id="javax.validation" version="1.1.0.v201304101302"/>
+      <unit id="javax.activation" version="1.1.0.v201108011116"/>
       <repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
