@@ -1,6 +1,6 @@
 target "Elexis-Server" with source allEnvironments
 
-location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
+location "http://download.elexis.info/elexis-server/f14501/p2/target/" elexis-server {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
 	org.eclipse.emf.common.feature.group
@@ -85,6 +85,16 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	ch.elexis.core.hl7.v2x
 	ch.elexis.core.findings
 	ch.elexis.core.findings.util
+	ch.elexis.core.test
+	// JPA
+	ch.elexis.core.jpa
+	ch.elexis.core.jpa.datasource
+	ch.elexis.core.jpa.entities
+	ch.elexis.core.jpa.logging.slf4j
+	ch.elexis.core.model
+	ch.elexis.core.services
+	ch.elexis.core.findings.fhir.model
+	//
 	org.postgresql
 	org.h2
 	org.jdom
@@ -116,6 +126,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.eclipse.persistence.jpars
 	org.eclipse.persistence.dbws.feature.group
 	javax.validation
+	javax.activation
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
