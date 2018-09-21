@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" name="info.elexis.server.findings.fhir.jpa.codes.CodingService">
-   <service>
-      <provide interface="ch.elexis.core.findings.codes.ICodingService"/>
-   </service>
-   <reference bind="bindFhirTransformer" cardinality="0..n" interface="ch.elexis.core.findings.codes.ICodingContribution" name="FhirTransformer" policy="static" policy-option="greedy" unbind="unbindFhirTransformer"/>
-   <implementation class="info.elexis.server.findings.fhir.jpa.codes.CodingService"/>
-</scr:component>

@@ -13,9 +13,10 @@ import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.codes.ICodingContribution;
 import ch.elexis.core.findings.util.model.TransientCoding;
+import ch.elexis.core.model.IBillingSystemFactor;
 import ch.elexis.core.services.IModelService;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.VKPreis;
-import info.elexis.server.core.connector.elexis.services.JPAQuery;
+import ch.elexis.core.services.IQuery;
+import info.elexis.server.findings.fhir.jpa.service.CoreModelServiceHolder;
 
 @Component
 public class CoverageTypeCodingContribution implements ICodingContribution {
@@ -40,11 +41,11 @@ public class CoverageTypeCodingContribution implements ICodingContribution {
 
 	private List<ICoding> loadTypes() {
 		List<ICoding> ret = new ArrayList<>();
-		JPAQuery<VKPreis> query = modelService.getQuery(VKPreis.class);
-		List<VKPreis> preise = query.execute();
+		IQuery<IBillingSystemFactor> query = CoreModelServiceHolder.get().getQuery(IBillingSystemFactor.class);
+		List<IBillingSystemFactor> factors = query.execute();
 		HashSet<String> uniqueTypes = new HashSet<>();
-		for (VKPreis vkPreis : preise) {
-			uniqueTypes.add(vkPreis.getTyp());
+		for (IBillingSystemFactor factor : factors) {
+			uniqueTypes.add(factor.getSystem());
 		}
 		if (!uniqueTypes.isEmpty()) {
 			for (String string : uniqueTypes) {

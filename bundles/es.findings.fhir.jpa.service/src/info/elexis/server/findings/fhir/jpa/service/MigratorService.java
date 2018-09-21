@@ -20,16 +20,14 @@ import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.migration.IMigratorService;
 import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.model.TransientCoding;
+import ch.elexis.core.model.ICoverage;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IQuery;
+import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.text.model.Samdas;
 import ch.rgw.tools.VersionedResource;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.BehandlungService;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
-import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter;
-import info.elexis.server.findings.fhir.jpa.model.annotated.Encounter_;
-import info.elexis.server.findings.fhir.jpa.model.service.JPAQuery;
+
 
 @Component
 public class MigratorService implements IMigratorService {
@@ -71,7 +69,7 @@ public class MigratorService implements IMigratorService {
 	 * @param patientId
 	 */
 	private void migratePatientCondition(String patientId) {
-		Optional<Kontakt> patient = KontaktService.load(patientId);
+		Optional<IPatient> patient = CoreModelServiceHolder.get().load(patientId, IPatient.class);
 		patient.ifPresent(p -> {
 			String diagnosis = p.getDiagnosen();
 			if (diagnosis != null && !diagnosis.isEmpty()) {
@@ -96,67 +94,71 @@ public class MigratorService implements IMigratorService {
 	}
 
 	private void migratePatientEncounters(String patientId) {
-		Optional<Kontakt> patient = KontaktService.load(patientId);
+		Optional<IPatient> patient = CoreModelServiceHolder.get().load(patientId, IPatient.class);
 		patient.ifPresent(p -> {
-			List<Behandlung> behandlungen = BehandlungService.findAllConsultationsForPatient(p);
-			behandlungen.stream().forEach(b -> migrateEncounter(b));
+			IQuery<ch.elexis.core.model.IEncounter> query = CoreModelServiceHolder.get()
+					.getQuery(ch.elexis.core.model.IEncounter.class);
+			query.and(ModelPackage.Literals.IENCOUNTER__PATIENT, COMPARATOR.EQUALS, p);
+			List<ch.elexis.core.model.IEncounter> encounters = query.execute();
+			encounters.stream().forEach(b -> migrateEncounter(b));
 		});
 	}
 
 	private void migrateConsultationEncounter(String consultationId) {
-		Optional<Behandlung> behandlung = BehandlungService.load(consultationId);
-		behandlung.ifPresent(b -> {
+		Optional<ch.elexis.core.model.IEncounter> encounter = CoreModelServiceHolder.get().load(consultationId,
+				ch.elexis.core.model.IEncounter.class);
+		encounter.ifPresent(b -> {
 			migrateEncounter(b);
 		});
 	}
 
-	private void migrateEncounter(Behandlung b) {
-		String patientId = b.getFall().getPatientKontakt().getId();
-		JPAQuery<Encounter> query = modelService.getQuery(Encounter.class);
-		query.add(Encounter_.patientid, JPAQuery.QUERY.EQUALS, patientId);
-		query.add(Encounter_.consultationid, JPAQuery.QUERY.EQUALS, b.getId());
-		List<Encounter> encounters = query.execute();
+	private void migrateEncounter(ch.elexis.core.model.IEncounter encounter) {
+		IPatient patient = encounter.getCoverage().getPatient();
+		IQuery<IEncounter> query = FindingsModelServiceHolder.get().getQuery(IEncounter.class);
+		query.and("patientid", COMPARATOR.EQUALS, patient.getId());
+		query.and("consultationid", COMPARATOR.EQUALS, encounter.getId());
+		List<IEncounter> encounters = query.execute();
 		if (encounters.isEmpty()) {
-			createEncounter(b);
+			createEncounter(encounter);
 		}
 	}
 
-	private void createEncounter(Behandlung behandlung) {
-		IEncounter encounter = findingsService.create(IEncounter.class);
-		updateEncounter(encounter, behandlung);
+	private void createEncounter(ch.elexis.core.model.IEncounter encounter) {
+		IEncounter findingsEncounter = FindingsModelServiceHolder.get().create(IEncounter.class);
+		updateEncounter(findingsEncounter, encounter);
 	}
 
-	private void updateEncounter(IEncounter encounter, Behandlung behandlung) {
-		encounter.setConsultationId(behandlung.getId());
-		encounter.setMandatorId(behandlung.getMandant().getId());
+	private void updateEncounter(IEncounter findingsEncounter, ch.elexis.core.model.IEncounter encounter) {
+		findingsEncounter.setConsultationId(encounter.getId());
+		findingsEncounter.setMandatorId(encounter.getMandator().getId());
 
-		LocalDate encounterDate = behandlung.getDatum();
+		LocalDate encounterDate = encounter.getDate();
 		if (encounterDate != null) {
-			encounter.setStartTime(encounterDate.atStartOfDay());
-			encounter.setEndTime(encounterDate.atTime(23, 59, 59));
+			findingsEncounter.setStartTime(encounterDate.atStartOfDay());
+			findingsEncounter.setEndTime(encounterDate.atTime(23, 59, 59));
 		}
-		Fall fall = behandlung.getFall();
-		if (fall != null) {
-			Kontakt patient = fall.getPatientKontakt();
+		ICoverage coverage = encounter.getCoverage();
+		if (coverage != null) {
+			IPatient patient = coverage.getPatient();
 			if (patient != null) {
-				encounter.setPatientId(patient.getId());
+				findingsEncounter.setPatientId(patient.getId());
 			}
 		}
 
-		VersionedResource vr = behandlung.getEintrag();
+		VersionedResource vr = encounter.getVersionedEntry();
 		if (vr != null) {
 			Samdas samdas = new Samdas(vr.getHead());
-			encounter.setText(samdas.getRecordText());
+			findingsEncounter.setText(samdas.getRecordText());
 		}
 
-		List<ICoding> coding = encounter.getType();
+		List<ICoding> coding = findingsEncounter.getType();
 		if (!ModelUtil.isSystemInList(CodingSystem.ELEXIS_ENCOUNTER_TYPE.getSystem(), coding)) {
 			coding.add(
 					new TransientCoding(CodingSystem.ELEXIS_ENCOUNTER_TYPE.getSystem(), "text",
 					"Nicht strukturierte Konsultation"));
-			encounter.setType(coding);
+			findingsEncounter.setType(coding);
 		}
 
-		findingsService.saveFinding(encounter);
+		findingsService.saveFinding(findingsEncounter);
 	}
 }

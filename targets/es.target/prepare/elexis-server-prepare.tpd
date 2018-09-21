@@ -11,6 +11,7 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	ch.elexis.core.hl7.v2x
 	ch.elexis.core.findings
 	ch.elexis.core.findings.util
+	ch.elexis.core.test
 	// JPA
 	ch.elexis.core.jpa
 	ch.elexis.core.jpa.datasource
