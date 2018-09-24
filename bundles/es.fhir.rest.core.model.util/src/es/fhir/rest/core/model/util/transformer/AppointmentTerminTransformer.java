@@ -1,5 +1,8 @@
 package es.fhir.rest.core.model.util.transformer;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,51 +19,65 @@ import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Slot;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.model.IContact;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.util.Converters;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
+import es.fhir.rest.core.model.util.transformer.helper.IAppointmentHelper;
 import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
-public class AppointmentTerminTransformer implements IFhirTransformer<Appointment, Termin> {
-
-	private TerminHelper terminHelper = new TerminHelper();
-	private Converters converters = new Converters();
-
+public class AppointmentTerminTransformer implements IFhirTransformer<Appointment, IAppointment> {
+	
+	@org.osgi.service.component.annotations.Reference(policy = ReferencePolicy.STATIC)
 	private IFhirTransformerRegistry transformerRegistry;
+	
+	@org.osgi.service.component.annotations.Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
 
-	@org.osgi.service.component.annotations.Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
+	private IAppointmentHelper appointmentHelper;
+	
+	@Activate
+	private void activate() {
+		appointmentHelper = new IAppointmentHelper();
 	}
-
+	
 	@Override
-	public Optional<Appointment> getFhirObject(Termin localObject, Set<Include> includes) {
+	public Optional<Appointment> getFhirObject(IAppointment localObject, Set<Include> includes) {
 		Appointment appointment = new Appointment();
 
 		appointment.setId(new IdDt(Appointment.class.getSimpleName(), localObject.getId()));
 		appointment.getMeta().setVersionId(localObject.getLastupdate().toString());
-		appointment.getMeta().setLastUpdated(converters.getLastUpdateAsDate(localObject).orElse(null));
+		appointment.getMeta().setLastUpdated(
+			appointmentHelper.getLastUpdateAsDate(localObject.getLastupdate()).orElse(null));
 
-		terminHelper.mapApplyAppointmentStatus(appointment, localObject);
+		appointmentHelper.mapApplyAppointmentStatus(appointment, localObject);
 
-		appointment.setDescription(terminHelper.getDescription(localObject));
+		appointment.setDescription(appointmentHelper.getDescription(localObject));
 
-		Optional<Object[]> startEndDuration = terminHelper.getStartEndDuration(localObject);
-		if (startEndDuration.isPresent()) {
-			appointment.setStart((Date) startEndDuration.get()[0]);
-			appointment.setEnd((Date) startEndDuration.get()[1]);
-			appointment.setMinutesDuration((int) startEndDuration.get()[2]);
+		LocalDateTime start = localObject.getStart();
+		if(start != null) {
+			Date start_ = Date.from(ZonedDateTime.of(start, ZoneId.systemDefault()).toInstant());
+			appointment.setStart(start_);
+		}
+
+		LocalDateTime end = localObject.getEnd();
+		if(end != null) {
+			Date end_ = Date.from(ZonedDateTime.of(end, ZoneId.systemDefault()).toInstant());
+			appointment.setEnd(end_);
+		}
+		
+		Integer durationMinutes = localObject.getDurationMinutes();
+		if(durationMinutes != null) {
+			appointment.setMinutesDuration(durationMinutes);
 		}
 
 		Reference slotReference = new Reference(new IdType(Slot.class.getSimpleName(), localObject.getId()));
@@ -68,7 +85,7 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 
 		List<AppointmentParticipantComponent> participant = appointment.getParticipant();
 
-		Optional<Kontakt> assignedContact = TerminService.resolveAssignedContact(localObject.getBereich());
+		Optional<IContact> assignedContact = TerminService.resolveAssignedContact(localObject.getSchedule());
 		if (assignedContact.isPresent() && assignedContact.get().isMandator()) {
 			AppointmentParticipantComponent hcp = new AppointmentParticipantComponent();
 			hcp.setActor(new Reference(new IdDt(Practitioner.class.getSimpleName(), assignedContact.get().getId())));
@@ -77,9 +94,9 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 			participant.add(hcp);
 		}
 
-		String patientIdOrSomeString = localObject.getPatId();
+		String patientIdOrSomeString = localObject.getSubjectOrPatient();
 		if (StringUtils.isNotEmpty(patientIdOrSomeString)) {
-			Optional<Kontakt> patientContact = KontaktService.load(patientIdOrSomeString);
+			Optional<IPatient> patientContact = modelService.load(patientIdOrSomeString, IPatient.class);
 			if (patientContact.isPresent()) {
 				AppointmentParticipantComponent patient = new AppointmentParticipantComponent();
 				patient.setActor(new Reference(new IdDt(Patient.class.getSimpleName(), patientIdOrSomeString)));
@@ -89,8 +106,8 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 
 				if (includes.contains(new Include("Appointment:patient"))) {
 					@SuppressWarnings("unchecked")
-					IFhirTransformer<Patient, Kontakt> patientTransformer = (IFhirTransformer<Patient, Kontakt>) transformerRegistry
-							.getTransformerFor(Patient.class, Kontakt.class);
+					IFhirTransformer<Patient, IPatient> patientTransformer = (IFhirTransformer<Patient, IPatient>) transformerRegistry
+							.getTransformerFor(Patient.class, IPatient.class);
 					patient.getActor().setResource(patientTransformer.getFhirObject(patientContact.get()).get());
 				}
 			} else {
@@ -102,32 +119,32 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 	}
 
 	@Override
-	public Optional<Termin> getLocalObject(Appointment fhirObject) {
+	public Optional<IAppointment> getLocalObject(Appointment fhirObject) {
 		String id = fhirObject.getIdElement().getIdPart();
 		if (id != null && !id.isEmpty()) {
-			return TerminService.load(id);
+			return modelService.load(id, IAppointment.class);
 		}
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<Termin> updateLocalObject(Appointment fhirObject, Termin localObject) {
+	public Optional<IAppointment> updateLocalObject(Appointment fhirObject, IAppointment localObject) {
 		
-		terminHelper.mapApplyAppointmentStatus(localObject, fhirObject);
+		appointmentHelper.mapApplyAppointmentStatus(localObject, fhirObject);
 		// TODO more
 		
-		TerminService.save(localObject);
+		modelService.save(localObject);
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<Termin> createLocalObject(Appointment fhirObject) {
+	public Optional<IAppointment> createLocalObject(Appointment fhirObject) {
 		return Optional.empty();
 	}
 
 	@Override
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
-		return Appointment.class.equals(fhirClazz) && Termin.class.equals(localClazz);
+		return Appointment.class.equals(fhirClazz) && IAppointment.class.equals(localClazz);
 	}
 
 }

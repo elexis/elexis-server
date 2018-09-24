@@ -25,7 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class AppointmentTest {
@@ -34,8 +34,7 @@ public class AppointmentTest {
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
-		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
-		initializer.initializeAgendaTable();
+		AllTests.getTestDatabaseInitializer().initializeAgendaTable();
 
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);

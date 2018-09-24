@@ -39,7 +39,6 @@ public class ContactService extends PersistenceService2 {
 	 * @param mimeType
 	 */
 	public static void setContactImage(IContact contact, byte[] image, MimeType mimeType){
-		@SuppressWarnings("unchecked")
 		Optional<IImage> contactImage =
 			(Optional<IImage>) modelService.load(contact.getId(), IImage.class);
 		IImage dbImage;
@@ -61,7 +60,6 @@ public class ContactService extends PersistenceService2 {
 	 * @param contact
 	 * @return the {@link DbImage} object containing the resp. image, if present
 	 */
-	@SuppressWarnings("unchecked")
 	public static Optional<IImage> getContactImage(IContact contact){
 		return (Optional<IImage>) modelService.load(contact.getId(), IImage.class);
 	}

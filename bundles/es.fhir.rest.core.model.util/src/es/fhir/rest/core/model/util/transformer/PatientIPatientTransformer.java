@@ -31,7 +31,7 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 	private IContactHelper contactHelper;
 	
 	@Activate
-	public void activate() {
+	private void activate() {
 		contactHelper = new IContactHelper(modelService);
 	}
 

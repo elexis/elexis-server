@@ -1,24 +1,24 @@
 package es.fhir.rest.core.resources.util;
 
 import ca.uhn.fhir.rest.param.ParamPrefixEnum;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
+import ch.elexis.core.services.IQuery.COMPARATOR;
 
 public class QueryUtil {
 
-	public static QUERY prefixParamToToQueryParam(ParamPrefixEnum prefix) {
+	public static COMPARATOR prefixParamToToQueryParam(ParamPrefixEnum prefix) {
 		switch (prefix) {
 		case EQUAL:
-			return QUERY.EQUALS;
+			return COMPARATOR.EQUALS;
 		case GREATERTHAN:
-			return QUERY.GREATER;
+			return COMPARATOR.GREATER;
 		case GREATERTHAN_OR_EQUALS:
-			return QUERY.GREATER_OR_EQUAL;
+			return COMPARATOR.GREATER_OR_EQUAL;
 		case LESSTHAN:
-			return QUERY.LESS;
+			return COMPARATOR.LESS;
 		case LESSTHAN_OR_EQUALS:
-			return QUERY.LESS_OR_EQUAL;
+			return COMPARATOR.LESS_OR_EQUAL;
 		case NOT_EQUAL:
-			return QUERY.NOT_EQUALS;
+			return COMPARATOR.NOT_EQUALS;
 		default:
 			break;
 		}

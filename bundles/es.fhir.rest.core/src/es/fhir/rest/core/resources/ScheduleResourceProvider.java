@@ -24,27 +24,24 @@ import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
 public class ScheduleResourceProvider implements IFhirResourceProvider {
-
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return Schedule.class;
 	}
-
+	
+	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
 	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Schedule, String> getTransformer() {
-		return (IFhirTransformer<Schedule, String>) transformerRegistry.getTransformerFor(Schedule.class, String.class);
+	public IFhirTransformer<Schedule, String> getTransformer(){
+		return (IFhirTransformer<Schedule, String>) transformerRegistry
+			.getTransformerFor(Schedule.class, String.class);
 	}
-
+	
 	@Read
-	public Schedule getResourceById(@IdParam IdType theId) {
+	public Schedule getResourceById(@IdParam IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<Schedule> fhirSchedule = getTransformer().getFhirObject(idPart);
@@ -52,13 +49,13 @@ public class ScheduleResourceProvider implements IFhirResourceProvider {
 		}
 		return null;
 	}
-
+	
 	@Search
-	public List<Schedule> findSchedules() {
+	public List<Schedule> findSchedules(){
 		Set<String> agendaAreas = TerminService.getAgendaAreas();
 		List<Schedule> areas = agendaAreas.stream()
-				.map(areaName -> getTransformer().getFhirObject(DigestUtils.md5Hex(areaName)))
-				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+			.map(areaName -> getTransformer().getFhirObject(DigestUtils.md5Hex(areaName)))
+			.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		return areas;
 	}
 }

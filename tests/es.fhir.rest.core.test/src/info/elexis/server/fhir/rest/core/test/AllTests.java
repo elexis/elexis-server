@@ -21,9 +21,11 @@ import ch.elexis.core.services.IElexisEntityManager;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import ch.elexis.core.utils.OsgiServiceUtil;
+import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
 import info.elexis.server.fhir.rest.core.resources.CORSTest;
 import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
+import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
 
 @RunWith(Suite.class)
 //@SuiteClasses({ CORSTest.class, MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
@@ -31,7 +33,8 @@ import info.elexis.server.fhir.rest.core.resources.PatientTest;
 //		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
 //		AllergyIntoleranceTest.class, AppointmentTest.class, ScheduleTest.class })
 @SuiteClasses({
-	CORSTest.class, PatientTest.class, OrganizationTest.class
+	CORSTest.class, PatientTest.class, OrganizationTest.class, AppointmentTest.class,
+	ScheduleTest.class
 })
 public class AllTests {
 	
