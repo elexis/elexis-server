@@ -30,7 +30,7 @@ import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import info.elexis.server.core.SystemPropertyConstants;
 
-@Component(service = CoreFhirRestServlet.class)
+@Component(service = CoreFhirRestServlet.class, immediate = true)
 public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final String FHIR_BASE_URL = "/fhir";
@@ -39,17 +39,8 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final long serialVersionUID = -4760702567124041329L;
 
-	// HTTP service to register this as servlet
+	@Reference
 	private HttpService httpService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
-	public void bindHttpService(HttpService httpService) {
-		this.httpService = httpService;
-	}
-
-	public void unbindHttpService(HttpService httpService) {
-		this.httpService = null;
-	}
 
 	// resource providers
 	private List<IFhirResourceProvider> providers;

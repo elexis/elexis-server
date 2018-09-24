@@ -27,7 +27,7 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 @Component
 public class OrganizationResourceProvider implements IFhirResourceProvider {
 	
-	@Reference
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference

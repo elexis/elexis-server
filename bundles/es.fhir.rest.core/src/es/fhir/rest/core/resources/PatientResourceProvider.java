@@ -30,7 +30,7 @@ import info.elexis.server.core.connector.elexis.services.ContactService;
 @Component
 public class PatientResourceProvider implements IFhirResourceProvider {
 	
-	@Reference
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference

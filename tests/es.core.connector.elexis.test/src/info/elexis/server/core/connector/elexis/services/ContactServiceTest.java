@@ -1,14 +1,19 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.test.TestEntities;
+import ch.elexis.core.types.Gender;
 import ch.elexis.core.utils.OsgiServiceUtil;
 
 
@@ -42,24 +47,24 @@ public class ContactServiceTest extends AbstractServiceTest {
 	//		assertTrue(ageInYears >= 37);
 	//	}
 	
-//	@Test
-//	public void testFindPatientByPatientNumber(){
-//		Optional<IPatient> patient =
-//			ContactService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
-//		assertTrue(patient.isPresent());
-//		Optional<IPatient> findById =
-//			modelService.load(TestEntities.PATIENT_MALE_ID, IPatient.class);
-//		assertTrue(findById.isPresent());
-//		assertEquals(findById.get().getId(), patient.get().getId());
-//		
-//		assertEquals("Testpatient", patient.get().getDescription1());
-//		assertEquals("Vorname", patient.get().getDescription2());
-//		assertEquals(new TimeTool(LocalDate.of(1979, 3, 15)), patient.get().getDateOfBirth());
-//		assertEquals(Gender.MALE, patient.get().getGender());
-//		assertEquals("Teststrasse 15", patient.get().getStreet());
-//		assertEquals("Testort", patient.get().getCity());
-//		assertEquals("6840", patient.get().getZip());
-//	}
+	@Test
+	public void testFindPatientByPatientNumber(){
+		Optional<IPatient> patient =
+			ContactService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
+		assertTrue(patient.isPresent());
+		Optional<IPatient> findById =
+			modelService.load(TestEntities.PATIENT_MALE_ID, IPatient.class);
+		assertTrue(findById.isPresent());
+		assertEquals(findById.get().getId(), patient.get().getId());
+		
+		assertEquals("Testpatient", patient.get().getDescription1());
+		assertEquals("Vorname", patient.get().getDescription2());
+		assertEquals(LocalDate.of(1979, 3, 15).atStartOfDay(), patient.get().getDateOfBirth());
+		assertEquals(Gender.MALE, patient.get().getGender());
+		assertEquals("Teststrasse 15", patient.get().getStreet());
+		assertEquals("Testort", patient.get().getCity());
+		assertEquals("6840", patient.get().getZip());
+	}
 	
 //	@Test
 //	public void testLoadMandatorAndExtInfoValues(){

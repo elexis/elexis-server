@@ -30,28 +30,33 @@ import info.elexis.server.fhir.rest.core.resources.PatientTest;
 //		PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
 //		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
 //		AllergyIntoleranceTest.class, AppointmentTest.class, ScheduleTest.class })
-@SuiteClasses({ CORSTest.class, PatientTest.class, OrganizationTest.class })
+@SuiteClasses({
+	CORSTest.class, PatientTest.class, OrganizationTest.class
+})
 public class AllTests {
-
+	
 	private static IFindingsService iFindingsService;
 	
 	public static final String GENERIC_CLIENT_URL = "http://localhost:8380/fhir";
 	
-	private static IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
-	private static IElexisEntityManager entityManager = OsgiServiceUtil.getService(IElexisEntityManager.class).get();
-
-	private static TestDatabaseInitializer testDatabaseInitializer = new TestDatabaseInitializer(modelService, entityManager);
-
-	public static Date getDate(LocalDateTime localDateTime) {
+	private static IModelService modelService = OsgiServiceUtil.getService(IModelService.class,
+		"(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
+	private static IElexisEntityManager entityManager =
+		OsgiServiceUtil.getService(IElexisEntityManager.class).get();
+	
+	private static TestDatabaseInitializer testDatabaseInitializer =
+		new TestDatabaseInitializer(modelService, entityManager);
+	
+	public static Date getDate(LocalDateTime localDateTime){
 		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
 		return Date.from(zdt.toInstant());
 	}
-
-	public static LocalDateTime getLocalDateTime(Date date) {
+	
+	public static LocalDateTime getLocalDateTime(Date date){
 		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 	}
-
-	public static boolean isCodeInConcept(String system, String code, CodeableConcept concept) {
+	
+	public static boolean isCodeInConcept(String system, String code, CodeableConcept concept){
 		List<Coding> list = concept.getCoding();
 		if (list != null && !list.isEmpty()) {
 			for (Coding coding : list) {
@@ -62,8 +67,9 @@ public class AllTests {
 		}
 		return false;
 	}
-
-	public static boolean isCodeInConcepts(String system, String code, List<CodeableConcept> concepts) {
+	
+	public static boolean isCodeInConcepts(String system, String code,
+		List<CodeableConcept> concepts){
 		if (concepts != null && !concepts.isEmpty()) {
 			for (CodeableConcept concept : concepts) {
 				if (isCodeInConcept(system, code, concept)) {
@@ -73,30 +79,31 @@ public class AllTests {
 		}
 		return false;
 	}
-
-	public static IFindingsService getFindingsService() {
+	
+	public static IFindingsService getFindingsService(){
 		if (iFindingsService != null) {
 			return iFindingsService;
 		}
 		BundleContext bundleContext = FrameworkUtil.getBundle(AllTests.class).getBundleContext();
-		ServiceReference<IFindingsService> serviceReference = bundleContext.getServiceReference(IFindingsService.class);
+		ServiceReference<IFindingsService> serviceReference =
+			bundleContext.getServiceReference(IFindingsService.class);
 		if (serviceReference != null) {
 			iFindingsService = bundleContext.getService(serviceReference);
 		}
 		return iFindingsService;
 	}
-
-	public static void deleteAllFindings() {
+	
+	public static void deleteAllFindings(){
 		IFindingsService iFindingsService = getFindingsService();
 		if (iFindingsService != null) {
-			for (IFinding iFinding : iFindingsService.getPatientsFindings(testDatabaseInitializer.getPatient().getId(),
-					IFinding.class)) {
+			for (IFinding iFinding : iFindingsService.getPatientsFindings(
+				testDatabaseInitializer.getPatient().getId(), IFinding.class)) {
 				iFindingsService.deleteFinding(iFinding);
 			}
 		}
 	}
-
-	public static TestDatabaseInitializer getTestDatabaseInitializer() {
+	
+	public static TestDatabaseInitializer getTestDatabaseInitializer(){
 		return testDatabaseInitializer;
 	}
 }

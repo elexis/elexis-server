@@ -10,6 +10,7 @@ import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.StringType;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -24,10 +25,15 @@ import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 @Component
 public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPatient> {
 	
-	@Reference
-	IModelService modelService;
-
-	private IContactHelper contactHelper = new IContactHelper(modelService);
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	private IContactHelper contactHelper;
+	
+	@Activate
+	public void activate() {
+		contactHelper = new IContactHelper(modelService);
+	}
 
 	@Override
 	public Optional<Patient> getFhirObject(IPatient localObject, Set<Include> includes) {

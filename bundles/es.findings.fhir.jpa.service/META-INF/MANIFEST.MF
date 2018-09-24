@@ -27,7 +27,7 @@ Import-Package: ch.elexis.core.findings.util,
  org.osgi.service.component.annotations;version="1.2.0",
  org.slf4j;version="1.7.2"
 Export-Package: info.elexis.server.findings.fhir.jpa.service
-Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.TessinerCodeContribution.xml,
+Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.CoreModelServiceHolder.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.TessinerCodeContribution.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.service.MigratorService.xml,
- OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml,
- OSGI-INF/info.elexis.server.findings.fhir.jpa.service.CoreModelServiceHolder.xml
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml

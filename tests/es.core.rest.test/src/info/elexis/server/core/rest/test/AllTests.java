@@ -14,8 +14,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.common.DBConnection.DBType;
+import ch.elexis.core.services.IConfigService;
+import ch.elexis.core.services.IElexisEntityManager;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.test.initializer.TestDatabaseInitializer;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.rest.test.elexisinstances.AllElexisInstancesTests;
 import info.elexis.server.core.rest.test.serversetup.SetupTest;
 import info.elexis.server.core.rest.test.swagger.SwaggerTest;
@@ -36,11 +40,15 @@ public class AllTests {
 
 	private static OkHttpClient defaultOkHttpClient = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS)
 			.writeTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
+	
+	public static IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
+	public static IElexisEntityManager entityManager = OsgiServiceUtil.getService(IElexisEntityManager.class).get();
+	public static IConfigService configService = OsgiServiceUtil.getService(IConfigService.class).get();
 
 	@BeforeClass
 	public static void setup() throws IOException, SQLException {
-		TestDatabaseInitializer tdi = new TestDatabaseInitializer();
-		tdi.initializeDb(getTestDatabaseConnection(), true);
+		TestDatabaseInitializer tdi = new TestDatabaseInitializer(modelService, entityManager);
+		tdi.initializeDb(configService);
 	}
 
 	public static boolean isReachable(String targetUrl) throws MalformedURLException, IOException {

@@ -1,6 +1,5 @@
 package info.elexis.server.core.connector.elexis.services;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,15 +16,14 @@ import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.types.Gender;
-import ch.elexis.core.types.RelationshipType;
 import ch.elexis.core.utils.OsgiServiceUtil;
 
 public class ContactService extends PersistenceService2 {
 	
 	private static Logger log = LoggerFactory.getLogger(ContactService.class);
 	
-	private static IModelService modelService =
-		OsgiServiceUtil.getService(IModelService.class).get();
+	private static IModelService modelService = OsgiServiceUtil.getService(IModelService.class,
+		"(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
 	
 	public static List<ICoverage> getFaelle(IPatient patient){
 		IQuery<ICoverage> query = modelService.getQuery(ICoverage.class);

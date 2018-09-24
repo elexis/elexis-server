@@ -25,55 +25,58 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class PatientTest {
-
+	
 	private static IGenericClient client;
-
+	
 	@BeforeClass
-	public static void setupClass() throws IOException, SQLException {
+	public static void setupClass() throws IOException, SQLException{
 		AllTests.getTestDatabaseInitializer().initializePatient();
-
+		
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
-
+	
 	@Test
-	public void getPatient() {
+	public void getPatient(){
 		// search by name
-		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))
-				.returnBundle(Bundle.class).execute();
+		Bundle results = client.search().forResource(Patient.class)
+			.where(Patient.NAME.matches().value("Test")).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
 		Patient patient = (Patient) entries.get(0).getResource();
 		// read with by id
-		Patient readPatient = client.read().resource(Patient.class).withId(patient.getId()).execute();
+		Patient readPatient =
+			client.read().resource(Patient.class).withId(patient.getId()).execute();
 		assertNotNull(readPatient);
 		assertEquals(patient.getId(), readPatient.getId());
 		// search by elexis patient number identifier
-		results = client.search()
-				.forResource(Patient.class).where(Patient.IDENTIFIER.exactly()
-						.systemAndIdentifier("www.elexis.info/patnr",
-				Integer.toString(getPatientNumber(patient)))).returnBundle(Bundle.class).execute();
+		results =
+			client.search().forResource(Patient.class)
+				.where(Patient.IDENTIFIER.exactly().systemAndIdentifier("www.elexis.info/patnr",
+					Integer.toString(getPatientNumber(patient))))
+				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
-
+		
 	}
-
+	
 	/**
-	 * Test all properties set by
-	 * {@link TestDatabaseInitializer#initializePatient()}.
+	 * Test all properties set by {@link TestDatabaseInitializer#initializePatient()}.
 	 */
 	@Test
-	public void getPatientProperties() {
-		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
-				.execute();
+	public void getPatientProperties(){
+		IReadExecutable<Patient> readPatientE = client.read().resource(Patient.class)
+			.withId(AllTests.getTestDatabaseInitializer().getPatient().getId());
+		Patient readPatient = readPatientE.execute();
 		assertNotNull(readPatient);
 		List<HumanName> names = readPatient.getName();
 		assertNotNull(names);
@@ -84,7 +87,8 @@ public class PatientTest {
 		assertEquals("Test", name.getGivenAsSingleString());
 		Date dob = readPatient.getBirthDate();
 		assertNotNull(dob);
-		assertEquals(LocalDate.of(1990, Month.JANUARY, 1), AllTests.getLocalDateTime(dob).toLocalDate());
+		assertEquals(LocalDate.of(1990, Month.JANUARY, 1),
+			AllTests.getLocalDateTime(dob).toLocalDate());
 		assertEquals(AdministrativeGender.FEMALE, readPatient.getGender());
 		List<ContactPoint> telcoms = readPatient.getTelecom();
 		assertNotNull(telcoms);
@@ -99,7 +103,7 @@ public class PatientTest {
 		assertEquals("City", addresses.get(0).getCity());
 		assertEquals("123", addresses.get(0).getPostalCode());
 		assertEquals("Street 1", addresses.get(0).getLine().get(0).asStringValue());
-
+		
 		List<Identifier> identifiers = readPatient.getIdentifier();
 		boolean ahvFound = false;
 		for (Identifier identifier : identifiers) {
@@ -110,8 +114,8 @@ public class PatientTest {
 		}
 		assertTrue(ahvFound);
 	}
-
-	public int getPatientNumber(Patient patient) {
+	
+	public int getPatientNumber(Patient patient){
 		List<Identifier> identifiers = patient.getIdentifier();
 		for (Identifier identifier : identifiers) {
 			if ("www.elexis.info/patnr".equals(identifier.getSystem())) {
