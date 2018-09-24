@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1537539122">
+<target name="Elexis-Server" sequenceNumber="1537778960">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.7.0.20180730-1329"/>
-      <unit id="ch.elexis.core" version="3.7.0.20180921-1407"/>
+      <unit id="ch.elexis.core" version="3.7.0.20180924-0831"/>
       <unit id="ch.elexis.core.l10n" version="3.7.0.20180920-0818"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20180920-0818"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180920-0818"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20180806-1009"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20180920-0818"/>
-      <unit id="ch.elexis.core.test" version="1.0.0.20180921-1408"/>
+      <unit id="ch.elexis.core.test" version="1.0.0.20180924-0831"/>
       <unit id="ch.elexis.core.jpa" version="1.0.0.20180919-1821"/>
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20180723-0755"/>
       <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20180921-0946"/>
