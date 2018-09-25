@@ -8,8 +8,6 @@ import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +22,12 @@ import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IProcedureRequest;
 import ch.elexis.core.findings.codes.ICodingService;
 import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import ch.rgw.tools.VersionedResource;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.BehandlungService;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class ProcedureRequestIProcedureRequestTransformer
@@ -39,20 +35,20 @@ public class ProcedureRequestIProcedureRequestTransformer
 
 	private static Logger logger = LoggerFactory.getLogger(ProcedureRequestIProcedureRequestTransformer.class);
 
-	private FindingsContentHelper contentHelper = new FindingsContentHelper();
-
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
 	private IFindingsService findingsService;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
-
+	@Reference
 	private ICodingService codingService;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindICodingService(ICodingService codingService) {
-		this.codingService = codingService;
+	private FindingsContentHelper contentHelper;
+
+	
+	public void activate() {
+		contentHelper = new FindingsContentHelper();
 	}
 
 	@Override
@@ -87,7 +83,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 		contentHelper.setResource(fhirObject, iProcedureRequest);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();
-			Optional<Kontakt> patient = KontaktService.load(id);
+			Optional<IPatient> patient = modelService.load(id, IPatient.class);
 			patient.ifPresent(k -> iProcedureRequest.setPatientId(id));
 		}
 		IEncounter iEncounter = null;
@@ -107,7 +103,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 	}
 
 	private void writeBehandlungSoapText(IEncounter iEncounter, ProcedureRequest procedureRequest) {
-		Optional<Behandlung> behandlung = BehandlungService.load(iEncounter.getConsultationId());
+		Optional<ch.elexis.core.model.IEncounter> behandlung = modelService.load(iEncounter.getConsultationId(), ch.elexis.core.model.IEncounter.class);
 		behandlung.ifPresent(cons -> {
 			Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 			if (lockInfo.isPresent()) {
@@ -136,14 +132,14 @@ public class ProcedureRequestIProcedureRequestTransformer
 
 				VersionedResource vResource = VersionedResource.load(null);
 				vResource.update(text.toString(), "From FHIR");
-				cons.setEintrag(vResource);
-				BehandlungService.save(cons);
+				cons.setVersionedEntry(vResource);
+				modelService.save(cons);
 				AbstractHelper.releaseLock(lockInfo.get());
 			}
 		});
 	}
 
-	private String getProcedureText(Behandlung behandlung) {
+	private String getProcedureText(ch.elexis.core.model.IEncounter behandlung) {
 		StringBuilder ret = new StringBuilder();
 		@SuppressWarnings("unchecked")
 		List<IProcedureRequest> procedureRequests = (List<IProcedureRequest>) ((Object) findingsService

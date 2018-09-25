@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding="info/elexis/server/fhir/rest/core/resources/ProcedureRequestTest.java|info/elexis/server/fhir/rest/core/resources/EncounterTest.java|info/elexis/server/fhir/rest/core/resources/FamilyMemberHistoryTest.java|info/elexis/server/fhir/rest/core/resources/MedicationRequestTest.java|info/elexis/server/fhir/rest/core/resources/ObservationTest.java|info/elexis/server/fhir/rest/core/resources/AllergyIntoleranceTest.java|info/elexis/server/fhir/rest/core/resources/ClaimTest.java|info/elexis/server/fhir/rest/core/resources/ConditionTest.java" kind="src" path="src">
+	<classpathentry excluding="info/elexis/server/fhir/rest/core/resources/ClaimTest.java|info/elexis/server/fhir/rest/core/resources/MedicationRequestTest.java" kind="src" path="src">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>

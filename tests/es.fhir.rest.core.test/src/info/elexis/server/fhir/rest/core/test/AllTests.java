@@ -21,22 +21,30 @@ import ch.elexis.core.services.IElexisEntityManager;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import ch.elexis.core.utils.OsgiServiceUtil;
+import info.elexis.server.fhir.rest.core.resources.AllergyIntoleranceTest;
 import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
 import info.elexis.server.fhir.rest.core.resources.CORSTest;
+import info.elexis.server.fhir.rest.core.resources.ConditionTest;
 import info.elexis.server.fhir.rest.core.resources.CoverageTest;
+import info.elexis.server.fhir.rest.core.resources.EncounterTest;
+import info.elexis.server.fhir.rest.core.resources.FamilyMemberHistoryTest;
+import info.elexis.server.fhir.rest.core.resources.ObservationTest;
 import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
 import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
+import info.elexis.server.fhir.rest.core.resources.ProcedureRequestTest;
 import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
 
 @RunWith(Suite.class)
 //@SuiteClasses({  MedicationRequestTest.class, PatientTest.class, OrganizationTest.class,
-//		EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
-//		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
-//		AllergyIntoleranceTest.class})
+//		, CodesySystemTest.class,
+//		, ClaimTest.class, ,
+//		})
 @SuiteClasses({
-	CORSTest.class, PatientTest.class, OrganizationTest.class, AppointmentTest.class,
-	CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class
+	CORSTest.class, AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
+	AppointmentTest.class, CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class,
+	EncounterTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, ConditionTest.class,
+	ProcedureRequestTest.class
 })
 public class AllTests {
 	
@@ -110,5 +118,9 @@ public class AllTests {
 	
 	public static TestDatabaseInitializer getTestDatabaseInitializer(){
 		return testDatabaseInitializer;
+	}
+	
+	public static IModelService getModelService(){
+		return modelService;
 	}
 }

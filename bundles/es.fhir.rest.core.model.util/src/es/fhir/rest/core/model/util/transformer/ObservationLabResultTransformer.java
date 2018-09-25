@@ -8,21 +8,27 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.codesystems.ObservationCategory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.model.ILabResult;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.model.util.transformer.helper.LabResultHelper;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
+import es.fhir.rest.core.model.util.transformer.helper.ILabResultHelper;
 
 @Component
-public class ObservationLabResultTransformer implements IFhirTransformer<Observation, LabResult> {
+public class ObservationLabResultTransformer implements IFhirTransformer<Observation, ILabResult> {
 
-	private LabResultHelper labResultHelper = new LabResultHelper();
+	private ILabResultHelper labResultHelper;
 
+	@Activate
+	public void activate() {
+		labResultHelper = new ILabResultHelper();
+	}
+	
 	@Override
-	public Optional<Observation> getFhirObject(LabResult localObject, Set<Include> includes) {
+	public Optional<Observation> getFhirObject(ILabResult localObject, Set<Include> includes) {
 		Observation observation = new Observation();
 
 		observation.setId(new IdDt("Observation", localObject.getId()));
@@ -50,26 +56,26 @@ public class ObservationLabResultTransformer implements IFhirTransformer<Observa
 	}
 
 	@Override
-	public Optional<LabResult> getLocalObject(Observation fhirObject) {
+	public Optional<ILabResult> getLocalObject(Observation fhirObject) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Optional<LabResult> updateLocalObject(Observation fhirObject, LabResult localObject) {
+	public Optional<ILabResult> updateLocalObject(Observation fhirObject, ILabResult localObject) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Optional<LabResult> createLocalObject(Observation fhirObject) {
+	public Optional<ILabResult> createLocalObject(Observation fhirObject) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
-		return Observation.class.equals(fhirClazz) && LabResult.class.equals(localClazz);
+		return Observation.class.equals(fhirClazz) && ILabResult.class.equals(localClazz);
 	}
 
 }

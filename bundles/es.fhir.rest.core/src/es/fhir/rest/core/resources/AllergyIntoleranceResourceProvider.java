@@ -10,8 +10,6 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -23,46 +21,41 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IAllergyIntolerance;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider {
-
+	
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
+	private IFhirTransformerRegistry transformerRegistry;
+	
+	@Reference
+	private IFindingsService findingsService;
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return AllergyIntolerance.class;
 	}
-
-	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
-
-	private IFindingsService findingsService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<AllergyIntolerance, IAllergyIntolerance> getTransformer(){
 		return (IFhirTransformer<AllergyIntolerance, IAllergyIntolerance>) transformerRegistry
 			.getTransformerFor(AllergyIntolerance.class, IAllergyIntolerance.class);
 	}
-
+	
 	@Search()
 	public List<AllergyIntolerance> findAllergyIntolerance(
 		@RequiredParam(name = AllergyIntolerance.SP_PATIENT) IdType patientId){
 		if (patientId != null && !patientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.load(patientId.getIdPart());
+			Optional<IPatient> patient = modelService.load(patientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<AllergyIntolerance> ret = new ArrayList<>();
@@ -89,8 +82,7 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 		@ResourceParam AllergyIntolerance allergyIntolerance){
 		MethodOutcome outcome = new MethodOutcome();
 		
-		Optional<IAllergyIntolerance> exists =
-			getTransformer().getLocalObject(allergyIntolerance);
+		Optional<IAllergyIntolerance> exists = getTransformer().getLocalObject(allergyIntolerance);
 		if (exists.isPresent()) {
 			outcome.setCreated(false);
 			outcome.setId(new IdType(allergyIntolerance.getId()));

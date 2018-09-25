@@ -41,8 +41,8 @@ import ch.elexis.core.findings.ObservationComponent;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import ch.elexis.core.model.ILabResult;
+import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
@@ -54,10 +54,9 @@ public class ObservationTest {
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException, ElexisException {
-		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
-		initializer.initializeLabResult();
-		initializer.initializeBehandlung();
-		initializer.initializeMandant();
+		AllTests.getTestDatabaseInitializer().initializeLabResult();
+		AllTests.getTestDatabaseInitializer().initializeBehandlung();
+		AllTests.getTestDatabaseInitializer().initializeMandant();
 
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
@@ -119,7 +118,7 @@ public class ObservationTest {
 
 	@Test
 	public void getObservation() {
-		List<LabResult> labResults = TestDatabaseInitializer.getLabResults();
+		List<ILabResult> labResults = TestDatabaseInitializer.getLabResults();
 		
 		Observation readObservation = client.read().resource(Observation.class)
 				.withId(labResults.get(0).getId())
@@ -225,7 +224,7 @@ public class ObservationTest {
 	}
 
 	@Test
-	public void lobaratoryObservations() throws FHIRException {
+	public void laboratoryObservations() throws FHIRException {
 		// search by patient and category
 		Bundle results = client.search().forResource(Observation.class)
 				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))

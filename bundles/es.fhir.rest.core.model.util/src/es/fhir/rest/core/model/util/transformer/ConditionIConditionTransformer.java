@@ -7,28 +7,26 @@ import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
+
 
 @Component(immediate = true)
 public class ConditionIConditionTransformer implements IFhirTransformer<Condition, ICondition> {
 
-	private FindingsContentHelper contentHelper = new FindingsContentHelper();
-
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
 	private IFindingsService findingsService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
+	
+	private FindingsContentHelper contentHelper = new FindingsContentHelper();
 
 	@Override
 	public Optional<Condition> getFhirObject(ICondition localObject, Set<Include> includes) {
@@ -62,7 +60,7 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 		contentHelper.setResource(fhirObject, iCondition);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
 			String id = fhirObject.getSubject().getReferenceElement().getIdPart();
-			Optional<Kontakt> patient = KontaktService.load(id);
+			Optional<IPatient> patient = modelService.load(id, IPatient.class);
 			patient.ifPresent(k -> iCondition.setPatientId(id));
 		}
 		findingsService.saveFinding(iCondition);

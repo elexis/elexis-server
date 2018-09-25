@@ -16,6 +16,7 @@ Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.model,
  ch.rgw.tools,
  com.google.gson;version="2.5.0",
+ info.elexis.server.core.connector.elexis.services,
  info.elexis.server.core.service,
  javax.persistence.metamodel,
  org.eclipse.persistence.config;version="2.5.0",
@@ -30,4 +31,5 @@ Export-Package: info.elexis.server.findings.fhir.jpa.service
 Service-Component: OSGI-INF/info.elexis.server.findings.fhir.jpa.service.CoreModelServiceHolder.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.TessinerCodeContribution.xml,
  OSGI-INF/info.elexis.server.findings.fhir.jpa.service.MigratorService.xml,
- OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.codes.CoverageTypeCodingContribution.xml,
+ OSGI-INF/info.elexis.server.findings.fhir.jpa.service.FindingsModelServiceHolder.xml

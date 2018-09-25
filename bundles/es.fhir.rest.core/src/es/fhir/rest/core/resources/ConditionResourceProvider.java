@@ -11,8 +11,6 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -27,36 +25,27 @@ import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.migration.IMigratorService;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.CodeTypeUtil;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class ConditionResourceProvider implements IFhirResourceProvider {
 
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
 	private IMigratorService migratorService;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIMigratorService(IMigratorService migratorService) {
-		this.migratorService = migratorService;
-	}
-
+	@Reference
 	private IFindingsService findingsService;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
-
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
 
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
@@ -87,7 +76,7 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId,
 			@OptionalParam(name = Condition.SP_CATEGORY) CodeType categoryCode) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
+			Optional<IPatient> patient = modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate diagnose condition first

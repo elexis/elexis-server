@@ -10,8 +10,6 @@ import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -25,34 +23,29 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IProcedureRequest;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
 	private IFindingsService findingsService;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
-
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
 
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return ProcedureRequest.class;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<ProcedureRequest, IProcedureRequest> getTransformer() {
@@ -80,7 +73,7 @@ public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 			@RequiredParam(name = ProcedureRequest.SP_PATIENT) IdType thePatientId,
 			@OptionalParam(name = ProcedureRequest.SP_ENCOUNTER) IdType theEncounterId) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
+			Optional<IPatient> patient = modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<IProcedureRequest> findings = findingsService

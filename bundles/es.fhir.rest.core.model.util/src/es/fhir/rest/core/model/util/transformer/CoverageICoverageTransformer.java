@@ -29,7 +29,7 @@ public class CoverageICoverageTransformer implements IFhirTransformer<Coverage, 
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
-	private ICoverageHelper coverageHelper = new ICoverageHelper();
+	private ICoverageHelper coverageHelper;
 	
 	@Activate
 	public void activate(){

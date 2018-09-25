@@ -27,8 +27,8 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.services.VerrechnetService;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
@@ -39,9 +39,8 @@ public class ClaimTest {
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
-		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
-		initializer.initializeTarmedTables();
-		initializer.initializeBehandlung();
+		AllTests.getTestDatabaseInitializer().initializeTarmedTables();
+		AllTests.getTestDatabaseInitializer().initializeBehandlung();
 
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);

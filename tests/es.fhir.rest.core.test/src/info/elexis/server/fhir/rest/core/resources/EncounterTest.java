@@ -33,7 +33,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
+import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
@@ -43,9 +43,8 @@ public class EncounterTest {
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
-		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
-		initializer.initializeBehandlung();
-		initializer.initializeMandant();
+		 AllTests.getTestDatabaseInitializer().initializeBehandlung();
+		 AllTests.getTestDatabaseInitializer().initializeMandant();
 
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);

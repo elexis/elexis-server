@@ -1,9 +1,11 @@
 package info.elexis.server.findings.fhir.jpa.service;
 
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ch.elexis.core.services.IModelService;
 
+@Component
 public class FindingsModelServiceHolder {
 	private static IModelService modelService;
 

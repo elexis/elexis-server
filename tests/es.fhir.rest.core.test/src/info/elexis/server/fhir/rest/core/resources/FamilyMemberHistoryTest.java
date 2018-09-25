@@ -20,7 +20,6 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IFamilyMemberHistory;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
@@ -30,8 +29,7 @@ public class FamilyMemberHistoryTest {
 	
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException{
-		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
-		initializer.initializePatient();
+		AllTests.getTestDatabaseInitializer().initializePatient();
 		
 		
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
