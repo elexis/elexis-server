@@ -6,28 +6,32 @@ import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Practitioner;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.useradmin.User;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.model.IMandator;
+import ch.elexis.core.model.IPerson;
+import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
-import es.fhir.rest.core.model.util.transformer.helper.KontaktHelper;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import info.elexis.server.core.connector.elexis.services.UserService;
 
 @Component
-public class PractitionerKontaktTransformer implements IFhirTransformer<Practitioner, IMandator> {
+public class PractitionerIMandatorTransformer implements IFhirTransformer<Practitioner, IMandator> {
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
-	private IContactHelper contactHelper = new IContactHelper(modelService);
+	private IContactHelper contactHelper;
+	
+	@Activate
+	private void activate(){
+		contactHelper = new IContactHelper(modelService);
+	}
 	
 	@Override
 	public Optional<Practitioner> getFhirObject(IMandator localObject, Set<Include> includes){
@@ -39,16 +43,20 @@ public class PractitionerKontaktTransformer implements IFhirTransformer<Practiti
 		identifiers.add(getElexisObjectIdentifier(localObject));
 		practitioner.setIdentifier(identifiers);
 		
-		practitioner.setName(contactHelper.getHumanNames(localObject));
-		practitioner.setGender(contactHelper.getGender(localObject.getGender()));
-		practitioner.setBirthDate(contactHelper.getBirthDate(localObject));
+		if (localObject.isPerson()) {
+			IPerson mandatorPerson = modelService.load(localObject.getId(), IPerson.class).get();
+			practitioner.setName(contactHelper.getHumanNames(mandatorPerson));
+			practitioner.setGender(contactHelper.getGender(mandatorPerson.getGender()));
+			practitioner.setBirthDate(contactHelper.getBirthDate(mandatorPerson));
+			
+			Optional<IUser> userLocalObject = UserService.findByContact(mandatorPerson);
+			if (userLocalObject.isPresent()) {
+				practitioner.setActive(userLocalObject.get().isActive());
+			}
+		}
+		
 		practitioner.setAddress(contactHelper.getAddresses(localObject));
 		practitioner.setTelecom(contactHelper.getContactPoints(localObject));
-		
-		Optional<User> userLocalObject = UserService.findByKontakt(localObject);
-		if (userLocalObject.isPresent()) {
-			practitioner.setActive(userLocalObject.get().isActive());
-		}
 		
 		return Optional.of(practitioner);
 	}

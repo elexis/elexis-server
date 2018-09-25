@@ -48,7 +48,7 @@ public class IContactHelper extends AbstractHelper {
 			ret.add(humanName);
 		}
 		if (person.isUser()) {
-			Optional<IUser> userLocalObject = UserService.findByIContact(modelService, person);
+			Optional<IUser> userLocalObject = UserService.findByContact(person);
 			if (userLocalObject.isPresent()) {
 				HumanName sysName = new HumanName();
 				sysName.setText(userLocalObject.get().getId());

@@ -117,8 +117,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 		}
 
 		if (actors != null) {
-			// TODO join?
-//			query.startGroup(); 
+			query.startGroup();
 			List<ReferenceParam> areas = actors.getValuesAsQueryTokens();
 			for (ReferenceParam areaParam : areas) {
 				if (Schedule.class.getSimpleName().equals(areaParam.getResourceType())) {
@@ -130,8 +129,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 					query.or(ModelPackage.Literals.IAPPOINTMENT__SCHEDULE, COMPARATOR.EQUALS, agendaAreaName.get());
 				}
 			}
-			// TODO 
-//			query.endGroup_And();
+			query.andJoinGroups();
 		}
 
 		List<IAppointment> termine = query.execute();

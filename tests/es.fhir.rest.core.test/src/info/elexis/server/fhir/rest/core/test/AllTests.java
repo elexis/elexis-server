@@ -23,18 +23,20 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
 import info.elexis.server.fhir.rest.core.resources.CORSTest;
+import info.elexis.server.fhir.rest.core.resources.CoverageTest;
 import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
+import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
 import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
 
 @RunWith(Suite.class)
-//@SuiteClasses({ CORSTest.class, MedicationRequestTest.class, PatientTest.class, OrganizationTest.class, CoverageTest.class,
-//		PractitionerRoleTest.class, EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
+//@SuiteClasses({  MedicationRequestTest.class, PatientTest.class, OrganizationTest.class,
+//		EncounterTest.class, ConditionTest.class, CodesySystemTest.class,
 //		ProcedureRequestTest.class, ClaimTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
-//		AllergyIntoleranceTest.class, AppointmentTest.class, ScheduleTest.class })
+//		AllergyIntoleranceTest.class})
 @SuiteClasses({
 	CORSTest.class, PatientTest.class, OrganizationTest.class, AppointmentTest.class,
-	ScheduleTest.class
+	CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class
 })
 public class AllTests {
 	

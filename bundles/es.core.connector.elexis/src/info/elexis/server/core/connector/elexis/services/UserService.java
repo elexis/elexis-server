@@ -15,18 +15,14 @@ import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IRole;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.ModelPackage;
-import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
-import ch.elexis.core.utils.OsgiServiceUtil;
 import ch.rgw.tools.PasswordEncryptionService;
+import info.elexis.server.core.connector.elexis.services.internal.CoreModelServiceHolder;
 
 public class UserService extends PersistenceService2 {
 	
 	private static Logger log = LoggerFactory.getLogger(UserService.class);
-	
-	private static IModelService modelService =
-		OsgiServiceUtil.getService(IModelService.class).get();
 	
 	//	public static class Builder extends AbstractBuilder<User> {
 	//		public Builder(String username, Kontakt mandant){
@@ -64,11 +60,11 @@ public class UserService extends PersistenceService2 {
 	 * @param contact
 	 * @return
 	 */
-	public static Optional<IUser> findByIContact(IModelService modelService, IContact contact){
+	public static Optional<IUser> findByContact(IContact contact){
 		if (contact == null) {
 			return Optional.empty();
 		}
-		IQuery<IUser> qre = modelService.getQuery(IUser.class);
+		IQuery<IUser> qre = CoreModelServiceHolder.get().getQuery(IUser.class);
 		qre.and(ModelPackage.Literals.IUSER__ASSIGNED_CONTACT, COMPARATOR.EQUALS, contact);
 		List<IUser> result = qre.execute();
 		if (result.size() == 1) {
@@ -114,7 +110,7 @@ public class UserService extends PersistenceService2 {
 				String hashed_pw = pes.getEncryptedPasswordAsHexString(password, salt);
 				user.setSalt(salt);
 				user.setHashedPassword(hashed_pw);
-				modelService.save(user);
+				CoreModelServiceHolder.get().save(user);
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException | DecoderException e) {
 				log.warn("Error verifying password for user [{}].", user.getLabel(), e);
 			}
@@ -124,7 +120,7 @@ public class UserService extends PersistenceService2 {
 	
 	public static Optional<IContact> findKontaktByUserId(String userId){
 		if (StringUtils.isNotEmpty(userId)) {
-			Optional<IUser> user = modelService.load(userId, IUser.class);
+			Optional<IUser> user = CoreModelServiceHolder.get().load(userId, IUser.class);
 			if (user.isPresent()) {
 				return Optional.ofNullable(user.get().getAssignedContact());
 			}

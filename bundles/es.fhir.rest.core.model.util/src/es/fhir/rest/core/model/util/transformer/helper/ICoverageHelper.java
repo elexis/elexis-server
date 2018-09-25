@@ -12,53 +12,43 @@ import org.hl7.fhir.dstu3.model.Reference;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.model.FallConstants;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
+import ch.elexis.core.model.IContact;
+import ch.elexis.core.model.ICoverage;
+import ch.elexis.core.model.IPatient;
 
-public class FallHelper extends AbstractHelper {
-
-	public String getDependent(Fall fall) {
-		String ret = fall.getVersNummer();
+public class ICoverageHelper extends AbstractHelper {
+	
+	public String getDependent(ICoverage coverage){
+		String ret = coverage.getInsuranceNumber();
 		if (ret == null) {
-			ret = fall.getExtInfoAsString("Versicherungsnummer");
+			ret = (String) coverage.getExtInfo("Versicherungsnummer");
 		}
 		return ret;
 	}
-
-	public void setBin(Fall fall, String bin) {
-		String billingMethod = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
-		if (billingMethod != null && !billingMethod.isEmpty()) {
-			if (billingMethod.equals("UVG")) {
-				fall.setExtInfoValue("Unfallnummer", bin);
+	
+	public void setBin(ICoverage coverage, String bin){
+		String billingSystem = coverage.getBillingSystem();
+		if (billingSystem != null && !billingSystem.isEmpty()) {
+			if (billingSystem.equals("UVG")) {
+				coverage.setExtInfo("Unfallnummer", bin);
 			} else {
-				fall.setExtInfoValue("Versicherungsnummer", bin);
+				coverage.setExtInfo("Versicherungsnummer", bin);
 			}
 		}
 	}
-
-	public Reference getBeneficiaryReference(Fall fall) {
-		Kontakt patient = fall.getPatientKontakt();
+	
+	public Reference getBeneficiaryReference(ICoverage fall){
+		IPatient patient = fall.getPatient();
 		if (patient != null) {
 			return new Reference(new IdDt("Patient", patient.getId()));
 		}
 		return null;
 	}
-
-	public Reference getIssuerReference(Fall fall) {
-		Kontakt kostenTr = fall.getKostentrKontakt();
-		if (kostenTr == null) {
-			String kostenTrId = fall.getExtInfoAsString("Kostenträger");
-			if (kostenTrId != null && !kostenTrId.isEmpty()) {
-				Optional<Kontakt> kostenTrOpt = KontaktService.load(kostenTrId);
-				if (kostenTrOpt.isPresent()) {
-					kostenTr = kostenTrOpt.get();
-				}
-			}
-		}
+	
+	public Reference getIssuerReference(ICoverage fall){
+		IContact kostenTr = fall.getCostBearer();
 		if (kostenTr != null) {
-			if (kostenTr.isOrganisation()) {
+			if (kostenTr.isOrganization()) {
 				return new Reference(new IdDt("Organization", kostenTr.getId()));
 			} else if (kostenTr.isPatient()) {
 				return new Reference(new IdDt("Patient", kostenTr.getId()));
@@ -66,34 +56,34 @@ public class FallHelper extends AbstractHelper {
 		}
 		return null;
 	}
-
-	public Period getPeriod(Fall fall) {
+	
+	public Period getPeriod(ICoverage coverage){
 		Period period = new Period();
-		LocalDate startDate = fall.getDatumVon();
+		LocalDate startDate = coverage.getDateFrom();
 		if (startDate != null) {
 			period.setStart(getDate(startDate.atStartOfDay()));
 		}
-		LocalDate endDate = fall.getDatumBis();
+		LocalDate endDate = coverage.getDateTo();
 		if (endDate != null) {
 			period.setEnd(getDate(endDate.atStartOfDay()));
 		}
 		return period;
 	}
-
-	public void setPeriod(Fall fall, Period period) {
+	
+	public void setPeriod(ICoverage coverage, Period period){
 		if (period.getStart() != null) {
-			fall.setDatumVon(getLocalDateTime(period.getStart()).toLocalDate());
+			coverage.setDateFrom(getLocalDateTime(period.getStart()).toLocalDate());
 		}
 	}
-
-	public String getFallText(Fall fall) {
+	
+	public String getFallText(ICoverage coverage){
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
-		String grund = fall.getGrund();
-		String bezeichnung = fall.getBezeichnung();
-		LocalDate dateFrom = fall.getDatumVon();
-		LocalDate dateTo = fall.getDatumBis();
-		String billingSystem = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
-
+		String grund = coverage.getReason();
+		String bezeichnung = coverage.getDescription();
+		LocalDate dateFrom = coverage.getDateFrom();
+		LocalDate dateTo = coverage.getDateTo();
+		String billingSystem = coverage.getBillingSystem();
+		
 		if (dateFrom == null) {
 			dateFrom = LocalDate.of(1970, 1, 1);
 		}
@@ -112,10 +102,10 @@ public class FallHelper extends AbstractHelper {
 		ret.append(dateFrom.format(dateFormat)).append("-").append(ed).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
 		return ret.toString();
 	}
-
-	public Optional<CodeableConcept> getType(Fall fall) {
+	
+	public Optional<CodeableConcept> getType(ICoverage coverage){
 		CodeableConcept ret = new CodeableConcept();
-		String billingSystem = fall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING);
+		String billingSystem = coverage.getBillingSystem();
 		if (billingSystem != null) {
 			Coding coding = new Coding();
 			coding.setSystem(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem());
@@ -124,8 +114,8 @@ public class FallHelper extends AbstractHelper {
 		}
 		return Optional.of(ret);
 	}
-
-	public Optional<String> getType(Coverage fhirObject) {
+	
+	public Optional<String> getType(Coverage fhirObject){
 		CodeableConcept fhirType = fhirObject.getType();
 		for (Coding coding : fhirType.getCoding()) {
 			if (coding.getSystem().equals(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem())) {

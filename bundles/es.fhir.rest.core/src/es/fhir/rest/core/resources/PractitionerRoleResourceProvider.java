@@ -14,7 +14,6 @@ import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -31,10 +30,10 @@ import es.fhir.rest.core.resources.util.CodeTypeUtil;
 @Component
 public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
 	private IModelService modelService;
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 	
 	@Override

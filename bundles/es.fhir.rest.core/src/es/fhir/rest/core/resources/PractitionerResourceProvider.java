@@ -11,7 +11,6 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -30,10 +29,10 @@ import info.elexis.server.core.connector.elexis.services.UserService;
 @Component
 public class PractitionerResourceProvider implements IFhirResourceProvider {
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
 	private IModelService modelService;
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 	
 	@Override
@@ -75,7 +74,7 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			if (!practitioners.isEmpty()) {
 				// only Kontakt with existing user entry
 				practitioners = practitioners.stream()
-					.filter(kontakt -> UserService.findByKontakt(modelService, kontakt).isPresent())
+					.filter(contact -> UserService.findByContact(contact).isPresent())
 					.collect(Collectors.toList());
 				List<Practitioner> ret = new ArrayList<Practitioner>();
 				for (IMandator practitioner : practitioners) {
