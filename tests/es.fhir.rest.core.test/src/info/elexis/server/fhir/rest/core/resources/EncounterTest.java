@@ -44,8 +44,7 @@ public class EncounterTest {
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
 		 AllTests.getTestDatabaseInitializer().initializeBehandlung();
-		 AllTests.getTestDatabaseInitializer().initializeMandant();
-
+	
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 

@@ -7,8 +7,6 @@ import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -19,16 +17,12 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 @Component
 public class LocationResourceProvider implements IFhirResourceProvider {
 
+	@Reference
+	private IFhirTransformerRegistry transformerRegistry;
+	
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Location.class;
-	}
-
-	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
 	}
 
 	@SuppressWarnings("unchecked")
