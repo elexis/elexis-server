@@ -28,6 +28,7 @@ import info.elexis.server.fhir.rest.core.resources.ConditionTest;
 import info.elexis.server.fhir.rest.core.resources.CoverageTest;
 import info.elexis.server.fhir.rest.core.resources.EncounterTest;
 import info.elexis.server.fhir.rest.core.resources.FamilyMemberHistoryTest;
+import info.elexis.server.fhir.rest.core.resources.MedicationRequestTest;
 import info.elexis.server.fhir.rest.core.resources.ObservationTest;
 import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
@@ -44,7 +45,7 @@ import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
 	CORSTest.class, AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
 	AppointmentTest.class, CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class,
 	EncounterTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, ConditionTest.class,
-	ProcedureRequestTest.class
+	ProcedureRequestTest.class, MedicationRequestTest.class
 })
 public class AllTests {
 	
