@@ -62,6 +62,7 @@ public class EncounterTest {
 		assertFalse(entries.isEmpty());
 		Encounter encounter = (Encounter) entries.get(0).getResource();
 
+		System.out.println("LOOK "+TestDatabaseInitializer.getBehandlung().getId());
 		// search by elexis behandlung id
 		results = client.search().forResource(Encounter.class)
 				.where(Encounter.IDENTIFIER.exactly().systemAndIdentifier("www.elexis.info/consultationid",

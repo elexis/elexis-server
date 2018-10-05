@@ -81,7 +81,7 @@ public class MedicationRequestTest {
 		updateOrder.getDosageInstruction().get(0).setText("test");
 		List<Extension> entryTypes = updateOrder
 				.getExtensionsByUrl("www.elexis.info/extensions/prescription/entrytype");
-		assertEquals(EntryType.UNKNOWN.name(), ((CodeType) entryTypes.get(0).getValue()).getValue());
+		assertEquals(EntryType.FIXED_MEDICATION.name(), ((CodeType) entryTypes.get(0).getValue()).getValue());
 		entryTypes.get(0).setValue(new CodeType(EntryType.SYMPTOMATIC_MEDICATION.name()));
 
 		// update the medication

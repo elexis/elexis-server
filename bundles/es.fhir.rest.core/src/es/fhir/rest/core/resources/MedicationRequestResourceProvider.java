@@ -20,8 +20,10 @@ import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.IPrescription;
+import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
+import ch.elexis.core.services.IQuery.COMPARATOR;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
@@ -70,9 +72,8 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					IQuery<IPrescription> query = modelService.getQuery(IPrescription.class);
+					query.and(ModelPackage.Literals.IPRESCRIPTION__PATIENT, COMPARATOR.EQUALS, patient.get());
 					// TODO
-					//					JPAQuery<Prescription> qbe = new JPAQuery<Prescription>(Prescription.class);
-					//					qbe.add(Prescription_.patient, JPAQuery.QUERY.EQUALS, patient.get());
 					//					qbe.add(Prescription_.rezeptID, JPAQuery.QUERY.EQUALS, null);
 					List<IPrescription> prescriptions = query.execute();
 					if (prescriptions != null && !prescriptions.isEmpty()) {
