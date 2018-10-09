@@ -24,20 +24,6 @@ public class UserService extends PersistenceService2 {
 	
 	private static Logger log = LoggerFactory.getLogger(UserService.class);
 	
-	//	public static class Builder extends AbstractBuilder<User> {
-	//		public Builder(String username, Kontakt mandant){
-	//			object = new User();
-	//			object.setId(username);
-	//			object.setKontakt(mandant);
-	//			object.setActive(true);
-	//			object.setSalt("invalid");
-	//			object.setHashedPassword("invalid");
-	//			
-	//			Optional<Role> role = RoleService.load(RoleConstants.SYSTEMROLE_LITERAL_USER);
-	//			object.getRoles().add(role.get());
-	//		}
-	//	}
-	
 	/**
 	 * Determine whether a given user has a role
 	 * 

@@ -4,21 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabOrder_;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
+import ch.elexis.core.model.ILabOrder;
+import ch.elexis.core.model.ILabResult;
+import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IQuery;
+import ch.elexis.core.services.IQuery.COMPARATOR;
 
-public class LabOrderService extends PersistenceService {
-	/**
-	 * convenience method
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public static Optional<LabOrder> load(String id) {
-		return PersistenceService.load(LabOrder.class, id).map(v -> (LabOrder) v);
-	}
+public class LabOrderService extends PersistenceService2 {
 
 	/**
 	 * Find the LabOrder for a given LabResult, does not consider whether this
@@ -27,10 +19,10 @@ public class LabOrderService extends PersistenceService {
 	 * @param labresult
 	 * @return
 	 */
-	public static Optional<LabOrder> findLabOrderByLabResult(LabResult labresult) {
-		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class, true);
-		query.add(LabOrder_.result, QUERY.EQUALS, labresult);
-		return query.executeGetSingleResult();
+	public static Optional<ILabOrder> findLabOrderByLabResult(ILabResult labResult) {
+		IQuery<ILabOrder> query = modelService.getQuery(ILabOrder.class, true);
+		query.and(ModelPackage.Literals.ILAB_ORDER__RESULT, COMPARATOR.EQUALS, labResult);
+		return query.executeSingleResult();
 	}
 
 	/**
@@ -40,11 +32,11 @@ public class LabOrderService extends PersistenceService {
 	 * @param labOrder
 	 * @return
 	 */
-	public static List<LabOrder> findAllLabOrdersInSameOrderIdGroupWithResults(LabOrder labOrder) {
-		JPAQuery<LabOrder> query = new JPAQuery<LabOrder>(LabOrder.class);
-		query.add(LabOrder_.patient, QUERY.EQUALS, labOrder.getPatient());
-		query.add(LabOrder_.orderid, QUERY.EQUALS, labOrder.getOrderid());
-		query.add(LabOrder_.result, QUERY.NOT_EQUALS, null);
+	public static List<ILabOrder> findAllLabOrdersInSameOrderIdGroupWithResults(ILabOrder labOrder) {
+		IQuery<ILabOrder> query = modelService.getQuery(ILabOrder.class);
+		query.and(ModelPackage.Literals.ILAB_ORDER__PATIENT, COMPARATOR.EQUALS, labOrder.getPatient());
+		query.and(ModelPackage.Literals.ILAB_ORDER__ORDER_ID, COMPARATOR.EQUALS, labOrder.getOrderId());
+		query.and(ModelPackage.Literals.ILAB_ORDER__RESULT, COMPARATOR.NOT_EQUALS, null);
 		return query.execute();
 	}
 
@@ -55,8 +47,8 @@ public class LabOrderService extends PersistenceService {
 	 * @param labOrder
 	 * @return
 	 */
-	public static List<LabResult> findAllLabResultsForLabOrderIdGroup(LabOrder labOrder) {
-		List<LabOrder> ordersWithResult = findAllLabOrdersInSameOrderIdGroupWithResults(labOrder);
+	public static List<ILabResult> findAllLabResultsForLabOrderIdGroup(ILabOrder labOrder) {
+		List<ILabOrder> ordersWithResult = findAllLabOrdersInSameOrderIdGroupWithResults(labOrder);
 		return ordersWithResult.stream().map(owr -> owr.getResult()).filter(result -> !result.isDeleted())
 				.collect(Collectors.toList());
 	}

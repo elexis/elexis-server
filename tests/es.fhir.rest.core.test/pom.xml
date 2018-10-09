@@ -97,7 +97,7 @@
 						</dependency>
 						<dependency>
 							<type>eclipse-feature</type>
-							<artifactId>	info.elexis.server.openid.feature</artifactId>
+							<artifactId>info.elexis.server.openid.feature</artifactId>
 							<version>1.0.0</version>
 						</dependency>
 					</dependencies>

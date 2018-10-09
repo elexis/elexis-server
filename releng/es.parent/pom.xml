@@ -137,17 +137,6 @@
 							<arch>x86_64</arch>
 						</environment>
 					</environments>
-					<dependency-resolution>
-						<!-- Required for tycho-surefire test to correctly initialize the entity 
-							managers -->
-						<extraRequirements>
-							<requirement>
-								<type>eclipse-plugin</type>
-								<id>org.eclipse.persistence.jpa.logging.slf4j</id>
-								<versionRange>0.0.0</versionRange>
-							</requirement>
-						</extraRequirements>
-					</dependency-resolution>
 				</configuration>
 			</plugin>
 		</plugins>

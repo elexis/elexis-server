@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -20,17 +22,24 @@ import info.elexis.server.core.connector.elexis.services.AllServiceTests;
 @SuiteClasses({ AllServiceTests.class })
 public class AllTestsSuite {
 	
-	private static IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
-	private static IElexisEntityManager entityManager = OsgiServiceUtil.getService(IElexisEntityManager.class).get();
-	private static IConfigService configService = OsgiServiceUtil.getService(IConfigService.class).get();
+	private static IModelService modelService;
+	private static IElexisEntityManager entityManager;
+	private static IConfigService configService;
 	
-	private static TestDatabaseInitializer initializer = new TestDatabaseInitializer(modelService, entityManager);
 	public static String RWA_ID;
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {		
+		modelService = OsgiServiceUtil.getService(IModelService.class).get();
+		assertNotNull(modelService);
+		entityManager = OsgiServiceUtil.getService(IElexisEntityManager.class).get();
+		assertNotNull(entityManager);
+		configService = OsgiServiceUtil.getService(IConfigService.class).get();
+		assertNotNull(configService);
+		TestDatabaseInitializer initializer = new TestDatabaseInitializer(modelService, entityManager);
+		assertNotNull(initializer);
 		initializer.initializeDb(configService);
-//
+
 //		AllTestsSuite.getInitializer().initializePatient();
 //		AllTestsSuite.getInitializer().initializeLaborTarif2009Tables();
 //		AllTestsSuite.getInitializer().initializeAgendaTable();
@@ -49,7 +58,4 @@ public class AllTestsSuite {
 //		RWA_ID = rowaStock.getId();
 	}
 
-//	public static TestDatabaseInitializer getInitializer() {
-//		return initializer;
-//	}
 }

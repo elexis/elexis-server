@@ -16,7 +16,6 @@
 	</parent>
 
 	<modules>
-		<module>org.eclipse.persistence.jpa.logging.slf4j</module>
 		<module>es.core.jetty.homebundle</module>
 		<module>es.core.jetty.osgi.boot.fragment</module>
 		<module>es.core.common</module>

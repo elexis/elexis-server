@@ -12,7 +12,9 @@ import org.junit.runners.Suite.SuiteClasses;
 //		UserServiceTest.class, UserconfigServiceTest.class, PhysioLeistungTest.class, StoreToStringTest.class,
 //		TarmedLeistungServiceTest.class, TerminServiceTest.class, XidServiceTest.class, StickerServiceTest.class,
 //		ReminderServiceTest.class, Labor2009TarifServiceTest.class, LeistungsblockServiceTest.class })
-@SuiteClasses({ ContactServiceTest.class})
+@SuiteClasses({
+	ContactServiceTest.class
+})
 public class AllServiceTests {
-
+	
 }

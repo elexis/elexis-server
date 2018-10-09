@@ -175,13 +175,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.persistence.jpa.logging.slf4j"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
          id="org.joda.money"
          download-size="0"
          install-size="0"
@@ -242,6 +235,14 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.jpa.logging.slf4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>

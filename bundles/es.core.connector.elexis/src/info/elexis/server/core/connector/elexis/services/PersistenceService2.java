@@ -3,11 +3,15 @@ package info.elexis.server.core.connector.elexis.services;
 import java.util.List;
 
 import ch.elexis.core.model.Identifiable;
+import ch.elexis.core.services.IModelService;
+import info.elexis.server.core.connector.elexis.services.internal.CoreModelServiceHolder;
 
 public class PersistenceService2 {
 
 	private static ThreadLocal<String> threadLocalUserId = new ThreadLocal<>();
 
+	protected static IModelService modelService = CoreModelServiceHolder.get();
+	
 	/**
 	 * Return all elements of a given type
 	 * 
