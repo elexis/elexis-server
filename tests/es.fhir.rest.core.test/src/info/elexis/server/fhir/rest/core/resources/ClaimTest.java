@@ -33,6 +33,7 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
+@Ignore
 public class ClaimTest {
 	
 	private static IGenericClient client;

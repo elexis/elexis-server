@@ -18,6 +18,7 @@ import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.migration.IMigratorService;
+import ch.elexis.core.findings.util.FindingsServiceHolder;
 import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.model.TransientCoding;
 import ch.elexis.core.model.ICoverage;
@@ -121,7 +122,7 @@ public class MigratorService implements IMigratorService {
 	}
 	
 	private void createEncounter(ch.elexis.core.model.IEncounter encounter){
-		IEncounter findingsEncounter = FindingsModelServiceHolder.get().create(IEncounter.class);
+		IEncounter findingsEncounter = FindingsServiceHolder.getiFindingsService().create(IEncounter.class);
 		updateEncounter(findingsEncounter, encounter);
 	}
 	
