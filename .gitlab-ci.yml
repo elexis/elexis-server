@@ -11,6 +11,10 @@ build:
   - mvn -f releng/es.parent/pom.xml clean verify
   - jo token="$WEBHOOK_TOKEN" info="elexis-server $CI_JOB_ID $ORIGIN_BRANCH $CI_COMMIT_REF_NAME $CI_COMMIT_SHA" binary=%$(find products/es.updatesite/target/*.zip) destDir=elexis-server/$CI_COMMIT_REF_NAME/p2/elexis-server | curl -k -H "Content-Type:application/json" -X POST -d @- $WEBHOOK_URL/deploy-zip
   - for file in products/es.core.product.runtime/target/products/*.zip; do jo token="$WEBHOOK_TOKEN" destFilename="${file##*/}" binary=%${file} destDir=elexis-server/$CI_COMMIT_REF_NAME/products/ | curl -k -H "Content-Type:application/json" -X POST -d @- $WEBHOOK_URL/deploy-file; done
+  artifacts:
+    reports:
+      junit:
+        - tests/**/target/surefire-reports/TEST-*.xml
 trigger_dockerhub_build:
     stage: trigger_other_builds
     script:
