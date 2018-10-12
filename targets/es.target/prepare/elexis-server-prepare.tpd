@@ -1,3 +1,5 @@
+
+
 target "Elexis-Server" 
 
 with source allEnvironments
@@ -37,6 +39,7 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 location "http://download.elexis.info/elexis/f11106/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
+	at.medevit.ch.artikelstamm.model
 	at.medevit.atc_codes
 }
 

@@ -231,7 +231,7 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 		private Optional<IBillable> getBillable(String system, String code) {
 			if (system.equals(CodingSystem.ELEXIS_TARMED_CODESYSTEM.getSystem())) {
 				Optional<ICodeElement> tarmed =
-					codeElementService.createFromString("Tarmed", code, null);
+					codeElementService.loadFromString("Tarmed", code, null);
 				if (tarmed.isPresent()) {
 					return tarmed.filter(IBillable.class::isInstance).map(IBillable.class::cast);
 				}
