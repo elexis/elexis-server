@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +39,10 @@ import ch.elexis.core.model.IRole;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.builder.IContactBuilder;
 import ch.elexis.core.model.builder.IUserBuilder;
+import ch.elexis.core.services.IElexisEntityManager;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IUserService;
+import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.rest.test.AllTests;
@@ -52,31 +55,28 @@ import okhttp3.Response;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SetupTest {
 	
-	private static IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
-	private static IUserService userService = OsgiServiceUtil.getService(IUserService.class).get();
-
 	public static final String OAUTH_TOKEN_LOCATION = BASE_URL + "/openid/token";
 	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
-
+	
 	public static final String USER_PASS_PRACTITIONER = "practitioner";
 	public static final String USER_PASS_ESADMIN = "esadmin";
-
+	
 	public static final String CONNECTOR_CONNECTION_LOCATION = "/elexis-connector/connection";
-
+	
 	private OkHttpClient client = AllTests.getDefaultOkHttpClient();
 	private Gson gson = new Gson();
 	private FhirContext fhirContext = FhirContext.forDstu3();
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-	private Request getDBConnectionRequest = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION)
-			.build();
-	private Request getDBStatusInformation = new Request.Builder()
-			.url(REST_URL + CONNECTOR_CONNECTION_LOCATION + "/status").build();
-
+	
+	private Request getDBConnectionRequest =
+		new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).build();
+	private Request getDBStatusInformation =
+		new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION + "/status").build();
+	
 	private Response response;
-
+	
 	@BeforeClass
-	public static void waitForService() throws IOException, InterruptedException {
+	public static void waitForService() throws IOException, InterruptedException{
 		int i = 0;
 		do {
 			Thread.sleep(500);
@@ -86,21 +86,21 @@ public class SetupTest {
 			}
 		} while (!AllTests.isReachable(REST_URL + "/system/v1/uptime"));
 	}
-
+	
 	@Test
-	public void _01_startupWithoutDatabaseConnection() throws IOException {
+	public void _01_startupWithoutDatabaseConnection() throws IOException{
 		response = client.newCall(getDBConnectionRequest).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
 		assertEquals(204, response.code());
-
+		
 		response = client.newCall(getDBStatusInformation).execute();
 		String responseString = response.body().string();
 		assertTrue(responseString, response.isSuccessful());
-		assertEquals("Entity Manager is null.", responseString);
+		assertEquals("No database connection set.", responseString);
 	}
-
+	
 	@Test
-	public void _02_0_setInvalidTestDatabaseConnection() throws IOException {
+	public void _02_0_setInvalidTestDatabaseConnection() throws IOException{
 		DBConnection dbc = new DBConnection();
 		dbc.hostName = "localhost";
 		dbc.connectionString = "jdbc:mysql://localhost:3306/invalidDatabase";
@@ -108,129 +108,160 @@ public class SetupTest {
 		dbc.password = "elexis";
 		dbc.username = "elexis";
 		dbc.rdbmsType = DBType.MySQL;
-
+		
 		String dbcJson = new Gson().toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
-		Request request = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
+		Request request =
+			new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
 		response = client.newCall(request).execute();
-		assertFalse(response.isSuccessful());
 		assertEquals(422, response.code());
+		assertFalse(response.body().string(), response.isSuccessful());
+		
 	}
-
+	
 	@Test
-	public void _02_1_setValidTestDatabaseConnection() throws IOException {
+	public void _02_1_setValidTestDatabaseConnection()
+		throws IOException, SQLException, InterruptedException{
 		DBConnection dbc = AllTests.getTestDatabaseConnection();
 		String dbcJson = new Gson().toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
-		Request request = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
+		Request request =
+			new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
 		response = client.newCall(request).execute();
 		assertTrue(response.body().string(), response.isSuccessful());
-
+		
 		response = client.newCall(getDBStatusInformation).execute();
 		assertTrue(response.isSuccessful());
-		assertTrue(response.body().string().startsWith("Elexis 3"));
-
-		initializeTestUsersAndRoles();
+		String bodyString = response.body().string();
+		assertTrue(bodyString, bodyString.contains("liquibase"));
+		
+		initializeRequiredDatabaseEntities();
 	}
-
-	private static void initializeTestUsersAndRoles() {		
+	
+	private static void initializeRequiredDatabaseEntities() throws IOException, SQLException{
+		IModelService modelService = OsgiServiceUtil.getService(IModelService.class,
+			"(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
+		IElexisEntityManager entityManager =
+			OsgiServiceUtil.getService(IElexisEntityManager.class).get();
+		
+		TestDatabaseInitializer tdb = new TestDatabaseInitializer(modelService, entityManager);
+		tdb.initializeDb();
+		
 		IRole esadminRole = modelService.create(IRole.class);
 		esadminRole.setId("esadmin");
 		esadminRole.setSystemRole(true);
-		modelService.save(esadminRole);
+		assertTrue(modelService.save(esadminRole));
 		
 		IRole fhirRole = modelService.create(IRole.class);
 		fhirRole.setId("fhir");
 		fhirRole.setSystemRole(true);
-		modelService.save(fhirRole);
-
-		IPerson drGonzo = new IContactBuilder.PersonBuilder(modelService, "Oscar", "Zeta Acosta", LocalDate.of(1935, 4, 8),
-				Gender.MALE).mandator().buildAndSave();
-
-		IUser practitioner = new IUserBuilder(modelService, USER_PASS_PRACTITIONER, drGonzo).build();
+		assertTrue(modelService.save(fhirRole));
+		
+		IPerson drGonzo = new IContactBuilder.PersonBuilder(modelService, "Oscar", "Zeta Acosta",
+			LocalDate.of(1935, 4, 8), Gender.MALE).mandator().buildAndSave();
+		
+		IUserService userService = OsgiServiceUtil.getService(IUserService.class).get();
+		IUser practitioner =
+			new IUserBuilder(modelService, USER_PASS_PRACTITIONER, drGonzo).build();
 		userService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
 		practitioner.setAllowExternal(true);
 		practitioner.getRoles().add(fhirRole);
-		modelService.save(practitioner);
-
+		assertTrue(modelService.save(practitioner));
+		assertTrue(userService.verifyPassword(practitioner, USER_PASS_PRACTITIONER));
+		
 		IUser esadmin = new IUserBuilder(modelService, USER_PASS_ESADMIN, drGonzo).build();
 		userService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
 		esadmin.setAllowExternal(true);
 		esadmin.getRoles().add(esadminRole);
-		modelService.save(esadmin);
+		assertTrue(modelService.save(esadmin));
+		assertTrue(userService.verifyPassword(esadmin, USER_PASS_ESADMIN));
+		
+		OsgiServiceUtil.ungetService(userService);
+		OsgiServiceUtil.ungetService(modelService);
 	}
-
+	
 	@Test
-	public void _03_getDatabaseConnectionInformation() throws IOException, InterruptedException {
+	public void _03_getDatabaseConnectionInformation() throws IOException, InterruptedException{
 		response = client.newCall(getDBStatusInformation).execute();
 		assertTrue(response.isSuccessful());
-		assertTrue(response.body().string().startsWith("Elexis 3."));
+		String resp = response.body().string();
+		assertTrue(resp, resp.contains("liquibase"));
 	}
-
+	
 	@Test
-	public void _04_tryToSetDatabaseConnectionWithoutAuthentication_Unauthorized() throws IOException {
+	public void _04_tryToSetDatabaseConnectionWithoutAuthentication_Unauthorized()
+		throws IOException, SQLException{
 		DBConnection dbc = AllTests.getTestDatabaseConnection();
 		String dbcJson = gson.toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);
-		Request request = new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
+		Request request =
+			new Request.Builder().url(REST_URL + CONNECTOR_CONNECTION_LOCATION).post(body).build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, response.code());
 	}
-
+	
 	@Test
-	public void _05_tryToAccessFHIRPatientResourceWithoutAuthentication_Unauthorized() throws IOException {
-		Request request = new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111").build();
+	public void _05_tryToAccessFHIRPatientResourceWithoutAuthentication_Unauthorized()
+		throws IOException{
+		Request request =
+			new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111").build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, response.code());
 	}
-
+	
 	@Test
-	public void _06_accessFhirMetadataResourceForSmartOnFhirInformation() throws IOException {
-		Request request = new Request.Builder().url(BASE_URL + "/fhir/metadata?_format=json").build();
+	public void _06_accessFhirMetadataResourceForSmartOnFhirInformation() throws IOException{
+		Request request =
+			new Request.Builder().url(BASE_URL + "/fhir/metadata?_format=json").build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_OK, response.code());
 		String body = response.body().string();
-		CapabilityStatement cs = (CapabilityStatement) fhirContext.newJsonParser().parseResource(body);
+		CapabilityStatement cs =
+			(CapabilityStatement) fhirContext.newJsonParser().parseResource(body);
 		CapabilityStatementRestSecurityComponent security = cs.getRest().get(0).getSecurity();
 		CodeableConcept securityServiceCoding = security.getService().get(0);
 		assertEquals("http://hl7.org/fhir/restful-security-service",
-				securityServiceCoding.getCoding().get(0).getSystem());
-		UriType extension = (UriType) security.getExtension().get(0).getExtension().get(0).getValue();
+			securityServiceCoding.getCoding().get(0).getSystem());
+		UriType extension =
+			(UriType) security.getExtension().get(0).getExtension().get(0).getValue();
 		assertEquals("http://localhost:8380/openid/token", extension.getValueAsString());
 	}
-
+	
 	private static String bearerAccessToken_Scope_FHIR_Invalid; // non-static variables are null after each test
 	private static String bearerAccessToken_Scope_FHIR_Valid;
-
+	
 	@Test
-	public void _07_fetchAccessTokenWithUnitTestClientTestUsersForScopeFhir() throws Exception {
-		OAuthClientRequest resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
-				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_PRACTITIONER)
-				.setPassword(USER_PASS_PRACTITIONER).setScope("fhir").buildQueryMessage();
-
-		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
-				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
-
+	public void _07_fetchAccessTokenWithUnitTestClientTestUsersForScopeFhir() throws Exception{
+		OAuthClientRequest resourceOwnerPasswordRequest =
+			OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION).setGrantType(GrantType.PASSWORD)
+				.setUsername(USER_PASS_PRACTITIONER).setPassword(USER_PASS_PRACTITIONER)
+				.setScope("fhir").buildQueryMessage();
+		
+		OAuthJSONAccessTokenResponse accessToken = new URLConnectionClient().execute(
+			resourceOwnerPasswordRequest, prepareUnitTestClientAuthorizationHeaders(),
+			OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
+		
 		bearerAccessToken_Scope_FHIR_Valid = accessToken.getAccessToken();
 		assertNotNull(accessToken);
 		assertNotNull(bearerAccessToken_Scope_FHIR_Valid);
 		assertTrue(accessToken.getExpiresIn() <= 3600l);
 		assertEquals("Bearer", accessToken.getTokenType());
-
+		
 		resourceOwnerPasswordRequest = OAuthClientRequest.tokenLocation(OAUTH_TOKEN_LOCATION)
-				.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_ESADMIN).setPassword(USER_PASS_ESADMIN)
-				.setScope("fhir").buildQueryMessage();
+			.setGrantType(GrantType.PASSWORD).setUsername(USER_PASS_ESADMIN)
+			.setPassword(USER_PASS_ESADMIN).setScope("fhir").buildQueryMessage();
 		accessToken = new URLConnectionClient().execute(resourceOwnerPasswordRequest,
-				prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
-
+			prepareUnitTestClientAuthorizationHeaders(), OAuth.HttpMethod.POST,
+			OAuthJSONAccessTokenResponse.class);
+		
 		bearerAccessToken_Scope_FHIR_Invalid = accessToken.getAccessToken();
 		assertNotNull(accessToken);
 		assertNotNull(bearerAccessToken_Scope_FHIR_Invalid);
 		assertTrue(accessToken.getExpiresIn() <= 3600l);
 		assertEquals("Bearer", accessToken.getTokenType());
 	}
-
-	private Map<String, String> prepareUnitTestClientAuthorizationHeaders() {
+	
+	private Map<String, String> prepareUnitTestClientAuthorizationHeaders(){
 		String basicAuthStr = ELEXIS_SERVER_UNITTEST_CLIENT + ":" + ELEXIS_SERVER_UNITTEST_CLIENT;
 		String basicAuthStrEncoded = Base64.encodeBase64String(basicAuthStr.getBytes());
 		Map<String, String> headers = new HashMap<String, String>();
@@ -238,21 +269,22 @@ public class SetupTest {
 		headers.put("Authorization", "Basic " + basicAuthStrEncoded);
 		return headers;
 	}
-
+	
 	@Test
-	public void _08_tryToAccessFHIRPatientResourceWithAccessToken_scopeFhir() throws IOException {
-		Request request = new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111")
+	public void _08_tryToAccessFHIRPatientResourceWithAccessToken_scopeFhir() throws IOException{
+		Request request =
+			new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111")
 				.addHeader("Authorization", "Bearer " + bearerAccessToken_Scope_FHIR_Valid).build();
 		response = client.newCall(request).execute();
 		assertEquals(HttpURLConnection.HTTP_OK, response.code());
-
+		
 		request = new Request.Builder().url(BASE_URL + "/fhir/Patient/s9b71824bf6b877701111")
-				.addHeader("Authorization", "Bearer " + bearerAccessToken_Scope_FHIR_Invalid).build();
+			.addHeader("Authorization", "Bearer " + bearerAccessToken_Scope_FHIR_Invalid).build();
 		response = client.newCall(request).execute();
 		// user has requested scope fhir, but does not have role fhir in Elexis - hence
 		// has to fail
 		assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, response.code());
 	}
-
+	
 	// Test access FHIR resource with fhir* permission only
 }

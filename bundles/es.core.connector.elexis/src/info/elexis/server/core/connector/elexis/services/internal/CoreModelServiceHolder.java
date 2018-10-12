@@ -16,9 +16,6 @@ public class CoreModelServiceHolder {
 	}
 	
 	public static IModelService get(){
-		if (modelService == null) {
-			throw new IllegalStateException("No IModelService available");
-		}
 		return modelService;
 	}
 }

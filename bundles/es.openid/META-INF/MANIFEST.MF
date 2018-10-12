@@ -9,7 +9,8 @@ Require-Bundle: org.apache.commons.lang,
  org.mortbay.jasper.apache-jsp;bundle-version="8.5.23",
  org.eclipse.jetty.server;bundle-version="9.4.8",
  org.eclipse.jetty.webapp;bundle-version="9.4.8",
- org.eclipse.jetty.servlet;bundle-version="9.4.8"
+ org.eclipse.jetty.servlet;bundle-version="9.4.8",
+ ch.elexis.core
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: info.elexis
 Bundle-Activator: info.elexis.server.openid.internal.Activator

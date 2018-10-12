@@ -3,6 +3,6 @@
    <service>
       <provide interface="info.elexis.server.core.common.security.ESAuthorizingRealm"/>
    </service>
-   <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService"/>
+   <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService" target="(service.model.name=ch.elexis.core.model)"/>
    <implementation class="info.elexis.server.core.connector.elexis.security.ElexisConnectorAuthorizingRealm"/>
 </scr:component>

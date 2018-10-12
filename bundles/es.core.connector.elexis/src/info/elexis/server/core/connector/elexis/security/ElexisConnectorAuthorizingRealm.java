@@ -20,7 +20,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,7 @@ public class ElexisConnectorAuthorizingRealm extends AuthorizingRealm
 		setName(REALM_NAME);
 	}
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	private static final CredentialsMatcher credentialsMatcher = new CredentialsMatcher() {

@@ -28,10 +28,11 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-		Optional<IElexisDataSource> datasource =
-				OsgiServiceUtil.getService(IElexisDataSource.class);
+
 		Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
-		if(connection.isPresent()) {
+		if (connection.isPresent()) {
+			Optional<IElexisDataSource> datasource =
+				OsgiServiceUtil.getService(IElexisDataSource.class);
 			datasource.get().setDBConnection(connection.get());
 		}
 
@@ -48,6 +49,10 @@ public class Activator implements BundleActivator {
 		ApplicationShutdownRegistrar.removeShutdownListener(iasl);
 
 		Activator.context = null;
+	}
+	
+	public static BundleContext getContext(){
+		return context;
 	}
 
 }

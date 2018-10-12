@@ -7,77 +7,75 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.DBConnection;
-import ch.elexis.core.common.DBConnection.DBType;
+import ch.elexis.core.services.IElexisDataSource;
+import ch.elexis.core.services.IModelService;
 import ch.elexis.core.status.StatusUtil;
-import info.elexis.server.core.common.test.TestSystemPropertyConstants;
 import info.elexis.server.core.common.util.CoreUtil;
 import info.elexis.server.core.connector.elexis.internal.Activator;
 
 public class ElexisDBConnectionUtil {
-
+	
 	private static DBConnection connection;
 	private static Path connectionConfigPath;
-
+	
 	private static Logger log = LoggerFactory.getLogger(ElexisDBConnectionUtil.class);
-
 	
 	static {
 		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
-		if (TestSystemPropertyConstants.systemIsInTestMode()) {
-			connection = ElexisDBConnectionUtil.getTestDatabaseConnection();
-			setConnection(connection); // openid requires this file
-		} else if (connectionConfigPath.toFile().exists()) {
-			try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
+		if (connectionConfigPath.toFile().exists()) {
+			try (InputStream is =
+				Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
 				connection = DBConnection.unmarshall(is);
-				log.info("Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
+				log.info(
+					"Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
 				StatusUtil.logStatus(log, verifyConnection(connection));
 			} catch (IOException | JAXBException e) {
 				log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
 			}
 		}
 	}
-
-	public static Optional<DBConnection> getConnection() {
+	
+	public static Optional<DBConnection> getConnection(){
 		return Optional.ofNullable(connection);
 	}
-
-	public static IStatus setConnection(DBConnection connection) {
+	
+	public static IStatus setConnection(IElexisDataSource elexisDataSource,
+		DBConnection connection){
 		IStatus status = verifyConnection(connection);
 		if (status.isOK()) {
 			try {
-				status = doSetConnection(connection);
-			} catch (IOException | JAXBException e) {
-				return new Status(Status.ERROR, Activator.BUNDLE_ID, "error persisting database connection", e);
+				status = doSetConnection(elexisDataSource, connection);
+			} catch (IOException | JAXBException | InterruptedException e) {
+				return new Status(Status.ERROR, Activator.BUNDLE_ID,
+					"Error setting database connection", e);
 			}
 		}
 		return status;
 	}
-
+	
 	/**
 	 * Verify if the provided connection matches the Elexis-Server requirements.
 	 * 
 	 * @param connection
 	 * @return
 	 */
-	private static IStatus verifyConnection(DBConnection connection) {
+	private static IStatus verifyConnection(DBConnection connection){
 		if (connection == null) {
 			return new Status(Status.ERROR, Activator.BUNDLE_ID, "Connection is null");
 		}
-
+		
 		Connection dbConnection = null;
 		try {
 			switch (connection.rdbmsType) {
@@ -93,33 +91,34 @@ public class ElexisDBConnectionUtil {
 			default:
 				break;
 			}
-
-			dbConnection = DriverManager.getConnection(connection.connectionString, connection.username,
-					connection.password);
-			Statement statement;
-			String validationQuery = "SELECT wert FROM config WHERE param = 'dbversion'";
-
-			statement = dbConnection.createStatement();
-
-			ResultSet executeQuery = statement.executeQuery(validationQuery);
-			if (executeQuery.next()) {
-				String dbVersionValue = executeQuery.getString(1);
-				if (dbVersionValue == null || dbVersionValue.length() < 4) {
-					return new Status(Status.ERROR, Activator.BUNDLE_ID,
-							"Invalid database version [" + dbVersionValue + "] found.");
-				}
-//				Semver dbVersion = new Semver(dbVersionValue);
-//				if (dbVersion.isGreaterThanOrEqualTo(MINIMUM_REQUIRED_DB_VERSION)) {
-					return Status.OK_STATUS;
-//				} else {
-//					return new Status(Status.ERROR, Activator.BUNDLE_ID, "Minimum required db version is ["
-//							+ MINIMUM_REQUIRED_DB_VERSION + "] found db version [" + dbVersionValue + "]");
+			
+//			dbConnection = DriverManager.getConnection(connection.connectionString,
+//				connection.username, connection.password);
+//			Statement statement;
+//			String validationQuery = "SELECT wert FROM config WHERE param = 'dbversion'";
+//			
+//			statement = dbConnection.createStatement();
+//			
+//			ResultSet executeQuery = statement.executeQuery(validationQuery);
+//			if (executeQuery.next()) {
+//				String dbVersionValue = executeQuery.getString(1);
+//				if (dbVersionValue == null || dbVersionValue.length() < 4) {
+//					return new Status(Status.ERROR, Activator.BUNDLE_ID,
+//						"Invalid database version [" + dbVersionValue + "] found.");
 //				}
-			} else {
-				return new Status(Status.ERROR, Activator.BUNDLE_ID, "No dbversion entry found in config table.");
-			}
-
-		} catch (ClassNotFoundException | SQLException cnfe) {
+//				//				Semver dbVersion = new Semver(dbVersionValue);
+//				//				if (dbVersion.isGreaterThanOrEqualTo(MINIMUM_REQUIRED_DB_VERSION)) {
+//				return Status.OK_STATUS;
+//				//				} else {
+//				//					return new Status(Status.ERROR, Activator.BUNDLE_ID, "Minimum required db version is ["
+//				//							+ MINIMUM_REQUIRED_DB_VERSION + "] found db version [" + dbVersionValue + "]");
+//				//				}
+//			} else {
+//				return new Status(Status.ERROR, Activator.BUNDLE_ID,
+//					"No dbversion entry found in config table.");
+//			}
+			return Status.OK_STATUS;
+		} catch (ClassNotFoundException  cnfe) {
 			return new Status(Status.ERROR, Activator.BUNDLE_ID, cnfe.getMessage());
 		} finally {
 			if (dbConnection != null) {
@@ -131,32 +130,27 @@ public class ElexisDBConnectionUtil {
 			}
 		}
 	}
-
-	private static IStatus doSetConnection(DBConnection connection) throws IOException, JAXBException {
+	
+	private static IStatus doSetConnection(IElexisDataSource elexisDataSource,
+		DBConnection connection) throws IOException, JAXBException, InterruptedException{
 		ElexisDBConnectionUtil.connection = connection;
 		persistDBConnection();
-//		return Activator.refreshDataSource();
-		// TODO
-		return Status.OK_STATUS;
+		IStatus elexisDataSourceStatus = elexisDataSource.setDBConnection(connection);
+		if (elexisDataSourceStatus.isOK()) {
+			ServiceTracker<Object, Object> serviceTracker =
+				new ServiceTracker<>(Activator.getContext(), IModelService.class.getName(), null);
+			serviceTracker.waitForService(5000);
+		}
+		return elexisDataSourceStatus;
 	}
-
-	private static void persistDBConnection() throws IOException, JAXBException {
+	
+	private static void persistDBConnection() throws IOException, JAXBException{
 		if (connection != null) {
-			try (OutputStream fos = Files.newOutputStream(connectionConfigPath, StandardOpenOption.CREATE)) {
+			try (OutputStream fos =
+				Files.newOutputStream(connectionConfigPath, StandardOpenOption.CREATE)) {
 				connection.marshall(fos);
 			}
 		}
 	}
-
-	/**
-	 * @return an h2 based test database connection
-	 */
-	public static DBConnection getTestDatabaseConnection() {
-		DBConnection retVal = new DBConnection();
-		retVal.connectionString = "jdbc:h2:mem:elexisTest;DB_CLOSE_DELAY=-1";
-		retVal.rdbmsType = DBType.H2;
-		retVal.username = "sa";
-		retVal.password = "";
-		return retVal;
-	}
+	
 }

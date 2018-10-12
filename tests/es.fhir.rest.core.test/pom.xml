@@ -78,6 +78,10 @@
 							<level>3</level>
 							<autoStart>true</autoStart>
 						</bundle>
+						<bundle>
+							<id>ch.elexis.core.findings.fhir.model</id>
+							<autoStart>true</autoStart>
+						</bundle>
 					</bundleStartLevel>
 					<dependencies>
 						<dependency>
