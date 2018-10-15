@@ -4,6 +4,5 @@
       <provide interface="org.eclipse.osgi.framework.console.CommandProvider"/>
    </service>
    <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService"/>
-   <reference cardinality="1..1" field="stockCommissioningSystemService" interface="ch.elexis.core.services.IStockCommissioningSystemService" name="stockCommissioningSystemService"/>
    <implementation class="info.elexis.server.core.connector.elexis.internal.ConsoleCommandProvider"/>
 </scr:component>

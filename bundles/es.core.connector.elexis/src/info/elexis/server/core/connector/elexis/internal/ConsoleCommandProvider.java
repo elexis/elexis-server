@@ -1,13 +1,10 @@
 package info.elexis.server.core.connector.elexis.internal;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
@@ -17,12 +14,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IConfig;
-import ch.elexis.core.model.IStock;
-import ch.elexis.core.model.IStockEntry;
-import ch.elexis.core.model.stock.ICommissioningSystemDriver;
 import ch.elexis.core.services.IModelService;
-import ch.elexis.core.services.IStockCommissioningSystemService;
-import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
 import info.elexis.server.core.connector.elexis.services.ConfigService;
@@ -35,8 +27,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	@Reference(cardinality = ReferenceCardinality.MANDATORY)
 	private IModelService modelService;
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
-	private IStockCommissioningSystemService stockCommissioningSystemService;
+//	@Reference(cardinality = ReferenceCardinality.MANDATORY)
+//	private IStockCommissioningSystemService stockCommissioningSystemService;
 	
 	public void _es_elc(CommandInterpreter ci) {
 		executeCommand(ci);
@@ -167,45 +159,45 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return getHelp(1);
 	}
 
-	public String __stock_list() {
-		List<IStock> stocks = modelService.getQuery(IStock.class).execute();
-		for (IStock stock : stocks) {
-			ci.println(stock.getLabel());
-			if (stock.isCommissioningSystem()) {
-				ICommissioningSystemDriver instance = stockCommissioningSystemService
-						.getDriverInstanceForStock(stock);
-				ci.print("\t [  isCommissioningSystem  ] ");
-				if (instance != null) {
-					IStatus status = instance.getStatus();
-					String statusString = StatusUtil.printStatus(status);
-					ci.print(statusString);
-				} else {
-					ci.print("No driver instance found.\n");
-				}
-			}
-		}
-		return ok();
-	}
+//	public String __stock_list() {
+//		List<IStock> stocks = modelService.getQuery(IStock.class).execute();
+//		for (IStock stock : stocks) {
+//			ci.println(stock.getLabel());
+//			if (stock.isCommissioningSystem()) {
+//				ICommissioningSystemDriver instance = stockCommissioningSystemService
+//						.getDriverInstanceForStock(stock);
+//				ci.print("\t [  isCommissioningSystem  ] ");
+//				if (instance != null) {
+//					IStatus status = instance.getStatus();
+//					String statusString = StatusUtil.printStatus(status);
+//					ci.print(statusString);
+//				} else {
+//					ci.print("No driver instance found.\n");
+//				}
+//			}
+//		}
+//		return ok();
+//	}
 
-	public String __stock_scs(Iterator<String> args) {
-		String stockId = args.next();
-		String action = args.next();
-		if (stockId == null || action == null) {
-			return missingArgument("stockId (start | stop)");
-		}
-
-		Optional<IStock> findById = modelService.load(stockId, IStock.class);
-		if (!findById.isPresent()) {
-			return "Stock not found [" + stockId + "]";
-		}
-		IStatus status;
-		if ("start".equalsIgnoreCase(action)) {
-			status = stockCommissioningSystemService.initializeStockCommissioningSystem(findById.get());
-		} else {
-			status = stockCommissioningSystemService.shutdownStockCommissioningSytem(findById.get());
-		}
-		return StatusUtil.printStatus(status);
-	}
+//	public String __stock_scs(Iterator<String> args) {
+//		String stockId = args.next();
+//		String action = args.next();
+//		if (stockId == null || action == null) {
+//			return missingArgument("stockId (start | stop)");
+//		}
+//
+//		Optional<IStock> findById = modelService.load(stockId, IStock.class);
+//		if (!findById.isPresent()) {
+//			return "Stock not found [" + stockId + "]";
+//		}
+//		IStatus status;
+//		if ("start".equalsIgnoreCase(action)) {
+//			status = stockCommissioningSystemService.initializeStockCommissioningSystem(findById.get());
+//		} else {
+//			status = stockCommissioningSystemService.shutdownStockCommissioningSytem(findById.get());
+//		}
+//		return StatusUtil.printStatus(status);
+//	}
 
 //	public String __stock_listForStock(Iterator<String> args) {
 //		if (args.hasNext()) {
@@ -222,33 +214,33 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 //		}
 //	}
 
-	public String __stock_seCsOut(Iterator<String> args) {
-		if (args.hasNext()) {
-			Optional<IStockEntry> se = modelService.load(args.next(), IStockEntry.class);
-			if (se.isPresent()) {
-				IStatus performArticleOutlay = stockCommissioningSystemService.performArticleOutlay(se.get(), 1,
-						null);
-				return StatusUtil.printStatus(performArticleOutlay);
-			} else {
-				return "Invalid stock entry id";
-			}
-		} else {
-			return missingArgument("stockEntryId");
-		}
-	}
+//	public String __stock_seCsOut(Iterator<String> args) {
+//		if (args.hasNext()) {
+//			Optional<IStockEntry> se = modelService.load(args.next(), IStockEntry.class);
+//			if (se.isPresent()) {
+//				IStatus performArticleOutlay = stockCommissioningSystemService.performArticleOutlay(se.get(), 1,
+//						null);
+//				return StatusUtil.printStatus(performArticleOutlay);
+//			} else {
+//				return "Invalid stock entry id";
+//			}
+//		} else {
+//			return missingArgument("stockEntryId");
+//		}
+//	}
 
-	public String __stock_stockSyncCs(Iterator<String> args) {
-		if (args.hasNext()) {
-			Optional<IStock> se = modelService.load(args.next(), IStock.class);
-			if (se.isPresent()) {
-				IStatus performArticleOutlay = stockCommissioningSystemService.synchronizeInventory(se.get(),
-						Collections.emptyList(), null);
-				return StatusUtil.printStatus(performArticleOutlay);
-			} else {
-				return "Invalid stock id";
-			}
-		} else {
-			return missingArgument("stockId");
-		}
-	}
+//	public String __stock_stockSyncCs(Iterator<String> args) {
+//		if (args.hasNext()) {
+//			Optional<IStock> se = modelService.load(args.next(), IStock.class);
+//			if (se.isPresent()) {
+//				IStatus performArticleOutlay = stockCommissioningSystemService.synchronizeInventory(se.get(),
+//						Collections.emptyList(), null);
+//				return StatusUtil.printStatus(performArticleOutlay);
+//			} else {
+//				return "Invalid stock id";
+//			}
+//		} else {
+//			return missingArgument("stockId");
+//		}
+//	}
 }
