@@ -165,14 +165,14 @@ public class SetupTest {
 			new IUserBuilder(modelService, USER_PASS_PRACTITIONER, drGonzo).build();
 		userService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
 		practitioner.setAllowExternal(true);
-		practitioner.getRoles().add(fhirRole);
+		practitioner.addRole(fhirRole);
 		assertTrue(modelService.save(practitioner));
 		assertTrue(userService.verifyPassword(practitioner, USER_PASS_PRACTITIONER));
 		
 		IUser esadmin = new IUserBuilder(modelService, USER_PASS_ESADMIN, drGonzo).build();
 		userService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
 		esadmin.setAllowExternal(true);
-		esadmin.getRoles().add(esadminRole);
+		esadmin.addRole(esadminRole);
 		assertTrue(modelService.save(esadmin));
 		assertTrue(userService.verifyPassword(esadmin, USER_PASS_ESADMIN));
 		

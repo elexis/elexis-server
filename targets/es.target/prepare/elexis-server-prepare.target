@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1539346435">
+<target name="Elexis-Server" sequenceNumber="1539592649">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.7.0.20181008-1313"/>
-      <unit id="ch.elexis.core" version="3.7.0.20181012-1209"/>
+      <unit id="ch.elexis.core" version="3.7.0.20181015-0828"/>
       <unit id="ch.elexis.core.l10n" version="3.7.0.20181001-0902"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20181009-1312"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20181009-1312"/>
@@ -146,10 +146,6 @@
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.201307051903"/>
       <repository location="http://download.elexis.info/elexis-server/misc/gemini-jpa/"/>
-    </location>
-    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
-      <repository location="http://download.eclipse.org/gemini/updates/naming/1.0.5/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="com.google.code.gson" version="2.8.0"/>

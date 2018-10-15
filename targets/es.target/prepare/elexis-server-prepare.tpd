@@ -160,10 +160,6 @@ location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 	org.eclipse.gemini.jpa.feature.feature.group
 }
 
-location "http://download.eclipse.org/gemini/updates/naming/1.0.5/" {
-	org.eclipse.gemini.naming.feature.feature.group
-}
-
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
 location "http://download.elexis.info/elexis-server/elexis-server-dependencies/" {
 	com.google.code.gson
