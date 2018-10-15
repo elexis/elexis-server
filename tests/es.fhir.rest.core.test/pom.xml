@@ -54,11 +54,6 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-							<id>org.eclipse.gemini.naming</id>
-							<level>1</level>
-							<autoStart>true</autoStart>
-						</bundle>
-						<bundle>
 							<id>org.eclipse.gemini.jpa</id>
 							<level>2</level>
 							<autoStart>true</autoStart>
@@ -76,6 +71,10 @@
 						<bundle>
 							<id>ch.elexis.core.jpa.entities</id>
 							<level>3</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
+							<id>ch.elexis.core.model</id>
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>

@@ -130,8 +130,6 @@ location "http://download.elexis.info/elexis-server/f14501/p2/target/" elexis-se
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
-	org.eclipse.gemini.naming.feature.feature.group
-	
 	jcl.over.slf4j
 	com.google.code.gson
 	com.squareup.okhttp3.okhttp

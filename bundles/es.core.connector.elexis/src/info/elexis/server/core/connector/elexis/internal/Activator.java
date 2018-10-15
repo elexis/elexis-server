@@ -7,6 +7,7 @@ import org.osgi.framework.BundleContext;
 
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.services.IElexisDataSource;
+import ch.elexis.core.utils.CoreUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnectionUtil;
 import info.elexis.server.core.contrib.ApplicationShutdownRegistrar;
@@ -28,12 +29,13 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-
-		Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
-		if (connection.isPresent()) {
-			Optional<IElexisDataSource> datasource =
-				OsgiServiceUtil.getService(IElexisDataSource.class);
-			datasource.get().setDBConnection(connection.get());
+		if (!CoreUtil.isTestMode()) { 
+			Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
+			if (connection.isPresent()) {
+				Optional<IElexisDataSource> datasource =
+					OsgiServiceUtil.getService(IElexisDataSource.class);
+				datasource.get().setDBConnection(connection.get());
+			}
 		}
 
 		ApplicationShutdownRegistrar.addShutdownListener(iasl);
