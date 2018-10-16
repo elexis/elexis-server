@@ -18,11 +18,6 @@ import ch.elexis.core.utils.OsgiServiceUtil;
 
 
 public class ContactServiceTest extends AbstractServiceTest {
-	
-	@Before
-	public void before(){
-		modelService = OsgiServiceUtil.getService(IModelService.class).get();
-	}
 		
 	@Test
 	public void testFindAllPatients(){
