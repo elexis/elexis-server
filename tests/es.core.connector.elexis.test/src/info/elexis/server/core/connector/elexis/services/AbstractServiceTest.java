@@ -19,7 +19,8 @@ import ch.rgw.tools.TimeTool;
 
 public abstract class AbstractServiceTest {
 	
-	public IModelService modelService = OsgiServiceUtil.getService(IModelService.class).get();
+	public IModelService coreModelService = OsgiServiceUtil.getService(IModelService.class,
+		"(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
 	
 	public List<IContact> testContacts = new ArrayList<IContact>();
 	public List<IContact> testPatients = new ArrayList<IContact>();
@@ -29,21 +30,23 @@ public abstract class AbstractServiceTest {
 	public void createTestMandantPatientFallBehandlung(){
 		TimeTool timeTool = new TimeTool();
 		IPerson mandator =
-			new IContactBuilder.PersonBuilder(modelService, "mandator1 " + timeTool.toString(),
+			new IContactBuilder.PersonBuilder(coreModelService, "mandator1 " + timeTool.toString(),
 				"Anton" + timeTool.toString(), timeTool.toLocalDate(), Gender.MALE).mandator()
 					.buildAndSave();
 		mandator.setMandator(true);
 		testContacts.add(mandator);
 		
-		IPatient patient = new IContactBuilder.PatientBuilder(modelService, "Armer",
+		IPatient patient = new IContactBuilder.PatientBuilder(coreModelService, "Armer",
 			"Anton" + timeTool.toString(), timeTool.toLocalDate(), Gender.MALE).buildAndSave();
 		testPatients.add(patient);
 		
-		ICoverage testFall = new ICoverageBuilder(modelService, patient, "Fallbezeichnung",
-			"Fallgrund", "KVG").buildAndSave();
+		ICoverage testFall =
+			new ICoverageBuilder(coreModelService, patient, "Fallbezeichnung", "Fallgrund", "KVG")
+				.buildAndSave();
 		testFaelle.add(testFall);
 		
-		IEncounter behandlung = new IEncounterBuilder(modelService, testFall, (IMandator) mandator).buildAndSave();
+		IEncounter behandlung =
+			new IEncounterBuilder(coreModelService, testFall, (IMandator) mandator).buildAndSave();
 		testBehandlungen.add(behandlung);
 	}
 	
@@ -58,22 +61,22 @@ public abstract class AbstractServiceTest {
 			//			}
 			
 			System.out.print("Deleting behandlung " + cons.getLabel());
-			modelService.remove(cons);
+			coreModelService.remove(cons);
 			System.out.println(" [OK]");
 		}
 		for (ICoverage fall : testFaelle) {
 			System.out.print("Removing fall " + fall.getLabel());
-			modelService.remove(fall);
+			coreModelService.remove(fall);
 			System.out.println(" [OK]");
 		}
 		for (IContact contact : testPatients) {
 			System.out.print("Removing patient " + contact.getLabel());
-			modelService.remove(contact);
+			coreModelService.remove(contact);
 			System.out.println(" [OK]");
 		}
 		for (IContact contact : testContacts) {
 			System.out.print("Removing contact " + contact.getLabel());
-			modelService.remove(contact);
+			coreModelService.remove(contact);
 			System.out.println(" [OK]");
 		}
 	}
