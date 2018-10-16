@@ -11,4 +11,5 @@ Require-Bundle: org.junit,
 Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.commands,
  ch.elexis.core.findings.util.model,
+ org.hl7.fhir.dstu3.model,
  org.osgi.framework;version="1.8.0"
