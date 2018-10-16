@@ -107,6 +107,7 @@ location "http://download.elexis.info/elexis-server/f14501/p2/target/" elexis-se
 	org.beanshell.bsh
 	
 	at.medevit.ch.artikelstamm
+	at.medevit.ch.artikelstamm.model
 	ch.elexis.base.ch.ticode
 	at.medevit.atc_codes
 	

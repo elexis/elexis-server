@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1539593339">
+<target name="Elexis-Server" sequenceNumber="1539681782">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
@@ -100,6 +100,7 @@
       <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
       <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20181011-1124"/>
+      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20181011-1821"/>
       <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180705-1301"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20180309-1216"/>
       <unit id="org.tukaani.xz" version="1.5.0.v20170111-1717"/>
