@@ -91,13 +91,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.postgresql"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.h2"
          download-size="0"
          install-size="0"
@@ -247,6 +240,13 @@
 
    <plugin
          id="at.medevit.ch.artikelstamm.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.postgresql.jdbc42"
          download-size="0"
          install-size="0"
          version="0.0.0"
