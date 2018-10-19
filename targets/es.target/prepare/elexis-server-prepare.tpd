@@ -23,7 +23,6 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	ch.elexis.core.services
 	ch.elexis.core.findings.fhir.model
 	//
-	org.postgresql
 	org.h2
 	org.jdom
 	org.apache.commons.dbcp
@@ -197,9 +196,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.springframework.spring-beans
 	org.apache.commons.collections4
 	se.ugli.bigqueue
-	// weird problems with com.mysql.jdbc >= 5.1.39
-	// SELECT * FROM SEQUENCE WHERE SEQ_NAME = 'SEQ_GEN'
-	com.mysql.jdbc [5.1.38,5.1.38]
+	com.mysql.jdbc
+	org.postgresql.jdbc42
 	org.apache.commons.lang3 [3.3.2,3.3.2]
 	org.apache.commons.configuration
 	org.joda.money
