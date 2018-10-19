@@ -7,14 +7,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import ch.elexis.core.model.IPatient;
-import ch.elexis.core.services.IModelService;
 import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.types.Gender;
-import ch.elexis.core.utils.OsgiServiceUtil;
 
 
 public class ContactServiceTest extends AbstractServiceTest {

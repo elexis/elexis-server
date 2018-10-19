@@ -4,13 +4,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -40,12 +36,6 @@ public class AllTests {
 	private static OkHttpClient defaultOkHttpClient =
 		new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS)
 			.writeTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
-	
-	@BeforeClass
-	public static void setup() throws IOException, SQLException{
-		//		TestDatabaseInitializer tdi = new TestDatabaseInitializer(modelService, entityManager);
-		//		tdi.initializeDb(configService);
-	}
 	
 	public static boolean isReachable(String targetUrl) throws MalformedURLException, IOException{
 		HttpURLConnection httpUrlConnection =
