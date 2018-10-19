@@ -95,7 +95,7 @@ location "http://download.elexis.info/elexis-server/f14501/p2/target/" elexis-se
 	ch.elexis.core.services
 	ch.elexis.core.findings.fhir.model
 	//
-	org.postgresql
+	org.postgresql.jdbc42
 	org.h2
 	org.jdom
 	org.apache.commons.dbcp
