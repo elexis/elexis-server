@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" name="info.elexis.server.core.service.internal.StoreToStringServiceImpl">
-   <service>
-      <provide interface="info.elexis.server.core.service.StoreToStringService"/>
-   </service>
-   <reference bind="bindContribution" cardinality="0..1" interface="info.elexis.server.core.service.StoreToStringContribution" name="Contribution" policy="dynamic" policy-option="greedy" unbind="unbindContribution"/>
-   <implementation class="info.elexis.server.core.service.internal.StoreToStringServiceImpl"/>
-</scr:component>

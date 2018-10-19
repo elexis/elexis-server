@@ -45,7 +45,6 @@ Export-Package: info.elexis.server.core,
  info.elexis.server.core.contrib,
  info.elexis.server.core.rest,
  info.elexis.server.core.security,
- info.elexis.server.core.security.oauth2,
- info.elexis.server.core.service
+ info.elexis.server.core.security.oauth2
 Bundle-ClassPath: .
 
