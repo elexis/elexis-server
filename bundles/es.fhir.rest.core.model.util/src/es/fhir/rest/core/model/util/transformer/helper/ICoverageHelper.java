@@ -27,7 +27,7 @@ public class ICoverageHelper extends AbstractHelper {
 	}
 	
 	public void setBin(ICoverage coverage, String bin){
-		String billingSystem = coverage.getBillingSystem();
+		String billingSystem = coverage.getBillingSystem().getName();
 		if (billingSystem != null && !billingSystem.isEmpty()) {
 			if (billingSystem.equals("UVG")) {
 				coverage.setExtInfo("Unfallnummer", bin);
@@ -82,7 +82,7 @@ public class ICoverageHelper extends AbstractHelper {
 		String bezeichnung = coverage.getDescription();
 		LocalDate dateFrom = coverage.getDateFrom();
 		LocalDate dateTo = coverage.getDateTo();
-		String billingSystem = coverage.getBillingSystem();
+		String billingSystem = coverage.getBillingSystem().getName();
 		
 		if (dateFrom == null) {
 			dateFrom = LocalDate.of(1970, 1, 1);
@@ -105,7 +105,7 @@ public class ICoverageHelper extends AbstractHelper {
 	
 	public Optional<CodeableConcept> getType(ICoverage coverage){
 		CodeableConcept ret = new CodeableConcept();
-		String billingSystem = coverage.getBillingSystem();
+		String billingSystem = coverage.getBillingSystem().getName();
 		if (billingSystem != null) {
 			Coding coding = new Coding();
 			coding.setSystem(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem());
