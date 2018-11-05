@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 
 import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.model.IConfig;
-import ch.elexis.core.model.ICoverage;
 import ch.elexis.core.model.ch.BillingLaw;
-import ch.rgw.tools.StringTool;
 
 public class FallService extends PersistenceService2 {
 
@@ -26,21 +24,21 @@ public class FallService extends PersistenceService2 {
 		return systeme.toArray(new String[] {});
 	}
 
-	/**
-	 * Retrieve a required String Value from this billing system's definition. If no
-	 * variable with that name is found, the billings system constants will be
-	 * searched
-	 * 
-	 * @param name
-	 * @return a string that might be empty but will never be null.
-	 */
-	public static String getRequiredString(ICoverage fall, String name) {
-		String kid = (String) fall.getExtInfo(name);
-		if (StringTool.isNothing(kid)) {
-			kid = getBillingSystemConstant(fall.getBillingSystem(), name);
-		}
-		return kid;
-	}
+//	/**
+//	 * Retrieve a required String Value from this billing system's definition. If no
+//	 * variable with that name is found, the billings system constants will be
+//	 * searched
+//	 * 
+//	 * @param name
+//	 * @return a string that might be empty but will never be null.
+//	 */
+//	public static String getRequiredString(ICoverage fall, String name) {
+//		String kid = (String) fall.getExtInfo(name);
+//		if (StringTool.isNothing(kid)) {
+//			kid = getBillingSystemConstant(fall.getBillingSystem(), name);
+//		}
+//		return kid;
+//	}
 
 	public static String[] getBillingSystemConstants(final String billingSystem) {
 		String bc = ConfigService.INSTANCE.get(Preferences.LEISTUNGSCODES_CFG_KEY + "/" + billingSystem + "/constants",

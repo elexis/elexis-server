@@ -10,7 +10,7 @@
 // *    
 // *******************************************************************************/
 //
-//package info.elexis.server.core.connector.elexis.billable.optifier;
+package info.elexis.server.core.connector.elexis.billable.optifier;
 //
 //import java.math.BigDecimal;
 //import java.math.RoundingMode;
@@ -66,7 +66,7 @@
 // * @author gerry
 // * 
 // */
-//public class TarmedOptifier implements IOptifier<TarmedLeistung> {
+public class TarmedOptifier  {
 //	private static final String TL = "TL"; //$NON-NLS-1$
 //	private static final String AL = "AL"; //$NON-NLS-1$
 //	private static final String AL_NOTSCALED = "AL_NOTSCALED"; //$NON-NLS-1$
@@ -1107,4 +1107,4 @@
 //		return false;
 //	}
 //
-//}
+}

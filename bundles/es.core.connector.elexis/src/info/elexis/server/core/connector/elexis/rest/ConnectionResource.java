@@ -31,6 +31,9 @@ import io.swagger.annotations.ApiResponses;
 })
 @Path("/elexis-connector/connection")
 @Component(service = ConnectionResource.class, immediate = true)
+@Produces({
+	MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML
+})
 public class ConnectionResource {
 	
 	@Reference

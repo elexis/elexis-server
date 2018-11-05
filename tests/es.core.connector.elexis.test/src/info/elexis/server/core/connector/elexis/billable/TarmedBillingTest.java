@@ -29,60 +29,60 @@ public class TarmedBillingTest extends AbstractServiceTest {
 //		cleanup();
 //	}
 //
-//	@Test
-//	public void testAddTarmedBilling() {
-//		TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null).get();
-//		TarmedLeistung code_000750 = TarmedLeistungService.findFromCode("00.0750", null).get();
-//		assertNotNull(code_000015);
-//		assertNotNull(code_000010);
-//		assertNotNull(code_000750);
+////	@Test
+////	public void testAddTarmedBilling() {
+////		TarmedLeistung code_000015 = TarmedLeistungService.findFromCode("00.0015", null).get();
+////		TarmedLeistung code_000750 = TarmedLeistungService.findFromCode("00.0750", null).get();
+////		assertNotNull(code_000015);
+////		assertNotNull(code_000010);
+////		assertNotNull(code_000750);
+////
+////		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
+////
+////		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, mandator);
+////		assertTrue(status.getMessage(), status.isOK());
+////		ObjectStatus os = (ObjectStatus) status;
+////		vr = (Verrechnet) os.getObject();
+////		assertNotNull(vr);
+////
+////		assertEquals(code_000010.getTx255(), vr.getLeistungenText());
+////		assertEquals("0.89", vr.getVk_scale());
+////		assertEquals(1776, vr.getVk_tp());
+////		assertEquals(1581, vr.getVk_preis());
+////		assertEquals(100, vr.getScale());
+////		assertEquals(100, vr.getScale2());
+////		assertEquals(ElexisTypeMap.TYPE_TARMEDLEISTUNG, vr.getKlasse());
+////		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
+////		assertEquals(1, vr.getZahl());
+////
+////		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
+////		status = ivlt_000750.add(testBehandlungen.get(0), userContact, mandator);
+////		assertTrue(status.getMessage(), !status.isOK());
+////	}
 //
-//		VerrechenbarTarmedLeistung vlt_000010 = new VerrechenbarTarmedLeistung(code_000010);
-//
-//		IStatus status = vlt_000010.add(testBehandlungen.get(0), userContact, mandator);
-//		assertTrue(status.getMessage(), status.isOK());
-//		ObjectStatus os = (ObjectStatus) status;
-//		vr = (Verrechnet) os.getObject();
-//		assertNotNull(vr);
-//
-//		assertEquals(code_000010.getTx255(), vr.getLeistungenText());
-//		assertEquals("0.89", vr.getVk_scale());
-//		assertEquals(1776, vr.getVk_tp());
-//		assertEquals(1581, vr.getVk_preis());
-//		assertEquals(100, vr.getScale());
-//		assertEquals(100, vr.getScale2());
-//		assertEquals(ElexisTypeMap.TYPE_TARMEDLEISTUNG, vr.getKlasse());
-//		assertEquals(testBehandlungen.get(0).getId(), vr.getBehandlung().getId());
-//		assertEquals(1, vr.getZahl());
-//
-//		VerrechenbarTarmedLeistung ivlt_000750 = new VerrechenbarTarmedLeistung(code_000750);
-//		status = ivlt_000750.add(testBehandlungen.get(0), userContact, mandator);
-//		assertTrue(status.getMessage(), !status.isOK());
-//	}
-//
-//	@Test
-//	public void testDoNotBillTympanometrieTwicePerSideTicket5004() {
-//		TarmedLeistung code_090510 = TarmedLeistungService.findFromCode("09.0510", null).get();
-//		assertNotNull(code_090510);
-//		VerrechenbarTarmedLeistung vtl_090510 = new VerrechenbarTarmedLeistung(code_090510);
-//
-//		IStatus status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
-//		assertTrue(status.getMessage(), status.isOK());
-//		ObjectStatus os = (ObjectStatus) status;
-//		vr = (Verrechnet) os.getObject();
-//		assertNotNull(vr);
-//		assertEquals(TarmedOptifier.SIDE_L, vr.getDetail().get(TarmedOptifier.SIDE));
-//
-//		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
-//		assertTrue(status.getMessage(), status.isOK());
-//		os = (ObjectStatus) status;
-//		vr = (Verrechnet) os.getObject();
-//		assertNotNull(vr);
-//		assertEquals(TarmedOptifier.SIDE_R, vr.getDetail().get(TarmedOptifier.SIDE));
-//
-//		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
-//		assertFalse(status.getMessage(), status.isOK());
-//	}
+////	@Test
+////	public void testDoNotBillTympanometrieTwicePerSideTicket5004() {
+////		TarmedLeistung code_090510 = TarmedLeistungService.findFromCode("09.0510", null).get();
+////		assertNotNull(code_090510);
+////		VerrechenbarTarmedLeistung vtl_090510 = new VerrechenbarTarmedLeistung(code_090510);
+////
+////		IStatus status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
+////		assertTrue(status.getMessage(), status.isOK());
+////		ObjectStatus os = (ObjectStatus) status;
+////		vr = (Verrechnet) os.getObject();
+////		assertNotNull(vr);
+////		assertEquals(TarmedOptifier.SIDE_L, vr.getDetail().get(TarmedOptifier.SIDE));
+////
+////		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
+////		assertTrue(status.getMessage(), status.isOK());
+////		os = (ObjectStatus) status;
+////		vr = (Verrechnet) os.getObject();
+////		assertNotNull(vr);
+////		assertEquals(TarmedOptifier.SIDE_R, vr.getDetail().get(TarmedOptifier.SIDE));
+////
+////		status = vtl_090510.add(testBehandlungen.get(0), userContact, mandator);
+////		assertFalse(status.getMessage(), status.isOK());
+////	}
 //
 //	@Test
 //	public void testBehandlungResolvesVerrechnet() {
@@ -234,43 +234,44 @@ public class TarmedBillingTest extends AbstractServiceTest {
 //		status = tlBaseRadiologyHospitalV.add(testBehandlungen.get(0), userContact, mandator);
 //		assertFalse(status.isOK());
 //	}
+//	
 //
-//	@Test
-//	public void testIsCompatibleTarmedBilling() {
-//		TarmedOptifier optifier = new TarmedOptifier();
-//
-//		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
-//		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
-//		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null)
-//				.get();
-//		TarmedLeistung tlBaseFirst5Min = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null).get();
-//
-//		IStatus resCompatible = optifier.isCompatible(tlBaseXRay, tlUltrasound, testBehandlungen.get(0));
-//		assertFalse(resCompatible.isOK());
-//		String resText = "";
-//		if (!resCompatible.getMessage().isEmpty()) {
-//			resText = resCompatible.getMessage();
-//		}
-//		assertEquals("39.3005 nicht kombinierbar mit Kapitel 39.01", resText);
-//		resCompatible = optifier.isCompatible(tlUltrasound, tlBaseXRay, testBehandlungen.get(0));
-//		assertTrue(resCompatible.isOK());
-//
-//		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseRadiologyHospital, testBehandlungen.get(0));
-//		assertFalse(resCompatible.isOK());
-//		if (!resCompatible.getMessage().isEmpty()) {
-//			resText = resCompatible.getMessage();
-//		}
-//		assertEquals("39.0015 nicht kombinierbar mit Leistung 39.0020", resText);
-//
-//		resCompatible = optifier.isCompatible(tlBaseRadiologyHospital, tlUltrasound, testBehandlungen.get(0));
-//		assertFalse(resCompatible.isOK());
-//
-//		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseFirst5Min, testBehandlungen.get(0));
-//		assertTrue(resCompatible.isOK());
-//
-//		resCompatible = optifier.isCompatible(tlBaseFirst5Min, tlBaseRadiologyHospital, testBehandlungen.get(0));
-//		assertTrue(resCompatible.isOK());
-//	}
+////	@Test
+////	public void testIsCompatibleTarmedBilling() {
+////		TarmedOptifier optifier = new TarmedOptifier();
+////
+////		TarmedLeistung tlBaseXRay = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0020", null).get();
+////		TarmedLeistung tlUltrasound = (TarmedLeistung) TarmedLeistungService.findFromCode("39.3005", null).get();
+////		TarmedLeistung tlBaseRadiologyHospital = (TarmedLeistung) TarmedLeistungService.findFromCode("39.0015", null)
+////				.get();
+////		TarmedLeistung tlBaseFirst5Min = (TarmedLeistung) TarmedLeistungService.findFromCode("00.0010", null).get();
+////
+////		IStatus resCompatible = optifier.isCompatible(tlBaseXRay, tlUltrasound, testBehandlungen.get(0));
+////		assertFalse(resCompatible.isOK());
+////		String resText = "";
+////		if (!resCompatible.getMessage().isEmpty()) {
+////			resText = resCompatible.getMessage();
+////		}
+////		assertEquals("39.3005 nicht kombinierbar mit Kapitel 39.01", resText);
+////		resCompatible = optifier.isCompatible(tlUltrasound, tlBaseXRay, testBehandlungen.get(0));
+////		assertTrue(resCompatible.isOK());
+////
+////		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseRadiologyHospital, testBehandlungen.get(0));
+////		assertFalse(resCompatible.isOK());
+////		if (!resCompatible.getMessage().isEmpty()) {
+////			resText = resCompatible.getMessage();
+////		}
+////		assertEquals("39.0015 nicht kombinierbar mit Leistung 39.0020", resText);
+////
+////		resCompatible = optifier.isCompatible(tlBaseRadiologyHospital, tlUltrasound, testBehandlungen.get(0));
+////		assertFalse(resCompatible.isOK());
+////
+////		resCompatible = optifier.isCompatible(tlBaseXRay, tlBaseFirst5Min, testBehandlungen.get(0));
+////		assertTrue(resCompatible.isOK());
+////
+////		resCompatible = optifier.isCompatible(tlBaseFirst5Min, tlBaseRadiologyHospital, testBehandlungen.get(0));
+////		assertTrue(resCompatible.isOK());
+////	}
 //
 //	@Test
 //	public void testAddCompatibleAndIncompatibleTarmedBilling() {
@@ -324,18 +325,18 @@ public class TarmedBillingTest extends AbstractServiceTest {
 //		VerrechnetMatch.assertVerrechnetMatch(testBehandlungen.get(3), matches);
 //	}
 //
-//	@Test
-//	public void testAddAutoPositions() {
-//		IStatus status = getTarmedVerrechenbar("39.0590").add(testBehandlungen.get(0), userContact, mandator);
-//		assertTrue(status.isOK());
-//
-//		List<VerrechnetMatch> matches = new ArrayList<>();
-//		matches.add(new VerrechnetMatch("39.0590-20141001", 1));
-//		matches.add(new VerrechnetMatch("39.2000-20141001", 1));
-//		matches.add(new VerrechnetMatch("39.0020-20141001", 1));
-//
-//		VerrechnetMatch.assertVerrechnetMatch(testBehandlungen.get(0), matches);
-//	}
+////	@Test
+////	public void testAddAutoPositions() {
+////		IStatus status = getTarmedVerrechenbar("39.0590").add(testBehandlungen.get(0), userContact, mandator);
+////		assertTrue(status.isOK());
+////
+////		List<VerrechnetMatch> matches = new ArrayList<>();
+////		matches.add(new VerrechnetMatch("39.0590-20141001", 1));
+////		matches.add(new VerrechnetMatch("39.2000-20141001", 1));
+////		matches.add(new VerrechnetMatch("39.0020-20141001", 1));
+////
+////		VerrechnetMatch.assertVerrechnetMatch(testBehandlungen.get(0), matches);
+////	}
 //
 //	@Test
 //	public void testResolveTarmedViaLaw() {

@@ -1,7 +1,9 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -163,19 +165,18 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 
 		public List<IBilled> bill() {
 			List<IBilled> ret = new ArrayList<>();
-			ICoverage fall = getFall(coverages.get(0));
-			List<BillableContext> billables = getBillableContexts(items);
+			ICoverage coverage = getFall(coverages.get(0));
 			List<IDiagnosis> diagnose = getDiagnose(diagnosis);
-			Optional<ch.elexis.core.model.IEncounter> behandlung = getOrCreateBehandlung(claim, fall, providerRef);
+			Optional<ch.elexis.core.model.IEncounter> behandlung = getOrCreateBehandlung(claim, coverage, providerRef);
 			if (behandlung.isPresent()) {
 				ch.elexis.core.model.IEncounter cons = behandlung.get();
 				Optional<IMandator> mandator = modelService.load(providerRef.getReferenceElement().getIdPart(), IMandator.class);
 				if (mandator.isPresent()) {
 					
-					if (!cons.getCoverage().getId().equals(fall.getId())) {
+					if (!cons.getCoverage().getId().equals(coverage.getId())) {
 						Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 						if (lockInfo.isPresent()) {
-							cons.setCoverage(fall);
+							cons.setCoverage(coverage);
 							AbstractHelper.releaseLock(lockInfo.get());
 						}
 					}
@@ -183,7 +184,8 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 					for (IDiagnosis diag : diagnose) {
 						cons.addDiagnosis(diag);
 					}
-
+					
+					List<BillableContext> billables = getBillableContexts(items, cons);
 					for (BillableContext billable : billables) {
 						List<IBilled> billed = billable.bill(cons, mandator.get(), mandator.get());
 						if (billed.size() < billable.getAmount()) {
@@ -202,13 +204,13 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return ret;
 		}
 
-		private List<BillableContext> getBillableContexts(List<ItemComponent> items) {
+		private List<BillableContext> getBillableContexts(List<ItemComponent> items, ch.elexis.core.model.IEncounter cons) {
 			List<BillableContext> ret = new ArrayList<>();
 			for (ItemComponent itemComponent : items) {
 				CodeableConcept serviceCoding = itemComponent.getService();
 				if (serviceCoding != null) {
 					for (Coding coding : serviceCoding.getCoding()) {
-						Optional<IBillable> billable = getBillable(coding.getSystem(), coding.getCode());
+						Optional<IBillable> billable = getBillable(coding.getSystem(), coding.getCode(), cons);
 						Optional<Integer> amount = getAmount(itemComponent);
 						if (billable.isPresent() && amount.isPresent()) {
 							ret.add(new BillableContext(billable.get(), amount.get()));
@@ -228,10 +230,12 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return Optional.empty();
 		}
 
-		private Optional<IBillable> getBillable(String system, String code) {
+		private Optional<IBillable> getBillable(String system, String code, ch.elexis.core.model.IEncounter cons) {
 			if (system.equals(CodingSystem.ELEXIS_TARMED_CODESYSTEM.getSystem())) {
+				Map<Object, Object> context = new HashMap<>();
+				context.put(ICodeElementService.ContextKeys.CONSULTATION, cons);
 				Optional<ICodeElement> tarmed =
-					codeElementService.loadFromString("Tarmed", code, null);
+					codeElementService.loadFromString("Tarmed", code, context);
 				if (tarmed.isPresent()) {
 					return tarmed.filter(IBillable.class::isInstance).map(IBillable.class::cast);
 				}
