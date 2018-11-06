@@ -66,7 +66,6 @@ public class PatientTest {
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
-		
 	}
 	
 	/**

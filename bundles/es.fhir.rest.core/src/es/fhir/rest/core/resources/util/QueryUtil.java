@@ -1,11 +1,13 @@
 package es.fhir.rest.core.resources.util;
 
+import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.param.ParamPrefixEnum;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IQuery.ORDER;
 
 public class QueryUtil {
-
-	public static COMPARATOR prefixParamToToQueryParam(ParamPrefixEnum prefix) {
+	
+	public static COMPARATOR prefixParamToToQueryParam(ParamPrefixEnum prefix){
 		switch (prefix) {
 		case EQUAL:
 			return COMPARATOR.EQUALS;
@@ -24,5 +26,9 @@ public class QueryUtil {
 		}
 		throw new UnsupportedOperationException();
 	}
-
+	
+	public static ORDER sortOrderEnumToLocal(SortOrderEnum order){
+		return (SortOrderEnum.ASC == order) ? ORDER.ASC : ORDER.DESC;
+	}
+	
 }
