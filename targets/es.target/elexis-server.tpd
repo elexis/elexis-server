@@ -104,6 +104,9 @@ location "http://download.elexis.info/elexis-server/f14501/p2/target/" elexis-se
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
 	org.apache.poi
+	org.apache.poi.ooxml
+	org.apache.poi.ooxml.schemas
+	com.healthmarketscience.jackcess
 	org.beanshell.bsh
 	
 	at.medevit.ch.artikelstamm
