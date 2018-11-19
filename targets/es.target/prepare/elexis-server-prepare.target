@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1541404676">
+<target name="Elexis-Server" sequenceNumber="1542617251">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.7.0.20181025-0751"/>
+      <unit id="ch.rgw.utility" version="3.7.0.20181116-1152"/>
       <unit id="ch.elexis.core" version="3.7.0.20181030-0959"/>
       <unit id="ch.elexis.core.l10n" version="3.7.0.20181001-0902"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20181024-1142"/>
