@@ -1,5 +1,8 @@
 package es.fhir.rest.core.model.util.transformer;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -8,36 +11,53 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.dstu3.model.Slot;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;
+import es.fhir.rest.core.model.util.transformer.helper.IAppointmentHelper;
 import es.fhir.rest.core.resources.util.TerminUtil;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
-import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
-public class SlotTerminTransformer implements IFhirTransformer<Slot, Termin> {
+public class SlotTerminTransformer implements IFhirTransformer<Slot, IAppointment> {
 
-	private TerminHelper terminHelper = new TerminHelper();
+	@org.osgi.service.component.annotations.Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	private IAppointmentHelper appointmentHelper;
 
+	@Activate
+	private void activate() {
+		appointmentHelper = new IAppointmentHelper();
+	}
+	
 	@Override
-	public Optional<Slot> getFhirObject(Termin localObject, Set<Include> includes) {
+	public Optional<Slot> getFhirObject(IAppointment localObject, Set<Include> includes) {
 		Slot slot = new Slot();
 
 		slot.setId(new IdDt(Slot.class.getSimpleName(), localObject.getId()));
 
 		slot.setSchedule(new Reference(
-				new IdType(Schedule.class.getSimpleName(), TerminUtil.getIdForBereich(localObject.getBereich()))));
+				new IdType(Schedule.class.getSimpleName(), TerminUtil.getIdForBereich(localObject.getSchedule()))));
 
-		slot.setStatus(terminHelper.getSlotStatus(localObject));
+		slot.setStatus(appointmentHelper.getSlotStatus(localObject));
 
-		Optional<Object[]> startEndDuration = terminHelper.getStartEndDuration(localObject);
-		if (startEndDuration.isPresent()) {
-			slot.setStart((Date) startEndDuration.get()[0]);
-			slot.setEnd((Date) startEndDuration.get()[1]);
+		LocalDateTime start = localObject.getStart();
+		if(start != null) {
+			Date start_ = Date.from(ZonedDateTime.of(start, ZoneId.systemDefault()).toInstant());
+			slot.setStart(start_);
+		} else {
+			// TODO is required - what now?
+		}
+		
+		LocalDateTime end = localObject.getEnd();
+		if(end != null) {
+			Date end_ = Date.from(ZonedDateTime.of(end, ZoneId.systemDefault()).toInstant());
+			slot.setEnd(end_);
 		} else {
 			// TODO is required - what now?
 		}
@@ -46,27 +66,27 @@ public class SlotTerminTransformer implements IFhirTransformer<Slot, Termin> {
 	}
 
 	@Override
-	public Optional<Termin> getLocalObject(Slot fhirObject) {
+	public Optional<IAppointment> getLocalObject(Slot fhirObject) {
 		String id = fhirObject.getIdElement().getIdPart();
 		if (id != null && !id.isEmpty()) {
-			return TerminService.load(id);
+			return modelService.load(id, IAppointment.class);
 		}
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<Termin> updateLocalObject(Slot fhirObject, Termin localObject) {
+	public Optional<IAppointment> updateLocalObject(Slot fhirObject, IAppointment localObject) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<Termin> createLocalObject(Slot fhirObject) {
+	public Optional<IAppointment> createLocalObject(Slot fhirObject) {
 		return Optional.empty();
 	}
 
 	@Override
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
-		return Slot.class.equals(fhirClazz) && Termin.class.equals(localClazz);
+		return Slot.class.equals(fhirClazz) && IAppointment.class.equals(localClazz);
 	}
 
 }

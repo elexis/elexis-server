@@ -9,8 +9,6 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.Create;
@@ -27,40 +25,31 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.migration.IMigratorService;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.DateRangeParamUtil;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
 
 @Component
 public class EncounterResourceProvider implements IFhirResourceProvider {
+	
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
+	private IFhirTransformerRegistry transformerRegistry;
 
+	@Reference
 	private IMigratorService migratorService;
 
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIMigratorService(IMigratorService migratorService) {
-		this.migratorService = migratorService;
-	}
-
+	@Reference
 	private IFindingsService findingsService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
 
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Encounter.class;
-	}
-
-	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -95,7 +84,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
 			@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<Kontakt> patient = KontaktService.load(thePatientId.getIdPart());
+			Optional<IPatient> patient = modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate encounters first

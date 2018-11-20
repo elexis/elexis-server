@@ -10,7 +10,6 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  javax.persistence;bundle-version="2.1.0";visibility:=reexport,
  org.eclipse.persistence.jpa;bundle-version="2.6.1",
  info.elexis.server.core,
- info.elexis.server.core.connector.elexis.jpa;bundle-version="1.0.0";visibility:=reexport,
  at.medevit.ch.artikelstamm;bundle-version="3.0.0";visibility:=reexport,
  ch.rgw.utility;bundle-version="3.1.0";visibility:=reexport,
  ch.elexis.core;bundle-version="3.1.0";visibility:=reexport,
@@ -21,8 +20,7 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
-Import-Package: info.elexis.server.core.connector.elexis.datasource.util,
- io.swagger.annotations;version="1.5.17",
+Import-Package: io.swagger.annotations;version="1.5.17",
  javax.servlet;version="3.1.0",
  javax.servlet.http;version="2.4.0",
  javax.ws.rs;version="1.1.1",

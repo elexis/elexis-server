@@ -11,10 +11,9 @@
     <relativePath>../releng/es.parent</relativePath>
   </parent>
   <modules>
-    <module>es.core.connector.elexis.jpa.test</module>
     <module>es.core.connector.elexis.test</module>
-    <module>es.core.rest.test</module>
     <module>es.fhir.rest.core.test</module>
+    <module>es.core.rest.test</module>
   </modules>
   <dependencies>
     <dependency>

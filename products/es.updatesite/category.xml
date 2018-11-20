@@ -8,12 +8,4 @@
    <feature url="features/info.elexis.server.core.jsp.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.jsp.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.openid.feature_1.0.0.qualifier.jar" id="info.elexis.server.openid.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.fhir.rest.core.feature_2.0.0.qualifier.jar" id="info.elexis.server.fhir.rest.core.feature" version="2.0.0.qualifier"/>
-   <bundle id="info.elexis.server.core.connector.elexis.jpa.test" version="1.0.0.qualifier">
-      <category name="releng"/>
-   </bundle>
-   <category-def name="releng" label="releng">
-      <description>
-         Release engineering relevant bundles (includes testing)
-      </description>
-   </category-def>
 </site>

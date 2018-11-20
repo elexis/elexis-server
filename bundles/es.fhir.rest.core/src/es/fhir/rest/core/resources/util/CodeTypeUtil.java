@@ -8,13 +8,13 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Observation;
 
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabItem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;
-import info.elexis.server.core.connector.elexis.services.LabResultService;
+import ch.elexis.core.model.ILabItem;
+import ch.elexis.core.model.ILabResult;
+import ch.elexis.core.services.IModelService;
 
 public class CodeTypeUtil {
-
-	public static Optional<String> getSystem(CodeType code) {
+	
+	public static Optional<String> getSystem(CodeType code){
 		String codeValue = code.getValue();
 		if (codeValue != null) {
 			String[] parts = codeValue.split("\\|");
@@ -24,8 +24,8 @@ public class CodeTypeUtil {
 		}
 		return Optional.empty();
 	}
-
-	public static Optional<String> getCode(CodeType code) {
+	
+	public static Optional<String> getCode(CodeType code){
 		String codeValue = code.getValue();
 		if (codeValue != null) {
 			String[] parts = codeValue.split("\\|");
@@ -37,12 +37,13 @@ public class CodeTypeUtil {
 		}
 		return Optional.empty();
 	}
-
-	public static boolean isVitoLabkey(Observation observation, String codeString) {
+	
+	public static boolean isVitoLabkey(IModelService modelService, Observation observation,
+		String codeString){
 		String labresultId = observation.getIdElement().getIdPart();
-		Optional<LabResult> result = LabResultService.load(labresultId);
+		Optional<ILabResult> result = modelService.load(labresultId, ILabResult.class);
 		if (result.isPresent()) {
-			LabItem item = result.get().getItem();
+			ILabItem item = result.get().getItem();
 			if (item != null) {
 				String export = item.getExport();
 				if (export != null && export.startsWith("vitolabkey:")) {
@@ -62,8 +63,8 @@ public class CodeTypeUtil {
 		}
 		return false;
 	}
-
-	public static boolean isCodeInConcept(CodeableConcept concept, String system, String code) {
+	
+	public static boolean isCodeInConcept(CodeableConcept concept, String system, String code){
 		List<Coding> codings = concept.getCoding();
 		for (Coding coding : codings) {
 			if (coding.getSystem().equals(system) && coding.getCode().equals(code)) {

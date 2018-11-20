@@ -1,11 +1,12 @@
 package es.fhir.rest.core.model.util.transformer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IStatus;
 import org.hl7.fhir.dstu3.model.Claim;
 import org.hl7.fhir.dstu3.model.Claim.DiagnosisComponent;
 import org.hl7.fhir.dstu3.model.Claim.InsuranceComponent;
@@ -19,8 +20,6 @@ import org.hl7.fhir.dstu3.model.SimpleQuantity;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.api.Include;
@@ -28,53 +27,55 @@ import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.lock.types.LockInfo;
-import ch.elexis.core.status.ObjectStatus;
+import ch.elexis.core.model.IBillable;
+import ch.elexis.core.model.IBilled;
+import ch.elexis.core.model.ICodeElement;
+import ch.elexis.core.model.ICoverage;
+import ch.elexis.core.model.IDiagnosis;
+import ch.elexis.core.model.IDiagnosisReference;
+import ch.elexis.core.model.IMandator;
+import ch.elexis.core.services.IBillingService;
+import ch.elexis.core.services.ICodeElementService;
+import ch.elexis.core.services.IModelService;
+import ch.rgw.tools.Result;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.AbstractHelper;
-import info.elexis.server.core.connector.elexis.billable.IBillable;
-import info.elexis.server.core.connector.elexis.billable.VerrechenbarTarmedLeistung;
-import info.elexis.server.core.connector.elexis.jpa.ElexisTypeMap;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Diagnosis;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.TarmedLeistung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Verrechnet;
-import info.elexis.server.core.connector.elexis.services.BehandlungService;
-import info.elexis.server.core.connector.elexis.services.FallService;
-import info.elexis.server.core.connector.elexis.services.KontaktService;
-import info.elexis.server.core.connector.elexis.services.TarmedLeistungService;
 
 @Component
-public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<Verrechnet>> {
+public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<IBilled>> {
 
+	@org.osgi.service.component.annotations.Reference
 	private IFindingsService findingsService;
+	
+	@org.osgi.service.component.annotations.Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@org.osgi.service.component.annotations.Reference
+	private IBillingService billingService;
 
-	@org.osgi.service.component.annotations.Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService) {
-		this.findingsService = findingsService;
-	}
-
+	@org.osgi.service.component.annotations.Reference
+	private ICodeElementService codeElementService;
+	
 	@Override
-	public Optional<Claim> getFhirObject(List<Verrechnet> localObject, Set<Include> includes) {
+	public Optional<Claim> getFhirObject(List<IBilled> localObject, Set<Include> includes) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<List<Verrechnet>> getLocalObject(Claim fhirObject) {
+	public Optional<List<IBilled>> getLocalObject(Claim fhirObject) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<List<Verrechnet>> updateLocalObject(Claim fhirObject, List<Verrechnet> localObject) {
+	public Optional<List<IBilled>> updateLocalObject(Claim fhirObject, List<IBilled> localObject) {
 		// TODO Auto-generated method stub
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<List<Verrechnet>> createLocalObject(Claim fhirObject) {
+	public Optional<List<IBilled>> createLocalObject(Claim fhirObject) {
 		ClaimContext claimContext = new ClaimContext(fhirObject);
 		// test if all the information is present
 		if (claimContext.isValid()) {
@@ -101,12 +102,12 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 	 */
 	private class BillableContext {
 
-		private IStatus lastStatus;
+		private Result<IBilled> lastStatus;
 
 		private int amount;
-		private IBillable<?> billable;
+		private IBillable billable;
 
-		public BillableContext(IBillable<?> billable, Integer amount) {
+		public BillableContext(IBillable billable, Integer amount) {
 			this.billable = billable;
 			this.amount = amount;
 		}
@@ -115,19 +116,19 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return amount;
 		}
 
-		public IStatus getLastStatus() {
+		public Result<IBilled> getLastStatus() {
 			return lastStatus;
 		}
 
-		public List<Verrechnet> bill(Behandlung behandlung, Kontakt user, Kontakt mandator) {
-			List<Verrechnet> ret = new ArrayList<>();
+		public List<IBilled> bill(ch.elexis.core.model.IEncounter behandlung, IMandator user,
+			IMandator mandator){
+			List<IBilled> ret = new ArrayList<>();
 			for (int i = 0; i < amount; i++) {
-				lastStatus = billable.add(behandlung, user, mandator);
+				lastStatus = billingService.bill(billable, behandlung, 1);
 				if (!lastStatus.isOK()) {
 					return ret;
 				} else {
-					ObjectStatus os = (ObjectStatus) lastStatus;
-					ret.add((Verrechnet) os.getObject());
+					ret.add(lastStatus.get());
 				}
 			}
 			return ret;
@@ -162,37 +163,39 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 					&& !diagnosis.isEmpty() && providerRef != null && !providerRef.isEmpty();
 		}
 
-		public List<Verrechnet> bill() {
-			List<Verrechnet> ret = new ArrayList<>();
-			Fall fall = getFall(coverages.get(0));
-			List<BillableContext> billables = getBillableContexts(items);
-			List<Diagnosis> diagnose = getDiagnose(diagnosis);
-			Optional<Behandlung> behandlung = getOrCreateBehandlung(claim, fall, providerRef);
+		public List<IBilled> bill() {
+			List<IBilled> ret = new ArrayList<>();
+			ICoverage coverage = getFall(coverages.get(0));
+			List<IDiagnosis> diagnose = getDiagnose(diagnosis);
+			Optional<ch.elexis.core.model.IEncounter> behandlung = getOrCreateBehandlung(claim, coverage, providerRef);
 			if (behandlung.isPresent()) {
-				Behandlung cons = behandlung.get();
-				Optional<Kontakt> mandator = KontaktService.load(providerRef.getReferenceElement().getIdPart());
+				ch.elexis.core.model.IEncounter cons = behandlung.get();
+				Optional<IMandator> mandator = modelService.load(providerRef.getReferenceElement().getIdPart(), IMandator.class);
 				if (mandator.isPresent()) {
-					if (!cons.getFall().getId().equals(fall.getId())) {
+					
+					if (!cons.getCoverage().getId().equals(coverage.getId())) {
 						Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 						if (lockInfo.isPresent()) {
-							cons.setFall(fall);
-							cons = (Behandlung) BehandlungService.save(cons);
+							cons.setCoverage(coverage);
 							AbstractHelper.releaseLock(lockInfo.get());
 						}
 					}
 
-					for (Diagnosis diag : diagnose) {
-						BehandlungService.setDiagnosisOnConsultation(cons, diag);
+					for (IDiagnosis diag : diagnose) {
+						cons.addDiagnosis(diag);
 					}
+					
+					List<BillableContext> billables = getBillableContexts(items, cons);
 					for (BillableContext billable : billables) {
-						List<Verrechnet> billed = billable.bill(cons, mandator.get(), mandator.get());
+						List<IBilled> billed = billable.bill(cons, mandator.get(), mandator.get());
 						if (billed.size() < billable.getAmount()) {
-							IStatus status = billable.getLastStatus();
+							Result<IBilled> status = billable.getLastStatus();
 							LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
 									.error("Could not bill all items of claim. " + status);
 						}
 						ret.addAll(billed);
 					}
+					modelService.save(cons);
 				}
 			} else {
 				LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
@@ -201,13 +204,13 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return ret;
 		}
 
-		private List<BillableContext> getBillableContexts(List<ItemComponent> items) {
+		private List<BillableContext> getBillableContexts(List<ItemComponent> items, ch.elexis.core.model.IEncounter cons) {
 			List<BillableContext> ret = new ArrayList<>();
 			for (ItemComponent itemComponent : items) {
 				CodeableConcept serviceCoding = itemComponent.getService();
 				if (serviceCoding != null) {
 					for (Coding coding : serviceCoding.getCoding()) {
-						Optional<IBillable<?>> billable = getBillable(coding.getSystem(), coding.getCode());
+						Optional<IBillable> billable = getBillable(coding.getSystem(), coding.getCode(), cons);
 						Optional<Integer> amount = getAmount(itemComponent);
 						if (billable.isPresent() && amount.isPresent()) {
 							ret.add(new BillableContext(billable.get(), amount.get()));
@@ -227,11 +230,14 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return Optional.empty();
 		}
 
-		private Optional<IBillable<?>> getBillable(String system, String code) {
+		private Optional<IBillable> getBillable(String system, String code, ch.elexis.core.model.IEncounter cons) {
 			if (system.equals(CodingSystem.ELEXIS_TARMED_CODESYSTEM.getSystem())) {
-				Optional<TarmedLeistung> tarmed = TarmedLeistungService.findFromCode(code, null);
+				Map<Object, Object> context = new HashMap<>();
+				context.put(ICodeElementService.ContextKeys.CONSULTATION, cons);
+				Optional<ICodeElement> tarmed =
+					codeElementService.loadFromString("Tarmed", code, context);
 				if (tarmed.isPresent()) {
-					return Optional.of(new VerrechenbarTarmedLeistung(tarmed.get()));
+					return tarmed.filter(IBillable.class::isInstance).map(IBillable.class::cast);
 				}
 			}
 			LoggerFactory.getLogger(ClaimVerrechnetTransformer.class)
@@ -239,18 +245,18 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return Optional.empty();
 		}
 
-		private List<Diagnosis> getDiagnose(List<DiagnosisComponent> diagnosis) {
-			List<Diagnosis> ret = new ArrayList<>();
+		private List<IDiagnosis> getDiagnose(List<DiagnosisComponent> diagnosis) {
+			List<IDiagnosis> ret = new ArrayList<>();
 			for (DiagnosisComponent diagnosisComponent : diagnosis) {
 				if (diagnosisComponent.hasDiagnosisCodeableConcept()) {
 					CodeableConcept diagnoseCoding = (CodeableConcept) diagnosisComponent.getDiagnosis();
 					if (diagnoseCoding != null) {
 						for (Coding coding : diagnoseCoding.getCoding()) {
-							Diagnosis diag = new Diagnosis();
+							IDiagnosisReference diag = modelService.create(IDiagnosisReference.class);
 							diag.setCode(coding.getCode());
 							diag.setText((coding.getDisplay() != null) ? coding.getDisplay() : "MISSING");
 							if (CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem().equals(coding.getSystem())) {
-								diag.setDiagnosisClass(ElexisTypeMap.TYPE_TESSINER_CODE);
+								diag.setReferredClass("ch.elexis.data.TICode");
 							}
 							ret.add(diag);
 						}
@@ -260,23 +266,26 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return ret;
 		}
 
-		private Fall getFall(InsuranceComponent insuranceComponent) {
+		private ICoverage getFall(InsuranceComponent insuranceComponent){
 			Reference reference = (Reference) insuranceComponent.getCoverage();
 			if (reference != null && !reference.isEmpty()) {
-				Optional<Fall> fallOpt = FallService.load(reference.getReferenceElement().getIdPart());
+				Optional<ICoverage> fallOpt =
+					modelService.load(reference.getReferenceElement().getIdPart(), ICoverage.class);
 				return fallOpt.orElse(null);
 			}
 			return null;
 		}
 
-		private Optional<Behandlung> getOrCreateBehandlung(Claim fhirObject, Fall fall, Reference providerRef) {
+		private Optional<ch.elexis.core.model.IEncounter> getOrCreateBehandlung(Claim fhirObject,
+			ICoverage fall, Reference providerRef){
 			if (fhirObject.getInformation() != null && !fhirObject.getInformation().isEmpty()) {
 				List<SpecialConditionComponent> information = fhirObject.getInformation();
 				for (SpecialConditionComponent specialConditionComponent : information) {
 					Type value = specialConditionComponent.getValue();
 					if (value instanceof StringType) {
 						if (((StringType) value).getValue().startsWith("Encounter/")) {
-							Optional<Behandlung> found = getBehandlungWithEncounterRef(
+							Optional<ch.elexis.core.model.IEncounter> found =
+								getBehandlungWithEncounterRef(
 									new IdType(((StringType) value).getValue()));
 							if (found.isPresent()) {
 								return found;
@@ -295,7 +304,8 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			return Optional.empty();
 		}
 
-		private Optional<Behandlung> getBehandlungWithEncounterRef(IdType encounterRef) {
+		private Optional<ch.elexis.core.model.IEncounter> getBehandlungWithEncounterRef(
+			IdType encounterRef){
 			if (encounterRef.getIdPart() != null) {
 				Optional<IEncounter> encounter =
 					findingsService.findById(encounterRef.getIdPart(), IEncounter.class);
@@ -305,9 +315,11 @@ public class ClaimVerrechnetTransformer implements IFhirTransformer<Claim, List<
 			}
 			return Optional.empty();
 		}
-
-		private Optional<Behandlung> getBehandlungForEncounter(IEncounter encounter) {
-			return BehandlungService.load((encounter).getConsultationId());
+		
+		private Optional<ch.elexis.core.model.IEncounter> getBehandlungForEncounter(
+			IEncounter encounter){
+			return modelService.load((encounter).getConsultationId(),
+				ch.elexis.core.model.IEncounter.class);
 		}
 	}
 }

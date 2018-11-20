@@ -20,18 +20,10 @@ import es.fhir.rest.core.model.util.transformer.helper.CodeSystemHelper;
 @Component
 public class CodeSystemStringTransformer implements IFhirTransformer<CodeSystem, String> {
 
+	@Reference
 	private ICodingService codingService;
 
 	private HashMap<String, CodeSystem> idMap = new HashMap<>();
-
-	@Reference
-	public void setICodingService(ICodingService codingService) {
-		this.codingService = codingService;
-	}
-
-	public void unsetICodingService(ICodingService findingsService) {
-		this.codingService = null;
-	}
 
 	@Override
 	public Optional<CodeSystem> getFhirObject(String localObject, Set<Include> includes) {

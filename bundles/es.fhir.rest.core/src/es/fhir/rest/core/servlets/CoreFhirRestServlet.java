@@ -17,6 +17,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import info.elexis.server.core.SystemPropertyConstants;
 
-@Component(service = CoreFhirRestServlet.class)
+@Component(service = CoreFhirRestServlet.class, immediate = true)
 public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final String FHIR_BASE_URL = "/fhir";
@@ -38,17 +39,8 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final long serialVersionUID = -4760702567124041329L;
 
-	// HTTP service to register this as servlet
+	@Reference
 	private HttpService httpService;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY)
-	public void bindHttpService(HttpService httpService) {
-		this.httpService = httpService;
-	}
-
-	public void unbindHttpService(HttpService httpService) {
-		this.httpService = null;
-	}
 
 	// resource providers
 	private List<IFhirResourceProvider> providers;
@@ -101,6 +93,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	@Deactivate
 	public void deactivate() {
+		logger.debug("Deactivating CoreFhirRestServlet");
 		httpService.unregister(FHIR_BASE_URL + "/*");
 	}
 

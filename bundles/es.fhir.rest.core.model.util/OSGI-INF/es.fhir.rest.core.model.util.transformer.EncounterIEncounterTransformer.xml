@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="es.fhir.rest.core.model.util.transformer.EncounterIEncounterTransformer">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" name="es.fhir.rest.core.model.util.transformer.EncounterIEncounterTransformer">
    <service>
       <provide interface="es.fhir.rest.core.IFhirTransformer"/>
    </service>
-   <reference bind="bindIFindingsService" cardinality="1..1" interface="ch.elexis.core.findings.IFindingsService" name="IFindingsService" policy="static"/>
+   <reference cardinality="1..1" field="codeModelService" interface="ch.elexis.core.services.IModelService" name="codeModelService" target="(service.model.name=ch.elexis.core.model)"/>
+   <reference cardinality="1..1" field="findingsModelService" interface="ch.elexis.core.services.IModelService" name="findingsModelService" target="(service.model.name=ch.elexis.core.findings.model)"/>
+   <reference cardinality="1..1" field="findingsService" interface="ch.elexis.core.findings.IFindingsService" name="findingsService"/>
    <implementation class="es.fhir.rest.core.model.util.transformer.EncounterIEncounterTransformer"/>
 </scr:component>

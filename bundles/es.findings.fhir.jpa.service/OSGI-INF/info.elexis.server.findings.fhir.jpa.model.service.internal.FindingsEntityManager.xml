@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager">
-   <reference bind="bindDataSource" cardinality="1..1" interface="javax.sql.DataSource" name="DataSource"/>
-   <reference bind="bindEntityManagerFactoryBuilder" cardinality="1..1" interface="org.osgi.service.jpa.EntityManagerFactoryBuilder" name="EntityManagerFactoryBuilder" policy="static" target="(osgi.unit.name=findings)" unbind="unbindEntityManagerFactoryBuilder"/>
-   <implementation class="info.elexis.server.findings.fhir.jpa.model.service.internal.FindingsEntityManager"/>
-</scr:component>

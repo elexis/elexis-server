@@ -34,9 +34,8 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
-import info.elexis.server.core.connector.elexis.services.BehandlungService;
+import ch.elexis.core.model.IEncounter;
+import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
 
@@ -46,8 +45,7 @@ public class ProcedureRequestTest {
 
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
-		TestDatabaseInitializer initializer = new TestDatabaseInitializer();
-		initializer.initializeBehandlung();
+		AllTests.getTestDatabaseInitializer().initializeBehandlung();
 
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
@@ -144,8 +142,8 @@ public class ProcedureRequestTest {
 			}
 		}
 		assertNotNull(consultationId);
-		Optional<Behandlung> behandlung = BehandlungService.load(consultationId);
+		Optional<IEncounter> behandlung = AllTests.getModelService().load(consultationId, IEncounter.class);
 		assertTrue(behandlung.isPresent());
-		assertTrue(behandlung.get().getEintrag().getHead().contains("Procedure"));
+		assertTrue(behandlung.get().getVersionedEntry().getHead().contains("Procedure"));
 	}
 }

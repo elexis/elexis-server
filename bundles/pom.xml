@@ -16,22 +16,18 @@
 	</parent>
 
 	<modules>
-		<module>org.eclipse.persistence.jpa.logging.slf4j</module>
 		<module>es.core.jetty.homebundle</module>
 		<module>es.core.jetty.osgi.boot.fragment</module>
 		<module>es.core.common</module>
               	<module>es.core</module>
                	<module>es.core.logging</module>
                	<module>es.core.p2</module>
-		<module>es.core.connector.elexis.datasource</module>
                	<module>es.core.connector.elexis</module>
-               	<module>es.core.connector.elexis.jpa</module>
 		<module>at.medevit.logback.pushnotification</module>
 		<module>at.medevit.logback.mattermost</module>
 		<module>es.hapi.fhir</module>
 		<module>es.fhir.rest.core</module>
 		<module>es.fhir.rest.core.model.util</module>
-		<module>es.findings.fhir.jpa</module>
 		<module>es.findings.fhir.jpa.service</module>
 		<module>es.openid</module>
        </modules>

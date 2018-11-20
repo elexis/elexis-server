@@ -1,9 +1,11 @@
+
+
 target "Elexis-Server" 
 
 with source allEnvironments
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
+location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	ch.rgw.utility
 	ch.elexis.core
 	ch.elexis.core.l10n
@@ -11,7 +13,16 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	ch.elexis.core.hl7.v2x
 	ch.elexis.core.findings
 	ch.elexis.core.findings.util
-	org.postgresql
+	ch.elexis.core.test
+	// JPA
+	ch.elexis.core.jpa
+	ch.elexis.core.jpa.datasource
+	ch.elexis.core.jpa.entities
+	ch.elexis.core.jpa.logging.slf4j
+	ch.elexis.core.model
+	ch.elexis.core.services
+	ch.elexis.core.findings.fhir.model
+	//
 	org.h2
 	org.jdom
 	org.apache.commons.dbcp
@@ -20,13 +31,17 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
 	org.apache.poi
+	org.apache.poi.ooxml
+	org.apache.poi.ooxml.schemas
+	com.healthmarketscience.jackcess
 	org.beanshell.bsh
 }
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
+location "http://download.elexis.info/elexis/f11106/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
+	at.medevit.ch.artikelstamm.model
 	at.medevit.atc_codes
 }
 
@@ -135,19 +150,16 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2018020616315
 
 // for es.core.connector.elexis.jpa
 location "http://download.eclipse.org/rt/eclipselink/updates/" {
-	org.eclipse.persistence.jpa.feature.group [2.6.5.v20170607-b3d05bd,2.6.5.v20170607-b3d05bd]
-	org.eclipse.persistence.moxy.feature.group [2.6.5.v20170607-b3d05bd,2.6.5.v20170607-b3d05bd]
-	org.eclipse.persistence.jpars [2.6.0.v20150309-bf26070,2.6.0.v20150309-bf26070]
-	org.eclipse.persistence.dbws.feature.group  [2.6.5.v20170607-b3d05bd,2.6.5.v20170607-b3d05bd]
+	org.eclipse.persistence.jpa.feature.group
+	org.eclipse.persistence.moxy.feature.group
+	org.eclipse.persistence.jpars
+	org.eclipse.persistence.dbws.feature.group
 	javax.validation
+	javax.activation
 }
 
 location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 	org.eclipse.gemini.jpa.feature.feature.group
-}
-
-location "http://download.eclipse.org/gemini/updates/naming/1.0.5/" {
-	org.eclipse.gemini.naming.feature.feature.group
 }
 
 // maven to p2 repository see https://github.com/elexis/elexis-server-dependencies
@@ -187,9 +199,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.springframework.spring-beans
 	org.apache.commons.collections4
 	se.ugli.bigqueue
-	// weird problems with com.mysql.jdbc >= 5.1.39
-	// SELECT * FROM SEQUENCE WHERE SEQ_NAME = 'SEQ_GEN'
-	com.mysql.jdbc [5.1.38,5.1.38]
+	com.mysql.jdbc
+	org.postgresql.jdbc42
 	org.apache.commons.lang3 [3.3.2,3.3.2]
 	org.apache.commons.configuration
 	org.joda.money

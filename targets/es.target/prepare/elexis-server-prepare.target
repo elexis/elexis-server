@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
-<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1536323745">
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
+<target name="Elexis-Server" sequenceNumber="1542617251">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.rgw.utility" version="3.7.0.20180709-0709"/>
-      <unit id="ch.elexis.core" version="3.7.0.20180904-1540"/>
-      <unit id="ch.elexis.core.l10n" version="3.7.0.20180904-1236"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.20180719-1429"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20180712-1129"/>
-      <unit id="ch.elexis.core.findings" version="1.0.0.20180326-1354"/>
-      <unit id="ch.elexis.core.findings.util" version="1.0.0.20180907-1229"/>
-      <unit id="org.postgresql" version="9.2.0.1002-jdbc4"/>
+      <unit id="ch.rgw.utility" version="3.7.0.20181116-1152"/>
+      <unit id="ch.elexis.core" version="3.7.0.20181030-0959"/>
+      <unit id="ch.elexis.core.l10n" version="3.7.0.20181001-0902"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.20181024-1142"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20181024-1607"/>
+      <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
+      <unit id="ch.elexis.core.findings.util" version="1.0.0.20181025-1305"/>
+      <unit id="ch.elexis.core.test" version="1.0.0.20181030-0925"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20181025-1305"/>
+      <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20181030-0925"/>
+      <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20181030-0959"/>
+      <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
+      <unit id="ch.elexis.core.model" version="1.0.0.20181025-1328"/>
+      <unit id="ch.elexis.core.services" version="1.0.0.20181030-1011"/>
+      <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20181025-1305"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.1.v201101151400"/>
       <unit id="org.apache.commons.dbcp" version="1.4.0.v201204271417"/>
@@ -19,15 +26,19 @@
       <unit id="bouncycastle.bcprov-jdk14" version="138.0.0"/>
       <unit id="com.ibm.icu" version="58.2.0.v20170418-1837"/>
       <unit id="ca.uhn.hapi.osgi-base" version="2.3.0"/>
-      <unit id="org.apache.poi" version="3.0.2.FINAL"/>
+      <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+      <unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
+      <unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
+      <unit id="com.healthmarketscience.jackcess" version="2.1.9"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
+      <repository location="http://download.elexis.info/elexis/f11106/p2/elexis-3-core/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180614-0933"/>
-      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20180830-1920"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180705-1301"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20181011-1124"/>
+      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20181011-1821"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20180309-1216"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
+      <repository location="http://download.elexis.info/elexis/f11106/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
@@ -126,20 +137,17 @@
       <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20180206163158/repository/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.persistence.jpa.feature.group" version="2.6.5.v20170607-b3d05bd"/>
-      <unit id="org.eclipse.persistence.moxy.feature.group" version="2.6.5.v20170607-b3d05bd"/>
+      <unit id="org.eclipse.persistence.jpa.feature.group" version="2.7.3.v20180807-4be1041"/>
+      <unit id="org.eclipse.persistence.moxy.feature.group" version="2.7.3.v20180807-4be1041"/>
       <unit id="org.eclipse.persistence.jpars" version="2.6.0.v20150309-bf26070"/>
-      <unit id="org.eclipse.persistence.dbws.feature.group" version="2.6.5.v20170607-b3d05bd"/>
+      <unit id="org.eclipse.persistence.dbws.feature.group" version="2.7.3.v20180807-4be1041"/>
       <unit id="javax.validation" version="1.1.0.v201304101302"/>
+      <unit id="javax.activation" version="1.1.0.v201108011116"/>
       <repository location="http://download.eclipse.org/rt/eclipselink/updates/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.201307051903"/>
       <repository location="http://download.elexis.info/elexis-server/misc/gemini-jpa/"/>
-    </location>
-    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.gemini.naming.feature.feature.group" version="1.0.5.RELEASE"/>
-      <repository location="http://download.eclipse.org/gemini/updates/naming/1.0.5/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="com.google.code.gson" version="2.8.0"/>
@@ -177,7 +185,8 @@
       <unit id="org.springframework.spring-beans" version="4.3.8.RELEASE"/>
       <unit id="org.apache.commons.collections4" version="4.1.0"/>
       <unit id="se.ugli.bigqueue" version="1.6.0.0"/>
-      <unit id="com.mysql.jdbc" version="5.1.38"/>
+      <unit id="com.mysql.jdbc" version="5.1.47"/>
+      <unit id="org.postgresql.jdbc42" version="42.2.5"/>
       <unit id="org.apache.commons.lang3" version="3.3.2"/>
       <unit id="org.apache.commons.configuration" version="2.0.0"/>
       <unit id="org.joda.money" version="0.11.0"/>

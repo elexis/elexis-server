@@ -1,56 +1,67 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.pde.ui.JunitLaunchConfig">
-<booleanAttribute key="append.args" value="true"/>
-<stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
-<booleanAttribute key="askclear" value="false"/>
-<booleanAttribute key="automaticAdd" value="false"/>
-<booleanAttribute key="automaticValidate" value="false"/>
-<stringAttribute key="bootstrap" value=""/>
-<stringAttribute key="checked" value="[NONE]"/>
-<booleanAttribute key="clearConfig" value="true"/>
-<booleanAttribute key="clearws" value="true"/>
-<booleanAttribute key="clearwslog" value="false"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
-<booleanAttribute key="default" value="false"/>
-<booleanAttribute key="includeOptional" value="false"/>
-<stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
-<setAttribute key="name.schedenig.eclipse.grepconsole.DisabledIds"/>
-<setAttribute key="name.schedenig.eclipse.grepconsole.EnabledIds"/>
-<setAttribute key="name.schedenig.eclipse.grepconsole.FilterDisabledIds"/>
-<setAttribute key="name.schedenig.eclipse.grepconsole.FilterEnabledIds"/>
-<setAttribute key="name.schedenig.eclipse.grepconsole.StatisticsDisabledIds"/>
-<setAttribute key="name.schedenig.eclipse.grepconsole.StatisticsEnabledIds"/>
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/es.fhir.rest.core.test/src/info/elexis/server/fhir/rest/core/test/AllTests.java"/>
-</listAttribute>
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-<listEntry value="1"/>
-</listAttribute>
-<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
-<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
-<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
-<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
-<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8&quot; javaProject=&quot;es.fhir.rest.core.test&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#13;&#10;"/>
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#13;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;es.fhir.rest.core.test&quot;/&gt;&#13;&#10;&lt;/runtimeClasspathEntry&gt;&#13;&#10;"/>
-</listAttribute>
-<booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="info.elexis.server.fhir.rest.core.test.AllTests"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="es.fhir.rest.core.test"/>
-<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.osgi.service.http.port=8380 &#10;-DREFRESH_BUNDLES=false &#10;-DacceptMissingLockServiceContributor=true&#10;-Des.test=true&#10;-Ddisable.web.security=true"/>
-<stringAttribute key="pde.version" value="3.3"/>
-<stringAttribute key="product" value="info.elexis.server.core.ElexisServer"/>
-<booleanAttribute key="run_in_ui_thread" value="false"/>
-<stringAttribute key="selected_target_plugins" value="at.medevit.ch.artikelstamm@default:default,bouncycastle.bcprov-jdk14@default:default,ch.elexis.base.ch.ticode@default:default,ch.elexis.core.findings.util@default:default,ch.elexis.core.findings@default:default,ch.elexis.core.l10n@default:default,ch.elexis.core@default:default,ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,ch.rgw.utility@default:default,com.eclipsesource.jaxrs.jersey-min@default:default,com.eclipsesource.jaxrs.publisher@default:true,com.eclipsesource.jaxrs.swagger-all@default:default,com.google.code.gson@default:default,com.google.gson@default:default,com.google.guava@default:default,com.mysql.jdbc@default:default,com.phloc.commons@default:default,com.phloc.schematron@default:default,findbugsAnnotations@default:default,javassist@default:default,javax.activation@default:default,javax.annotation@default:default,javax.inject@default:default,javax.mail@default:default,javax.persistence@1:true,javax.servlet*3.1.0.v201410161800@default:default,javax.transaction@default:false,javax.xml.stream@default:default,javax.xml@default:default,net.sf.saxon.Saxon-HE@default:default,org.apache.aries.spifly.dynamic.bundle@default:default,org.apache.aries.util@default:default,org.apache.commons.beanutils@default:default,org.apache.commons.codec@default:default,org.apache.commons.collections4@default:default,org.apache.commons.collections@default:default,org.apache.commons.configuration@default:default,org.apache.commons.dbcp@default:default,org.apache.commons.io@default:default,org.apache.commons.lang3@default:default,org.apache.commons.logging*1.2.0@default:default,org.apache.commons.pool@default:default,org.apache.felix.scr@default:default,org.apache.httpcomponents.httpclient*4.5.2.v20170210-0925@default:default,org.apache.httpcomponents.httpcore*4.4.6.v20170210-0925@default:default,org.apache.oltu.oauth2.resourceserver@default:default,org.apache.shiro.core@default:default,org.apache.shiro.jaxrs@default:default,org.apache.shiro.web@default:default,org.beanshell.bsh@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.runtime@default:true,org.eclipse.emf.common@default:default,org.eclipse.emf.ecore@default:default,org.eclipse.equinox.app@default:default,org.eclipse.equinox.cm@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.ds@1:true,org.eclipse.equinox.event@1:true,org.eclipse.equinox.http.jetty@2:true,org.eclipse.equinox.http.servlet@default:default,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.region@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.transforms.hook@default:false,org.eclipse.equinox.weaving.hook@default:false,org.eclipse.gemini.jpa@2:true,org.eclipse.gemini.naming@1:true,org.eclipse.jetty.http*9.4.10.v20180503@default:default,org.eclipse.jetty.io*9.4.10.v20180503@default:default,org.eclipse.jetty.security*9.4.10.v20180503@default:default,org.eclipse.jetty.server*9.4.10.v20180503@default:default,org.eclipse.jetty.servlet*9.4.10.v20180503@default:default,org.eclipse.jetty.util*9.4.10.v20180503@default:default,org.eclipse.osgi.compatibility.state@default:false,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.eclipse.persistence.antlr@default:default,org.eclipse.persistence.asm@default:default,org.eclipse.persistence.core*2.6.5.v20170607-b3d05bd@default:default,org.eclipse.persistence.jpa.jpql@default:default,org.eclipse.persistence.jpa@default:default,org.eclipse.persistence.oracle@default:false,org.h2@default:default,org.hamcrest.core@default:default,org.hamcrest.library@default:default,org.jdom@default:default,org.joda.money@default:default,org.json@default:default,org.junit@default:default,org.objectweb.asm*5.0.1.v201404251740@default:default,org.objectweb.asm*6.1.1@default:default,org.objectweb.asm.commons@default:default,org.objectweb.asm.tree@default:default,org.postgresql@default:default,org.slf4j.api@default:default,org.springframework.spring-web@default:default,org.thymeleaf@default:default,osgi.enterprise@default:default,stax2-api@default:default,woodstox-core-asl@default:default"/>
-<stringAttribute key="selected_workspace_plugins" value="info.elexis.server.core.common@default:default,info.elexis.server.core.connector.elexis.datasource@2:true,info.elexis.server.core.connector.elexis.jpa.test@default:default,info.elexis.server.core.connector.elexis.jpa@3:true,info.elexis.server.core.connector.elexis.test@default:false,info.elexis.server.core.connector.elexis@default:default,info.elexis.server.core.logging@default:false,info.elexis.server.core@default:default,info.elexis.server.fhir.rest.core.model.util@default:default,info.elexis.server.fhir.rest.core.test@default:false,info.elexis.server.fhir.rest.core@default:default,info.elexis.server.findings.fhir.jpa.service@default:default,info.elexis.server.findings.fhir.jpa@default:default,info.elexis.server.hapi.fhir@default:default,org.eclipse.persistence.jpa.logging.slf4j@default:false"/>
-<booleanAttribute key="show_selected_only" value="false"/>
-<booleanAttribute key="tracing" value="false"/>
-<booleanAttribute key="useCustomFeatures" value="false"/>
-<booleanAttribute key="useDefaultConfig" value="true"/>
-<booleanAttribute key="useDefaultConfigArea" value="false"/>
-<booleanAttribute key="useProduct" value="false"/>
+    <booleanAttribute key="append.args" value="true"/>
+    <stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
+    <booleanAttribute key="askclear" value="false"/>
+    <booleanAttribute key="automaticAdd" value="false"/>
+    <booleanAttribute key="automaticValidate" value="false"/>
+    <stringAttribute key="bootstrap" value=""/>
+    <stringAttribute key="checked" value="[NONE]"/>
+    <booleanAttribute key="clearConfig" value="true"/>
+    <booleanAttribute key="clearws" value="true"/>
+    <booleanAttribute key="clearwslog" value="false"/>
+    <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
+    <booleanAttribute key="default" value="false"/>
+    <booleanAttribute key="includeOptional" value="false"/>
+    <stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.DisabledIds"/>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.EnabledIds"/>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.FilterDisabledIds"/>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.FilterEnabledIds">
+        <setEntry value="0f03e7f0-7082-462f-ae84-1883904b5301"/>
+        <setEntry value="6dd8dcfd-0337-4dd5-94fb-f0798d93f265"/>
+        <setEntry value="805195bb-ae5d-4b68-b2c8-11e4688de116"/>
+    </setAttribute>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.NotificationsDisabledIds"/>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.NotificationsEnabledIds"/>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.StatisticsDisabledIds">
+        <setEntry value="75da4f67-40e8-45e0-8c75-8292c6f9e5db"/>
+    </setAttribute>
+    <setAttribute key="name.schedenig.eclipse.grepconsole.StatisticsEnabledIds">
+        <setEntry value="0f03e7f0-7082-462f-ae84-1883904b5301"/>
+        <setEntry value="805195bb-ae5d-4b68-b2c8-11e4688de116"/>
+    </setAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/es.fhir.rest.core.test/src/info/elexis/server/fhir/rest/core/test/AllTests.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+    <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+    <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+    <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8&quot; javaProject=&quot;es.fhir.rest.core.test&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#13;&#10;"/>
+        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#13;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;es.fhir.rest.core.test&quot;/&gt;&#13;&#10;&lt;/runtimeClasspathEntry&gt;&#13;&#10;"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="info.elexis.server.fhir.rest.core.test.AllTests"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="es.fhir.rest.core.test"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.osgi.service.http.port=8380 &#10;-DREFRESH_BUNDLES=false &#10;-DacceptMissingLockServiceContributor=true&#10;-Des.test=true&#10;-Ddisable.web.security=true&#10;-Delexis.test.mode=true"/>
+    <stringAttribute key="pde.version" value="3.3"/>
+    <stringAttribute key="product" value="info.elexis.server.core.ElexisServer"/>
+    <booleanAttribute key="run_in_ui_thread" value="false"/>
+    <stringAttribute key="selected_target_plugins" value="at.medevit.ch.artikelstamm@default:default,bouncycastle.bcprov-jdk14@default:default,ch.elexis.core.findings.fhir.model@default:default,ch.elexis.core.findings.util@default:default,ch.elexis.core.findings@default:default,ch.elexis.core.jpa.logging.slf4j@default:false,ch.elexis.core.l10n@default:default,ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,ch.rgw.utility@default:default,com.eclipsesource.jaxrs.jersey-min@default:default,com.eclipsesource.jaxrs.publisher@default:true,com.eclipsesource.jaxrs.swagger-all@default:default,com.google.code.gson@default:default,com.google.gson@default:default,com.google.guava@default:default,com.mysql.jdbc@default:default,com.phloc.commons@default:default,com.phloc.schematron@default:default,findbugsAnnotations@default:default,javassist@default:default,javax.annotation@default:default,javax.inject@default:default,javax.persistence@1:true,javax.servlet*3.1.0.v201410161800@default:default,javax.transaction@default:false,javax.xml.bind@default:default,javax.xml.stream.stax-api@default:default,javax.xml@default:default,net.sf.saxon.Saxon-HE@default:default,org.apache.aries.spifly.dynamic.bundle@default:default,org.apache.aries.util@default:default,org.apache.commons.beanutils@default:default,org.apache.commons.codec@default:default,org.apache.commons.collections4@default:default,org.apache.commons.collections@default:default,org.apache.commons.configuration@default:default,org.apache.commons.dbcp@default:default,org.apache.commons.io@default:default,org.apache.commons.lang3@default:default,org.apache.commons.lang@default:default,org.apache.commons.logging*1.2.0@default:default,org.apache.commons.pool@default:default,org.apache.felix.gogo.command@default:default,org.apache.felix.gogo.runtime@default:default,org.apache.felix.gogo.shell@default:default,org.apache.felix.scr@1:true,org.apache.httpcomponents.httpclient@default:default,org.apache.httpcomponents.httpcore@default:default,org.apache.oltu.oauth2.resourceserver@default:default,org.apache.shiro.core@default:default,org.apache.shiro.jaxrs@default:default,org.apache.shiro.web@default:default,org.beanshell.bsh@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.expressions@default:default,org.eclipse.core.filesystem@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.resources@default:default,org.eclipse.core.runtime@default:true,org.eclipse.emf.common@default:default,org.eclipse.emf.ecore@default:default,org.eclipse.equinox.app@default:default,org.eclipse.equinox.cm@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.console@default:default,org.eclipse.equinox.ds@1:true,org.eclipse.equinox.event@1:true,org.eclipse.equinox.http.jetty@2:true,org.eclipse.equinox.http.servlet@default:default,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.region@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.transforms.hook@default:false,org.eclipse.equinox.weaving.hook@default:false,org.eclipse.gemini.jpa@2:true,org.eclipse.jetty.http*9.4.10.v20180503@default:default,org.eclipse.jetty.io*9.4.10.v20180503@default:default,org.eclipse.jetty.security*9.4.10.v20180503@default:default,org.eclipse.jetty.server*9.4.10.v20180503@default:default,org.eclipse.jetty.servlet*9.4.10.v20180503@default:default,org.eclipse.jetty.util*9.4.10.v20180503@default:default,org.eclipse.osgi.compatibility.state@default:false,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.eclipse.persistence.antlr*3.2.0.v201302191141@default:default,org.eclipse.persistence.antlr*3.5.2.v201711011707@default:default,org.eclipse.persistence.asm@default:default,org.eclipse.persistence.core*2.7.3.v20180807-4be1041@default:default,org.eclipse.persistence.jpa.jpql@default:default,org.eclipse.persistence.jpa@default:default,org.eclipse.persistence.oracle@default:false,org.h2@default:default,org.hamcrest.core@default:default,org.hamcrest.library@default:default,org.jdom@default:default,org.joda.money@default:default,org.json@default:default,org.junit@default:default,org.objectweb.asm*5.0.1.v201404251740@default:default,org.objectweb.asm*6.1.1@default:default,org.objectweb.asm.commons@default:default,org.objectweb.asm.tree@default:default,org.postgresql.jdbc42@default:default,org.slf4j.api@default:default,org.springframework.spring-web@default:default,org.thymeleaf@default:default,osgi.enterprise@default:default,stax2-api@default:default,woodstox-core-asl@default:default"/>
+    <stringAttribute key="selected_workspace_plugins" value="at.medevit.ch.artikelstamm.model@default:default,at.medevit.ch.artikelstamm@default:default,at.medevit.logback.mattermost@default:false,at.medevit.logback.pushnotification@default:false,ch.elexis.base.ch.arzttarife.model@default:default,ch.elexis.core.findings.fhir.model@default:true,ch.elexis.core.findings.util@default:default,ch.elexis.core.findings@default:default,ch.elexis.core.jpa.datasource@3:true,ch.elexis.core.jpa.entities@3:true,ch.elexis.core.jpa@default:true,ch.elexis.core.model@default:true,ch.elexis.core.services@default:default,ch.elexis.core.test@default:default,ch.elexis.core@default:default,info.elexis.server.core.common@default:default,info.elexis.server.core.connector.elexis@default:default,info.elexis.server.core@default:default,info.elexis.server.fhir.rest.core.model.util@default:default,info.elexis.server.fhir.rest.core.test@default:false,info.elexis.server.fhir.rest.core@default:default,info.elexis.server.findings.fhir.jpa.service@default:default,info.elexis.server.hapi.fhir@default:default"/>
+    <booleanAttribute key="show_selected_only" value="false"/>
+    <booleanAttribute key="tracing" value="false"/>
+    <booleanAttribute key="useCustomFeatures" value="false"/>
+    <booleanAttribute key="useDefaultConfig" value="true"/>
+    <booleanAttribute key="useDefaultConfigArea" value="false"/>
+    <booleanAttribute key="useProduct" value="false"/>
 </launchConfiguration>

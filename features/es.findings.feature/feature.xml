@@ -22,13 +22,6 @@
    </requires>
 
    <plugin
-         id="info.elexis.server.findings.fhir.jpa"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="info.elexis.server.findings.fhir.jpa.service"
          download-size="0"
          install-size="0"
@@ -51,6 +44,13 @@
 
    <plugin
          id="stax2-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.findings.fhir.model"
          download-size="0"
          install-size="0"
          version="0.0.0"

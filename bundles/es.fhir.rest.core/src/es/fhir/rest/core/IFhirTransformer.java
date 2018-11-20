@@ -8,7 +8,7 @@ import org.hl7.fhir.dstu3.model.Identifier;
 
 import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.findings.IdentifierSystem;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.AbstractDBObjectIdDeleted;
+import ch.elexis.core.model.Identifiable;
 
 /**
  * Service definition for transforming FHIR objects to local Objects. Provides
@@ -74,7 +74,7 @@ public interface IFhirTransformer<F, L> {
 	 */
 	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz);
 
-	default Identifier getElexisObjectIdentifier(AbstractDBObjectIdDeleted dbObject) {
+	default Identifier getElexisObjectIdentifier(Identifiable dbObject) {
 		Identifier identifier = new Identifier();
 		identifier.setSystem(IdentifierSystem.ELEXIS_OBJID.getSystem());
 		identifier.setValue(dbObject.getId());

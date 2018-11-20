@@ -16,8 +16,6 @@ import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,47 +34,47 @@ import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceOrListParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IQuery;
+import ch.elexis.core.services.IQuery.COMPARATOR;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.QueryUtil;
 import es.fhir.rest.core.resources.util.TerminUtil;
 import info.elexis.server.core.common.converter.DateConverter;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Termin_;
-import info.elexis.server.core.connector.elexis.services.JPAQuery;
-import info.elexis.server.core.connector.elexis.services.JPAQuery.QUERY;
-import info.elexis.server.core.connector.elexis.services.TerminService;
+
 
 @Component
 public class AppointmentResourceProvider implements IFhirResourceProvider {
 
 	private static Logger log = LoggerFactory.getLogger(AppointmentResourceProvider.class);
+	
+	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	private IModelService modelService;
+	
+	@Reference
+	private IFhirTransformerRegistry transformerRegistry;
 
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Appointment.class;
 	}
 
-	private IFhirTransformerRegistry transformerRegistry;
-
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
-		this.transformerRegistry = transformerRegistry;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Appointment, Termin> getTransformer() {
-		return (IFhirTransformer<Appointment, Termin>) transformerRegistry.getTransformerFor(Appointment.class,
-				Termin.class);
+	public IFhirTransformer<Appointment, IAppointment> getTransformer() {
+		return (IFhirTransformer<Appointment, IAppointment>) transformerRegistry.getTransformerFor(Appointment.class,
+				IAppointment.class);
 	}
 
 	@Read
 	public Appointment getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<Termin> appointment = TerminService.load(idPart);
+			Optional<IAppointment> appointment = modelService.load(idPart, IAppointment.class);
 			if (appointment.isPresent()) {
 				Optional<Appointment> fhirAppointment = getTransformer().getFhirObject(appointment.get());
 				return fhirAppointment.get();
@@ -98,24 +96,24 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 			@RequiredParam(name = Appointment.SP_DATE) DateRangeParam dateParam,
 			@Description(shortDefinition = "Only supports Schedule/identifier") @OptionalParam(name = Appointment.SP_ACTOR) ReferenceOrListParam actors,
 			@IncludeParam(allow = { "Appointment:patient" }) Set<Include> theIncludes) {
-		JPAQuery<Termin> query = new JPAQuery<>(Termin.class);
+		IQuery<IAppointment> query = modelService.getQuery(IAppointment.class);
 
 		// gesperrte termine sind keine Termine - es sind nicht verfügbare Slots
 		// TODO configurable
-		query.add(Termin_.terminTyp, QUERY.NOT_EQUALS, "gesperrt");
+		query.and(ModelPackage.Literals.IAPPOINTMENT__TYPE, COMPARATOR.NOT_EQUALS, "gesperrt");
 
 		DateConverter dateConverter = new DateConverter();
 
 		// TODO support minutes
 		if (dateParam.getLowerBound() != null) {
 			LocalDate dayParam = dateConverter.convertToLocalDate(dateParam.getLowerBound().getValue());
-			QUERY compare = QueryUtil.prefixParamToToQueryParam(dateParam.getLowerBound().getPrefix());
-			query.add(Termin_.tag, compare, dayParam);
+			COMPARATOR compare = QueryUtil.prefixParamToToQueryParam(dateParam.getLowerBound().getPrefix());
+			query.and("tag", compare, dayParam);
 		}
 		if (dateParam.getUpperBound() != null) {
 			LocalDate dayParam2 = dateConverter.convertToLocalDate(dateParam.getUpperBound().getValue());
-			QUERY compare2 = QueryUtil.prefixParamToToQueryParam(dateParam.getUpperBound().getPrefix());
-			query.add(Termin_.tag, compare2, dayParam2);
+			COMPARATOR compare2 = QueryUtil.prefixParamToToQueryParam(dateParam.getUpperBound().getPrefix());
+			query.and("tag", compare2, dayParam2);
 		}
 
 		if (actors != null) {
@@ -128,13 +126,13 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 						log.warn("Invalid agenda area id [{}]", areaParam.getIdPart());
 						continue;
 					}
-					query.or(Termin_.bereich, QUERY.EQUALS, agendaAreaName.get());
+					query.or(ModelPackage.Literals.IAPPOINTMENT__SCHEDULE, COMPARATOR.EQUALS, agendaAreaName.get());
 				}
 			}
-			query.endGroup_And();
+			query.andJoinGroups();
 		}
 
-		List<Termin> termine = query.execute();
+		List<IAppointment> termine = query.execute();
 		if (termine.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -147,7 +145,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 	public MethodOutcome updateAppointment(@IdParam IdType theId, @ResourceParam Appointment appointment) {
 		String versionId = theId.getVersionIdPart();
 
-		Optional<Termin> localObject = getTransformer().getLocalObject(appointment);
+		Optional<IAppointment> localObject = getTransformer().getLocalObject(appointment);
 		MethodOutcome outcome = new MethodOutcome();
 		if (localObject.isPresent()) {
 			if (versionId == null) {

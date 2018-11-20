@@ -22,12 +22,6 @@
    </requires>
 
    <plugin
-         id="info.elexis.server.core.connector.elexis.jpa"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.persistence.antlr"
          download-size="0"
          install-size="0"
@@ -91,13 +85,6 @@
 
    <plugin
          id="com.mysql.jdbc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.postgresql"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -181,20 +168,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.persistence.jpa.logging.slf4j"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="ch.elexis.base.ch.ticode"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.joda.money"
          download-size="0"
          install-size="0"
@@ -216,14 +189,64 @@
          unpack="false"/>
 
    <plugin
-         id="info.elexis.server.core.connector.elexis.datasource"
+         id="ch.elexis.core.l10n"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="ch.elexis.core.l10n"
+         id="ch.elexis.core.jpa"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.jpa.datasource"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.jpa.entities"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.services"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.elexis.core.jpa.logging.slf4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="at.medevit.ch.artikelstamm.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.postgresql.jdbc42"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -2,52 +2,49 @@ package info.elexis.server.core.connector.elexis.common;
 
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import ch.elexis.core.common.DBConnection;
-import info.elexis.server.core.connector.elexis.datasource.util.ElexisDBConnectionUtil;
+import ch.elexis.core.model.IConfig;
+import ch.elexis.core.services.IModelService;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
-import info.elexis.server.core.connector.elexis.internal.ElexisEntityManager;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Config;
+import info.elexis.server.core.connector.elexis.services.internal.CoreModelServiceHolder;
 
 public class ElexisDBConnection {
-
-	public static Optional<DBConnection> getConnection() {
+	
+	public static Optional<DBConnection> getConnection(){
 		return ElexisDBConnectionUtil.getConnection();
 	}
-
-	public static IStatus getDatabaseInformation() {
+	
+	public static IStatus getDatabaseInformation(){
 		String statusInfo = getDatabaseInformationString();
 		return new Status(Status.OK, BundleConstants.BUNDLE_ID, statusInfo);
 	}
-
-	public static String getDatabaseInformationString() {
-		EntityManager entityManager = ElexisEntityManager.createEntityManager();
-		if (entityManager == null) {
-			return "Entity Manager is null.";
+	
+	public static String getDatabaseInformationString(){
+		IModelService modelService = CoreModelServiceHolder.get();
+		if (modelService == null) {
+			return "No database connection set.";
 		}
-		try {
-			Config cDBV = entityManager.find(Config.class, "dbversion");
-			if (cDBV == null) {
-				return "Could not find dbversion entry in config table.";
-			}
-
-			String connectionString = "null";
-			if (ElexisDBConnectionUtil.getConnection().isPresent()) {
-				connectionString = ElexisDBConnectionUtil.getConnection().get().connectionString;
-			}
-			String dbv = cDBV.getWert();
-			String elVersion = entityManager.find(Config.class, "ElexisVersion").getWert();
-			Config createdConfig = entityManager.find(Config.class, "created");
-			String created = (createdConfig != null ) ? createdConfig.getWert() : "";
-			String statusInfo = "Elexis " + elVersion + " DBv " + dbv + ", created " + created + " [" + connectionString
-					+ "]";
-			return statusInfo;
-		} finally {
-			entityManager.close();
+		
+		Optional<IConfig> dbVersion = modelService.load("dbversion", IConfig.class);
+		if (!dbVersion.isPresent()) {
+			return "Could not find dbversion entry in config table.";
 		}
+		
+		String connectionString = "null";
+		if (ElexisDBConnectionUtil.getConnection().isPresent()) {
+			connectionString = ElexisDBConnectionUtil.getConnection().get().connectionString;
+		}
+		
+		Optional<IConfig> _elVersion = modelService.load("ElexisVersion", IConfig.class);
+		String elVersion = (_elVersion.isPresent()) ? _elVersion.get().getValue() : "unknown";
+		Optional<IConfig> _created = modelService.load("created", IConfig.class);
+		String created = (_created.isPresent()) ? _created.get().getValue() : "unknown";
+		String statusInfo = "Elexis " + elVersion + " DBv " + dbVersion.get().getValue()
+			+ ", created " + created + " [" + connectionString + "]";
+		return statusInfo;
+		
 	}
 }
