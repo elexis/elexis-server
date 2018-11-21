@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -34,7 +35,7 @@
 	<description>Elexis-Server for headless operation</description>
 
 	<properties>
-		<tycho.version>1.1.0</tycho.version>
+		<tycho.version>1.2.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 	</properties>
@@ -50,54 +51,10 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.17</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
-				<configuration>
-					<reportOutputDirectory>${project.build}/../../..</reportOutputDirectory>
-					<additionalparam>-Xdoclint:none</additionalparam>
-					<aggregate>true</aggregate>
-					<doctitle>Dokumentation der Java Schnittstellen f&#xFC;r Elexis
-						Server
-						${project.version}.</doctitle>
-					<header><![CDATA[Elexis ${project.version}. See also <a href="http://elexis.info">http://elexis.info</a>]]></header>
-					<bottom><![CDATA[Copyright 2016 Marco Descher and Elexis. See also <a href="http://elexis.info">Elexis</a>: eine freie Software von Ärzten für Ärzte]]></bottom>
-					<excludePackageNames>org.eclipse.*:org.hamcrest.*:org.osgi.*</excludePackageNames>
-					<groups>
-						<group>
-							<title>Elexis Server Core modules</title>
-							<packages>info.elexis.server.core*</packages>
-						</group>
-						<group>
-							<title>Utilities, Backward compatibility, etc</title>
-							<packages>*</packages>
-						</group>
-						<group>
-							<title>Modules for FIRH</title>
-							<packages>es.fhir*:info.elexis.server.findings.fhir*</packages>
-						</group>
-					</groups>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<extensions>true</extensions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<compilerArgument>-warn:none</compilerArgument>
-					<compilerArgument>-err:none</compilerArgument>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>${tycho-groupid}</groupId>
@@ -107,6 +64,7 @@
 					<resolver>p2</resolver>
 					<ignoreTychoRepositories>true</ignoreTychoRepositories>
 					<pomDependencies>consider</pomDependencies>
+					<executionEnvironment>JavaSE-1.8</executionEnvironment>
 					<target>
 						<artifact>
 							<groupId>info.elexis.server.targets</groupId>
@@ -141,38 +99,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.17</version>
-				<configuration>
-					<includeTestResources>false</includeTestResources>
-					<linkXRef>true</linkXRef>
-					<encoding>UTF-8</encoding>
-					<consoleOutput>false</consoleOutput>
-					<failsOnError>false</failsOnError>
-					<headerLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/epl-v10.html</headerLocation>
-					<configLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/checkstyle.xml</configLocation>
-					<suppressionsLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/checkstyle-suppressions.xml</suppressionsLocation>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<inherited>false</inherited>
-						<reports>
-							<report>checkstyle-aggregate</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin> <!-- maven-jxr-plugin is needed for linkXRef  -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
-		</plugins>
-	</reporting>
 	<distributionManagement>
 		<site>
 			<id>www.elexis.info</id>
