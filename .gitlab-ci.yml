@@ -8,7 +8,7 @@ build:
   script: 
   - find features -type f -name p2.inf -exec sed -i "s@REPLACE_WITH_GIT_REV@$CI_COMMIT_SHA@g" {} \;
   - find features -type f -name p2.inf -exec sed -i "s|REPLACE_WITH_GIT_REPO_URL|$CI_PROJECT_URL|g" {} \;
-  - mvn -f releng/es.parent/pom.xml clean verify
+  - mvn -f releng/es.parent/pom.xml clean verify -P sonar -Dsonar.login=$SONAR_LOGIN_TOKEN
   - jo token="$WEBHOOK_TOKEN" info="elexis-server $CI_JOB_ID $ORIGIN_BRANCH $CI_COMMIT_REF_NAME $CI_COMMIT_SHA" binary=%$(find products/es.updatesite/target/*.zip) destDir=elexis-server/$CI_COMMIT_REF_NAME/p2/elexis-server | curl -k -H "Content-Type:application/json" -X POST -d @- $WEBHOOK_URL/deploy-zip
   - for file in products/es.core.product.runtime/target/products/*.zip; do jo token="$WEBHOOK_TOKEN" destFilename="${file##*/}" binary=%${file} destDir=elexis-server/$CI_COMMIT_REF_NAME/products/ | curl -k -H "Content-Type:application/json" -X POST -d @- $WEBHOOK_URL/deploy-file; done
   artifacts:
