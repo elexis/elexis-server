@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.webapp.ConnectorDatabaseConfigurationWebappIndex">
+   <property name="osgi.http.whiteboard.servlet.pattern" value="/web/elexis-connector/connection"/>
+   <service>
+      <provide interface="javax.servlet.Servlet"/>
+   </service>
+   <implementation class="info.elexis.server.webapp.ConnectorDatabaseConfigurationWebappIndex"/>
+</scr:component>
