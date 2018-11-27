@@ -23,6 +23,12 @@ import ch.elexis.core.model.Identifiable;
  *            Local class, extends AbstractDBObjectIdDeleted
  */
 public interface IFhirTransformer<F, L> {
+	
+	/**
+	 * ID to directly reference a specific transformer
+	 */
+	public static final String TRANSFORMERID = "transformer.id";
+	
 	/**
 	 * Create a new FHIR object representing the localObject, optionally including
 	 * referenced resources.

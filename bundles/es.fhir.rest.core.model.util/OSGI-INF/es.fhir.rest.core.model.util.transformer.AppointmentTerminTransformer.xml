@@ -4,6 +4,6 @@
       <provide interface="es.fhir.rest.core.IFhirTransformer"/>
    </service>
    <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService" target="(service.model.name=ch.elexis.core.model)"/>
-   <reference cardinality="1..1" field="transformerRegistry" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="transformerRegistry" policy="static"/>
+   <reference cardinality="1..1" field="patientTransformer" interface="es.fhir.rest.core.IFhirTransformer" name="patientTransformer" policy="static" target="(transformer.id=Patient.IPatient)"/>
    <implementation class="es.fhir.rest.core.model.util.transformer.AppointmentTerminTransformer"/>
 </scr:component>

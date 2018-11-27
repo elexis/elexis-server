@@ -22,14 +22,14 @@ import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 
-@Component
+@Component(property = IFhirTransformer.TRANSFORMERID + "=Patient.IPatient")
 public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPatient> {
-	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
-	
+
 	private IContactHelper contactHelper;
-	
+
 	@Activate
 	private void activate() {
 		contactHelper = new IContactHelper(modelService);

@@ -21,7 +21,6 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Slot;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -30,15 +29,14 @@ import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.model.util.transformer.helper.IAppointmentHelper;
 import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
 public class AppointmentTerminTransformer implements IFhirTransformer<Appointment, IAppointment> {
 	
-	@org.osgi.service.component.annotations.Reference(policy = ReferencePolicy.STATIC)
-	private IFhirTransformerRegistry transformerRegistry;
+	@org.osgi.service.component.annotations.Reference(target="("+IFhirTransformer.TRANSFORMERID+"=Patient.IPatient)")
+	private IFhirTransformer<Patient, IPatient> patientTransformer;
 	
 	@org.osgi.service.component.annotations.Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
 	private IModelService modelService;
@@ -105,9 +103,6 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 				participant.add(patient);
 
 				if (includes.contains(new Include("Appointment:patient"))) {
-					@SuppressWarnings("unchecked")
-					IFhirTransformer<Patient, IPatient> patientTransformer = (IFhirTransformer<Patient, IPatient>) transformerRegistry
-							.getTransformerFor(Patient.class, IPatient.class);
 					patient.getActor().setResource(patientTransformer.getFhirObject(patientContact.get()).get());
 				}
 			} else {

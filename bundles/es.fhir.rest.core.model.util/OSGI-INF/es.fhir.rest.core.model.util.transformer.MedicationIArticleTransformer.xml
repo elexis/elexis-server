@@ -5,6 +5,5 @@
    </service>
    <reference cardinality="1..1" field="artikelstammModelService" interface="ch.elexis.core.services.IModelService" name="artikelstammModelService" target="(service.model.name=at.medevit.ch.artikelstamm.model)"/>
    <reference cardinality="1..1" field="coreModelService" interface="ch.elexis.core.services.IModelService" name="coreModelService" target="(service.model.name=ch.elexis.core.model)"/>
-   <reference cardinality="1..1" field="transformerRegistry" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="transformerRegistry" policy="static"/>
    <implementation class="es.fhir.rest.core.model.util.transformer.MedicationIArticleTransformer"/>
 </scr:component>

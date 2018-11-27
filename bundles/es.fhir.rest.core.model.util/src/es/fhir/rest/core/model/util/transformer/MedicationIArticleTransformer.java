@@ -12,7 +12,6 @@ import org.hl7.fhir.dstu3.model.Medication.MedicationPackageComponent;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import at.medevit.ch.artikelstamm.IArtikelstammItem;
 import ca.uhn.fhir.model.api.Include;
@@ -21,14 +20,11 @@ import ch.elexis.core.model.IArticle;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.types.ArticleTyp;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.model.util.transformer.helper.IMedicationHelper;
 
 @Component
 public class MedicationIArticleTransformer implements IFhirTransformer<Medication, IArticle> {
 	
-	@org.osgi.service.component.annotations.Reference(policy = ReferencePolicy.STATIC)
-	private IFhirTransformerRegistry transformerRegistry;
 	
 	@org.osgi.service.component.annotations.Reference(target = "(" + IModelService.SERVICEMODELNAME
 		+ "=ch.elexis.core.model)")
