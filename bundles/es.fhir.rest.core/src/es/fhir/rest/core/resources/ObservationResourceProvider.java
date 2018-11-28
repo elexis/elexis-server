@@ -110,7 +110,7 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 					// laboratory
 					if (categoryCode == null || ObservationCategory.LABORATORY.name()
 						.equalsIgnoreCase(CodeTypeUtil.getCode(categoryCode).orElse(""))) {
-						List<Observation> intermediateRet = new ArrayList<Observation>();
+						List<Observation> intermediateRet = new ArrayList<>();
 						IQuery<ILabResult> resultQuery = modelService.getQuery(ILabResult.class);
 						resultQuery.and(ModelPackage.Literals.ILAB_RESULT__PATIENT,
 							COMPARATOR.EQUALS, patient.get());

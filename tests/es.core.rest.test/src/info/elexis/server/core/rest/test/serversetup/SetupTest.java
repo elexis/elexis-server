@@ -121,7 +121,7 @@ public class SetupTest {
 	
 	@Test
 	public void _02_1_setValidTestDatabaseConnection()
-		throws IOException, SQLException, InterruptedException{
+		throws IOException, SQLException {
 		DBConnection dbc = AllTests.getTestDatabaseConnection();
 		String dbcJson = new Gson().toJson(dbc);
 		RequestBody body = RequestBody.create(JSON, dbcJson);

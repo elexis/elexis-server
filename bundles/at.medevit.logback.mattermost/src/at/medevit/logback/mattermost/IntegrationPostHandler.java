@@ -69,6 +69,7 @@ public class IntegrationPostHandler {
 				break;
 			case Level.WARN_INT:
 				sbBody.append(":warning: ");
+				break;
 			default:
 				break;
 			}

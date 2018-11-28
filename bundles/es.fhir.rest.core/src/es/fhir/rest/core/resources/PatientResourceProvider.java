@@ -117,6 +117,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 				case Patient.SP_GIVEN:
 					query.orderBy(ModelPackage.Literals.ICONTACT__DESCRIPTION2,
 						QueryUtil.sortOrderEnumToLocal(order));
+					break;
 				default:
 					logger.info("sortParamName [{}] not supported.", param);
 					break;
