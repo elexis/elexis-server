@@ -70,14 +70,18 @@ public class ConnectionResource {
 		@ApiResponse(code = 422, message = "error connecting to requested database, see error string"),
 		@ApiResponse(code = 401, message = "a connection was already set, and the request does lack the right to change it")
 	})
-	public Response setDBConnection(DBConnection dbConnection){
+	public Response setDBConnection(DBConnection dbConnection) {
 		if (ElexisDBConnectionUtil.getConnection().isPresent()) {
 			SecurityUtils.getSubject().checkPermission(RestPermission.ADMIN_WRITE);
 		}
+		boolean allValuesSet = dbConnection.allValuesSet();
+		if (!allValuesSet) {
+			return Response.status(422).type(MediaType.TEXT_PLAIN).entity("Invalid values or values missing.").build();
+		}
 		IStatus status = ElexisDBConnectionUtil.setConnection(elexisDataSource, dbConnection);
 		if (status.isOK()) {
-			return Response.ok().build();
+			return Response.ok().entity("Configuration successfully applied.").build();
 		}
-		return Response.status(422).type(MediaType.TEXT_PLAIN).entity(status.getMessage()).build();
+		return Response.serverError().entity(status.getMessage()).build();
 	}
 }
