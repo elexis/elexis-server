@@ -1,6 +1,6 @@
 target "Elexis-Server" with source allEnvironments
 
-location "http://download.elexis.info/elexis-server/f14501/p2/target/" elexis-server {
+location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
 	org.eclipse.emf.common.feature.group

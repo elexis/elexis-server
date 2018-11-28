@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1542627579">
+<target name="Elexis-Server" sequenceNumber="1543403963">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
@@ -74,15 +74,15 @@
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201803161213"/>
-      <unit id="ch.rgw.utility" version="3.7.0.20181025-0751"/>
-      <unit id="ch.elexis.core" version="3.7.0.20181030-0959"/>
+      <unit id="ch.rgw.utility" version="3.7.0.20181116-1152"/>
+      <unit id="ch.elexis.core" version="3.7.0.20181128-1057"/>
       <unit id="ch.elexis.core.l10n" version="3.7.0.20181001-0902"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20181024-1142"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20181024-1607"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20181025-1305"/>
       <unit id="ch.elexis.core.test" version="1.0.0.20181030-0925"/>
-      <unit id="ch.elexis.core.jpa" version="1.0.0.20181025-1305"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20181128-1057"/>
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20181030-0925"/>
       <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20181030-0959"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
@@ -186,7 +186,7 @@
       <unit id="org.objectweb.asm.commons" version="6.1.1"/>
       <unit id="org.objectweb.asm.tree" version="6.1.1"/>
       <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
-      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/f14501/p2/target/"/>
+      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/master/p2/target/"/>
     </location>
   </locations>
 </target>
