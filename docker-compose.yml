@@ -1,0 +1,36 @@
+# MEDEVIT <office@medevit.at>
+# Docker-compose image to run ES with MySQL,
+# requires docker-compose tool
+#
+# Adapted from https://docs.docker.com/compose/wordpress/
+# to start: docker-compose up -d
+# after start connect to https://localhost:8480/web/elexis-connector/connection
+# to fully remove including volume: docker-compose down -v
+version: '3'
+services:
+    database:
+        image: mysql:5.7
+        volumes:
+            - db_data:/var/lib/mysql
+        ports:
+            - "33306:3306" # provide mysql access on port 33306
+        restart: always
+        command: --lower_case_table_names=1
+        environment:
+            MYSQL_ROOT_PASSWORD: somerootpassword
+            MYSQL_DATABASE: elexisdb
+            MYSQL_USER: elexisuser
+            MYSQL_PASSWORD: elexispassword
+    elexisserver:
+        depends_on:
+            - database
+        image: medevit/elexis-server:latest
+        ports:
+            - "8380:8380"
+            - "8480:8480"
+            - "7234:7234"
+        restart: always
+        environment:
+            TZ: Europe/Zurich
+volumes:
+    db_data:
