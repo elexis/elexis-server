@@ -24,6 +24,9 @@ if [ "bridge.medelexis.ch." = $DIG_RESOLV ]; then
 
   certbot certonly --standalone --preferred-challenges http --email es-certbot@medevit.at \
   --non-interactive --agree-tos --domains $HOSTNAME --logs-dir /etc/letsencrypt/logs --work-dir /etc/letsencrypt/work
+  
+  # Start cron daemon for automatic letsenrypt cert renewal
+  /user/sbin/crond
 else
   echo "[WARN] dig resolves to $DIG_RESOLV, should resolve to bridge.medelexis.ch."
 fi
