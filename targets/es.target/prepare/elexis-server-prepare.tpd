@@ -167,10 +167,9 @@ location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 location "http://download.elexis.info/elexis-server/elexis-server-dependencies/" {
 	// java 11
 	com.sun.activation.javax.activation [1.2.0,1.2.0]
-	com.sun.xml.bind.jaxb-impl [2.3.1,2.3.1]
-	com.sun.xml.bind.jaxb-core [2.3.0.1,2.3.0.1]
-	jaxb-api [2.3.1,2.3.1]
 	javax.transaction-api [1.3.0,1.3.0]
+	com.sun.xml.bind.jaxb-osgi [2.4.0.b180830_0438,2.4.0.b180830_0438]
+	jaxb-api [2.4.0.b1808300359,2.4.0.b1808300359]
 	//
 	com.google.code.gson
 	jcl.over.slf4j
@@ -236,8 +235,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.springframework.spring-web
 	org.apache.commons.io
 	// Jetty JSP support
-	org.mortbay.jasper.apache-el [8.5.24,8.5.24]
-	org.mortbay.jasper.apache-jsp [8.5.24,8.5.24]
+	org.mortbay.jasper.apache-el [8.5.33,8.5.33]
+	org.mortbay.jasper.apache-jsp [8.5.33,8.5.33]
 	org.apache.taglibs.taglibs-standard-spec [1.2.5,1.2.5]
 	org.apache.taglibs.standard-impl [1.2.5,1.2.5]
 	org.apache.aries.spifly.static.bundle
