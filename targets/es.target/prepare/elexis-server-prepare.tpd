@@ -185,9 +185,7 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.springframework.spring-beans
 	org.apache.commons.collections4
 	se.ugli.bigqueue
-	// weird problems with com.mysql.jdbc >= 5.1.39
-	// SELECT * FROM SEQUENCE WHERE SEQ_NAME = 'SEQ_GEN'
-	com.mysql.jdbc [5.1.38,5.1.38]
+	com.mysql.cj
 	org.apache.commons.lang3 [3.3.2,3.3.2]
 	org.apache.commons.configuration
 	org.joda.money
