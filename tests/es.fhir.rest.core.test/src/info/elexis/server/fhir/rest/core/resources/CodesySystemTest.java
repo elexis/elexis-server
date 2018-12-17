@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.findings.util.ModelUtil;
 
 public class CodesySystemTest {
 

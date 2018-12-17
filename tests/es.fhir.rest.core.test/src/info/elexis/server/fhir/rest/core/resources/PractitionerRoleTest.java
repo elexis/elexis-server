@@ -32,7 +32,6 @@ import org.junit.Test;
 import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
-import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.core.connector.elexis.services.UserService;

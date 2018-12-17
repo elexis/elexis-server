@@ -39,7 +39,6 @@ import ch.elexis.core.findings.IObservation.ObservationCode;
 import ch.elexis.core.findings.IObservation.ObservationType;
 import ch.elexis.core.findings.ObservationComponent;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.LabResult;

@@ -12,8 +12,8 @@ Require-Bundle: ch.elexis.core.findings;bundle-version="1.0.0",
  hapi-fhir-osgi-core;bundle-version="2.0.0",
  org.h2,
  org.postgresql,
- com.mysql.jdbc,
- ch.elexis.core.findings.util;bundle-version="1.0.0"
+ ch.elexis.core.findings.util;bundle-version="1.0.0",
+ com.mysql.cj;bundle-version="8.0.13"
 Import-Package: ch.elexis.base.ch.ticode;resolution:=optional,
  com.google.gson;version="2.5.0",
  info.elexis.server.core.service,

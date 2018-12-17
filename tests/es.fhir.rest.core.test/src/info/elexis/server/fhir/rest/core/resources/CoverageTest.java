@@ -28,7 +28,6 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;

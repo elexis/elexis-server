@@ -22,7 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.IGenericClient;
-import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 
 public class AppointmentTest {
