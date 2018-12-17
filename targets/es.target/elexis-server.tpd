@@ -2,6 +2,7 @@ target "Elexis-Server" with source allEnvironments
 
 location "http://download.elexis.info/elexis/3.7/p2/elexis-3-core/" {
 	info.elexis.server.hapi.fhir
+	com.google.code.gson
 }
 
 location "http://download.elexis.info/elexis-server/1.7/p2/target/" elexis-server {
