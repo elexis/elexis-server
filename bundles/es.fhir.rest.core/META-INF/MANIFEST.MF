@@ -20,12 +20,12 @@ Import-Package: info.elexis.server.core,
  org.slf4j;version="1.7.2"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
-Require-Bundle: hapi-fhir-osgi-core;bundle-version="2.4.0",
- info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
+Require-Bundle: info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
  com.google.gson;bundle-version="2.5.0",
  woodstox-core-asl;bundle-version="4.4.1",
  org.thymeleaf;bundle-version="2.1.4",
  net.sf.saxon.Saxon-HE;bundle-version="9.6.0",
  ch.elexis.core.findings;bundle-version="1.0.0",
- info.elexis.server.core.common;bundle-version="1.0.0"
+ info.elexis.server.core.common;bundle-version="1.0.0",
+ info.elexis.server.hapi.fhir;bundle-version="3.4.0"
 Export-Package: es.fhir.rest.core

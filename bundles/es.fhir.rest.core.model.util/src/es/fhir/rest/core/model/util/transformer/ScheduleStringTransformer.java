@@ -5,12 +5,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.hl7.fhir.dstu3.model.Location;
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.osgi.service.component.annotations.Component;
 
-import ca.uhn.fhir.model.dstu.resource.Condition.Location;
 import ca.uhn.fhir.model.primitive.IdDt;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.TerminHelper;

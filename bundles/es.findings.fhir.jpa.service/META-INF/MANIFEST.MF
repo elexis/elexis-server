@@ -9,11 +9,11 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: ch.elexis.core.findings;bundle-version="1.0.0",
  info.elexis.server.findings.fhir.jpa;bundle-version="1.0.0",
  info.elexis.server.core.connector.elexis,
- hapi-fhir-osgi-core;bundle-version="2.0.0",
  org.h2,
  org.postgresql,
  ch.elexis.core.findings.util;bundle-version="1.0.0",
- com.mysql.cj;bundle-version="8.0.13"
+ com.mysql.cj;bundle-version="8.0.13",
+ info.elexis.server.hapi.fhir;bundle-version="3.4.0"
 Import-Package: ch.elexis.base.ch.ticode;resolution:=optional,
  com.google.gson;version="2.5.0",
  info.elexis.server.core.service,

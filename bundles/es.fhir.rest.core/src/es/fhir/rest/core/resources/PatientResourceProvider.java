@@ -13,7 +13,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
+import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -69,7 +70,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 		if (identifier != null) {
 			if (identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
 				Optional<Kontakt> patient = KontaktService
-						.findPatientByPatientNumber(Integer.valueOf(identifier.getValue().getValue()));
+						.findPatientByPatientNumber(Integer.valueOf(identifier.getValue()));
 				if (patient.isPresent()) {
 					if (patient.get().isPatient()) {
 						Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());

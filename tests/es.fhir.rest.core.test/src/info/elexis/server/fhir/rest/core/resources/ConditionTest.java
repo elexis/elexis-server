@@ -16,13 +16,14 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Patient;
+
+import org.hl7.fhir.dstu3.model.codesystems.ConditionCategory;
 import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.instance.model.valuesets.ConditionCategory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 
@@ -42,9 +43,9 @@ public class ConditionTest {
 
 	@Test
 	public void getCondition() {
-		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
-				.execute();
-				
+		Patient readPatient = client.read().resource(Patient.class)
+				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId()).execute();
+
 		// search by patient
 		Bundle results = client.search().forResource(Condition.class)
 				.where(Condition.SUBJECT.hasId(readPatient.getId())).returnBundle(Bundle.class).execute();
@@ -82,8 +83,8 @@ public class ConditionTest {
 		narrative.setDivAsString(divEncodedText);
 		condition.setText(narrative);
 		condition.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
-		condition.addCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.COMPLAINT.getSystem(),
-				ConditionCategory.COMPLAINT.toCode(), ConditionCategory.COMPLAINT.getDisplay())));
+		condition.addCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.PROBLEMLISTITEM.getSystem(),
+				ConditionCategory.PROBLEMLISTITEM.toCode(), ConditionCategory.PROBLEMLISTITEM.getDisplay())));
 
 		MethodOutcome outcome = client.create().resource(condition).execute();
 		assertNotNull(outcome);
@@ -103,8 +104,8 @@ public class ConditionTest {
 	 */
 	@Test
 	public void getConditionProperties() {
-		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
-				.execute();
+		Patient readPatient = client.read().resource(Patient.class)
+				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId()).execute();
 
 		// search by patient and category
 		Bundle results = client.search().forResource(Condition.class)
@@ -116,7 +117,8 @@ public class ConditionTest {
 		Condition condition = (Condition) entries.get(0).getResource();
 		assertNotNull(condition);
 
-		assertEquals("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), condition.getSubject().getReference());
+		assertEquals("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(),
+				condition.getSubject().getReference());
 		assertNotNull(condition.getCategory());
 		assertNotNull(condition.getCategory().get(0).getCoding());
 		assertFalse(condition.getCategory().get(0).getCoding().isEmpty());

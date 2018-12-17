@@ -2,8 +2,8 @@ package es.fhir.rest.core.model.util.transformer.helper;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.codesystems.PractitionerRole;
 
-import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
 import ch.elexis.core.findings.codes.CodingSystem;
 
 public class MandantHelper extends AbstractHelper {
@@ -11,12 +11,11 @@ public class MandantHelper extends AbstractHelper {
 	public CodeableConcept getPractitionerRoleCode(String roleId) {
 		CodeableConcept code = new CodeableConcept();
 		if ("assistant".equals(roleId)) {
-			code.addCoding(
-					new Coding(PractitionerRoleEnum.NURSE.getSystem(), PractitionerRoleEnum.NURSE.getCode(),
-							PractitionerRoleEnum.NURSE.getCode()));
+			code.addCoding(new Coding(PractitionerRole.NURSE.getSystem(), PractitionerRole.NURSE.toCode(),
+					PractitionerRole.NURSE.toCode()));
 		} else if ("doctor".equals(roleId)) {
-			code.addCoding(new Coding(PractitionerRoleEnum.DOCTOR.getSystem(), PractitionerRoleEnum.DOCTOR.getCode(),
-					PractitionerRoleEnum.DOCTOR.getCode()));
+			code.addCoding(new Coding(PractitionerRole.DOCTOR.getSystem(), PractitionerRole.DOCTOR.toCode(),
+					PractitionerRole.DOCTOR.toCode()));
 		} else if ("executive_doctor".equals(roleId)) {
 			code.addCoding(new Coding(CodingSystem.ELEXIS_PRACTITIONER_ROLE.getSystem(), "mandant", "mandant"));
 		} else {

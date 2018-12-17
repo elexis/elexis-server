@@ -28,9 +28,7 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import ca.uhn.fhir.model.dstu.valueset.PractitionerRoleEnum;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.User;
 import info.elexis.server.core.connector.elexis.jpa.test.TestDatabaseInitializer;
@@ -53,9 +51,10 @@ public class PractitionerRoleTest {
 	@Test
 	public void getPractitionerRole() {
 		// search by role
-		Bundle results = client.search()
-				.forResource(PractitionerRole.class).where(PractitionerRole.ROLE.exactly()
-						.systemAndCode(PractitionerRoleEnum.DOCTOR.getSystem(), PractitionerRoleEnum.DOCTOR.getCode()))
+		Bundle results = client.search().forResource(PractitionerRole.class)
+				.where(PractitionerRole.ROLE.exactly().systemAndCode(
+						org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.getSystem(),
+						org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.toCode()))
 				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
@@ -66,8 +65,9 @@ public class PractitionerRoleTest {
 		for (CodeableConcept role : roles) {
 			List<Coding> codings = role.getCoding();
 			for (Coding coding : codings) {
-				if (coding.getSystem().equals(PractitionerRoleEnum.DOCTOR.getSystem())
-						&& coding.getCode().equals(PractitionerRoleEnum.DOCTOR.getCode())) {
+				if (coding.getSystem().equals(org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.getSystem())
+						&& coding.getCode()
+								.equals(org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.toCode())) {
 					doctorRoleFound = true;
 				}
 			}

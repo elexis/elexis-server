@@ -12,7 +12,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import ca.uhn.fhir.model.dstu.composite.IdentifierDt;
+import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -139,10 +139,10 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
 				&& !identifier.getValue().isEmpty()) {
-			migratorService.migrateConsultationsFindings(identifier.getValue().getValue(), IEncounter.class);
+			migratorService.migrateConsultationsFindings(identifier.getValue(), IEncounter.class);
 
 			List<IEncounter> findings = findingsService
-				.getConsultationsFindings(identifier.getValue().getValue(),
+				.getConsultationsFindings(identifier.getValue(),
 					IEncounter.class);
 			if (findings != null && !findings.isEmpty()) {
 				List<Encounter> ret = new ArrayList<Encounter>();

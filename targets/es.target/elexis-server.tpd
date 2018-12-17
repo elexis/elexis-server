@@ -160,7 +160,6 @@ location "http://download.elexis.info/elexis-server/1.7/p2/target/" elexis-serve
 	org.apache.commons.configuration
 	org.joda.money
 	
-	hapi-fhir-osgi-core
 	org.thymeleaf
 	javassist
 	woodstox-core-asl

@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer;
 
 import java.util.Optional;
 
+
 import org.hl7.fhir.dstu3.model.AllergyIntolerance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;

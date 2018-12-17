@@ -15,18 +15,15 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
  info.elexis.server.findings.fhir.jpa;bundle-version="1.0.0",
  info.elexis.server.findings.fhir.jpa.service;bundle-version="1.0.0",
  com.eclipsesource.jaxrs.consumer,
- info.elexis.server.core.connector.elexis;bundle-version="1.0.0"
+ info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
+ info.elexis.server.hapi.fhir;bundle-version="3.4.0"
 Bundle-ClassPath: .
-Import-Package: ca.uhn.fhir.context;version="2.4.0",
- ca.uhn.fhir.parser;version="2.4.0",
- ch.elexis.core.common,
+Import-Package: ch.elexis.core.common,
  com.eclipsesource.jaxrs.provider.gson;version="2.3.0",
  info.elexis.server.core.common.util,
  info.elexis.server.core.connector.elexis.datasource.util,
  javax.ws.rs.core;version="2.0.1",
  org.glassfish.jersey.client;version="2.24.1",
- org.hl7.fhir.dstu3.model;version="2.4.0",
- org.hl7.fhir.instance.model.api;version="2.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: info.elexis.server.core.rest.test.internal.Activator

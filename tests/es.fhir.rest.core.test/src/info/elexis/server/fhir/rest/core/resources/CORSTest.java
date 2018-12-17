@@ -11,11 +11,11 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.IHttpRequest;
 import ca.uhn.fhir.rest.client.api.IHttpResponse;
-import ca.uhn.fhir.rest.method.HttpGetClientInvocation;
-import ca.uhn.fhir.rest.method.MethodUtil;
+import ca.uhn.fhir.rest.client.method.HttpGetClientInvocation;
+import ca.uhn.fhir.rest.client.method.MethodUtil;
 
 public class CORSTest {
 

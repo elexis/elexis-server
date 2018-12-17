@@ -29,7 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.exceptions.ElexisException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;

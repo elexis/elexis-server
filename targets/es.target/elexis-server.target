@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1545048233">
+<target name="Elexis-Server" sequenceNumber="1545048674">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="info.elexis.server.hapi.fhir" version="3.4.0.201812071120"/>
@@ -149,7 +149,6 @@
       <unit id="org.apache.commons.lang3" version="3.3.2"/>
       <unit id="org.apache.commons.configuration" version="2.0.0"/>
       <unit id="org.joda.money" version="0.11.0"/>
-      <unit id="hapi-fhir-osgi-core" version="2.4.0"/>
       <unit id="org.thymeleaf" version="3.0.2.RELEASE"/>
       <unit id="javassist" version="3.20.0.GA"/>
       <unit id="woodstox-core-asl" version="4.4.1"/>
