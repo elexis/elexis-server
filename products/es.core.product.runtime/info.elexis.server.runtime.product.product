@@ -36,6 +36,7 @@
    <vm>
    </vm>
 
+
    <plugins>
    </plugins>
 
@@ -73,7 +74,7 @@
    </configurations>
 
    <repositories>
-      <repository location="http://download.elexis.info/elexis-server/1.6/p2/elexis-server" enabled="true" />
+      <repository location="http://download.elexis.info/elexis-server/1.7/p2/elexis-server" enabled="true" />
    </repositories>
 
    <preferencesInfo>
