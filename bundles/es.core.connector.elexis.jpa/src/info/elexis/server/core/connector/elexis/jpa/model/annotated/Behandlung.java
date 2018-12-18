@@ -147,6 +147,15 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 		return LocalDateTime.of(getDatum(), getTime());
 	}
 
+	/**
+	 * @param dateTime
+	 * @since 1.7
+	 */
+	public void setDateTime(LocalDateTime dateTime) {
+		setDatum(dateTime.toLocalDate());
+		setTime(dateTime.toLocalTime());
+	}
+	
 	@Override
 	public String getLabel() {
 		return getDatum() + " " + getMandant() != null ? getMandant().getLabel() : "";

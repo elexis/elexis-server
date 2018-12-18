@@ -59,6 +59,12 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 		assertEquals(LocalDate.now(), findById.getDatum());
 		assertNotEquals(LocalTime.MIDNIGHT, findById.getTime());
 		assertTrue(LocalDateTime.now().isAfter(findById.getDateTime()));
+		
+		LocalDateTime now = LocalDateTime.now();
+		findById.setDateTime(now);
+		assertEquals(now.toLocalDate(), findById.getDatum());
+		assertEquals(now.toLocalTime(), findById.getTime());
+		assertEquals(now, findById.getDateTime());
 	}
 
 	@Test
