@@ -1,6 +1,8 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -49,6 +51,13 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 	@Basic(fetch = FetchType.LAZY)
 	@Convert(value = "VersionedResourceConverter")
 	private VersionedResource eintrag;
+
+	@Convert("booleanStringConverter")
+	@Column(length = 1)
+	private boolean billable; // DBModel 3.7.0
+
+	@Column(name = "zeit", length = 6)
+	private LocalTime time; // DBModel 3.7.0
 
 	public Fall getFall() {
 		return fall;
@@ -110,6 +119,32 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 
 	public void setEintrag(VersionedResource eintrag) {
 		this.eintrag = eintrag;
+	}
+
+	public boolean isBillable() {
+		return billable;
+	}
+
+	public void setBillable(boolean billable) {
+		this.billable = billable;
+	}
+
+	public LocalTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalTime time) {
+		this.time = time;
+	}
+
+	/**
+	 * 
+	 * @return the local date and time of a consultation. If the consultation does
+	 *         not bear time information, it is defaulted to midnight
+	 * @since 1.7
+	 */
+	public LocalDateTime getDateTime() {
+		return LocalDateTime.of(getDatum(), getTime());
 	}
 
 	@Override

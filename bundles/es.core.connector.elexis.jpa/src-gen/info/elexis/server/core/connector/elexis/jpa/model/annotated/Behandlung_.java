@@ -6,6 +6,7 @@ import info.elexis.server.core.connector.elexis.jpa.model.annotated.Fall;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Invoice;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
@@ -21,6 +22,8 @@ public class Behandlung_ {
     public static volatile SingularAttribute<Behandlung, VersionedResource> eintrag;
     public static volatile SingularAttribute<Behandlung, String> leistungenId;
     public static volatile SingularAttribute<Behandlung, Invoice> invoice;
+    public static volatile SingularAttribute<Behandlung, LocalTime> time;
     public static volatile SetAttribute<Behandlung, Diagnosis> diagnoses;
+    public static volatile SingularAttribute<Behandlung, Boolean> billable;
 
 }

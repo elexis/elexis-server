@@ -39,7 +39,7 @@ public class Fall extends AbstractDBObjectIdDeletedExtInfo {
 	@JoinColumn(name = "garantID")
 	private Kontakt garantKontakt;
 
-	@Column(length = 20)
+	@Column(length = 40) // DBModel 3.6.1
 	private String gesetz;
 
 	@Column(length = 80)

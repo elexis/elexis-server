@@ -101,7 +101,7 @@ CREATE TABLE FAELLE(
 	DatumBis		CHAR(8),						# end date
 	Bezeichnung		VARCHAR(80),					# title of the case
 	Grund			VARCHAR(80),					# reason for treatment
-	Gesetz			VARCHAR(20),					# deprecated, do not use
+	Gesetz			VARCHAR(40),					# deprecated, do not use
 	Status			VARCHAR(80),					# deprecated, do not use
 	ExtInfo			BLOB							# additional informations (hashtable)
 );
@@ -119,7 +119,9 @@ CREATE TABLE BEHANDLUNGEN(
 	Datum			CHAR(8),						# date of treatment
 	Diagnosen		VARCHAR(25),					# diagnoses
 	Leistungen		VARCHAR(25),					# deprecated, do not use.
-	Eintrag			BLOB							# treatment text (as VersionedResource)
+	Eintrag			BLOB,							# treatment text (as VersionedResource)
+	billable		CHAR(1) default '1',			# DB Model 3.7.0
+	Zeit			CHAR(6) default '000000'		# DB Model 3.7.0
 );
 
 CREATE INDEX i4 on BEHANDLUNGEN (FallID);

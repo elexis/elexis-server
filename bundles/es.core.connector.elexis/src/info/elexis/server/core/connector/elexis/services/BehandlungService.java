@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,7 @@ public class BehandlungService extends PersistenceService {
 		public Builder(Fall fall, Kontakt mandator) {
 			object = new Behandlung();
 			object.setDatum(LocalDate.now());
+			object.setTime(LocalTime.now());
 			object.setFall(fall);
 			object.setMandant(mandator);
 		}

@@ -2,9 +2,12 @@ package info.elexis.server.core.connector.elexis.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,6 +57,8 @@ public class BehandlungServiceTest extends AbstractServiceTest {
 	public void testGetBehandlung() {
 		Behandlung findById = BehandlungService.load(testBehandlungen.get(0).getId()).get();
 		assertEquals(LocalDate.now(), findById.getDatum());
+		assertNotEquals(LocalTime.MIDNIGHT, findById.getTime());
+		assertTrue(LocalDateTime.now().isAfter(findById.getDateTime()));
 	}
 
 	@Test
