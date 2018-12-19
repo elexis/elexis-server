@@ -134,6 +134,12 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
+	// java 11
+	com.sun.activation.javax.activation
+	javax.transaction-api
+	com.sun.xml.bind.jaxb-osgi
+	jaxb-api
+	//
 	jcl.over.slf4j
 	com.google.code.gson
 	com.squareup.okhttp3.okhttp
