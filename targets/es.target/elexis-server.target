@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Elexis-Server" sequenceNumber="1545296657">
+<target name="Elexis-Server" sequenceNumber="1545306057">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="info.elexis.server.hapi.fhir" version="3.4.0.201812071120"/>
@@ -83,7 +83,7 @@
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201803161213"/>
-      <unit id="ch.rgw.utility" version="3.7.0.20181203-1006"/>
+      <unit id="ch.rgw.utility" version="3.7.0.20181220-0933"/>
       <unit id="ch.elexis.core" version="3.7.0.20181207-2150"/>
       <unit id="ch.elexis.core.l10n" version="3.7.0.20181211-1039"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20181008-1423"/>
@@ -149,7 +149,6 @@
       <unit id="org.apache.commons.collections4" version="4.1.0"/>
       <unit id="com.google.guava" version="18.0.0.v20161115-1643"/>
       <unit id="se.ugli.bigqueue" version="1.6.0.0"/>
-      <unit id="com.mysql.cj" version="8.0.13"/>
       <unit id="org.apache.commons.lang3" version="3.3.2"/>
       <unit id="org.apache.commons.configuration" version="2.0.0"/>
       <unit id="org.joda.money" version="0.11.0"/>

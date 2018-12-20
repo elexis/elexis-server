@@ -159,7 +159,6 @@ location "http://download.elexis.info/elexis-server/1.7/p2/target/" elexis-serve
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
-	com.mysql.cj
 	org.apache.commons.lang3
 	org.apache.commons.configuration
 	org.joda.money
