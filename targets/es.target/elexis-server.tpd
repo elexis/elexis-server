@@ -5,6 +5,10 @@ location "http://download.elexis.info/elexis/3.7/p2/elexis-3-core/" {
 	com.google.code.gson
 }
 
+location "http://download.elexis.info/elexis-server/1.6/p2/target/" {
+	com.mysql.jdbc
+}
+
 location "http://download.elexis.info/elexis-server/1.7/p2/target/" elexis-server {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
@@ -155,7 +159,6 @@ location "http://download.elexis.info/elexis-server/1.7/p2/target/" elexis-serve
 	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
-	com.mysql.cj
 	org.apache.commons.lang3
 	org.apache.commons.configuration
 	org.joda.money
