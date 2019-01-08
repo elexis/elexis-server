@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  org.joda.money;bundle-version="0.11.0",
  org.beanshell.bsh;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Multi-Release: true
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: com.mysql.jdbc;version="5.1.47";resolution:=optional,
