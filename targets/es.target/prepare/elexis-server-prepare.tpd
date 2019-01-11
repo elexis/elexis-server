@@ -35,6 +35,7 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	org.apache.poi.ooxml.schemas
 	com.healthmarketscience.jackcess
 	org.beanshell.bsh
+	org.apache.commons.lang3
 }
 
 // switch to appropriate Elexis branch on branching ES
@@ -206,10 +207,8 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.springframework.spring-beans
 	org.apache.commons.collections4
 	se.ugli.bigqueue
-	com.mysql.jdbc
 	com.mysql.cj
 	org.postgresql.jdbc42
-	org.apache.commons.lang3 [3.3.2,3.3.2]
 	org.apache.commons.configuration
 	org.joda.money
 	com.github.pukkaone.logback-gelf

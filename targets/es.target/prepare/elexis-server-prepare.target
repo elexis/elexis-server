@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde?><!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl --><target name="Elexis-Server" sequenceNumber="1547155162">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde?><!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl --><target name="Elexis-Server" sequenceNumber="1547192106">
   <locations>
     <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="3.8.0.20190108-0900"/>
@@ -28,12 +28,13 @@
       <unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
       <unit id="com.healthmarketscience.jackcess" version="2.1.9"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
+      <unit id="org.apache.commons.lang3" version="3.7.0"/>
       <repository location="http://download.elexis.info/elexis/f11106/p2/elexis-3-core/"/>
     </location>
     <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20180705-1301"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20181024-1143"/>
       <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20181011-1124"/>
-      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20181011-1821"/>
+      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20181030-1012"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20180309-1216"/>
       <repository location="http://download.elexis.info/elexis/f11106/p2/elexis-3-base/"/>
     </location>
@@ -186,10 +187,8 @@
       <unit id="org.springframework.spring-beans" version="4.3.8.RELEASE"/>
       <unit id="org.apache.commons.collections4" version="4.1.0"/>
       <unit id="se.ugli.bigqueue" version="1.6.0.0"/>
-      <unit id="com.mysql.jdbc" version="5.1.47"/>
       <unit id="com.mysql.cj" version="8.0.13"/>
       <unit id="org.postgresql.jdbc42" version="42.2.5"/>
-      <unit id="org.apache.commons.lang3" version="3.3.2"/>
       <unit id="org.apache.commons.configuration" version="2.0.0"/>
       <unit id="org.joda.money" version="0.11.0"/>
       <unit id="com.github.pukkaone.logback-gelf" version="1.1.8"/>
