@@ -114,18 +114,20 @@ public class IPatientPatientAttributeMapper {
 
 	private void mapGender(Patient source, IPatient target) {
 		AdministrativeGender gender = source.getGender();
-		switch (gender) {
-		case FEMALE:
-			target.setGender(Gender.FEMALE);
-			break;
-		case MALE:
-			target.setGender(Gender.MALE);
-			break;
-		case UNKNOWN:
-			target.setGender(Gender.UNKNOWN);
-			break;
-		default:
-			target.setGender(Gender.UNDEFINED);
+		if(gender != null) {
+			switch (gender) {
+			case FEMALE:
+				target.setGender(Gender.FEMALE);
+				break;
+			case MALE:
+				target.setGender(Gender.MALE);
+				break;
+			case UNKNOWN:
+				target.setGender(Gender.UNKNOWN);
+				break;
+			default:
+				target.setGender(Gender.UNDEFINED);
+			}
 		}
 	}
 

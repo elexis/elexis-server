@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
@@ -134,6 +135,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 		Optional<IPatient> created = getTransformer().createLocalObject(patient);
 		if (created.isPresent()) {
 			outcome.setCreated(true);
+			outcome.setId(new IdDt("Patient", created.get().getId()));
 		} else {
 			throw new InternalErrorException("Creation failed");
 		}
