@@ -36,100 +36,87 @@ import es.fhir.rest.core.resources.util.QueryUtil;
 
 @Component
 public class PatientResourceProvider implements IFhirResourceProvider {
-	
+
 	private Logger logger;
-	
+
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
-	
+
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-	
+
 	@Override
-	public Class<? extends IBaseResource> getResourceType(){
+	public Class<? extends IBaseResource> getResourceType() {
 		return Patient.class;
 	}
-	
+
 	@Activate
-	public void activate(){
+	public void activate() {
 		logger = LoggerFactory.getLogger(getClass());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Patient, IPatient> getTransformer(){
-		return (IFhirTransformer<Patient, IPatient>) transformerRegistry
-			.getTransformerFor(Patient.class, IPatient.class);
+	public IFhirTransformer<Patient, IPatient> getTransformer() {
+		return (IFhirTransformer<Patient, IPatient>) transformerRegistry.getTransformerFor(Patient.class,
+				IPatient.class);
 	}
-	
+
 	@Read
-	public Patient getResourceById(@IdParam IdType theId){
+	public Patient getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IPatient> patient = modelService.load(idPart, IPatient.class);
-			if (patient.isPresent()) {
-				if (patient.get().isPatient()) {
-					Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());
-					return fhirPatient.get();
-				}
+			if (patient.isPresent() && patient.get().isPatient()) {
+				Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());
+				return fhirPatient.get();
 			}
 		}
 		return null;
 	}
-	
+
 	@Search()
-	public List<Patient> findPatientByIdentifier(
-		@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier){
-		if (identifier != null) {
-			if (identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
-				Optional<IPatient> patient = ContactService
+	public List<Patient> findPatientByIdentifier(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+		if (identifier != null && identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
+			Optional<IPatient> patient = ContactService
 					.findPatientByPatientNumber(Integer.valueOf(identifier.getValue()));
-				if (patient.isPresent()) {
-					if (patient.get().isPatient()) {
-						Optional<Patient> fhirPatient =
-							getTransformer().getFhirObject(patient.get());
-						return Collections.singletonList(fhirPatient.get());
-					}
-				}
+			if (patient.isPresent() && patient.get().isPatient()) {
+				Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());
+				return Collections.singletonList(fhirPatient.get());
 			}
 		}
 		return Collections.emptyList();
 	}
-	
+
 	@Search()
-	public List<Patient> findPatient(@RequiredParam(name = Patient.SP_NAME) String name,
-		@Sort SortSpec theSort){
+	public List<Patient> findPatient(@RequiredParam(name = Patient.SP_NAME) String name, @Sort SortSpec theSort) {
 		if (name != null) {
 			IQuery<IPatient> query = modelService.getQuery(IPatient.class);
-			query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE,
-				"%" + name + "%");
-			query.or(ModelPackage.Literals.ICONTACT__DESCRIPTION2, COMPARATOR.LIKE,
-				"%" + name + "%");
-			
+			query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE, "%" + name + "%", true);
+			query.or(ModelPackage.Literals.ICONTACT__DESCRIPTION2, COMPARATOR.LIKE, "%" + name + "%", true);
+
 			if (theSort != null) {
 				String param = theSort.getParamName();
 				SortOrderEnum order = theSort.getOrder();
 				switch (param) {
 				case Patient.SP_FAMILY:
-					query.orderBy(ModelPackage.Literals.ICONTACT__DESCRIPTION1,
-						QueryUtil.sortOrderEnumToLocal(order));
+					query.orderBy(ModelPackage.Literals.ICONTACT__DESCRIPTION1, QueryUtil.sortOrderEnumToLocal(order));
 					break;
 				case Patient.SP_GIVEN:
-					query.orderBy(ModelPackage.Literals.ICONTACT__DESCRIPTION2,
-						QueryUtil.sortOrderEnumToLocal(order));
+					query.orderBy(ModelPackage.Literals.ICONTACT__DESCRIPTION2, QueryUtil.sortOrderEnumToLocal(order));
 					break;
 				default:
 					logger.info("sortParamName [{}] not supported.", param);
 					break;
 				}
 			}
-			
+
 			List<IPatient> patients = query.execute();
 			if (!patients.isEmpty()) {
-				List<Patient> ret = new ArrayList<Patient>();
+				List<Patient> ret = new ArrayList<>();
 				for (IPatient patient : patients) {
 					Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient);
-					fhirPatient.ifPresent(fp -> ret.add(fp));
+					fhirPatient.ifPresent(ret::add);
 				}
 				return ret;
 			}

@@ -26,54 +26,51 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class OrganizationResourceProvider implements IFhirResourceProvider {
-	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
-	
+
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-	
+
 	@Override
-	public Class<? extends IBaseResource> getResourceType(){
+	public Class<? extends IBaseResource> getResourceType() {
 		return Organization.class;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Organization, IOrganization> getTransformer(){
-		return (IFhirTransformer<Organization, IOrganization>) transformerRegistry
-			.getTransformerFor(Organization.class, IOrganization.class);
+	public IFhirTransformer<Organization, IOrganization> getTransformer() {
+		return (IFhirTransformer<Organization, IOrganization>) transformerRegistry.getTransformerFor(Organization.class,
+				IOrganization.class);
 	}
-	
+
 	@Read
-	public Organization getResourceById(@IdParam IdType theId){
+	public Organization getResourceById(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IOrganization> organization = modelService.load(idPart, IOrganization.class);
 			if (organization.isPresent()) {
-				Optional<Organization> fhirOrganization =
-					getTransformer().getFhirObject(organization.get());
+				Optional<Organization> fhirOrganization = getTransformer().getFhirObject(organization.get());
 				return fhirOrganization.get();
-				
+
 			}
 		}
 		return null;
 	}
-	
+
 	@Search()
-	public List<Organization> findOrganization(
-		@RequiredParam(name = Organization.SP_NAME) String name){
+	public List<Organization> findOrganization(@RequiredParam(name = Organization.SP_NAME) String name) {
 		if (name != null) {
 			IQuery<IOrganization> query = modelService.getQuery(IOrganization.class);
 			query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE, "%" + name + "%", true);
 			query.or(ModelPackage.Literals.ICONTACT__DESCRIPTION2, COMPARATOR.LIKE, "%" + name + "%", true);
 			List<IOrganization> organizations = query.execute();
 			if (!organizations.isEmpty()) {
-				List<Organization> ret = new ArrayList<Organization>();
+				List<Organization> ret = new ArrayList<>();
 				for (IOrganization organization : organizations) {
-					Optional<Organization> fhirOrganization =
-						getTransformer().getFhirObject(organization);
-					fhirOrganization.ifPresent(fp -> ret.add(fp));
+					Optional<Organization> fhirOrganization = getTransformer().getFhirObject(organization);
+					fhirOrganization.ifPresent(ret::add);
 				}
 				return ret;
 			}
