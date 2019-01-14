@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -21,9 +22,11 @@ import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Address.AddressUse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ch.elexis.core.constants.XidConstants;
@@ -41,6 +44,25 @@ public class PatientTest {
 		
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
+	}
+	
+	@Test
+	public void createPatient() {
+		Patient patient = new Patient();
+		HumanName hn = new HumanName();
+		hn.setFamily("familyName");
+		patient.setName(Collections.singletonList(hn));
+		patient.setBirthDate(new Date());
+		Address address = new Address();
+		address.setCity("City");
+		address.setCountry("CH");
+		patient.setAddress(Collections.singletonList(address));
+		MethodOutcome execute = client.create().resource(patient).execute();
+		assertTrue(execute.getCreated());
+		Patient created = (Patient) execute.getResource();
+		assertEquals(hn.getFamily(), created.getName().get(0).getFamily());
+		assertNotNull(created.getId());
+		assertEquals(patient.getBirthDate(), created.getBirthDate());
 	}
 	
 	@Test
@@ -99,6 +121,7 @@ public class PatientTest {
 		List<Address> addresses = readPatient.getAddress();
 		assertNotNull(addresses);
 		assertEquals(1, addresses.size());
+		assertEquals(AddressUse.HOME, addresses.get(0).getUse());
 		assertEquals("City", addresses.get(0).getCity());
 		assertEquals("123", addresses.get(0).getPostalCode());
 		assertEquals("Street 1", addresses.get(0).getLine().get(0).asStringValue());

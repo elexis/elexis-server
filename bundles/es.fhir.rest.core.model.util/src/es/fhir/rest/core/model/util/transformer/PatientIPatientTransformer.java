@@ -1,26 +1,19 @@
 package es.fhir.rest.core.model.util.transformer;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.hl7.fhir.dstu3.model.Address;
-import org.hl7.fhir.dstu3.model.ContactPoint;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.dstu3.model.StringType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.model.primitive.IdDt;
-import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
+import es.fhir.rest.core.model.util.transformer.mapper.IPatientPatientAttributeMapper;
 
 @Component(property = IFhirTransformer.TRANSFORMERID + "=Patient.IPatient")
 public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPatient> {
@@ -28,41 +21,18 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 
-	private IContactHelper contactHelper;
+	private IPatientPatientAttributeMapper attributeMapper;
 
 	@Activate
 	private void activate() {
-		contactHelper = new IContactHelper(modelService);
+		IContactHelper contactHelper = new IContactHelper(modelService);
+		attributeMapper = new IPatientPatientAttributeMapper(contactHelper);
 	}
 
 	@Override
 	public Optional<Patient> getFhirObject(IPatient localObject, Set<Include> includes) {
 		Patient patient = new Patient();
-
-		patient.setId(new IdDt("Patient", localObject.getId()));
-
-		List<Identifier> identifiers = contactHelper.getIdentifiers(localObject);
-		identifiers.add(getElexisObjectIdentifier(localObject));
-		String patNr = localObject.getPatientNr();
-		Identifier identifier = new Identifier();
-		identifier.setSystem(IdentifierSystem.ELEXIS_PATNR.getSystem());
-		identifier.setValue(patNr);
-		identifiers.add(identifier);
-		patient.setIdentifier(identifiers);
-
-		patient.setName(contactHelper.getHumanNames(localObject));
-		patient.setGender(contactHelper.getGender(localObject.getGender()));
-		patient.setBirthDate(contactHelper.getBirthDate(localObject));
-		List<Address> addresses = contactHelper.getAddresses(localObject);
-		patient.setAddress(addresses);
-		List<ContactPoint> contactPoints = contactHelper.getContactPoints(localObject);
-		patient.setTelecom(contactPoints);
-
-		Extension elexisPatientNote = new Extension();
-		elexisPatientNote.setUrl("www.elexis.info/extensions/patient/notes");
-		elexisPatientNote.setValue(new StringType(localObject.getComment()));
-		patient.addExtension(elexisPatientNote);
-
+		attributeMapper.elexisToFhir(localObject, patient);
 		return Optional.of(patient);
 	}
 
@@ -87,6 +57,9 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 
 	@Override
 	public Optional<IPatient> createLocalObject(Patient fhirObject) {
-		return Optional.empty();
+		IPatient create = modelService.create(IPatient.class);
+		attributeMapper.fhirToElexis(fhirObject, create);
+		modelService.save(create);
+		return Optional.of(create);
 	}
 }

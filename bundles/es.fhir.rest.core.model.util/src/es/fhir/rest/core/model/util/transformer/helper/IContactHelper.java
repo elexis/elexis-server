@@ -15,6 +15,7 @@ import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Address.AddressUse;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IOrganization;
@@ -80,10 +81,10 @@ public class IContactHelper extends AbstractHelper {
 			return AdministrativeGender.FEMALE;
 		} else if (gender == Gender.MALE) {
 			return AdministrativeGender.MALE;
-		} else if (gender == Gender.UNDEFINED) {
-			return AdministrativeGender.OTHER;
-		} else {
+		} else if (gender == Gender.UNKNOWN) {
 			return AdministrativeGender.UNKNOWN;
+		} else {
+			return AdministrativeGender.OTHER;
 		}
 	}
 
@@ -97,11 +98,13 @@ public class IContactHelper extends AbstractHelper {
 
 	public List<Address> getAddresses(IContact contact) {
 		List<Address> ret = new ArrayList<>();
-		if(contact.getCity() != null && !contact.getCity().isEmpty()) {
+		if (contact.getCity() != null && !contact.getCity().isEmpty()) {
 			Address address = new Address();
+			address.setUse(AddressUse.HOME);
 			address.setCity(contact.getCity());
 			address.setPostalCode(contact.getZip());
-			List<StringType> lines = new ArrayList<StringType>();
+			address.setCountry((contact.getCountry() != null) ? contact.getCountry().name() : null);
+			List<StringType> lines = new ArrayList<>();
 			lines.add(new StringType(contact.getStreet()));
 			address.setLine(lines);
 			ret.add(address);
@@ -121,7 +124,7 @@ public class IContactHelper extends AbstractHelper {
 		if (contact.getPhone2() != null && !contact.getPhone2().isEmpty()) {
 			ContactPoint contactPoint = new ContactPoint();
 			contactPoint.setSystem(ContactPointSystem.PHONE);
-			contactPoint.setUse(ContactPointUse.HOME);
+			contactPoint.setUse(ContactPointUse.WORK);
 			contactPoint.setValue(contact.getPhone2());
 			ret.add(contactPoint);
 		}
@@ -142,6 +145,12 @@ public class IContactHelper extends AbstractHelper {
 			ContactPoint contactPoint = new ContactPoint();
 			contactPoint.setSystem(ContactPointSystem.OTHER);
 			contactPoint.setValue(contact.getWebsite());
+			ret.add(contactPoint);
+		}
+		if (contact.getFax() != null && ! contact.getFax().isEmpty()) {
+			ContactPoint contactPoint = new ContactPoint();
+			contactPoint.setSystem(ContactPointSystem.FAX);
+			contactPoint.setValue(contact.getFax());
 			ret.add(contactPoint);
 		}
 		return ret;
