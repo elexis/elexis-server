@@ -12,6 +12,7 @@ import java.time.Month;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Address.AddressUse;
@@ -32,7 +33,9 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.PreferReturnEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.constants.XidConstants;
+import ch.elexis.core.model.IPatient;
 import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
@@ -51,7 +54,7 @@ public class PatientTest {
 	}
 
 	@Test
-	public void createPatient() {
+	public void createDeletePatient() {
 		Patient patient = new Patient();
 		HumanName hn = new HumanName();
 		hn.setUse(NameUse.OFFICIAL);
@@ -70,6 +73,17 @@ public class PatientTest {
 		IIdType id = execute.getId();
 		Patient created = client.read().resource(Patient.class).withId(id).execute();
 		assertEquals(hn.getFamily(), created.getName().get(0).getFamily());
+		
+		// delete
+		client.delete().resource(created).execute();
+		Optional<IPatient> load = AllTests.getModelService().load(id.getIdPart(), IPatient.class, true);
+		assertTrue(load.isPresent());
+		assertTrue(load.get().isDeleted());
+	}
+	
+	@Test(expected=ResourceNotFoundException.class)
+	public void deleteNonExistentPatient() {
+		client.delete().resourceById("Patient", "doesNotExist").execute();
 	}
 
 	@Test

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.Delete;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -28,6 +29,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.ModelPackage;
@@ -150,6 +152,18 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	public MethodOutcome updatePatient(@IdParam IdType theId, @ResourceParam Patient patient) {		
 		// TODO request lock
 		return resourceProviderUtil.updateResource(theId, getTransformer(), patient, log);
+	}
+	
+	@Delete
+	public void deletePatient(@IdParam IdType theId) {
+		// TODO request lock
+		if(theId!=null) {
+			Optional<IPatient> resource = modelService.load(theId.getIdPart(), IPatient.class);
+			if(!resource.isPresent()) {
+				throw new ResourceNotFoundException(theId);
+			}
+			modelService.delete(resource.get());
+		}
 	}
 
 }
