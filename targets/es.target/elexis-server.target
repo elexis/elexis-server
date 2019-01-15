@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1547194279">
+<target name="Elexis-Server" sequenceNumber="1547547338">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.sdk.feature.group" version="3.15.0.v20180904-1442"/>
@@ -82,7 +82,7 @@
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20181025-1305"/>
       <unit id="ch.elexis.core.test" version="1.0.0.20181030-0925"/>
-      <unit id="ch.elexis.core.jpa" version="1.0.0.20190110-2017"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20190115-0957"/>
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190108-0900"/>
       <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190110-1434"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
