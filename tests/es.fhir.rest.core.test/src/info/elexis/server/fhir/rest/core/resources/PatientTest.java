@@ -29,9 +29,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.PreferReturnEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ch.elexis.core.constants.XidConstants;
+import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.hapi.fhir.FhirUtil;
@@ -60,12 +62,29 @@ public class PatientTest {
 		address.setCity("City");
 		address.setCountry("CH");
 		patient.setAddress(Collections.singletonList(address));
+
+		// create
 		MethodOutcome execute = client.create().resource(patient).execute();
 		assertTrue(execute.getCreated());
 		assertNotNull(execute.getId());
 		IIdType id = execute.getId();
 		Patient created = client.read().resource(Patient.class).withId(id).execute();
 		assertEquals(hn.getFamily(), created.getName().get(0).getFamily());
+	}
+
+	@Test
+	public void updatePatient() {
+		Patient loaded = client.read().resource(Patient.class).withId(TestEntities.PATIENT_MALE_ID).execute();
+		Date originalLastUpdate = loaded.getMeta().getLastUpdated();
+		loaded.getName().get(0).setFamily("familyNameUpdated");
+		MethodOutcome execute = client.update().resource(loaded).prefer(PreferReturnEnum.REPRESENTATION).execute();
+		assertEquals("familyNameUpdated", ((Patient) execute.getResource()).getName().get(0).getFamily());
+		
+		Patient updated = client.read().resource(Patient.class).withId(TestEntities.PATIENT_MALE_ID).execute();
+		assertEquals("familyNameUpdated", updated.getName().get(0).getFamily());
+		Date updatedLastUpdate = updated.getMeta().getLastUpdated();
+		assertTrue(updatedLastUpdate.after(originalLastUpdate));
+		// TODO test
 	}
 
 	@Test

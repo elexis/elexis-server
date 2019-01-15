@@ -52,7 +52,9 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 
 	@Override
 	public Optional<IPatient> updateLocalObject(Patient fhirObject, IPatient localObject) {
-		return Optional.empty();
+		attributeMapper.fhirToElexis(fhirObject, localObject);
+		modelService.save(localObject);
+		return Optional.of(localObject);
 	}
 
 	@Override

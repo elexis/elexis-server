@@ -23,6 +23,7 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Sort;
+import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.api.SortSpec;
@@ -42,7 +43,8 @@ import info.elexis.server.core.connector.elexis.services.ContactService;
 @Component
 public class PatientResourceProvider implements IFhirResourceProvider {
 
-	private Logger logger;
+	private Logger log;
+	private ResourceProviderUtil resourceProviderUtil;
 
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
@@ -57,7 +59,8 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 
 	@Activate
 	public void activate() {
-		logger = LoggerFactory.getLogger(getClass());
+		log = LoggerFactory.getLogger(getClass());
+		resourceProviderUtil = new ResourceProviderUtil();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,7 +114,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 					query.orderBy(ModelPackage.Literals.ICONTACT__DESCRIPTION2, QueryUtil.sortOrderEnumToLocal(order));
 					break;
 				default:
-					logger.info("sortParamName [{}] not supported.", param);
+					log.info("sortParamName [{}] not supported.", param);
 					break;
 				}
 			}
@@ -136,9 +139,17 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 		if (created.isPresent()) {
 			outcome.setCreated(true);
 			outcome.setId(new IdDt("Patient", created.get().getId()));
+			// TODO return the created object
 		} else {
 			throw new InternalErrorException("Creation failed");
 		}
 		return outcome;
 	}
+	
+	@Update
+	public MethodOutcome updatePatient(@IdParam IdType theId, @ResourceParam Patient patient) {		
+		// TODO request lock
+		return resourceProviderUtil.updateResource(theId, getTransformer(), patient, log);
+	}
+
 }

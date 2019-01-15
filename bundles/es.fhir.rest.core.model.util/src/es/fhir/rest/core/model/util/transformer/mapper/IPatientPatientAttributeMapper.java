@@ -2,6 +2,7 @@ package es.fhir.rest.core.model.util.transformer.mapper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Address;
@@ -13,6 +14,7 @@ import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.StringType;
 
@@ -34,7 +36,9 @@ public class IPatientPatientAttributeMapper {
 
 	public void elexisToFhir(IPatient source, Patient target) {
 		target.setId(new IdDt("Patient", source.getId()));
-		mapPatientNumber(source, target);
+		mapMetaData(source, target);
+		
+		mapIdentifiersAndPatientNumber(source, target);
 		target.setName(contactHelper.getHumanNames(source));
 		target.setGender(contactHelper.getGender(source.getGender()));
 		target.setBirthDate(contactHelper.getBirthDate(source));
@@ -50,6 +54,12 @@ public class IPatientPatientAttributeMapper {
 		mapBirthDate(source, target);
 		mapAddressTelecom(source, target);
 		mapComments(source, target);
+	}
+	
+	private void mapMetaData(IPatient source, Patient target) {
+		Meta meta = new Meta();
+		meta.setLastUpdated(new Date(source.getLastupdate()));
+		target.setMeta(meta);
 	}
 
 	private void mapComments(Patient source, IPatient target) {
@@ -143,7 +153,7 @@ public class IPatientPatientAttributeMapper {
 		}
 	}
 
-	private void mapPatientNumber(IPatient source, Patient target) {
+	private void mapIdentifiersAndPatientNumber(IPatient source, Patient target) {
 		List<Identifier> identifiers = contactHelper.getIdentifiers(source);
 		identifiers.add(getElexisObjectIdentifier(source));
 		String patNr = source.getPatientNr();

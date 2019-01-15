@@ -8,12 +8,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.shiro.SecurityUtils;
 import org.hl7.fhir.dstu3.model.Appointment;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -33,7 +32,6 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceOrListParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
@@ -50,7 +48,8 @@ import info.elexis.server.core.common.converter.DateConverter;
 @Component
 public class AppointmentResourceProvider implements IFhirResourceProvider {
 
-	private static Logger log = LoggerFactory.getLogger(AppointmentResourceProvider.class);
+	private Logger log;
+	private ResourceProviderUtil resourceProviderUtil;
 	
 	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
 	private IModelService modelService;
@@ -61,6 +60,12 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Appointment.class;
+	}
+	
+	@Activate
+	public void activate() {
+		log = LoggerFactory.getLogger(getClass());
+		resourceProviderUtil = new ResourceProviderUtil();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -143,31 +148,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 
 	@Update
 	public MethodOutcome updateAppointment(@IdParam IdType theId, @ResourceParam Appointment appointment) {
-		String versionId = theId.getVersionIdPart();
-
-		Optional<IAppointment> localObject = getTransformer().getLocalObject(appointment);
-		MethodOutcome outcome = new MethodOutcome();
-		if (localObject.isPresent()) {
-			if (versionId == null) {
-				log.warn("[{}] Version agnostic update on {}", SecurityUtils.getSubject().getPrincipal(), localObject.get());
-			}
-			if (versionId != null && !versionId.equals(localObject.get().getLastupdate().toString())) {
-				throw new ResourceVersionConflictException(
-						"Expected version " + localObject.get().getLastupdate().toString());
-			}
-			getTransformer().updateLocalObject(appointment, localObject.get());
-
-			Optional<Appointment> updatedObject = getTransformer().getFhirObject(localObject.get());
-			outcome.setId(updatedObject.get().getIdElement());
-			outcome.setResource(updatedObject.get());
-
-		} else {
-			OperationOutcome issueOutcome = new OperationOutcome();
-			issueOutcome.addIssue().setDiagnostics("No local object found");
-			outcome.setOperationOutcome(issueOutcome);
-		}
-
-		return outcome;
+		return resourceProviderUtil.updateResource(theId, getTransformer(), appointment, log);
 	}
 
 }
