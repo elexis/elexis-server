@@ -33,6 +33,8 @@
         filter=""/>
     <requirement
         name="org.eclipse.mylyn.wikitext_feature.feature.group"/>
+    <requirement
+        name="name.schedenig.eclipse.grepconsole.feature.group"/>
     <repository
         url="http://download.eclipse.org/cbi/tpd/3.0.0-SNAPSHOT/"/>
     <repository
@@ -41,6 +43,8 @@
         url="http://download.eclipse.org/rt/rap/incubator/nightly/e4/tooling/site/"/>
     <repository
         url="http://eclipse.jeeeyul.net/update/"/>
+    <repository
+        url="http://eclipse.schedenig.name"/>
     <description>Install the tools needed in the IDE to work with the source code for ${scope.project.label}</description>
   </setupTask>
   <setupTask
@@ -140,8 +144,32 @@
         rootFolder="${elexis-server.git.clone.location}"
         locateNestedProjects="true"/>
   </setupTask>
+  <setupTask
+      xsi:type="jdt:JRETask"
+      version="JavaSE-9"
+      location="${jre.location-9}"/>
   <stream name="master"
-      label="Master"/>
+      label="Master">
+    <setupTask
+        xsi:type="setup:CompoundTask"
+        name="User Preferences">
+      <annotation
+          source="http://www.eclipse.org/oomph/setup/UserPreferences">
+        <detail
+            key="/instance/name.schedenig.eclipse.grepconsole/expressions">
+          <value>record</value>
+        </detail>
+      </annotation>
+      <setupTask
+          xsi:type="setup:CompoundTask"
+          name="name.schedenig.eclipse.grepconsole">
+        <setupTask
+            xsi:type="setup:PreferenceTask"
+            key="/instance/name.schedenig.eclipse.grepconsole/expressions"
+            value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?>&lt;folders xmlns=&quot;http://eclipse.musgit.com/grepconsole&quot;>&lt;style background=&quot;ff0000&quot; bold=&quot;false&quot; border=&quot;false&quot; id=&quot;8720d322-7fd4-4bac-84cb-71a89591bbbb&quot; italic=&quot;false&quot; name=&quot;Error&quot; strikeout=&quot;false&quot; underline=&quot;false&quot;/>&lt;style bold=&quot;false&quot; border=&quot;false&quot; foreground=&quot;7f7f7f&quot; id=&quot;539dd97b-36dc-4d5f-9fd2-14e94d9b015d&quot; italic=&quot;false&quot; name=&quot;Debug&quot; strikeout=&quot;false&quot; underline=&quot;false&quot;/>&lt;style bold=&quot;false&quot; border=&quot;false&quot; foreground=&quot;2f98f2&quot; id=&quot;6cfd15b2-6a74-457b-bf8c-0325d26a2643&quot; italic=&quot;false&quot; name=&quot;Info&quot; strikeout=&quot;false&quot; underline=&quot;false&quot;/>&lt;style bold=&quot;false&quot; border=&quot;false&quot; id=&quot;1b0cf990-ad2d-4bc0-81e6-f59d7131f5a6&quot; italic=&quot;false&quot; strikeout=&quot;false&quot; underline=&quot;false&quot;/>&lt;style background=&quot;a52a2a&quot; bold=&quot;true&quot; border=&quot;false&quot; foreground=&quot;ffff00&quot; id=&quot;79ade458-a1ae-498b-9d83-a6a9f469185f&quot; italic=&quot;false&quot; name=&quot;Fatal&quot; strikeout=&quot;false&quot; underline=&quot;false&quot;/>&lt;style background=&quot;ffd27f&quot; bold=&quot;false&quot; border=&quot;false&quot; id=&quot;2d9ece6e-0325-4d39-8579-4456851f259c&quot; italic=&quot;false&quot; name=&quot;Warn&quot; strikeout=&quot;false&quot; underline=&quot;false&quot;/>&lt;folder enabled=&quot;true&quot; filter=&quot;true&quot; id=&quot;4d3fe9d9-d0e7-4536-bcf9-751170c3c98e&quot; notifications=&quot;true&quot; statistics=&quot;true&quot;>&lt;folder enabled=&quot;true&quot; id=&quot;75da4f67-40e8-45e0-8c75-8292c6f9e5db&quot; name=&quot;Log Output&quot;>&lt;item enabled=&quot;true&quot; expression=&quot;.*(\QDEBUG\E).*&quot; id=&quot;733554cb-6759-46e4-96b4-05b0ae9686e8&quot; name=&quot;Debug&quot;>&lt;group style=&quot;539dd97b-36dc-4d5f-9fd2-14e94d9b015d&quot;/>&lt;group/>&lt;/item>&lt;item enabled=&quot;true&quot; expression=&quot;.*(\QWARN\E).*&quot; id=&quot;805195bb-ae5d-4b68-b2c8-11e4688de116&quot; name=&quot;Warn&quot;>&lt;group style=&quot;2d9ece6e-0325-4d39-8579-4456851f259c&quot;/>&lt;group/>&lt;/item>&lt;item enabled=&quot;true&quot; expression=&quot;.*(\QERROR\E).*&quot; id=&quot;0f03e7f0-7082-462f-ae84-1883904b5301&quot; name=&quot;Error&quot;>&lt;group style=&quot;8720d322-7fd4-4bac-84cb-71a89591bbbb&quot;/>&lt;group/>&lt;/item>&lt;item expression=&quot;.*(\Q[FATAL]\E).*&quot; id=&quot;6da0cf2f-86fe-4054-9f74-522cb8137a72&quot; name=&quot;Fatal&quot;>&lt;group style=&quot;79ade458-a1ae-498b-9d83-a6a9f469185f&quot;/>&lt;group/>&lt;/item>&lt;item enabled=&quot;true&quot; expression=&quot;.*(\QINFO\E).*&quot; id=&quot;be290cbd-e7fe-401a-9972-88dab80bc3a8&quot; name=&quot;Info&quot;>&lt;group style=&quot;6cfd15b2-6a74-457b-bf8c-0325d26a2643&quot;/>&lt;group/>&lt;/item>&lt;/folder>&lt;/folder>&lt;/folders>"/>
+      </setupTask>
+    </setupTask>
+  </stream>
   <logicalProjectContainer
       xsi:type="setup:ProjectCatalog"
       href="index:/org.eclipse.setup#//@projectCatalogs[name='com.github']"/>

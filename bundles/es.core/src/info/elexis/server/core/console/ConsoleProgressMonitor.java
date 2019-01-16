@@ -8,7 +8,10 @@ public class ConsoleProgressMonitor implements IProgressMonitor {
 	private CommandInterpreter ci;
 	private String name;
 	private int totalWork;
-	private int worked = 0;
+	private int worked;
+	private boolean cancelled;
+
+	public ConsoleProgressMonitor() {}
 
 	public ConsoleProgressMonitor(CommandInterpreter ci) {
 		this.ci = ci;
@@ -17,12 +20,22 @@ public class ConsoleProgressMonitor implements IProgressMonitor {
 	@Override
 	public void beginTask(String name, int totalWork) {
 		this.name = name;
-		this.totalWork = totalWork;
+		this.totalWork = (totalWork == UNKNOWN) ? 9999 : totalWork;
+		this.worked = 0;
+		this.cancelled = false;
 		printStatus();
 	}
 
 	private void printStatus() {
-		ci.println(name + " [" + worked + "/" + totalWork + "]");
+		String msg = name + " [" + worked + "/" + totalWork + "]";
+		if (cancelled) {
+			msg = "-CNCLD- " + msg;
+		}
+		if (ci != null) {
+			ci.println(msg);
+		} else {
+			System.out.println(msg);
+		}
 	}
 
 	@Override
@@ -33,15 +46,20 @@ public class ConsoleProgressMonitor implements IProgressMonitor {
 
 	@Override
 	public void internalWorked(double work) {
+		// nothing to do
 	}
 
 	@Override
 	public boolean isCanceled() {
-		return false;
+		return cancelled;
 	}
 
 	@Override
 	public void setCanceled(boolean value) {
+		this.cancelled = value;
+		if (value) {
+			printStatus();
+		}
 	}
 
 	@Override
