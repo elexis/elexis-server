@@ -7,11 +7,13 @@ import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Address.AddressUse;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ContactPoint;
-import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
@@ -22,6 +24,7 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.Identifiable;
+import ch.elexis.core.model.MaritalStatus;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
@@ -37,13 +40,14 @@ public class IPatientPatientAttributeMapper {
 	public void elexisToFhir(IPatient source, Patient target) {
 		target.setId(new IdDt("Patient", source.getId()));
 		mapMetaData(source, target);
-		
+
 		mapIdentifiersAndPatientNumber(source, target);
 		target.setName(contactHelper.getHumanNames(source));
 		target.setGender(contactHelper.getGender(source.getGender()));
 		target.setBirthDate(contactHelper.getBirthDate(source));
 		mapAddressTelecom(source, target);
 		mapComments(source, target);
+		mapMaritalStatus(source, target);
 	}
 
 	public void fhirToElexis(Patient source, IPatient target) {
@@ -54,8 +58,24 @@ public class IPatientPatientAttributeMapper {
 		mapBirthDate(source, target);
 		mapAddressTelecom(source, target);
 		mapComments(source, target);
+		mapMaritalStatus(source, target);
 	}
-	
+
+	private void mapMaritalStatus(IPatient source, Patient target) {
+		MaritalStatus maritalStatus = source.getMaritalStatus();
+		if (maritalStatus != null) {
+			target.setMaritalStatus(new CodeableConcept().addCoding(new Coding().setCode(maritalStatus.getFhirCode())));
+		}
+	}
+
+	private void mapMaritalStatus(Patient source, IPatient target) {
+		CodeableConcept maritalStatus = source.getMaritalStatus();
+		if (maritalStatus != null && !maritalStatus.getCoding().isEmpty()) {
+			String code = maritalStatus.getCoding().get(0).getCode();
+			target.setMaritalStatus(MaritalStatus.byFhirCodeSafe(code));
+		}
+	}
+
 	private void mapMetaData(IPatient source, Patient target) {
 		Meta meta = new Meta();
 		meta.setLastUpdated(new Date(source.getLastupdate()));
@@ -107,10 +127,15 @@ public class IPatientPatientAttributeMapper {
 			if (ContactPointSystem.PHONE.equals(contactPoint.getSystem())) {
 				if (ContactPointUse.MOBILE.equals(contactPoint.getUse())) {
 					target.setMobile(contactPoint.getValue());
+				} else if (1 == contactPoint.getRank()) {
+					target.setPhone1(contactPoint.getValue());
+				} else if (2 == contactPoint.getRank()) {
+					target.setPhone2(contactPoint.getValue());
 				}
-			}
-			if (ContactPointSystem.EMAIL.equals(contactPoint.getSystem())) {
+			} else if (ContactPointSystem.EMAIL.equals(contactPoint.getSystem())) {
 				target.setEmail(contactPoint.getValue());
+			} else if (ContactPointSystem.FAX.equals(contactPoint.getSystem())) {
+				target.setFax(contactPoint.getValue());
 			}
 		}
 	}
@@ -124,7 +149,7 @@ public class IPatientPatientAttributeMapper {
 
 	private void mapGender(Patient source, IPatient target) {
 		AdministrativeGender gender = source.getGender();
-		if(gender != null) {
+		if (gender != null) {
 			switch (gender) {
 			case FEMALE:
 				target.setGender(Gender.FEMALE);

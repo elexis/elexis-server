@@ -33,7 +33,7 @@ public class IContactHelper extends AbstractHelper {
 
 	private IModelService modelService;
 
-	public IContactHelper(IModelService modelService){
+	public IContactHelper(IModelService modelService) {
 		this.modelService = modelService;
 	}
 
@@ -98,17 +98,18 @@ public class IContactHelper extends AbstractHelper {
 
 	public List<Address> getAddresses(IContact contact) {
 		List<Address> ret = new ArrayList<>();
-		if (contact.getCity() != null && !contact.getCity().isEmpty()) {
-			Address address = new Address();
-			address.setUse(AddressUse.HOME);
-			address.setCity(contact.getCity());
-			address.setPostalCode(contact.getZip());
-			address.setCountry((contact.getCountry() != null) ? contact.getCountry().name() : null);
-			List<StringType> lines = new ArrayList<>();
-			lines.add(new StringType(contact.getStreet()));
-			address.setLine(lines);
-			ret.add(address);
-		}
+
+		// main address data
+		Address address = new Address();
+		address.setUse(AddressUse.HOME);
+		address.setCity(contact.getCity());
+		address.setPostalCode(contact.getZip());
+		address.setCountry((contact.getCountry() != null) ? contact.getCountry().name() : null);
+		List<StringType> lines = new ArrayList<>();
+		lines.add(new StringType(contact.getStreet()));
+		address.setLine(lines);
+		ret.add(address);
+
 		return ret;
 	}
 
@@ -117,15 +118,15 @@ public class IContactHelper extends AbstractHelper {
 		if (contact.getPhone1() != null && !contact.getPhone1().isEmpty()) {
 			ContactPoint contactPoint = new ContactPoint();
 			contactPoint.setSystem(ContactPointSystem.PHONE);
-			contactPoint.setUse(ContactPointUse.HOME);
+			contactPoint.setRank(1);
 			contactPoint.setValue(contact.getPhone1());
 			ret.add(contactPoint);
 		}
 		if (contact.getPhone2() != null && !contact.getPhone2().isEmpty()) {
 			ContactPoint contactPoint = new ContactPoint();
 			contactPoint.setSystem(ContactPointSystem.PHONE);
-			contactPoint.setUse(ContactPointUse.WORK);
 			contactPoint.setValue(contact.getPhone2());
+			contactPoint.setRank(2);
 			ret.add(contactPoint);
 		}
 		if (contact.getMobile() != null && !contact.getMobile().isEmpty()) {
@@ -143,11 +144,11 @@ public class IContactHelper extends AbstractHelper {
 		}
 		if (contact.getWebsite() != null && !contact.getWebsite().isEmpty()) {
 			ContactPoint contactPoint = new ContactPoint();
-			contactPoint.setSystem(ContactPointSystem.OTHER);
+			contactPoint.setSystem(ContactPointSystem.URL);
 			contactPoint.setValue(contact.getWebsite());
 			ret.add(contactPoint);
 		}
-		if (contact.getFax() != null && ! contact.getFax().isEmpty()) {
+		if (contact.getFax() != null && !contact.getFax().isEmpty()) {
 			ContactPoint contactPoint = new ContactPoint();
 			contactPoint.setSystem(ContactPointSystem.FAX);
 			contactPoint.setValue(contact.getFax());
@@ -158,7 +159,7 @@ public class IContactHelper extends AbstractHelper {
 
 	public List<Identifier> getIdentifiers(IContact contact) {
 		List<Identifier> ret = new ArrayList<>();
-		
+
 		IQuery<IXid> query = modelService.getQuery(IXid.class);
 		query.and(ModelPackage.Literals.IXID__OBJECT_ID, COMPARATOR.EQUALS, contact.getId());
 		// TODO type?
