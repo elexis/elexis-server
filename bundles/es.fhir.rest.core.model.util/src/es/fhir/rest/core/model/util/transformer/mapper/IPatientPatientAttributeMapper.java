@@ -2,11 +2,14 @@ package es.fhir.rest.core.model.util.transformer.mapper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Address.AddressUse;
+import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ContactPoint;
@@ -18,13 +21,17 @@ import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Patient.ContactComponent;
 import org.hl7.fhir.dstu3.model.StringType;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import ch.elexis.core.findings.IdentifierSystem;
+import ch.elexis.core.model.IImage;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.MaritalStatus;
+import ch.elexis.core.model.MimeType;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
@@ -48,17 +55,59 @@ public class IPatientPatientAttributeMapper {
 		mapAddressTelecom(source, target);
 		mapComments(source, target);
 		mapMaritalStatus(source, target);
+		mapContacts(source, target);
+		mapContactImage(source, target);
 	}
 
 	public void fhirToElexis(Patient source, IPatient target) {
-		// id must not be mapped (not updateable)
-		// patientNumber must not be mapped (not updateable)
+		mapIdentifiers(source, target);
 		mapName(source, target);
 		mapGender(source, target);
 		mapBirthDate(source, target);
 		mapAddressTelecom(source, target);
 		mapComments(source, target);
 		mapMaritalStatus(source, target);
+		mapContacts(source, target);
+	}
+
+	private void mapContacts(Patient source, IPatient target) {
+
+	}
+
+	private void mapContacts(IPatient source, Patient target) {
+		List<ContactComponent> contacts = new ArrayList<Patient.ContactComponent>();
+
+		IPerson legalGuardian = source.getLegalGuardian();
+		if (legalGuardian != null) {
+			ContactComponent _legalGuardian = new ContactComponent();
+
+			CodeableConcept addCoding = new CodeableConcept().addCoding(new Coding().setCode("N"));
+			_legalGuardian.setRelationship(Collections.singletonList(addCoding));
+			_legalGuardian.setId(legalGuardian.getId());
+			List<HumanName> humanNames = contactHelper.getHumanNames(legalGuardian);
+			_legalGuardian.setName((!humanNames.isEmpty()) ? humanNames.get(0) : null);
+			List<Address> addresses = contactHelper.getAddresses(legalGuardian);
+			_legalGuardian.setAddress((!addresses.isEmpty()) ? addresses.get(0) : null);
+			AdministrativeGender gender = contactHelper.getGender(legalGuardian.getGender());
+			_legalGuardian.setGender(gender);
+			List<ContactPoint> contactPoints = contactHelper.getContactPoints(legalGuardian);
+			_legalGuardian.setTelecom(contactPoints);
+
+			contacts.add(_legalGuardian);
+		}
+
+		target.setContact(contacts);
+	}
+
+	private void mapContactImage(IPatient source, Patient target) {
+		IImage image = source.getImage();
+		if (image != null) {
+			Attachment _image = new Attachment();
+			MimeType mimeType = image.getMimeType();
+			_image.setContentType((mimeType != null) ? mimeType.getContentType() : null);
+			_image.setData(image.getImage());
+			target.setPhoto(Collections.singletonList(_image));
+		}
 	}
 
 	private void mapMaritalStatus(IPatient source, Patient target) {
@@ -187,6 +236,23 @@ public class IPatientPatientAttributeMapper {
 		identifier.setValue(patNr);
 		identifiers.add(identifier);
 		target.setIdentifier(identifiers);
+	}
+
+	/**
+	 * Selective support for incoming identifiers. Currently only accepts AHV Number
+	 * 
+	 * @param source
+	 * @param target
+	 */
+	private void mapIdentifiers(Patient source, IPatient target) {
+		// id must not be mapped (not updateable)
+		// patientNumber must not be mapped (not updateable)
+		List<Identifier> identifiers = source.getIdentifier();
+		for (Identifier identifier : identifiers) {
+			if ("www.ahv.ch/xid".equals(identifier.getSystem())) {
+				target.addXid("www.ahv.ch/xid", identifier.getValue(), true);
+			}
+		}
 	}
 
 	private Identifier getElexisObjectIdentifier(Identifiable dbObject) {

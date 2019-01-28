@@ -141,7 +141,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 		if (created.isPresent()) {
 			outcome.setCreated(true);
 			outcome.setId(new IdDt("Patient", created.get().getId()));
-			// TODO return the created object
+			outcome.setResource(getTransformer().getFhirObject(created.get()).get());
 		} else {
 			throw new InternalErrorException("Creation failed");
 		}
@@ -150,13 +150,13 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	
 	@Update
 	public MethodOutcome updatePatient(@IdParam IdType theId, @ResourceParam Patient patient) {		
-		// TODO request lock
+		// TODO request lock or fail
 		return resourceProviderUtil.updateResource(theId, getTransformer(), patient, log);
 	}
 	
 	@Delete
 	public void deletePatient(@IdParam IdType theId) {
-		// TODO request lock
+		// TODO request lock or fail
 		if(theId!=null) {
 			Optional<IPatient> resource = modelService.load(theId.getIdPart(), IPatient.class);
 			if(!resource.isPresent()) {

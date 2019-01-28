@@ -6,6 +6,9 @@ with source allEnvironments
 
 // switch to appropriate Elexis branch on branching ES
 location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
+	// Java 11
+	// com.sun.source.tree stuff wegen target
+	//
 	ch.rgw.utility
 	ch.elexis.core
 	ch.elexis.core.l10n
