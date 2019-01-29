@@ -118,7 +118,7 @@ public class PractitionerRoleTest {
 		List<ContactPoint> telcoms = readPractitioner.getTelecom();
 		assertNotNull(telcoms);
 		assertEquals(2, telcoms.size());
-		assertEquals(ContactPointUse.HOME, telcoms.get(0).getUse());
+		assertEquals(1, telcoms.get(0).getRank());
 		assertEquals("+01555234", telcoms.get(0).getValue());
 		assertEquals(ContactPointUse.MOBILE, telcoms.get(1).getUse());
 		assertEquals("+01444234", telcoms.get(1).getValue());

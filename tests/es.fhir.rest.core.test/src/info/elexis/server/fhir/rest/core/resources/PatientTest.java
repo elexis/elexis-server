@@ -148,7 +148,7 @@ public class PatientTest {
 		List<ContactPoint> telcoms = readPatient.getTelecom();
 		assertNotNull(telcoms);
 		assertEquals(2, telcoms.size());
-		assertEquals(ContactPointUse.HOME, telcoms.get(0).getUse());
+		assertEquals(1, telcoms.get(0).getRank());
 		assertEquals("+01555123", telcoms.get(0).getValue());
 		assertEquals(ContactPointUse.MOBILE, telcoms.get(1).getUse());
 		assertEquals("+01444123", telcoms.get(1).getValue());

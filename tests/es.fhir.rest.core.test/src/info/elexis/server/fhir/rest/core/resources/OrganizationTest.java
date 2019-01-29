@@ -65,7 +65,7 @@ public class OrganizationTest {
 		List<ContactPoint> telcoms = readOrganization.getTelecom();
 		assertNotNull(telcoms);
 		assertEquals(2, telcoms.size());
-		assertEquals(ContactPointUse.HOME, telcoms.get(0).getUse());
+		assertEquals(1, telcoms.get(0).getRank());
 		assertEquals("+01555345", telcoms.get(0).getValue());
 		assertEquals(ContactPointUse.MOBILE, telcoms.get(1).getUse());
 		assertEquals("+01444345", telcoms.get(1).getValue());
