@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1548746716">
+<target name="Elexis-Server" sequenceNumber="1548848365">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
+      <unit id="jaxb-api-impl-import-java9" version="1.0.0.20190124-1239"/>
       <unit id="ch.rgw.utility" version="3.8.0.20190125-0911"/>
-      <unit id="ch.elexis.core" version="3.8.0.20190128-1515"/>
+      <unit id="ch.elexis.core" version="3.8.0.20190130-1133"/>
       <unit id="ch.elexis.core.l10n" version="3.8.0.20190125-0911"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20190128-1515"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20190108-0900"/>

@@ -25,6 +25,7 @@ import org.hl7.fhir.dstu3.model.Patient.ContactComponent;
 import org.hl7.fhir.dstu3.model.StringType;
 
 import ca.uhn.fhir.model.primitive.IdDt;
+import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IImage;
 import ch.elexis.core.model.IPatient;
@@ -239,7 +240,8 @@ public class IPatientPatientAttributeMapper {
 	}
 
 	/**
-	 * Selective support for incoming identifiers. Currently only accepts AHV Number
+	 * Selective support for mapping incoming identifiers. Currently only accepts
+	 * AHV Number
 	 * 
 	 * @param source
 	 * @param target
@@ -249,8 +251,8 @@ public class IPatientPatientAttributeMapper {
 		// patientNumber must not be mapped (not updateable)
 		List<Identifier> identifiers = source.getIdentifier();
 		for (Identifier identifier : identifiers) {
-			if ("www.ahv.ch/xid".equals(identifier.getSystem())) {
-				target.addXid("www.ahv.ch/xid", identifier.getValue(), true);
+			if (XidConstants.CH_AHV.equals(identifier.getSystem())) {
+				target.addXid(XidConstants.CH_AHV, identifier.getValue(), true);
 			}
 		}
 	}
