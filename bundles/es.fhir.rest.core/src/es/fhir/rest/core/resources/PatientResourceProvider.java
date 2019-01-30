@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.Delete;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -28,7 +27,6 @@ import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.api.SortSpec;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
@@ -136,16 +134,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 
 	@Create
 	public MethodOutcome createPatient(@ResourceParam Patient patient) {
-		MethodOutcome outcome = new MethodOutcome();
-		Optional<IPatient> created = getTransformer().createLocalObject(patient);
-		if (created.isPresent()) {
-			outcome.setCreated(true);
-			outcome.setId(new IdDt("Patient", created.get().getId()));
-			outcome.setResource(getTransformer().getFhirObject(created.get()).get());
-		} else {
-			throw new InternalErrorException("Creation failed");
-		}
-		return outcome;
+		return resourceProviderUtil.createResource(getTransformer(), patient, log);
 	}
 	
 	@Update

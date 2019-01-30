@@ -7,6 +7,8 @@ import ch.elexis.core.services.IQuery.ORDER;
 
 public class QueryUtil {
 	
+	private QueryUtil() {}
+	
 	public static COMPARATOR prefixParamToToQueryParam(ParamPrefixEnum prefix){
 		switch (prefix) {
 		case EQUAL:

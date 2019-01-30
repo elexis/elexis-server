@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.ICoverage;
-import ch.elexis.core.model.IImage;
 import ch.elexis.core.model.IPatient;
-import ch.elexis.core.model.MimeType;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -28,43 +26,6 @@ public class ContactService extends PersistenceService2 {
 		IQuery<ICoverage> query = modelService.getQuery(ICoverage.class);
 		query.and(ModelPackage.Literals.ICOVERAGE__PATIENT, COMPARATOR.EQUALS, patient);
 		return query.execute();
-	}
-	
-	/**
-	 * Set a profile image for a given contact.
-	 * 
-	 * @param contact
-	 * @param image
-	 * @param mimeType
-	 */
-	public static void setContactImage(IContact contact, byte[] image, MimeType mimeType){
-		Optional<IImage> contactImage =
-			(Optional<IImage>) modelService.load(contact.getId(), IImage.class);
-		IImage dbImage;
-		if (!contactImage.isPresent()) {
-			dbImage = modelService.create(IImage.class);
-			dbImage.setId(contact.getId());
-		} else {
-			dbImage = contactImage.get();
-		}
-		
-		dbImage.setPrefix("ch.elexis.data.Kontakt"); // TODO weg damit?
-		dbImage.setTitle("ContactImage." + mimeType.name());
-		dbImage.setImage(image);
-		modelService.save(dbImage);
-	}
-	
-	/**
-	 * 
-	 * @param contact
-	 * @return the {@link DbImage} object containing the resp. image, if present
-	 */
-	public static Optional<IImage> getContactImage(IContact contact){
-		return (Optional<IImage>) modelService.load(contact.getId(), IImage.class);
-	}
-	
-	public static List<IPatient> findAllPatients(){
-		return modelService.getQuery(IPatient.class).execute();
 	}
 	
 	public static Optional<IPatient> findPatientByPatientNumber(int randomPatientNumber){

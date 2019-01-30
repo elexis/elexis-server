@@ -9,6 +9,7 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.slf4j.Logger;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import ch.elexis.core.model.Identifiable;
 import es.fhir.rest.core.IFhirTransformer;
@@ -34,14 +35,39 @@ public class ResourceProviderUtil {
 			transformer.updateLocalObject(fhirObject, localObject.get());
 
 			Optional<T> updatedObject = transformer.getFhirObject(localObject.get());
-			outcome.setId(updatedObject.get().getIdElement());
-			outcome.setResource(updatedObject.get());
+			if (updatedObject.isPresent()) {
+				outcome.setId(updatedObject.get().getIdElement());
+				outcome.setResource(updatedObject.get());
+				return outcome;
+			}
+			log.warn("Object update failed [{}]", fhirObject);
+			throw new InternalErrorException("Object update failed");
+			
 		} else {
 			OperationOutcome issueOutcome = new OperationOutcome();
 			issueOutcome.addIssue().setDiagnostics("No local object found");
 			outcome.setOperationOutcome(issueOutcome);
 		}
 		return outcome;
+	}
+
+	protected <T extends BaseResource, U extends Identifiable> MethodOutcome createResource(
+			IFhirTransformer<T, U> transformer, T fhirObject, Logger log) {
+		
+		Optional<U> created = transformer.createLocalObject(fhirObject);
+		if (created.isPresent()) {
+			Optional<T> updated = transformer.getFhirObject(created.get());
+			if (updated.isPresent()) {
+				MethodOutcome outcome = new MethodOutcome();
+				outcome.setCreated(true);
+				outcome.setId(updated.get().getIdElement());
+				outcome.setResource(updated.get());
+				return outcome;
+			}
+		}
+
+		log.warn("Object creation failed [{}]", fhirObject);
+		throw new InternalErrorException("Creation failed");
 	}
 
 }

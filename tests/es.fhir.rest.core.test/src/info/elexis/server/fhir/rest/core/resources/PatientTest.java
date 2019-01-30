@@ -70,6 +70,7 @@ public class PatientTest {
 		MethodOutcome execute = client.create().resource(patient).execute();
 		assertTrue(execute.getCreated());
 		assertNotNull(execute.getId());
+		assertEquals("Patient", execute.getId().getResourceType());
 		IIdType id = execute.getId();
 		Patient created = client.read().resource(Patient.class).withId(id).execute();
 		assertEquals(hn.getFamily(), created.getName().get(0).getFamily());

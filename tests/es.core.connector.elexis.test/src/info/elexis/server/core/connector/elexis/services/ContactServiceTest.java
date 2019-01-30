@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -16,11 +15,6 @@ import ch.elexis.core.types.Gender;
 
 public class ContactServiceTest extends AbstractServiceTest {
 		
-	@Test
-	public void testFindAllPatients(){
-		List<IPatient> findAllPatients = ContactService.findAllPatients();
-		assertTrue(findAllPatients.size() > 0);
-	}
 	
 	//	@Test
 	//	@Ignore
