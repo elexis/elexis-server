@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1548848787">
+<target name="Elexis-Server" sequenceNumber="1549029105">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -84,7 +84,7 @@
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20181025-1305"/>
       <unit id="ch.elexis.core.test" version="1.0.0.20181030-0925"/>
-      <unit id="ch.elexis.core.jpa" version="1.0.0.20190115-0957"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20190201-1325"/>
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190108-0900"/>
       <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190122-1406"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
