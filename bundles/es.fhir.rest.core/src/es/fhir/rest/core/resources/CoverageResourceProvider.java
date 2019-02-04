@@ -8,8 +8,11 @@ import java.util.Optional;
 import org.hl7.fhir.dstu3.model.Coverage;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -18,7 +21,6 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.model.ICoverage;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
@@ -29,6 +31,9 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 @Component
 public class CoverageResourceProvider implements IFhirResourceProvider {
 	
+	private Logger log;
+	private ResourceProviderUtil resourceProviderUtil;
+	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
@@ -38,6 +43,12 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
 		return Coverage.class;
+	}
+	
+	@Activate
+	public void activate() {
+		log = LoggerFactory.getLogger(getClass());
+		resourceProviderUtil = new ResourceProviderUtil();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -83,20 +94,6 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	
 	@Create
 	public MethodOutcome createCoverage(@ResourceParam Coverage coverage){
-		MethodOutcome outcome = new MethodOutcome();
-		Optional<ICoverage> exists = getTransformer().getLocalObject(coverage);
-		if (exists.isPresent()) {
-			outcome.setCreated(false);
-			outcome.setId(new IdType(coverage.getId()));
-		} else {
-			Optional<ICoverage> created = getTransformer().createLocalObject(coverage);
-			if (created.isPresent()) {
-				outcome.setCreated(true);
-				outcome.setId(new IdType(created.get().getId()));
-			} else {
-				throw new InternalErrorException("Creation failed");
-			}
-		}
-		return outcome;
+		return resourceProviderUtil.createResource(getTransformer(), coverage, log);
 	}
 }

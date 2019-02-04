@@ -7,6 +7,7 @@ import org.hl7.fhir.dstu3.model.BaseResource;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -51,6 +52,14 @@ public class ResourceProviderUtil {
 		return outcome;
 	}
 
+	/**
+	 * 
+	 * @param transformer
+	 * @param fhirObject
+	 * @param log
+	 * @return
+	 * TODO Support conditional create http://hl7.org/fhir/http.html#ccreate
+	 */
 	protected <T extends BaseResource, U extends Identifiable> MethodOutcome createResource(
 			IFhirTransformer<T, U> transformer, T fhirObject, Logger log) {
 		
