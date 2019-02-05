@@ -12,7 +12,6 @@ import ca.uhn.fhir.model.api.Include;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 import es.fhir.rest.core.model.util.transformer.mapper.IPatientPatientAttributeMapper;
 
 @Component(property = IFhirTransformer.TRANSFORMERID + "=Patient.IPatient")
@@ -25,8 +24,7 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 
 	@Activate
 	private void activate() {
-		IContactHelper contactHelper = new IContactHelper(modelService);
-		attributeMapper = new IPatientPatientAttributeMapper(contactHelper);
+		attributeMapper = new IPatientPatientAttributeMapper(modelService);
 	}
 
 	@Override

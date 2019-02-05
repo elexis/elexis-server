@@ -1,5 +1,6 @@
 package es.fhir.rest.core.model.util.transformer.mapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.MaritalStatus;
 import ch.elexis.core.model.MimeType;
+import ch.elexis.core.services.IModelService;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
@@ -40,9 +42,11 @@ import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 public class IPatientPatientAttributeMapper {
 
 	private IContactHelper contactHelper;
+	private IModelService coreModelService;
 
-	public IPatientPatientAttributeMapper(IContactHelper contactHelper) {
-		this.contactHelper = contactHelper;
+	public IPatientPatientAttributeMapper(IModelService coreModelService) {
+		this.contactHelper = new IContactHelper(coreModelService);
+		this.coreModelService = coreModelService;
 	}
 
 	public void elexisToFhir(IPatient source, Patient target) {
@@ -69,6 +73,7 @@ public class IPatientPatientAttributeMapper {
 		mapComments(source, target);
 		mapMaritalStatus(source, target);
 		mapContacts(source, target);
+		mapContactImage(source, target);
 	}
 
 	private void mapContacts(Patient source, IPatient target) {
@@ -108,6 +113,21 @@ public class IPatientPatientAttributeMapper {
 			_image.setContentType((mimeType != null) ? mimeType.getContentType() : null);
 			_image.setData(image.getImage());
 			target.setPhoto(Collections.singletonList(_image));
+		}
+	}
+
+	private void mapContactImage(Patient source, IPatient target) {
+		if (!source.getPhoto().isEmpty()) {
+			Attachment fhirImage = source.getPhoto().get(0);
+			IImage image = coreModelService.create(IImage.class);
+			image.setDate(LocalDate.now());
+			String contentType = fhirImage.getContentTypeElement().asStringValue();
+			MimeType mimeType = MimeType.getByContentType(contentType);
+			image.setMimeType(mimeType);
+			image.setImage(fhirImage.getData());
+			target.setImage(image);
+		} else {
+			target.setImage(null);
 		}
 	}
 
