@@ -118,6 +118,10 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	public List<Patient> findPatient(@OptionalParam(name = Patient.SP_NAME) StringAndListParam theNames,
 			@OptionalParam(name = Patient.SP_BIRTHDATE) DateParam theBirthDate, @Sort SortSpec theSort) {
 
+		if (theNames == null && theBirthDate == null) {
+			return Collections.emptyList();
+		}
+
 		IQuery<IPatient> query = modelService.getQuery(IPatient.class);
 		List<String> nameParameters = null;
 
