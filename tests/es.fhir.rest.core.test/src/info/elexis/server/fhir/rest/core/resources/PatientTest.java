@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,15 +75,15 @@ public class PatientTest {
 		IIdType id = execute.getId();
 		Patient created = client.read().resource(Patient.class).withId(id).execute();
 		assertEquals(hn.getFamily(), created.getName().get(0).getFamily());
-		
+
 		// delete
 		client.delete().resource(created).execute();
 		Optional<IPatient> load = AllTests.getModelService().load(id.getIdPart(), IPatient.class, true);
 		assertTrue(load.isPresent());
 		assertTrue(load.get().isDeleted());
 	}
-	
-	@Test(expected=ResourceNotFoundException.class)
+
+	@Test(expected = ResourceNotFoundException.class)
 	public void deleteNonExistentPatient() {
 		client.delete().resourceById("Patient", "doesNotExist").execute();
 	}
@@ -94,7 +95,7 @@ public class PatientTest {
 		loaded.getName().get(0).setFamily("familyNameUpdated");
 		MethodOutcome execute = client.update().resource(loaded).prefer(PreferReturnEnum.REPRESENTATION).execute();
 		assertEquals("familyNameUpdated", ((Patient) execute.getResource()).getName().get(0).getFamily());
-		
+
 		Patient updated = client.read().resource(Patient.class).withId(TestEntities.PATIENT_MALE_ID).execute();
 		assertEquals("familyNameUpdated", updated.getName().get(0).getFamily());
 		Date updatedLastUpdate = updated.getMeta().getLastUpdated();
@@ -104,25 +105,48 @@ public class PatientTest {
 
 	@Test
 	public void getPatient() {
-		// search by name
+		Patient readPatient = client.read().resource(Patient.class)
+				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId()).execute();
+		assertTrue(readPatient.getId().contains(AllTests.getTestDatabaseInitializer().getPatient().getId()));
+	}
+
+	@Test
+	public void searchPatientSingleNameValue() {
 		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))
 				.returnBundle(Bundle.class).execute();
-		assertNotNull(results);
-		List<BundleEntryComponent> entries = results.getEntry();
-		assertFalse(entries.isEmpty());
-		Patient patient = (Patient) entries.get(0).getResource();
-		// read with by id
-		Patient readPatient = client.read().resource(Patient.class).withId(patient.getId()).execute();
-		assertNotNull(readPatient);
-		assertEquals(patient.getId(), readPatient.getId());
-		// search by elexis patient number identifier
-		results = client
-				.search().forResource(Patient.class).where(Patient.IDENTIFIER.exactly()
-						.systemAndIdentifier("www.elexis.info/patnr", Integer.toString(getPatientNumber(patient))))
+		assertEquals(3, results.getEntry().size());
+		Optional<BundleEntryComponent> found = results.getEntry().stream().filter(
+				e -> e.getResource().getId().contains(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.findFirst();
+		assertTrue(found.isPresent());
+	}
+
+	@Test
+	public void searchPatientMultipleNameValue() {
+		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))
+				.and(Patient.NAME.matches().value("name")).returnBundle(Bundle.class).execute();
+		assertEquals(2, results.getEntry().size());
+		Optional<BundleEntryComponent> found = results.getEntry().stream()
+				.filter(e -> e.getResource().getId().contains("s9b71824bf6b877701111")).findFirst();
+		assertTrue(found.isPresent());
+	}
+
+	@Test
+	public void searchByPatientNumberIdentifier() {
+		String patientNr = AllTests.getTestDatabaseInitializer().getPatient().getPatientNr();
+		Bundle results = client.search().forResource(Patient.class)
+				.where(Patient.IDENTIFIER.exactly().systemAndIdentifier("www.elexis.info/patnr", patientNr))
 				.returnBundle(Bundle.class).execute();
-		assertNotNull(results);
-		entries = results.getEntry();
-		assertFalse(entries.isEmpty());
+		assertTrue(results.getEntry().get(0).getResource().getId()
+				.contains(AllTests.getTestDatabaseInitializer().getPatient().getId()));
+	}
+
+	@Test
+	public void searchByPatientBirthDate() {
+		Date birthDate = new GregorianCalendar(1988, 5, 23).getTime();
+		Bundle results = client.search().forResource(Patient.class).where(Patient.BIRTHDATE.exactly().day(birthDate))
+				.returnBundle(Bundle.class).execute();
+		assertEquals(1, results.getEntry().size());
 	}
 
 	/**
