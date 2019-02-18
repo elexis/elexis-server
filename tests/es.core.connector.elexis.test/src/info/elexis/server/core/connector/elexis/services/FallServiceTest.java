@@ -82,14 +82,6 @@
 //		assertEquals("insuranceType", storedFall.getExtInfoAsString(FallConstants.FLD_EXTINFO_BILLING));
 //	}
 //
-//	@Test
-//	public void testCheckFallIsOpen() {
-//		fall = new FallService.Builder(patient, "description", FallConstants.TYPE_DISEASE, "UVG").buildAndSave();
-//		assertEquals(true, FallService.isOpen(fall));
-//		fall.setDatumBis(LocalDate.now());
-//		FallService.save(fall);
-//		assertEquals(false, FallService.isOpen(fall));
-//	}
 //
 //	@Test
 //	public void testFallConstantsConfiguration() {
