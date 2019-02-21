@@ -60,7 +60,7 @@ public class IPatientPatientAttributeMapper {
 		mapAddressTelecom(source, target);
 		mapComments(source, target);
 		mapMaritalStatus(source, target);
-		mapContacts(source, target);
+		mapRelatedContacts(source, target);
 		mapContactImage(source, target);
 	}
 
@@ -80,8 +80,8 @@ public class IPatientPatientAttributeMapper {
 
 	}
 
-	private void mapContacts(IPatient source, Patient target) {
-		List<ContactComponent> contacts = new ArrayList<Patient.ContactComponent>();
+	private void mapRelatedContacts(IPatient source, Patient target) {
+		List<ContactComponent> contacts = new ArrayList<>();
 
 		IPerson legalGuardian = source.getLegalGuardian();
 		if (legalGuardian != null) {

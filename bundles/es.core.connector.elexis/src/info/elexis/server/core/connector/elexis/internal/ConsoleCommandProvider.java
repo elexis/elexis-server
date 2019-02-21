@@ -14,10 +14,12 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IConfig;
+import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IQuery;
+import ch.elexis.core.services.IQuery.COMPARATOR;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
-import info.elexis.server.core.connector.elexis.services.ConfigService;
 import info.elexis.server.core.connector.elexis.services.LockService;
 import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 
@@ -26,10 +28,10 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	@Reference(cardinality = ReferenceCardinality.MANDATORY)
 	private IModelService modelService;
-	
+
 //	@Reference(cardinality = ReferenceCardinality.MANDATORY)
 //	private IStockCommissioningSystemService stockCommissioningSystemService;
-	
+
 	public void _es_elc(CommandInterpreter ci) {
 		executeCommand(ci);
 	}
@@ -99,7 +101,10 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		if (StringUtils.isEmpty(nodePrefix)) {
 			nodePrefix = "";
 		}
-		List<IConfig> nodes = ConfigService.INSTANCE.getNodes(nodePrefix);
+
+		IQuery<IConfig> qre = modelService.getQuery(IConfig.class);
+		qre.and(ModelPackage.Literals.ICONFIG__KEY, COMPARATOR.LIKE, nodePrefix + "%");
+		List<IConfig> nodes = qre.execute();
 		for (IConfig config : nodes) {
 			ci.println(config);
 		}

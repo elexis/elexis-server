@@ -39,13 +39,14 @@ import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.INamedQuery;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.rgw.tools.StringTool;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.QueryUtil;
-import info.elexis.server.core.connector.elexis.services.ContactService;
 
 @Component
 public class PatientResourceProvider implements IFhirResourceProvider {
@@ -93,11 +94,14 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	@Search()
 	public List<Patient> findPatientByIdentifier(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
 		if (identifier != null && identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
-			Optional<IPatient> patient = ContactService
-					.findPatientByPatientNumber(Integer.valueOf(identifier.getValue()));
+			INamedQuery<IPatient> namedQuery = modelService.getNamedQuery(IPatient.class, "code");
+			Optional<IPatient> patient = namedQuery.executeWithParametersSingleResult(
+					namedQuery.getParameterMap("code", StringTool.normalizeCase(identifier.getValue())));
 			if (patient.isPresent() && patient.get().isPatient()) {
 				Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());
-				return Collections.singletonList(fhirPatient.get());
+				if(fhirPatient.isPresent()) {
+					return Collections.singletonList(fhirPatient.get());
+				}
 			}
 		}
 		return Collections.emptyList();
