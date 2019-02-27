@@ -157,7 +157,7 @@ public class DocHandleService extends PersistenceService {
 	 * @return the file handle, or <code>null</code> if none or invalid storage
 	 *         path configured or other error
 	 */
-	public static File omnivoreDetermineNetworkStorageFile(DocHandle docHandle) {
+	private static File omnivoreDetermineNetworkStorageFile(DocHandle docHandle) {
 		String pathname = LocalProperties.getProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, null);
 		if (pathname != null) {
 			File dir = new File(pathname);

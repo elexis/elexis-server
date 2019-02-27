@@ -4,15 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Convert;
 
@@ -54,9 +53,8 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column(length = 80)
 	protected String mimetype;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@PrimaryKeyJoinColumn
-	protected Heap content;
+	@Transient
+	protected byte[] content;
 
 	@Basic(fetch = FetchType.LAZY)
 	@Lob()
@@ -69,12 +67,6 @@ public class Brief extends AbstractDBObjectIdDeleted {
 	@Column
 	@Convert("booleanStringConverter")
 	protected boolean geloescht = false;
-
-	public Brief() {
-		super();
-		content = new Heap();
-		content.setId(getId());
-	}
 
 	public String getSubject() {
 		return subject;
@@ -164,11 +156,11 @@ public class Brief extends AbstractDBObjectIdDeleted {
 		this.path = path;
 	}
 
-	public Heap getContent() {
+	public byte[] getContent() {
 		return content;
 	}
 
-	public void setContent(Heap content) {
+	public void setContent(byte[] content) {
 		this.content = content;
 	}
 

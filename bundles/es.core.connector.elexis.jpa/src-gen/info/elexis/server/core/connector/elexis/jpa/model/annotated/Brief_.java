@@ -1,7 +1,6 @@
 package info.elexis.server.core.connector.elexis.jpa.model.annotated;
 
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Behandlung;
-import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,7 +16,6 @@ public class Brief_ {
     public static volatile SingularAttribute<Brief, String> subject;
     public static volatile SingularAttribute<Brief, String> typ;
     public static volatile SingularAttribute<Brief, LocalDateTime> creationDate;
-    public static volatile SingularAttribute<Brief, Heap> content;
     public static volatile SingularAttribute<Brief, Boolean> geloescht;
     public static volatile SingularAttribute<Brief, String> path;
     public static volatile SingularAttribute<Brief, LocalDate> gedruckt;
