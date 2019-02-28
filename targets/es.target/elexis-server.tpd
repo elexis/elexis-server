@@ -208,5 +208,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.objectweb.asm.tree
 	
 	com.eclipsesource.restfuse
+	
+	net.sf.opencsv
 }
 
