@@ -39,6 +39,6 @@ public class Config extends AbstractDBObject {
 
 	@Override
 	public String toString() {
-		return super.toString() + "param=[" + getParam() + "] wert=[" + getWert() + "]";
+		return super.toString() + " param=[" + getParam() + "] wert=[" + getWert() + "]";
 	}
 }
