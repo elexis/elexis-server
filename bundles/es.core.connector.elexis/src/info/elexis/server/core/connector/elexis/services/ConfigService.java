@@ -73,6 +73,9 @@ public class ConfigService {
 	 */
 	public boolean get(String key, boolean defValue) {
 		String string = get(key, Boolean.toString(defValue));
+		if ("1".equals(string.trim())) {
+			return true;
+		}
 		return Boolean.valueOf(string);
 	}
 
