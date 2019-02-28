@@ -14,6 +14,8 @@ import com.google.common.io.Files;
 
 import ch.elexis.core.constants.Preferences;
 import ch.rgw.tools.MimeTool;
+import info.elexis.server.core.common.LocalProperties;
+import info.elexis.server.core.connector.elexis.Properties;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.DocHandle;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
@@ -60,7 +62,7 @@ public class BriefService extends PersistenceService {
 		briefStoreContentConsideringNetworkPathStoreIfRequired(saved, saved.getContent());
 		return saved;
 	}
-	
+
 	/**
 	 * 
 	 * @param brief
@@ -149,7 +151,7 @@ public class BriefService extends PersistenceService {
 	 * @see https://github.com/elexis/elexis-3-core/blob/master/bundles/ch.elexis.core.data/src/ch/elexis/core/data/util/BriefExternUtil.java
 	 */
 	private static Optional<File> createExternFile(Brief brief) {
-		String path = ConfigService.INSTANCE.get(Preferences.P_TEXT_EXTERN_FILE_PATH, null);
+		String path = LocalProperties.getProperty(Properties.PROPERTY_BRIEFE_NETWORK_PATH, null);
 		if (isValidExternPath(path, true)) {
 			File dir = new File(path);
 			Kontakt patient = brief.getPatient();
@@ -183,7 +185,7 @@ public class BriefService extends PersistenceService {
 	 * @see https://github.com/elexis/elexis-3-core/blob/master/bundles/ch.elexis.core.data/src/ch/elexis/core/data/util/BriefExternUtil.java
 	 */
 	private static Optional<File> getExternFile(Brief brief) {
-		String path = ConfigService.INSTANCE.get(Preferences.P_TEXT_EXTERN_FILE_PATH, null);
+		String path = LocalProperties.getProperty(Properties.PROPERTY_BRIEFE_NETWORK_PATH, null);
 		if (isValidExternPath(path, true)) {
 			File dir = new File(path);
 			StringBuilder sb = new StringBuilder();
@@ -230,9 +232,8 @@ public class BriefService extends PersistenceService {
 	 */
 	private static boolean isExternFile() {
 		if (ConfigService.INSTANCE.get(Preferences.P_TEXT_EXTERN_FILE, false)) {
-			String path = ConfigService.INSTANCE.get(Preferences.P_TEXT_EXTERN_FILE_PATH, null);
-			boolean ret = isValidExternPath(path,
-					true);
+			String path = LocalProperties.getProperty(Properties.PROPERTY_BRIEFE_NETWORK_PATH, null);
+			boolean ret = isValidExternPath(path, true);
 			if (!ret) {
 				LoggerFactory.getLogger(BriefService.class)
 						.error("Briefe extern speichern aktiviert, aber Pfad [{}] nicht erreichbar.", path);

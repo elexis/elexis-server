@@ -2,6 +2,7 @@ package info.elexis.server.core.connector.elexis;
 
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
+import info.elexis.server.core.connector.elexis.services.BriefService;
 import info.elexis.server.core.connector.elexis.services.DocHandleService;
 import info.elexis.server.core.connector.elexis.services.LockService;
 
@@ -12,6 +13,12 @@ public class Properties {
 	 * network-store documents. Used by {@link DocHandleService}
 	 */
 	public static final String PROPERTY_OMNIVORE_NETWORK_PATH = BundleConstants.BUNDLE_ID + ".omnivoreNetworkPath";
+	
+	/**
+	 * A network path, mounted in the local file-system, used by briefe to
+	 * network-store documents. Used by {@link BriefService}
+	 */
+	public static final String PROPERTY_BRIEFE_NETWORK_PATH = BundleConstants.BUNDLE_ID + ".briefeNetworkPath";
 
 	/**
 	 * A comma separated list of {@link ILockServiceContributor} instances required

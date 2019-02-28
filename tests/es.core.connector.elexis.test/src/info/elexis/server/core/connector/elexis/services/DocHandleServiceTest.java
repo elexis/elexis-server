@@ -33,6 +33,8 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		} catch (IOException e) {
 			fail("Failed initialize temp directory:" + e.getMessage());
 		}
+
+		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
 	}
 
 	@Test
@@ -72,8 +74,6 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_GLOBAL, true);
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_IN_FS, true);
 
-		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
-
 		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
 		byte[] sampleDocument = new byte[512];
 		ThreadLocalRandom.current().nextBytes(sampleDocument);
@@ -94,8 +94,6 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 	public void testOmnivoreStoreContentConsideringNetworkPathStoreIfRequired() throws IOException {
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_GLOBAL, true);
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_IN_FS, true);
-
-		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
 
 		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
 		byte[] sampleDocument = new byte[512];
@@ -121,8 +119,6 @@ public class DocHandleServiceTest extends AbstractServiceTest {
 	public void testdetermineByteArrayLength() throws IOException {
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_GLOBAL, false);
 		ConfigService.INSTANCE.setFromBoolean(DocHandleService.CONFIG_OMNIVORE_STORE_IN_FS, false);
-
-		LocalProperties.setProperty(Properties.PROPERTY_OMNIVORE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
 
 		Optional<Kontakt> patient = KontaktService.findPatientByPatientNumber(TestEntities.PATIENT_MALE_PATIENTNR);
 		assertTrue(patient.isPresent());

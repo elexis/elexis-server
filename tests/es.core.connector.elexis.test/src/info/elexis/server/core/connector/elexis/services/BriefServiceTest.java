@@ -27,6 +27,8 @@ import org.junit.Test;
 
 import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.types.Gender;
+import info.elexis.server.core.common.LocalProperties;
+import info.elexis.server.core.connector.elexis.Properties;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Brief;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Heap;
 import info.elexis.server.core.connector.elexis.jpa.model.annotated.Kontakt;
@@ -46,6 +48,8 @@ public class BriefServiceTest {
 		} catch (IOException e) {
 			fail("Failed initialize temp directory:" + e.getMessage());
 		}
+		
+		LocalProperties.setProperty(Properties.PROPERTY_BRIEFE_NETWORK_PATH, tempDir.toFile().getAbsolutePath());
 	}
 
 	@Before
