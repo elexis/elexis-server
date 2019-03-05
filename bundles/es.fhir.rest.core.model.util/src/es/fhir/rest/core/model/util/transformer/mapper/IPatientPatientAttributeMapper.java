@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Address.AddressUse;
@@ -20,12 +20,13 @@ import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Patient.ContactComponent;
 import org.hl7.fhir.dstu3.model.StringType;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IImage;
@@ -39,7 +40,7 @@ import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 
-public class IPatientPatientAttributeMapper {
+public class IPatientPatientAttributeMapper implements IdentifiableDomainResourceAttributeMapper<IPatient, Patient> {
 
 	private IContactHelper contactHelper;
 	private IModelService coreModelService;
@@ -52,7 +53,8 @@ public class IPatientPatientAttributeMapper {
 	public void elexisToFhir(IPatient source, Patient target) {
 		target.setId(new IdDt("Patient", source.getId()));
 		mapMetaData(source, target);
-
+		mapNarrative(source, target);
+		
 		mapIdentifiersAndPatientNumber(source, target);
 		target.setName(contactHelper.getHumanNames(source));
 		target.setGender(contactHelper.getGender(source.getGender()));
@@ -144,12 +146,6 @@ public class IPatientPatientAttributeMapper {
 			String code = maritalStatus.getCoding().get(0).getCode();
 			target.setMaritalStatus(MaritalStatus.byFhirCodeSafe(code));
 		}
-	}
-
-	private void mapMetaData(IPatient source, Patient target) {
-		Meta meta = new Meta();
-		meta.setLastUpdated(new Date(source.getLastupdate()));
-		target.setMeta(meta);
 	}
 
 	private void mapComments(Patient source, IPatient target) {
