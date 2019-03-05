@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.FallConstants;
 import ch.elexis.core.model.ICoverage;
 import ch.elexis.core.model.IPatient;
@@ -37,7 +38,7 @@ public class CoverageICoverageTransformer implements IFhirTransformer<Coverage, 
 	}
 	
 	@Override
-	public Optional<Coverage> getFhirObject(ICoverage localObject, Set<Include> includes){
+	public Optional<Coverage> getFhirObject(ICoverage localObject, SummaryEnum summaryEnum,Set<Include> includes){
 		Coverage coverage = new Coverage();
 		
 		coverage.setId(new IdDt("Coverage", localObject.getId()));

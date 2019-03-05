@@ -16,6 +16,7 @@ import org.osgi.service.component.annotations.Reference;
 import at.medevit.ch.artikelstamm.IArtikelstammItem;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IArticle;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.types.ArticleTyp;
@@ -41,7 +42,7 @@ public class MedicationIArticleTransformer implements IFhirTransformer<Medicatio
 	}
 	
 	@Override
-	public Optional<Medication> getFhirObject(IArticle localObject, Set<Include> includes){
+	public Optional<Medication> getFhirObject(IArticle localObject, SummaryEnum summaryEnum,Set<Include> includes){
 		Medication medication = new Medication();
 		medication.setId(new IdDt("Medication", localObject.getTyp() + "." + localObject.getId()));
 		

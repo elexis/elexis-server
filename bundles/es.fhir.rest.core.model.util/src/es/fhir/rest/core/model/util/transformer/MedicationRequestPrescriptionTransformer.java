@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IArticle;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.IPrescription;
@@ -53,7 +54,7 @@ public class MedicationRequestPrescriptionTransformer
 	
 	@Override
 	public Optional<MedicationRequest> getFhirObject(IPrescription localObject,
-		Set<Include> includes){
+		SummaryEnum summaryEnum,Set<Include> includes){
 		MedicationRequest fhirObject = new MedicationRequest();
 		MedicationRequestStatus statusEnum = MedicationRequestStatus.ACTIVE;
 		

@@ -32,8 +32,10 @@ import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.api.SortSpec;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringAndListParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
@@ -85,7 +87,12 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 			Optional<IPatient> patient = modelService.load(idPart, IPatient.class);
 			if (patient.isPresent() && patient.get().isPatient()) {
 				Optional<Patient> fhirPatient = getTransformer().getFhirObject(patient.get());
-				return fhirPatient.get();
+				if (fhirPatient.isPresent()) {
+					return fhirPatient.get();
+				} else {
+					// TODO
+					log.error("");
+				}
 			}
 		}
 		return null;
@@ -116,11 +123,12 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	 *                     and {@link IPatient#getDescription2()}
 	 * @param theBirthDate
 	 * @param theSort
+	 * @param theSummary
 	 * @return
 	 */
 	@Search()
 	public List<Patient> findPatient(@OptionalParam(name = Patient.SP_NAME) StringAndListParam theNames,
-			@OptionalParam(name = Patient.SP_BIRTHDATE) DateParam theBirthDate, @Sort SortSpec theSort) {
+			@OptionalParam(name = Patient.SP_BIRTHDATE) DateParam theBirthDate, @Sort SortSpec theSort, SummaryEnum theSummary) {
 
 		if (theNames == null && theBirthDate == null) {
 			return Collections.emptyList();
@@ -131,7 +139,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 
 		if (theNames != null) {
 			nameParameters = theNames.getValuesAsQueryTokens().stream()
-					.flatMap(entry -> entry.getValuesAsQueryTokens().stream()).map(entry -> entry.getValue())
+					.flatMap(entry -> entry.getValuesAsQueryTokens().stream()).map(StringParam::getValue)
 					.collect(Collectors.toList());
 			if (!nameParameters.isEmpty()) {
 				// use the first name parameter directly in the SQL query
@@ -185,7 +193,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 				patients.removeIf(namePredicates);
 			}
 
-			List<Patient> ret = patients.parallelStream().map(pat -> getTransformer().getFhirObject(pat))
+			List<Patient> ret = patients.parallelStream().map(pat -> getTransformer().getFhirObject(pat, theSummary, Collections.emptySet()))
 					.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 			return ret;
 		}

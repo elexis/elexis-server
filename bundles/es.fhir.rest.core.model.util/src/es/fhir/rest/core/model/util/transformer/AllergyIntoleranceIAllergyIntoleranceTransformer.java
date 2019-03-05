@@ -10,6 +10,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.findings.IAllergyIntolerance;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.model.IPatient;
@@ -36,7 +37,7 @@ public class AllergyIntoleranceIAllergyIntoleranceTransformer
 	
 	@Override
 	public Optional<AllergyIntolerance> getFhirObject(IAllergyIntolerance localObject,
-		Set<Include> includes){
+		SummaryEnum summaryEnum, Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((AllergyIntolerance) resource.get());

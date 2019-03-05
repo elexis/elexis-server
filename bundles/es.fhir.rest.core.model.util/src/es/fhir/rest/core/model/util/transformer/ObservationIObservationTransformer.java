@@ -9,6 +9,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
@@ -30,7 +31,7 @@ public class ObservationIObservationTransformer
 	private FindingsContentHelper contentHelper = new FindingsContentHelper();
 	
 	@Override
-	public Optional<Observation> getFhirObject(IObservation localObject, Set<Include> includes){
+	public Optional<Observation> getFhirObject(IObservation localObject, SummaryEnum summaryEnum,Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Observation) resource.get());

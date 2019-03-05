@@ -29,6 +29,7 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceOrListParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -142,7 +143,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 			return Collections.emptyList();
 		}
 
-		return termine.parallelStream().map(a -> getTransformer().getFhirObject(a, theIncludes).get())
+		return termine.parallelStream().map(a -> getTransformer().getFhirObject(a, SummaryEnum.FALSE, theIncludes).get())
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 

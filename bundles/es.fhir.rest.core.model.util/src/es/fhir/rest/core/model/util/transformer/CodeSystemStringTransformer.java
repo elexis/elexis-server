@@ -12,6 +12,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.codes.ICodingService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -26,7 +27,7 @@ public class CodeSystemStringTransformer implements IFhirTransformer<CodeSystem,
 	private HashMap<String, CodeSystem> idMap = new HashMap<>();
 
 	@Override
-	public Optional<CodeSystem> getFhirObject(String localObject, Set<Include> includes) {
+	public Optional<CodeSystem> getFhirObject(String localObject, SummaryEnum summaryEnum,Set<Include> includes) {
 		CodeSystem ret = null;
 		Optional<String> idString = CodeSystemHelper.getIdForString(localObject);
 		Optional<String> systemString = CodeSystemHelper.getSystemForId(idString.get());

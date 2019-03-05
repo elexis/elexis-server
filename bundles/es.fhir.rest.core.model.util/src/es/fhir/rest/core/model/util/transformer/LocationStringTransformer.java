@@ -9,6 +9,7 @@ import org.hl7.fhir.dstu3.model.Location;
 import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import es.fhir.rest.core.IFhirTransformer;
 
 @Component
@@ -18,7 +19,7 @@ public class LocationStringTransformer implements IFhirTransformer<Location, Str
 	public static final String MAIN_LOCATION = "mainLocation";
 
 	@Override
-	public Optional<Location> getFhirObject(String localObject, Set<Include> includes) {
+	public Optional<Location> getFhirObject(String localObject, SummaryEnum summaryEnum,Set<Include> includes) {
 		if (Objects.equals(MAIN_LOCATION, localObject)) {
 			return getMainLocationOptional();
 		}

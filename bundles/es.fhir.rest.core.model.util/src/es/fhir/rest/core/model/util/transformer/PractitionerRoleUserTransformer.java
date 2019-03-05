@@ -11,6 +11,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IRole;
 import ch.elexis.core.model.IUser;
 import es.fhir.rest.core.IFhirTransformer;
@@ -22,7 +23,7 @@ public class PractitionerRoleUserTransformer implements IFhirTransformer<Practit
 	private MandantHelper mandantHelper = new MandantHelper();
 	
 	@Override
-	public Optional<PractitionerRole> getFhirObject(IUser localObject, Set<Include> includes){
+	public Optional<PractitionerRole> getFhirObject(IUser localObject, SummaryEnum summaryEnum,Set<Include> includes){
 		PractitionerRole practitionerRole = new PractitionerRole();
 		practitionerRole.setId(new IdDt("PractitionerRole", localObject.getId()));
 		

@@ -14,6 +14,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -28,7 +29,7 @@ public class ScheduleStringTransformer implements IFhirTransformer<Schedule, Str
 	private IModelService modelService;
 	
 	@Override
-	public Optional<Schedule> getFhirObject(String localObject, Set<Include> includes){
+	public Optional<Schedule> getFhirObject(String localObject, SummaryEnum summaryEnum,Set<Include> includes){
 		Schedule schedule = getSchedules().get(localObject);
 		return Optional.ofNullable(schedule);
 	}

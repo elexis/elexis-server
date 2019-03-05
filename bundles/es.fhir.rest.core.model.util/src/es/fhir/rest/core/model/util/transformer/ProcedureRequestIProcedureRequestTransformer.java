@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
@@ -52,7 +53,7 @@ public class ProcedureRequestIProcedureRequestTransformer
 	}
 
 	@Override
-	public Optional<ProcedureRequest> getFhirObject(IProcedureRequest localObject, Set<Include> includes) {
+	public Optional<ProcedureRequest> getFhirObject(IProcedureRequest localObject, SummaryEnum summaryEnum,Set<Include> includes) {
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((ProcedureRequest) resource.get());

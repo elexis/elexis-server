@@ -14,6 +14,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IOrganization;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -34,7 +35,7 @@ public class OrganizationKontaktTransformer
 	}
 	
 	@Override
-	public Optional<Organization> getFhirObject(IOrganization localObject, Set<Include> includes){
+	public Optional<Organization> getFhirObject(IOrganization localObject,SummaryEnum summaryEnum, Set<Include> includes){
 		Organization organization = new Organization();
 		
 		organization.setId(new IdDt("Organization", localObject.getId()));

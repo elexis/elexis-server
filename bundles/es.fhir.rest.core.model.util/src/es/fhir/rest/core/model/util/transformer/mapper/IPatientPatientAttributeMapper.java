@@ -50,10 +50,17 @@ public class IPatientPatientAttributeMapper implements IdentifiableDomainResourc
 		this.coreModelService = coreModelService;
 	}
 
-	public void elexisToFhir(IPatient source, Patient target) {
+	public void elexisToFhir(IPatient source, Patient target, SummaryEnum summaryEnum,
+		Set<Include> includes){
+		
 		target.setId(new IdDt("Patient", source.getId()));
 		mapMetaData(source, target);
-		mapNarrative(source, target);
+		if(SummaryEnum.DATA != summaryEnum) {
+			mapNarrative(source, target);
+		}
+		if (SummaryEnum.TEXT == summaryEnum || SummaryEnum.COUNT == summaryEnum) {
+			return;
+		}
 		
 		mapIdentifiersAndPatientNumber(source, target);
 		target.setName(contactHelper.getHumanNames(source));

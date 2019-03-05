@@ -13,6 +13,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.ILabResult;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.ILabResultHelper;
@@ -28,7 +29,7 @@ public class ObservationLabResultTransformer implements IFhirTransformer<Observa
 	}
 	
 	@Override
-	public Optional<Observation> getFhirObject(ILabResult localObject, Set<Include> includes) {
+	public Optional<Observation> getFhirObject(ILabResult localObject, SummaryEnum summaryEnum,Set<Include> includes) {
 		Observation observation = new Observation();
 
 		observation.setId(new IdDt("Observation", localObject.getId()));

@@ -11,6 +11,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.model.IMandator;
@@ -43,7 +44,7 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 	}
 	
 	@Override
-	public Optional<Encounter> getFhirObject(IEncounter localObject, Set<Include> includes){
+	public Optional<Encounter> getFhirObject(IEncounter localObject, SummaryEnum summaryEnum,Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Encounter) resource.get());

@@ -12,6 +12,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IUser;
@@ -34,7 +35,7 @@ public class PractitionerIMandatorTransformer implements IFhirTransformer<Practi
 	}
 	
 	@Override
-	public Optional<Practitioner> getFhirObject(IMandator localObject, Set<Include> includes){
+	public Optional<Practitioner> getFhirObject(IMandator localObject,SummaryEnum summaryEnum, Set<Include> includes){
 		Practitioner practitioner = new Practitioner();
 		
 		practitioner.setId(new IdDt("Practitioner", localObject.getId()));

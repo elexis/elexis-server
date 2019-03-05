@@ -7,6 +7,7 @@ import java.util.Set;
 import org.hl7.fhir.dstu3.model.Identifier;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.Identifiable;
 
@@ -17,32 +18,33 @@ import ch.elexis.core.model.Identifiable;
  * 
  * @author thomas
  *
- * @param <F>
- *            FHIR class
- * @param <L>
- *            Local class, extends AbstractDBObjectIdDeleted
+ * @param <F> FHIR class
+ * @param <L> Local class, extends AbstractDBObjectIdDeleted
  */
 public interface IFhirTransformer<F, L> {
-	
+
 	/**
 	 * ID to directly reference a specific transformer
 	 */
 	public static final String TRANSFORMERID = "transformer.id";
-	
+
 	/**
 	 * Create a new FHIR object representing the localObject, optionally including
-	 * referenced resources.
+	 * referenced resources or considering a {@link SummaryEnum}
 	 * 
 	 * @param localObject
-	 * @param includes
-	 *            the resources to <a href=
-	 *            "http://hapifhir.io/doc_rest_operations.html#Resource_Includes__include">include</a>
+	 * @param summaryEnum the <a href=
+	 *                    "https://www.hl7.org/fhir/search.html#summary">summary</a>
+	 *                    mode; {@link SummaryEnum#TEXT} and include do not match
+	 * @param includes    the resources to <a href=
+	 *                    "http://hapifhir.io/doc_rest_operations.html#Resource_Includes__include">include</a>
+	 * 
 	 * @return
 	 */
-	public Optional<F> getFhirObject(L localObject, Set<Include> includes);
+	public Optional<F> getFhirObject(L localObject, SummaryEnum summaryEnum, Set<Include> includes);
 
 	public default Optional<F> getFhirObject(L localObject) {
-		return getFhirObject(localObject, Collections.emptySet());
+		return getFhirObject(localObject, SummaryEnum.FALSE, Collections.emptySet());
 	}
 
 	/**

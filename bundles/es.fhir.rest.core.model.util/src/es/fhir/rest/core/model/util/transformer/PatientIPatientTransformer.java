@@ -9,6 +9,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -28,9 +29,9 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 	}
 
 	@Override
-	public Optional<Patient> getFhirObject(IPatient localObject, Set<Include> includes) {
+	public Optional<Patient> getFhirObject(IPatient localObject, SummaryEnum summaryEnum,Set<Include> includes) {
 		Patient patient = new Patient();
-		attributeMapper.elexisToFhir(localObject, patient);
+		attributeMapper.elexisToFhir(localObject, patient, summaryEnum, includes);
 		return Optional.of(patient);
 	}
 

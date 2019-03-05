@@ -16,6 +16,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
@@ -36,7 +37,7 @@ public class SlotTerminTransformer implements IFhirTransformer<Slot, IAppointmen
 	}
 	
 	@Override
-	public Optional<Slot> getFhirObject(IAppointment localObject, Set<Include> includes) {
+	public Optional<Slot> getFhirObject(IAppointment localObject, SummaryEnum summaryEnum,Set<Include> includes) {
 		Slot slot = new Slot();
 
 		slot.setId(new IdDt(Slot.class.getSimpleName(), localObject.getId()));
