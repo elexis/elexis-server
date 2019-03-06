@@ -8,7 +8,7 @@ HOSTNAME=$(hostname)
 DIG_RESOLV=`dig @ns1.dns-zonen.ch -t CNAME "$HOSTNAME" +short`
 if [ -z $DIG_RESOLV ]; then
 	echo "[WARN] No CNAME entry for $HOSTNAME found, should resolve to bridge.medelexis.ch"
-	return 0
+	exit 0
 fi
 
 if [ "bridge.medelexis.ch." = $DIG_RESOLV ]; then

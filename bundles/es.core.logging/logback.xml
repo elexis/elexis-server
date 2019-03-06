@@ -85,6 +85,7 @@
 	<logger name="ch.medelexis.server.connector.rockethealth" level="TRACE" />
 	<logger name="ca.uhn.fhir" level="INFO" />
 	<logger name="org.apache.shiro.session.mgt.DefaultSessionManager" level="INFO" />
+	<logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
 
 	<root level="${root.level:-DEBUG}">
 		<appender-ref ref="STDOUT" />
