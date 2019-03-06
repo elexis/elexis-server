@@ -15,6 +15,7 @@ RUN addgroup elexis && adduser -S -u 1000 -G elexis -g "" -h /elexis elexis && \
 COPY releng/docker-assets/sudoers /etc/
 COPY releng/docker-assets/elexis-server.sh /
 COPY releng/docker-assets/startopenvpn.sh /
+COPY releng/docker-assets/letsencrypt.sh /
 COPY releng/docker-assets/createESKeystore.sh /
 COPY releng/docker-assets/certbotrenew.sh /etc/periodic/weekly/
 
