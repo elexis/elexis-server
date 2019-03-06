@@ -3,17 +3,21 @@
 # set-up the letsencrypted certificate
 #
 set -x
+set -e
+
+if [ ! -f "client.ovpn" ]; then
+	# no vpn client configuration, skip everything
+	return 0	
+fi
+
+echo "Found client.ovpn, trying to set-up ..."
 
 mkdir -p /dev/net
 if [ ! -c /dev/net/tun ]; then
     mknod /dev/net/tun c 10 200
 fi
 
-if [ -f "client.ovpn" ]; then
-	openvpn --config client.ovpn &
-else
-  return 0
-fi
+openvpn --config client.ovpn --daemon
 
 # LetsEncrypt
 HOSTNAME=$(hostname)

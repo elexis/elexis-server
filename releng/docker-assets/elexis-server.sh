@@ -1,8 +1,6 @@
 #!/bin/bash
-
-if [ "$DEBUG" == "1" ]; then
-  set -x
-fi
+set -x
+set -e
 
 trap 'shut_down' TERM INT
 
@@ -36,7 +34,12 @@ mkdir -p /elexis/letsencrypt
 mkdir -p /elexis/elexis-server/logs
 
 # Initialize OpenVPN connection, care for letsencrypt
-sudo /startopenvpn.sh
+sudo /startopenvpn.sh &>> /elexis/elexis-server/logs/openvpn.log
+if [ $? ! -eq 0 ]; then
+	echo "Error configuring openvpn/letsencript configuration"
+	echo "see /elexis/elexis-server/logs/openvpn.log"
+    return -1
+fi
 
 #
 # Start Elexis-Server
