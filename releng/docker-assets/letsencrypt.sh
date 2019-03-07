@@ -5,9 +5,9 @@ set -e
 
 # LetsEncrypt
 HOSTNAME=$(hostname)
-DIG_RESOLV=`dig @ns1.dns-zonen.ch -t CNAME "$HOSTNAME" +short`
+DIG_RESOLV=`dig -t CNAME "$HOSTNAME" +short`
 if [ -z $DIG_RESOLV ]; then
-	echo "[WARN] No CNAME entry for $HOSTNAME found, should resolve to bridge.medelexis.ch"
+	echo "[WARN] No CNAME entry for $HOSTNAME found, should resolve to bridge.medelexis.ch."
 	exit 0
 fi
 

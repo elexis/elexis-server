@@ -34,12 +34,7 @@ mkdir -p /elexis/letsencrypt
 mkdir -p /elexis/elexis-server/logs
 
 # Initialize OpenVPN connection, care for letsencrypt
-sudo /startopenvpn.sh &>> /elexis/elexis-server/logs/startopenvpn.log
-if [ $? -ne 0 ]; then
-	echo "Error configuring openvpn/letsencript configuration"
-	echo "see /elexis/elexis-server/logs/openvpn.log"
-    return -1
-fi
+sudo /startopenvpn.sh &> /elexis/elexis-server/logs/startopenvpn.log
 
 #
 # Start Elexis-Server
