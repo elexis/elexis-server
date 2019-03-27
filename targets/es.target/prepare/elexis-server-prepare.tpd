@@ -38,6 +38,8 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	com.healthmarketscience.jackcess
 	org.beanshell.bsh
 	org.apache.commons.lang3
+	org.apache.xmlbeans
+	org.dom4j
 }
 
 // switch to appropriate Elexis branch on branching ES
