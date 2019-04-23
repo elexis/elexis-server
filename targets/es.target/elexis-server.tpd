@@ -103,7 +103,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.jdom
 	org.apache.commons.dbcp
 	org.apache.commons.pool
-	bouncycastle.bcprov-jdk14
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
 	org.apache.poi
@@ -143,6 +142,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	com.sun.xml.bind.jaxb-osgi
 	jaxb-api
 	//
+	bcprov
 	jcl.over.slf4j
 	com.google.code.gson
 	com.squareup.okhttp3.okhttp
