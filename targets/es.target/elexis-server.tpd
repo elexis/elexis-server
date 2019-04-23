@@ -95,6 +95,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	ch.elexis.core.jpa.entities
 	ch.elexis.core.jpa.logging.slf4j
 	ch.elexis.core.model
+	ch.elexis.core.jcifs
 	ch.elexis.core.services
 	ch.elexis.core.findings.fhir.model
 	//
