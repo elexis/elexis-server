@@ -119,13 +119,6 @@
          unpack="false"/>
 
    <plugin
-         id="bouncycastle.bcprov-jdk14"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="info.elexis.server.core.connector.elexis"
          download-size="0"
          install-size="0"
