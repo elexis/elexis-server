@@ -65,13 +65,13 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 		
 		appointment.setDescription(appointmentHelper.getDescription(localObject));
 		
-		LocalDateTime start = localObject.getStart();
+		LocalDateTime start = localObject.getStartTime();
 		if (start != null) {
 			Date start_ = Date.from(ZonedDateTime.of(start, ZoneId.systemDefault()).toInstant());
 			appointment.setStart(start_);
 		}
 		
-		LocalDateTime end = localObject.getEnd();
+		LocalDateTime end = localObject.getEndTime();
 		if (end != null) {
 			Date end_ = Date.from(ZonedDateTime.of(end, ZoneId.systemDefault()).toInstant());
 			appointment.setEnd(end_);

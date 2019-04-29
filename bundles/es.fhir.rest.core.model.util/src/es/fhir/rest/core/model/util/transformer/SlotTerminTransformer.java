@@ -47,7 +47,7 @@ public class SlotTerminTransformer implements IFhirTransformer<Slot, IAppointmen
 
 		slot.setStatus(appointmentHelper.getSlotStatus(localObject));
 
-		LocalDateTime start = localObject.getStart();
+		LocalDateTime start = localObject.getStartTime();
 		if(start != null) {
 			Date start_ = Date.from(ZonedDateTime.of(start, ZoneId.systemDefault()).toInstant());
 			slot.setStart(start_);
@@ -55,7 +55,7 @@ public class SlotTerminTransformer implements IFhirTransformer<Slot, IAppointmen
 			// TODO is required - what now?
 		}
 		
-		LocalDateTime end = localObject.getEnd();
+		LocalDateTime end = localObject.getEndTime();
 		if(end != null) {
 			Date end_ = Date.from(ZonedDateTime.of(end, ZoneId.systemDefault()).toInstant());
 			slot.setEnd(end_);

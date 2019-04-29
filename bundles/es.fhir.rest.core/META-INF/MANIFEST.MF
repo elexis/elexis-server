@@ -30,7 +30,8 @@ Require-Bundle: info.elexis.server.core.connector.elexis;bundle-version="1.0.0",
  net.sf.saxon.Saxon-HE;bundle-version="9.6.0",
  info.elexis.server.core.common;bundle-version="1.0.0",
  info.elexis.server.hapi.fhir;bundle-version="3.4.0",
- at.medevit.ch.artikelstamm.model;bundle-version="1.0.0"
+ at.medevit.ch.artikelstamm.model;bundle-version="1.0.0",
+ ch.elexis.core.findings
 Export-Package: es.fhir.rest.core,
  es.fhir.rest.core.coding,
  es.fhir.rest.core.resources.util
