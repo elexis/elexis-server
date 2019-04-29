@@ -109,6 +109,8 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.apache.poi
 	org.apache.poi.ooxml
 	org.apache.poi.ooxml.schemas
+	org.apache.xmlbeans
+	org.dom4j
 	com.healthmarketscience.jackcess
 	org.beanshell.bsh
 	

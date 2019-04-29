@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1556025590">
+<target name="Elexis-Server" sequenceNumber="1556529007">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -76,22 +76,22 @@
       <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201803161213"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201803161213"/>
-      <unit id="ch.rgw.utility" version="3.8.0.20190419-0730"/>
-      <unit id="ch.elexis.core" version="3.8.0.20190416-1216"/>
+      <unit id="ch.rgw.utility" version="3.8.0.20190425-1427"/>
+      <unit id="ch.elexis.core" version="3.8.0.20190425-1816"/>
       <unit id="ch.elexis.core.l10n" version="3.8.0.20190419-0730"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.20190416-1225"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.20190425-1331"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20190416-1216"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20181025-1305"/>
-      <unit id="ch.elexis.core.test" version="1.0.0.20190327-1655"/>
-      <unit id="ch.elexis.core.jpa" version="1.0.0.20190413-0954"/>
+      <unit id="ch.elexis.core.test" version="1.0.0.20190424-1313"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20190425-1816"/>
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190423-1012"/>
-      <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190411-1703"/>
+      <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190424-1301"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
-      <unit id="ch.elexis.core.model" version="1.0.0.20190416-1329"/>
+      <unit id="ch.elexis.core.model" version="1.0.0.20190425-1816"/>
       <unit id="ch.elexis.core.jcifs" version="2.1.2.20190405-1142"/>
-      <unit id="ch.elexis.core.services" version="1.0.0.20190416-1216"/>
-      <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20190402-0930"/>
+      <unit id="ch.elexis.core.services" version="1.0.0.20190424-1301"/>
+      <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20190425-1816"/>
       <unit id="org.postgresql.jdbc42" version="42.2.5"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.1.v201101151400"/>
@@ -102,10 +102,12 @@
       <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
       <unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
       <unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
+      <unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
+      <unit id="org.dom4j" version="1.6.1.v20170815-1500"/>
       <unit id="com.healthmarketscience.jackcess" version="2.1.9"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
       <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20190321-1121"/>
-      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20190419-0728"/>
+      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20190425-1817"/>
       <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20190409-1417"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20190409-1536"/>
       <unit id="org.tukaani.xz" version="1.8.0.v20180207-1613"/>
