@@ -48,6 +48,8 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-base/" {
 	at.medevit.ch.artikelstamm
 	at.medevit.ch.artikelstamm.model
 	at.medevit.atc_codes
+	ch.elexis.omnivore
+	ch.elexis.omnivore.model
 }
 
 location "http://download.eclipse.org/eclipse/updates/4.9/" {
