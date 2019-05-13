@@ -17,6 +17,7 @@ import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IXidService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 import info.elexis.server.core.connector.elexis.services.UserService;
@@ -27,11 +28,14 @@ public class PractitionerIMandatorTransformer implements IFhirTransformer<Practi
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
+	@Reference
+	private IXidService xidService;
+	
 	private IContactHelper contactHelper;
 	
 	@Activate
 	private void activate(){
-		contactHelper = new IContactHelper(modelService);
+		contactHelper = new IContactHelper(modelService, xidService);
 	}
 	
 	@Override

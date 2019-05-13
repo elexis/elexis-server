@@ -12,6 +12,7 @@ import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IXidService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.mapper.IPatientPatientAttributeMapper;
 
@@ -21,11 +22,14 @@ public class PatientIPatientTransformer implements IFhirTransformer<Patient, IPa
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 
+	@Reference
+	private IXidService xidService;
+	
 	private IPatientPatientAttributeMapper attributeMapper;
 
 	@Activate
 	private void activate() {
-		attributeMapper = new IPatientPatientAttributeMapper(modelService);
+		attributeMapper = new IPatientPatientAttributeMapper(modelService, xidService);
 	}
 
 	@Override

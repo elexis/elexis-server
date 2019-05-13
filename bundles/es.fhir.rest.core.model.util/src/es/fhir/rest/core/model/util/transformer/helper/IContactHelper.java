@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
+import org.hl7.fhir.dstu3.model.Address.AddressUse;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
@@ -15,29 +16,28 @@ import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Address.AddressUse;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IOrganization;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.IXid;
-import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
-import ch.elexis.core.services.IQuery;
-import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IXidService;
 import ch.elexis.core.types.Gender;
 import info.elexis.server.core.connector.elexis.services.UserService;
 
 public class IContactHelper extends AbstractHelper {
-
+	
 	private IModelService modelService;
-
-	public IContactHelper(IModelService modelService) {
+	private IXidService xidService;
+	
+	public IContactHelper(IModelService modelService, IXidService xidService){
 		this.modelService = modelService;
+		this.xidService = xidService;
 	}
-
-	public List<HumanName> getHumanNames(IPerson person) {
+	
+	public List<HumanName> getHumanNames(IPerson person){
 		List<HumanName> ret = new ArrayList<>();
 		if (person.isPerson()) {
 			HumanName humanName = new HumanName();
@@ -59,8 +59,8 @@ public class IContactHelper extends AbstractHelper {
 		}
 		return ret;
 	}
-
-	public String getOrganizationName(IOrganization organization) {
+	
+	public String getOrganizationName(IOrganization organization){
 		StringBuilder sb = new StringBuilder();
 		if (organization.isOrganization()) {
 			if (organization.getDescription1() != null) {
@@ -75,8 +75,8 @@ public class IContactHelper extends AbstractHelper {
 		}
 		return sb.toString();
 	}
-
-	public AdministrativeGender getGender(Gender gender) {
+	
+	public AdministrativeGender getGender(Gender gender){
 		if (gender == Gender.FEMALE) {
 			return AdministrativeGender.FEMALE;
 		} else if (gender == Gender.MALE) {
@@ -87,18 +87,18 @@ public class IContactHelper extends AbstractHelper {
 			return AdministrativeGender.OTHER;
 		}
 	}
-
-	public Date getBirthDate(IPerson kontakt) {
+	
+	public Date getBirthDate(IPerson kontakt){
 		LocalDateTime dateOfBirth = kontakt.getDateOfBirth();
 		if (dateOfBirth != null) {
 			return getDate(dateOfBirth);
 		}
 		return null;
 	}
-
-	public List<Address> getAddresses(IContact contact) {
+	
+	public List<Address> getAddresses(IContact contact){
 		List<Address> ret = new ArrayList<>();
-
+		
 		// main address data
 		Address address = new Address();
 		address.setUse(AddressUse.HOME);
@@ -109,11 +109,11 @@ public class IContactHelper extends AbstractHelper {
 		lines.add(new StringType(contact.getStreet()));
 		address.setLine(lines);
 		ret.add(address);
-
+		
 		return ret;
 	}
-
-	public List<ContactPoint> getContactPoints(IContact contact) {
+	
+	public List<ContactPoint> getContactPoints(IContact contact){
 		List<ContactPoint> ret = new ArrayList<>();
 		if (contact.getPhone1() != null && !contact.getPhone1().isEmpty()) {
 			ContactPoint contactPoint = new ContactPoint();
@@ -156,14 +156,10 @@ public class IContactHelper extends AbstractHelper {
 		}
 		return ret;
 	}
-
-	public List<Identifier> getIdentifiers(IContact contact) {
+	
+	public List<Identifier> getIdentifiers(IContact contact){
 		List<Identifier> ret = new ArrayList<>();
-
-		IQuery<IXid> query = modelService.getQuery(IXid.class);
-		query.and(ModelPackage.Literals.IXID__OBJECT_ID, COMPARATOR.EQUALS, contact.getId());
-		// TODO type?
-		List<IXid> xids = query.execute();
+		List<IXid> xids = xidService.getXids(contact);
 		for (IXid xid : xids) {
 			Identifier identifier = new Identifier();
 			identifier.setSystem(xid.getDomain());
