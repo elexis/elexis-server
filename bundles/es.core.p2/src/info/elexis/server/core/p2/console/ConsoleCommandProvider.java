@@ -5,8 +5,7 @@ import java.util.Iterator;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
-
-import info.elexis.server.core.console.AbstractConsoleCommandProvider;
+import ch.elexis.core.console.AbstractConsoleCommandProvider;
 import info.elexis.server.core.p2.internal.HTTPServiceHelper;
 import info.elexis.server.core.p2.internal.ProvisioningHelper;
 
@@ -14,7 +13,7 @@ import info.elexis.server.core.p2.internal.ProvisioningHelper;
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	public void _es_p2(CommandInterpreter ci) {
-		executeCommand(ci);
+		executeCommand("es_p2", ci);
 	}
 
 	public String __executeUpdate() {
@@ -22,7 +21,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __features() {
-		return getHelp(1);
+		return getHelp();
 	}
 
 	public String __features_listLocal() {
@@ -46,7 +45,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	public String __repo() {
-		return getHelp(1);
+		return getHelp();
 	}
 
 	public String __repo_list() {

@@ -17,22 +17,23 @@ import info.elexis.server.core.contrib.IApplicationShutdownListener;
  * This class controls all aspects of the application's execution
  */
 public class Application implements IApplication {
-
+	
 	private static Logger log = LoggerFactory.getLogger(Application.class);
-
+	
 	private static boolean restart;
 	private static boolean shutdown;
 	private static boolean force;
-
+	
 	private static final Date startTime = new Date();
-
+	
 	@Override
-	public Object start(IApplicationContext context) throws Exception {
-		log.info("Starting " + Application.class.getName() + "...");
-
-		log.info("Settings: TimeZone [{}], user.language [{}], user.region [{}]", TimeZone.getDefault().getID(),
-				System.getProperty("user.language"), System.getProperty("user.region"));
-
+	public Object start(IApplicationContext context) throws Exception{
+		log.info("Starting {} ...", getClass().getName());
+		
+		log.info("Settings: TimeZone [{}], user.language [{}], user.region [{}]",
+			TimeZone.getDefault().getID(), System.getProperty("user.language"),
+			System.getProperty("user.region"));
+		
 		context.applicationRunning();
 		while (!restart && !shutdown) {
 			Thread.sleep(2000);
@@ -40,21 +41,21 @@ public class Application implements IApplication {
 				checkVeto();
 			}
 		}
-
+		
 		if (restart) {
-			log.info("Restarting " + Application.class.getName() + "...");
+			log.info("Restarting {} ...", getClass().getName());
 			// give all services time to shutdown
 			Thread.sleep(2000);
 			return IApplication.EXIT_RESTART;
 		}
-
-		log.info("Stopping " + Application.class.getName() + "...");
+		
+		log.info("Stopping {} ...", getClass().getName());
 		return IApplication.EXIT_OK;
 	}
-
-	private static String checkVeto() {
-		Set<IApplicationShutdownListener> shutdownListeners = ApplicationShutdownRegistrar
-				.getApplicationShutdownListeners();
+	
+	private static String checkVeto(){
+		Set<IApplicationShutdownListener> shutdownListeners =
+			ApplicationShutdownRegistrar.getApplicationShutdownListeners();
 		for (IApplicationShutdownListener ias : shutdownListeners) {
 			if (force) {
 				ias.performShutdown(true);
@@ -70,19 +71,17 @@ public class Application implements IApplication {
 		}
 		return null;
 	}
-
+	
 	@Override
-	public void stop() {
-	}
-
+	public void stop(){}
+	
 	/**
 	 * Restart the server
 	 * 
 	 * @param force
-	 * @return <code>null</code> if restart initiated, or a veto reason denying the
-	 *         request
+	 * @return <code>null</code> if restart initiated, or a veto reason denying the request
 	 */
-	public static String restart(boolean force) {
+	public static String restart(boolean force){
 		String veto = checkVeto();
 		if (veto != null && !force) {
 			return veto;
@@ -91,15 +90,14 @@ public class Application implements IApplication {
 		Application.force = force;
 		return null;
 	}
-
+	
 	/**
 	 * Shutdown the server
 	 * 
 	 * @param force
-	 * @return <code>null</code> if shutdown initiated, or a veto reason denying the
-	 *         request
+	 * @return <code>null</code> if shutdown initiated, or a veto reason denying the request
 	 */
-	public static String shutdown(boolean force) {
+	public static String shutdown(boolean force){
 		String veto = checkVeto();
 		if (veto != null && !force) {
 			return veto;
@@ -108,10 +106,10 @@ public class Application implements IApplication {
 		Application.force = force;
 		return null;
 	}
-
-	public static String uptime() {
+	
+	public static String uptime(){
 		long millis = new Date().getTime() - startTime.getTime();
-
+		
 		long days = TimeUnit.MILLISECONDS.toDays(millis);
 		millis -= TimeUnit.DAYS.toMillis(days);
 		long hours = TimeUnit.MILLISECONDS.toHours(millis);
@@ -119,7 +117,7 @@ public class Application implements IApplication {
 		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
 		millis -= TimeUnit.MINUTES.toMillis(minutes);
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-
+		
 		return String.format("%d days, %d hours, %d min, %d sec", days, hours, minutes, seconds);
 	}
 }

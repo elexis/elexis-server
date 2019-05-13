@@ -2,32 +2,40 @@ package info.elexis.server.core.internal;
 
 import java.net.URL;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.console.AbstractConsoleCommandProvider;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import info.elexis.server.core.Application;
-import info.elexis.server.core.console.AbstractConsoleCommandProvider;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
-
-	public void _es(CommandInterpreter ci) {
-		executeCommand(ci);
+	
+	@Activate
+	public void activate(){
+		register(this.getClass());
 	}
-
-	public String __system() {
-		return getHelp(1);
+	
+	@Override
+	protected void initializeCommandsHelp(LinkedHashMap<String, String> commandsHelp){
+		commandsHelp.put("system", "system relevant commands");
 	}
-
-	public String __system_halt(Iterator<String> args) {
+	
+	public void _system(CommandInterpreter ci){
+		executeCommand("system", ci);
+	}
+	
+	public String __system_halt(Iterator<String> args){
 		boolean force = false;
 		if (args.hasNext()) {
 			force = "force".equals(args.next());
@@ -35,8 +43,8 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		String vetoReason = Application.shutdown(force);
 		return (vetoReason != null) ? vetoReason : ok();
 	}
-
-	public String __system_restart(Iterator<String> args) {
+	
+	public String __system_restart(Iterator<String> args){
 		boolean force = false;
 		if (args.hasNext()) {
 			force = "force".equals(args.next());
@@ -44,34 +52,34 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		String vetoReason = Application.restart(force);
 		return (vetoReason != null) ? vetoReason : ok();
 	}
-
-	public String __system_status() {
+	
+	public String __system_status(){
 		return Application.uptime();
 	}
-
-	public void __system_logTestError() {
-		LoggerFactory.getLogger(ConsoleCommandProvider.class).error("TEST {}", "ERROR", new Throwable("Diagnosis"));
+	
+	public void __system_logTestError(){
+		LoggerFactory.getLogger(ConsoleCommandProvider.class).error("TEST {}", "ERROR",
+			new Throwable("Diagnosis"));
 		ok();
 	}
-
-	public void __system_reloadLogConfig() {
+	
+	public void __system_reloadLogConfig(){
 		ConsoleCommandProvider.reloadLogger();
 		ok();
 	}
-
+	
 	/**
 	 * Reconfigures the system logger by reloading all log configuration files
 	 * 
-	 * @see <a href=
-	 *      "http://stackoverflow.com/questions/9320133/how-do-i-programmatically
+	 * @see <a href= "http://stackoverflow.com/questions/9320133/how-do-i-programmatically
 	 *      -tell-logback-to-reload-configuration">stackoverflow</a>
 	 */
-	public static void reloadLogger() {
+	public static void reloadLogger(){
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-
+		
 		ContextInitializer ci = new ContextInitializer(loggerContext);
 		URL url = ci.findURLOfDefaultConfigurationFile(true);
-
+		
 		try {
 			JoranConfigurator configurator = new JoranConfigurator();
 			configurator.setContext(loggerContext);
@@ -82,5 +90,5 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 		StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 	}
-
+	
 }

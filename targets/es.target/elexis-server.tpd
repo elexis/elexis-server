@@ -118,6 +118,8 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	at.medevit.ch.artikelstamm.model
 	ch.elexis.base.ch.ticode
 	at.medevit.atc_codes
+	ch.elexis.omnivore
+	ch.elexis.omnivore.model
 	
 	org.tukaani.xz
 	osgi.enterprise
