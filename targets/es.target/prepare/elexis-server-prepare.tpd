@@ -25,6 +25,7 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	ch.elexis.core.jcifs
 	ch.elexis.core.services
 	ch.elexis.core.findings.fhir.model
+	ch.elexis.core.tasks
 	//
 	org.h2
 	org.jdom
