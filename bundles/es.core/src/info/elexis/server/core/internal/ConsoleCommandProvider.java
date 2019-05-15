@@ -2,7 +2,6 @@ package info.elexis.server.core.internal;
 
 import java.net.URL;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -24,11 +23,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	@Activate
 	public void activate(){
 		register(this.getClass());
-	}
-	
-	@Override
-	protected void initializeCommandsHelp(LinkedHashMap<String, String> commandsHelp){
-		commandsHelp.put("system", "system relevant commands");
 	}
 	
 	public void _system(CommandInterpreter ci){

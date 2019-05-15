@@ -1,11 +1,11 @@
 package info.elexis.server.core.p2.console;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Component;
+
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
 import info.elexis.server.core.p2.internal.HTTPServiceHelper;
 import info.elexis.server.core.p2.internal.ProvisioningHelper;
@@ -75,12 +75,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			return HTTPServiceHelper.doRepositoryRemove(url).getStatusInfo().toString();
 		}
 		return missingArgument("url");
-	}
-
-	@Override
-	protected void initializeCommandsHelp(LinkedHashMap<String, String> commandsHelp){
-		// TODO Auto-generated method stub
-		
 	}
 
 }

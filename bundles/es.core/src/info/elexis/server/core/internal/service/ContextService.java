@@ -11,20 +11,21 @@ import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.IContext;
 import ch.elexis.core.services.IContextService;
+import info.elexis.server.core.SystemPropertyConstants;
 
 @Component
 public class ContextService implements IContextService {
 	
-	private ThreadLocal<IContext> threadLocalContext;
+	private IContext rootContext;
 	
 	@Activate
 	public void activate(){
-		threadLocalContext = ThreadLocal.withInitial(() -> new Context("ELEXIS-SERVER"));
+		rootContext = new Context(SystemPropertyConstants.getStationId());
 	}
 	
 	@Override
 	public IContext getRootContext(){
-		return threadLocalContext.get();
+		return rootContext;
 	}
 	
 	@Override

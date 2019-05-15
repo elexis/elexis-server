@@ -2,7 +2,6 @@ package info.elexis.server.core.connector.elexis.internal;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -104,12 +103,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		for (IConfig config : nodes) {
 			ci.println(config);
 		}
-	}
-	
-	@Override
-	protected void initializeCommandsHelp(LinkedHashMap<String, String> commandsHelp){
-		commandsHelp.put("elc", "elexis connector");
-		
 	}
 	
 	//	public String __stock_list() {
