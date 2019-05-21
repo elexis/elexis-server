@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1558015780">
+<target name="Elexis-Server" sequenceNumber="1558445681">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -14,9 +14,9 @@
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20181025-1305"/>
       <unit id="ch.elexis.core.test" version="1.0.0.20190508-1245"/>
-      <unit id="ch.elexis.core.jpa" version="1.0.0.20190515-1510"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20190521-0857"/>
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190511-0953"/>
-      <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190516-1336"/>
+      <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190521-0857"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
       <unit id="ch.elexis.core.model" version="1.0.0.20190516-1044"/>
       <unit id="ch.elexis.core.jcifs" version="2.1.2.20190509-1116"/>
@@ -120,12 +120,12 @@
       <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.14.v20181113/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201803161213"/>
-      <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201803161213"/>
+      <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201905211243"/>
+      <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201905211243"/>
+      <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201905211243"/>
+      <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201905211243"/>
+      <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201905211243"/>
+      <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201905211243"/>
       <repository location="http://medevit.github.io/osgi-jax-rs-connector/5.3.100/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -165,7 +165,6 @@
       <unit id="com.sun.xml.bind.jaxb-osgi" version="2.3.2"/>
       <unit id="jaxb-api" version="2.4.0.b1808300359"/>
       <unit id="bcprov" version="1.61.0"/>
-      <unit id="com.google.code.gson" version="2.8.0"/>
       <unit id="jcl.over.slf4j" version="1.7.25"/>
       <unit id="com.squareup.okhttp3.okhttp" version="3.10.0"/>
       <unit id="com.squareup.okio" version="1.14.0"/>
