@@ -150,7 +150,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	//
 	bcprov
 	jcl.over.slf4j
-	com.google.code.gson
 	com.squareup.okhttp3.okhttp
 	com.squareup.okio
 	org.apache.commons.beanutils
