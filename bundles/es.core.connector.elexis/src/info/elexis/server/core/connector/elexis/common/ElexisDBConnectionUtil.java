@@ -107,8 +107,7 @@ public class ElexisDBConnectionUtil {
 
 	private static IStatus doSetConnection(IElexisDataSource elexisDataSource, DBConnection connection)
 			throws IOException, JAXBException, InterruptedException {
-		ElexisDBConnectionUtil.connection = connection;
-		persistDBConnection();
+		persistDBConnection(connection);
 		IStatus elexisDataSourceStatus = elexisDataSource.setDBConnection(connection);
 		if (elexisDataSourceStatus.isOK()) {
 			ServiceTracker<Object, Object> serviceTracker = new ServiceTracker<>(Activator.getContext(),
@@ -118,11 +117,12 @@ public class ElexisDBConnectionUtil {
 		return elexisDataSourceStatus;
 	}
 
-	private static void persistDBConnection() throws IOException, JAXBException {
+	private static void persistDBConnection(DBConnection connection) throws IOException, JAXBException {
 		if (connection != null) {
 			try (OutputStream fos = Files.newOutputStream(connectionConfigPath, StandardOpenOption.CREATE)) {
 				connection.marshall(fos);
 			}
+			ElexisDBConnectionUtil.connection = connection;
 		}
 	}
 
