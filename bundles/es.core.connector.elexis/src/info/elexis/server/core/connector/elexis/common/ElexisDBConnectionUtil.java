@@ -56,6 +56,7 @@ public class ElexisDBConnectionUtil {
 			try {
 				status = doSetConnection(elexisDataSource, connection);
 			} catch (IOException | JAXBException | InterruptedException e) {
+				log.error("Error setting database connection", e);
 				return new Status(Status.ERROR, Activator.BUNDLE_ID, "Error setting database connection", e);
 			}
 		}
