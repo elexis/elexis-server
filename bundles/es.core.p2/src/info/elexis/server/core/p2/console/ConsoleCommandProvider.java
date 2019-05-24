@@ -30,6 +30,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return ProvisioningHelper.updateAllFeatures().getMessage();
 	}
 	
+	@CmdAdvisor(description = "list the installed features")
 	public String __p2_features_listLocal(){
 		return ProvisioningHelper
 			.getAllInstalledFeatures().stream().map(i -> i.getId() + " (" + i.getVersion() + ") "

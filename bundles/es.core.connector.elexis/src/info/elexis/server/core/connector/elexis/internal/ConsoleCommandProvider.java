@@ -12,6 +12,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
+import ch.elexis.core.console.CmdAdvisor;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IConfig;
 import ch.elexis.core.model.ModelPackage;
@@ -33,10 +34,12 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		register(this.getClass());
 	}
 	
+	@CmdAdvisor(description = "elexis database connector")
 	public void _elc(CommandInterpreter ci){
 		executeCommand("elc", ci);
 	}
 	
+	@CmdAdvisor(description = "show database connection and status information")
 	public String __elc_status(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
@@ -50,6 +53,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return sb.toString();
 	}
 	
+	@CmdAdvisor(description = "list all elexis instances connected to this server instance")
 	public void __elc_listInstances(){
 		List<InstanceStatus> status = InstanceService.getInstanceStatus();
 		for (int i = 0; i < status.size(); i++) {
@@ -65,11 +69,13 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 	
+	@CmdAdvisor(description = "clear the list of active elexis instances held by this server")
 	public String __elc_listInstances_clear(){
 		InstanceService.clearInstanceStatus();
 		return ok();
 	}
 	
+	@CmdAdvisor(description = "list all locks held by this server")
 	public void __elc_locks_list(){
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			ci.println(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
@@ -78,19 +84,22 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 	
+	@CmdAdvisor(description = "clear all locks held by this server")
 	public void __elc_locks_clearAll(){
 		LockService.clearAllLocks();
 		ok();
 	}
 	
-	public String __elc_locks_clearSingle(Iterator<String> args){
-		if (args.hasNext()) {
-			return Boolean.toString(LockService.clearLock(args.next()));
+	@CmdAdvisor(description = "clear a single lock held by this server")
+	public String __elc_locks_clearSingle(String elementId){
+		if (elementId != null) {
+			return Boolean.toString(LockService.clearLock(elementId));
 		} else {
 			return missingArgument("elementId");
 		}
 	}
 	
+	@CmdAdvisor(description = "list all configuration entries")
 	public void __elc_config_list(Iterator<String> args){
 		String nodePrefix = args.next();
 		if (StringUtils.isEmpty(nodePrefix)) {
