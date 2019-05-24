@@ -121,6 +121,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	at.medevit.atc_codes
 	ch.elexis.omnivore
 	ch.elexis.omnivore.model
+	ch.elexis.base.ch.labortarif.model
 	
 	org.tukaani.xz
 	osgi.enterprise
