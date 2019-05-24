@@ -9,6 +9,7 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
@@ -16,6 +17,7 @@ import ch.elexis.core.console.CmdAdvisor;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IConfig;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
@@ -25,6 +27,9 @@ import info.elexis.server.core.connector.elexis.services.internal.CoreModelServi
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
+	
+	@Reference
+	private IContextService contextService;
 	
 	//	@Reference(cardinality = ReferenceCardinality.MANDATORY)
 	//	private IStockCommissioningSystemService stockCommissioningSystemService;
@@ -44,6 +49,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
 		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
+		sb.append("StationId:\t" + contextService.getStationIdentifier());
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"

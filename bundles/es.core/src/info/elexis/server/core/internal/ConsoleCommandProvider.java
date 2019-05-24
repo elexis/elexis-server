@@ -10,6 +10,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
+import ch.elexis.core.console.CmdAdvisor;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
@@ -25,10 +26,12 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		register(this.getClass());
 	}
 	
+	@CmdAdvisor(description = "system related commands")
 	public void _system(CommandInterpreter ci){
 		executeCommand("system", ci);
 	}
 	
+	@CmdAdvisor(description = "halt the system")
 	public String __system_halt(Iterator<String> args){
 		boolean force = false;
 		if (args.hasNext()) {
@@ -38,6 +41,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return (vetoReason != null) ? vetoReason : ok();
 	}
 	
+	@CmdAdvisor(description = "reboot/restart the system")
 	public String __system_restart(Iterator<String> args){
 		boolean force = false;
 		if (args.hasNext()) {
@@ -51,6 +55,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return Application.uptime();
 	}
 	
+	@CmdAdvisor(description = "test log an error (e.g. to test push notification)")
 	public void __system_logTestError(){
 		LoggerFactory.getLogger(ConsoleCommandProvider.class).error("TEST {}", "ERROR",
 			new Throwable("Diagnosis"));
