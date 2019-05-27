@@ -12,10 +12,10 @@ import ch.elexis.core.lock.types.LockRequest.Type;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.Identifiable;
-import ch.elexis.core.server.ILockService;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IStoreToStringService;
+import info.elexis.server.core.connector.elexis.locking.ILockService;
 
 @Component
 public class LocalLockService implements ILocalLockService {
@@ -31,17 +31,24 @@ public class LocalLockService implements ILocalLockService {
 	
 	@Override
 	public LockResponse acquireOrReleaseLocks(LockRequest request){
-		return lockService.acquireOrReleaseLocks(request);
+		if(Type.ACQUIRE == request.getRequestType()) {
+			return lockService.acquireLock(request.getLockInfo());
+		} else if (Type.RELEASE == request.getRequestType()) {
+			return lockService.releaseLock(request.getLockInfo());
+		} else if (Type.INFO == request.getRequestType()) {
+			// what??
+		}
+		throw new IllegalArgumentException("No support for request type "+request.getRequestType());
 	}
 	
 	@Override
 	public boolean isLocked(LockRequest request){
-		return lockService.isLocked(request);
+		return lockService.isLocked(request.getLockInfo());
 	}
 	
 	@Override
 	public LockInfo getLockInfo(String storeToString){
-		return lockService.getLockInfo(storeToString);
+		return lockService.getLockInfo(storeToString).orElse(null);
 	}
 	
 	private LockRequest buildLockRequest(Identifiable object, Type lockType){
@@ -84,7 +91,7 @@ public class LocalLockService implements ILocalLockService {
 	public boolean isLocked(Object object){
 		if (object instanceof Identifiable) {
 			LockRequest request = buildLockRequest((Identifiable) object, LockRequest.Type.INFO);
-			return lockService.isLocked(request);
+			return lockService.isLocked(request.getLockInfo());
 		}
 		throw new IllegalArgumentException("Can not isLocked on class " + object);
 	}
