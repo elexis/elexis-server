@@ -49,7 +49,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
 		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
-		sb.append("StationId:\t" + contextService.getStationIdentifier());
+		sb.append("StationId:\t" + contextService.getStationIdentifier()+"\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
