@@ -29,12 +29,12 @@ import info.elexis.server.core.connector.elexis.Properties;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 
-@Component(service = {})
+@Component
 public class LockService implements ILockService {
 
-	private static HashMap<String, LockInfo> locks = new HashMap<String, LockInfo>();
+	private static HashMap<String, LockInfo> locks = new HashMap<>();
 	private static ReentrantLock locksLock = new ReentrantLock();
-	private static Map<String, ILockServiceContributor> contributors = new HashMap<String, ILockServiceContributor>();
+	private static Map<String, ILockServiceContributor> contributors = new HashMap<>();
 	private static Set<String> requiredContributors;
 
 	private static Logger log = LoggerFactory.getLogger(LockService.class);
@@ -64,14 +64,14 @@ public class LockService implements ILockService {
 	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
-			log.info("Binding lock service contributor " + isc.getClass());
+			log.info("Binding lock service contributor {}", isc.getClass());
 			contributors.put(isc.getClass().getName(), isc);
 		}
 	}
 
 	protected void unsetLockServiceContributor(ILockServiceContributor isc) {
 		synchronized (contributors) {
-			log.info("Unbinding lock service contributor " + isc.getClass());
+			log.info("Unbinding lock service contributor {}", isc.getClass());
 			contributors.remove(isc.getClass().getName());
 		}
 	}
@@ -283,7 +283,7 @@ public class LockService implements ILockService {
 	}
 
 	public static List<LockInfo> getAllLockInfo() {
-		return new ArrayList<LockInfo>(locks.values());
+		return new ArrayList<>(locks.values());
 	}
 
 	/**
