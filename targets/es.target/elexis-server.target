@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1558687643">
+<target name="Elexis-Server" sequenceNumber="1558952852">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -92,7 +92,7 @@
       <unit id="ch.elexis.core.jcifs" version="2.1.2.20190509-1116"/>
       <unit id="ch.elexis.core.services" version="1.0.0.20190523-1542"/>
       <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20190515-1510"/>
-      <unit id="ch.elexis.core.tasks" version="1.0.0.20190522-0735"/>
+      <unit id="ch.elexis.core.tasks" version="1.0.0.20190527-0930"/>
       <unit id="org.postgresql.jdbc42" version="42.2.5"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.1.v201101151400"/>
@@ -112,7 +112,7 @@
       <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20190516-0804"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20190409-1536"/>
       <unit id="ch.elexis.omnivore" version="3.2.0.20190430-1229"/>
-      <unit id="ch.elexis.omnivore.model" version="3.8.0.20190516-0804"/>
+      <unit id="ch.elexis.omnivore.model" version="3.8.0.20190524-0915"/>
       <unit id="ch.elexis.base.ch.labortarif.model" version="1.0.0.20190516-0804"/>
       <unit id="org.tukaani.xz" version="1.8.0.v20180207-1613"/>
       <unit id="osgi.enterprise" version="4.2.0.v201108120515"/>
