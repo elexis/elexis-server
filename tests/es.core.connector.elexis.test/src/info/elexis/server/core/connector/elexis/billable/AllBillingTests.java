@@ -5,8 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ BillingTest.class, ICodeElementValuesTest.class, TarmedBillingTest.class, VerrechenbarTest.class,
-		TarmedOptifierTest.class })
+@SuiteClasses({ BillingTest.class, ICodeElementValuesTest.class, VerrechenbarTest.class })
 public class AllBillingTests {
 
 //	public static VerrechenbarTarmedLeistung getTarmedVerrechenbar(String tarmedCode) {
