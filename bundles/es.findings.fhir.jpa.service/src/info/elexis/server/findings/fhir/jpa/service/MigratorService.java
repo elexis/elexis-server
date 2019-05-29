@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
@@ -23,21 +21,20 @@ import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.model.TransientCoding;
 import ch.elexis.core.model.ICoverage;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IEncounterService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.text.model.Samdas;
 import ch.rgw.tools.VersionedResource;
-import info.elexis.server.core.connector.elexis.services.EncounterService;
 
 @Component
 public class MigratorService implements IMigratorService {
 	
+	@Reference
 	private IFindingsService findingsService;
 	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFindingsService(IFindingsService findingsService){
-		this.findingsService = findingsService;
-	}
+	@Reference
+	private IEncounterService encounterService;
 	
 	@Override
 	public void migratePatientsFindings(String patientId, Class<? extends IFinding> filter,
@@ -97,8 +94,8 @@ public class MigratorService implements IMigratorService {
 		Optional<IPatient> patient = CoreModelServiceHolder.get().load(patientId, IPatient.class);
 		patient.ifPresent(p -> {
 			List<ch.elexis.core.model.IEncounter> encounters =
-				EncounterService.findAllEncountersForPatient(patient.get());
-			encounters.stream().forEach(b -> migrateEncounter(b));
+				encounterService.getAllEncountersForPatient(patient.get());
+			encounters.stream().forEach(this::migrateEncounter);
 		});
 	}
 	
