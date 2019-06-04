@@ -80,13 +80,13 @@ public class ProvisioningHelper {
 		IArtifactRepositoryManager artifactRepoMgr = Provisioner.getInstance().getArtifactRepositoryManager();
 		if (artifactRepoMgr.contains(location)) {
 			result &= artifactRepoMgr.removeRepository(location);
-			log.debug("Removed artifact repository " + location);
+			log.debug("Removed artifact repository {}", location);
 		}
 
 		IMetadataRepositoryManager metadataRepoMgr = Provisioner.getInstance().getMetadataRepositoryManager();
 		if (metadataRepoMgr.contains(location)) {
 			result &= metadataRepoMgr.removeRepository(location);
-			log.debug("Removed metadata repository " + location);
+			log.debug("Removed metadata repository {}",  location);
 		}
 
 		return result;
@@ -101,7 +101,7 @@ public class ProvisioningHelper {
 		IMetadataRepositoryManager metadataRepoMgr = Provisioner.getInstance().getMetadataRepositoryManager();
 		if (!metadataRepoMgr.contains(location)) {
 			metadataRepoMgr.addRepository(location);
-			log.debug("Added artifact repository " + location);
+			log.debug("Added artifact repository {}", location);
 		}
 
 		registerHttpAuthentication(location, username, password);
@@ -129,22 +129,19 @@ public class ProvisioningHelper {
 		} else {
 			Update[] possibleUpdates = operation.getPossibleUpdates();
 			for (Update update : possibleUpdates) {
-				log.debug("[UPDATE] Found update " + update.replacement);
+				log.debug("[UPDATE] Found update {}", update.replacement);
 			}
 		}
 
 		if (status.getSeverity() != IStatus.ERROR) {
 			IStatus stat = ProvisioningHelper.performOperation(operation);
-			log.info("[UPDATE] Finished {} / {}", stat.getCode(), stat.getMessage());
+			log.info("[UPDATE] Finished {} | severity {} | code {}", stat.getMessage(),
+				stat.getSeverity(), stat.getCode());
 			// TODO perform restart
-			if (stat.isMultiStatus()) {
-				StatusUtil.printStatus(log, stat);
-			}
 		} else {
-			log.warn("UPDATE FAILED {} / {}", status.getCode(), status.getMessage());
-			if (status.isMultiStatus()) {
-				StatusUtil.printStatus(log, status);
-			}
+			log.warn("[UPDATE] FAILED {} | severity {} | code {}", status.getMessage(),
+				status.getSeverity(), status.getCode());
+			StatusUtil.logStatus(log, status);
 		}
 
 		return status;
@@ -192,7 +189,7 @@ public class ProvisioningHelper {
 	}
 
 	private static IInstallableUnit findFeature(String feature) {
-		List<IInstallableUnit> features = new ArrayList<IInstallableUnit>(getAllAvailableFeatures());
+		List<IInstallableUnit> features = new ArrayList<>(getAllAvailableFeatures());
 		// sort in order to have the newest feature on top
 		Collections.sort(features, Collections.reverseOrder());
 
