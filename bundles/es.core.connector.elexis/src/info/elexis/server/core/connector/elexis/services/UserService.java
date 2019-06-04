@@ -8,7 +8,7 @@ import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
-import info.elexis.server.core.connector.elexis.services.internal.CoreModelServiceHolder;
+import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
 
 public class UserService extends PersistenceService2 {
 

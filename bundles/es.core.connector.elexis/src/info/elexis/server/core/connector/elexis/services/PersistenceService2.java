@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.services.IModelService;
-import info.elexis.server.core.connector.elexis.services.internal.CoreModelServiceHolder;
+import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
 
 public class PersistenceService2 {
 

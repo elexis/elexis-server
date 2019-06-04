@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.services;
+package info.elexis.server.core.connector.elexis.internal.services;
 
 import java.util.List;
 

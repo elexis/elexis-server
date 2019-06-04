@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="info.elexis.server.core.connector.elexis.services.LocalLockService">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="info.elexis.server.core.connector.elexis.internal.services.LocalLockService">
    <service>
       <provide interface="ch.elexis.core.services.ILocalLockService"/>
    </service>
    <reference cardinality="1..1" field="contextService" interface="ch.elexis.core.services.IContextService" name="contextService"/>
    <reference cardinality="1..1" field="lockService" interface="info.elexis.server.core.connector.elexis.locking.ILockService" name="lockService"/>
    <reference cardinality="1..1" field="storeToStringService" interface="ch.elexis.core.services.IStoreToStringService" name="storeToStringService"/>
-   <implementation class="info.elexis.server.core.connector.elexis.services.LocalLockService"/>
+   <implementation class="info.elexis.server.core.connector.elexis.internal.services.LocalLockService"/>
 </scr:component>

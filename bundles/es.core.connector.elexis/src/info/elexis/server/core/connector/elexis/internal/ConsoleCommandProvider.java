@@ -22,8 +22,8 @@ import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
 import info.elexis.server.core.connector.elexis.services.LockService;
-import info.elexis.server.core.connector.elexis.services.internal.CoreModelServiceHolder;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {

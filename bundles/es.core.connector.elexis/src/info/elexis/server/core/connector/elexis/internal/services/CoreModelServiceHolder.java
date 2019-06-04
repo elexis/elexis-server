@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.services.internal;
+package info.elexis.server.core.connector.elexis.internal.services;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
