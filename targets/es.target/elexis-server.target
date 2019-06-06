@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1559736420">
+<target name="Elexis-Server" sequenceNumber="1559828158">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -77,7 +77,7 @@
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201905211243"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201905211243"/>
       <unit id="ch.rgw.utility" version="3.8.0.20190425-1427"/>
-      <unit id="ch.elexis.core" version="3.8.0.20190605-0854"/>
+      <unit id="ch.elexis.core" version="3.8.0.20190605-1537"/>
       <unit id="ch.elexis.core.l10n" version="3.8.0.20190527-1326"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20190522-0735"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20190416-1216"/>
@@ -88,7 +88,7 @@
       <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190511-0953"/>
       <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190604-1303"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
-      <unit id="ch.elexis.core.model" version="1.0.0.20190603-1130"/>
+      <unit id="ch.elexis.core.model" version="1.0.0.20190606-1014"/>
       <unit id="ch.elexis.core.jcifs" version="2.1.2.20190509-1116"/>
       <unit id="ch.elexis.core.services" version="1.0.0.20190604-1304"/>
       <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20190515-1510"/>
