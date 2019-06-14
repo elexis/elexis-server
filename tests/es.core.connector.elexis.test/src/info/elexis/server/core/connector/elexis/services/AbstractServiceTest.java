@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.services;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,7 @@ public abstract class AbstractServiceTest {
 		testFaelle.add(testFall);
 
 		Behandlung behandlung = new BehandlungService.Builder(testFall, mandator).buildAndSave();
+		assertTrue(behandlung.isBillable());
 		testBehandlungen.add(behandlung);
 	}
 
