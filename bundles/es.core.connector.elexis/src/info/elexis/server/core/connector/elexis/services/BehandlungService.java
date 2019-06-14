@@ -48,6 +48,7 @@ public class BehandlungService extends PersistenceService {
 			object.setTime(LocalTime.now());
 			object.setFall(fall);
 			object.setMandant(mandator);
+			object.setBillable(true);
 		}
 	}
 
