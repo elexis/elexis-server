@@ -4,9 +4,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ch.elexis.core.model.IContact;
-import ch.elexis.core.model.ICoverage;
-import ch.elexis.core.model.IMandator;
-import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.IContext;
 import info.elexis.server.core.SystemPropertyConstants;
@@ -24,75 +21,6 @@ public class Context implements IContext {
 		return SystemPropertyConstants.getStationId();
 	}
 	
-	@Override
-	public Optional<IUser> getActiveUser(){
-		return Optional.ofNullable((IUser) context.get(ACTIVE_USER));
-	}
-	
-	@Override
-	public void setActiveUser(IUser user){
-		if (user == null) {
-			context.remove(ACTIVE_USER);
-		} else {
-			setNamed(ACTIVE_USER, user);
-		}
-	}
-	
-	@Override
-	public Optional<IContact> getActiveUserContact(){
-		return Optional.ofNullable((IContact) context.get(ACTIVE_USERCONTACT));
-	}
-	
-	@Override
-	public void setActiveUserContact(IContact userContact){
-		if (userContact == null) {
-			context.remove(ACTIVE_USERCONTACT);
-		} else {
-			setNamed(ACTIVE_USERCONTACT, userContact);
-		}
-	}
-	
-	@Override
-	public Optional<ICoverage> getActiveCoverage(){
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setActiveCoverage(ICoverage coverage){
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Optional<IPatient> getActivePatient(){
-		return Optional.ofNullable((IPatient) context.get(ACTIVE_PATIENT));
-	}
-	
-	@Override
-	public void setActivePatient(IPatient patient){
-		if (patient == null) {
-			context.remove(ACTIVE_PATIENT);
-		} else {
-			setNamed(ACTIVE_PATIENT, patient);
-		}
-	}
-	
-	@Override
-	public Optional<IMandator> getActiveMandator(){
-		return Optional.ofNullable((IMandator) context.get(ACTIVE_MANDATOR));
-		
-	}
-	
-	@Override
-	public void setActiveMandator(IMandator mandator){
-		if (mandator == null) {
-			context.remove(ACTIVE_MANDATOR);
-		} else {
-			setNamed(ACTIVE_MANDATOR, mandator);
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Optional<T> getTyped(Class<T> clazz){
@@ -102,7 +30,16 @@ public class Context implements IContext {
 	@Override
 	public void setTyped(Object object){
 		if (object != null) {
+			if (object instanceof IUser) {
+				// also set active user contact
+				IContact userContact = ((IUser) object).getAssignedContact();
+				setNamed(ACTIVE_USERCONTACT, userContact);
+			}
 			Optional<Class<?>> modelInterface = getModelInterface(object);
+			if (object.equals(context.get(modelInterface.get().getName()))) {
+				// object is already in the context do nothing otherwise loop happens
+				return;
+			}
 			if (modelInterface.isPresent()) {
 				context.put(modelInterface.get().getName(), object);
 			} else {
