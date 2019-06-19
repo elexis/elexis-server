@@ -86,6 +86,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	ch.elexis.core.l10n
 	ch.elexis.core.importer.div
 	ch.elexis.core.hl7.v2x
+	ch.elexis.core.hapi.fhir
 	ch.elexis.core.findings
 	ch.elexis.core.findings.util
 	ch.elexis.core.test
