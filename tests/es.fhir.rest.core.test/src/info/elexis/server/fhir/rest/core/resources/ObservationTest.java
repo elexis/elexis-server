@@ -40,10 +40,10 @@ import ch.elexis.core.findings.ObservationComponent;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
+import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.ILabResult;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
-import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class ObservationTest {
 

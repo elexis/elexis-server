@@ -16,7 +16,7 @@ import ca.uhn.fhir.rest.client.api.IHttpRequest;
 import ca.uhn.fhir.rest.client.api.IHttpResponse;
 import ca.uhn.fhir.rest.client.method.HttpGetClientInvocation;
 import ca.uhn.fhir.rest.client.method.MethodUtil;
-import info.elexis.server.hapi.fhir.FhirUtil;
+import ch.elexis.core.hapi.fhir.FhirUtil;
 
 public class CORSTest {
 	

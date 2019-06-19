@@ -34,10 +34,10 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
+import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.IEncounter;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
-import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class ProcedureRequestTest {
 

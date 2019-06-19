@@ -18,11 +18,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.types.ArticleTyp;
 import es.fhir.rest.core.coding.MedicamentCoding;
 import info.elexis.server.fhir.rest.core.test.AllTests;
-import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class MedicationTest {
 	

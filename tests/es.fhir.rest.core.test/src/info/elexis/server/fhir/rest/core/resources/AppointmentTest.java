@@ -25,8 +25,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ch.elexis.core.hapi.fhir.FhirUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
-import info.elexis.server.hapi.fhir.FhirUtil;
 
 public class AppointmentTest {
 

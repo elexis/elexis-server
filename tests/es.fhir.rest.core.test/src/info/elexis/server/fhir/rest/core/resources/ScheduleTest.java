@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import info.elexis.server.hapi.fhir.FhirUtil;
+import ch.elexis.core.hapi.fhir.FhirUtil;
 
 public class ScheduleTest {
 
