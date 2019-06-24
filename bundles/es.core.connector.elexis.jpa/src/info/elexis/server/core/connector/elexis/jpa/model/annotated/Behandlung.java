@@ -54,7 +54,7 @@ public class Behandlung extends AbstractDBObjectIdDeleted {
 
 	@Convert("booleanStringConverter")
 	@Column(length = 1)
-	private boolean billable; // DBModel 3.7.0
+	private boolean billable = true; // DBModel 3.7.0
 
 	@Column(name = "zeit", length = 6)
 	private LocalTime time; // DBModel 3.7.0
