@@ -35,13 +35,13 @@ public class SwaggerConfigurator {
 			Configuration config = configAdmin.getConfiguration(SERVICE_PID, null);
 			Dictionary<String, Object> properties = config.getProperties();
 			if (properties == null) {
-				properties = new Hashtable<String, Object>();
+				properties = new Hashtable<>();
 				properties.put(Constants.SERVICE_PID, SERVICE_PID);
 			}
 
 			properties.put("swagger.basePath", "/services");
 			properties.put("swagger.info.title", "Elexis-Server");
-			properties.put("swagger.info.version", "1.7");
+			properties.put("swagger.info.version", "1.8");
 			properties.put("swagger.scheme.https", "");
 
 			properties.put("swagger.securityDefinition.type.esoauth", "oauth2");

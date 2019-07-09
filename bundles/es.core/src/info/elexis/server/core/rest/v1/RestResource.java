@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 
+@Deprecated
 @Api(value = "/system", tags = { "system" })
 @Path("system/v1")
 @Component(service = RestResource.class, immediate = true)
