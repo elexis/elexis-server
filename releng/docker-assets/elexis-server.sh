@@ -71,15 +71,22 @@ EOF
 fi
 
 # Handle ES properties
-JAVA_PROPERTIES=""
+EFFECTIVE_JAVA_PROPERTIES=""
 
 if [ ! -z $DISABLE_WEB_SECURITY ]; then
 	echo "Starting with disabled web security"
-	JAVA_PROPERTIES+="-Ddisable.web.security=true "
+	EFFECTIVE_JAVA_PROPERTIES+=" -Ddisable.web.security=true"
 fi
 
+if [ ! -z $JAVA_PROPERTIES ]; then
+	echo "Appending Java properties: '"$JAVA_PROPERTIES"'"
+	EFFECTIVE_JAVA_PROPERTIES+=" $JAVA_PROPERTIES"
+fi
+
+echo "Effective Java properties: '"$EFFECTIVE_JAVA_PROPERTIES"'"
+
 # Start-up the elexis-server
-/opt/elexis-server/elexis-server -console 7234 --launcher.appendVmargs -vmargs ${JAVA_PROPERTIES} &
+/opt/elexis-server/elexis-server -console 7234 --launcher.appendVmargs -vmargs ${EFFECTIVE_JAVA_PROPERTIES} &
 PID=$!
 
 echo "Started Elexis-Server launcher with PID [$PID]"
