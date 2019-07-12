@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="info.elexis.server.core.p2.console.ConsoleCommandProvider">
-   <implementation class="info.elexis.server.core.p2.console.ConsoleCommandProvider"/>
-   <service servicefactory="false">
+   <service>
       <provide interface="org.eclipse.osgi.framework.console.CommandProvider"/>
    </service>
+   <implementation class="info.elexis.server.core.p2.console.ConsoleCommandProvider"/>
 </scr:component>
