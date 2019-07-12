@@ -86,7 +86,7 @@ public class ProvisioningHelper {
 		IMetadataRepositoryManager metadataRepoMgr = Provisioner.getInstance().getMetadataRepositoryManager();
 		if (metadataRepoMgr.contains(location)) {
 			result &= metadataRepoMgr.removeRepository(location);
-			log.debug("Removed metadata repository {}",  location);
+			log.debug("Removed metadata repository {}", location);
 		}
 
 		return result;
@@ -107,7 +107,20 @@ public class ProvisioningHelper {
 		registerHttpAuthentication(location, username, password);
 	}
 
-	public static IStatus updateAllFeatures() {
+	public static Update[] getPossibleUpdates() {
+		UpdateOperation updateOperation = determinePossibleUpdates();
+		if (updateOperation != null) {
+			return updateOperation.getPossibleUpdates();
+		}
+		return new Update[] {};
+	}
+
+	/**
+	 * 
+	 * @return an {@link UpdateOperation} if updates where found, else
+	 *         <code>null</code>
+	 */
+	private static UpdateOperation determinePossibleUpdates() {
 		IProvisioningAgent agent = Provisioner.getInstance().getProvisioningAgent();
 		ProvisioningHelper.refreshRepositories();
 
@@ -121,30 +134,26 @@ public class ProvisioningHelper {
 
 		UpdateOperation operation = new UpdateOperation(session, units.toUnmodifiableSet());
 		IStatus status = operation.resolveModal(new TimeoutProgressMonitor(15000));
-		log.info("[UPDATE] Check for updates {} | severity {} | code {}", status.getMessage(), status.getSeverity(),
-				status.getCode());
+		if (status.getSeverity() == Status.ERROR) {
+			StatusUtil.logStatus("determine updates", log, status);
+		}
 		if ((!status.isOK() && status.getCode() == 10000 && status.getSeverity() == 1)) {
 			// no updates available
-			return status;
+			return null;
 		} else {
-			Update[] possibleUpdates = operation.getPossibleUpdates();
-			for (Update update : possibleUpdates) {
-				log.debug("[UPDATE] Found update {}", update.replacement);
-			}
+			return operation;
+		}
+	}
+
+	public static IStatus updateAllFeatures() {
+		UpdateOperation updateOperation = determinePossibleUpdates();
+		if (updateOperation == null) {
+			return Status.OK_STATUS;
 		}
 
-		if (status.getSeverity() != IStatus.ERROR) {
-			IStatus stat = ProvisioningHelper.performOperation(operation);
-			log.info("[UPDATE] Finished {} | severity {} | code {}", stat.getMessage(),
-				stat.getSeverity(), stat.getCode());
-			// TODO perform restart
-		} else {
-			log.warn("[UPDATE] FAILED {} | severity {} | code {}", status.getMessage(),
-				status.getSeverity(), status.getCode());
-			StatusUtil.logStatus(log, status);
-		}
-
-		return status;
+		IStatus stat = ProvisioningHelper.performOperation(updateOperation);
+		StatusUtil.logStatus("update finished", log, stat);
+		return stat;
 	}
 
 	public static Collection<IInstallableUnit> getAllInstalledFeatures() {
@@ -204,8 +213,8 @@ public class ProvisioningHelper {
 	/**
 	 * 
 	 * @param featureName
-	 * @param install
-	 *            <code>true</code> to install, <code>false</code> to uninstall
+	 * @param install     <code>true</code> to install, <code>false</code> to
+	 *                    uninstall
 	 * @return
 	 */
 	public static String unInstallFeature(String featureName, boolean install) {
