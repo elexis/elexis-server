@@ -1,7 +1,9 @@
 package info.elexis.server.core.p2.jaxrs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,22 +30,18 @@ public class UpdateResource {
 	@Path("updates")
 	@ApiOperation(nickname = "checkUpdate", value = "check for available updates")
 	public Response checkUpdates() {
-		List<String> resultList = new ArrayList<>();
 		Update[] possibleUpdates = ProvisioningHelper.getPossibleUpdates();
-		if (possibleUpdates != null) {
-			for (Update update : possibleUpdates) {
-				resultList.add(update.toString());
-			}
-		}
+		List<String> resultList = Arrays.asList(possibleUpdates).stream().map(Update::toString)
+				.collect(Collectors.toList());
 		return Response.ok(resultList).build();
 	}
-	
+
 	@POST
 	@Path("updates")
 	@ApiOperation(nickname = "executeUpdate", value = "check for available updates")
 	public Response executeUpdates() {
 		IStatus updateAllFeatures = ProvisioningHelper.updateAllFeatures();
-		if(updateAllFeatures.isOK()) {
+		if (updateAllFeatures.isOK()) {
 			return Response.ok().build();
 		}
 		return Response.ok().build();
