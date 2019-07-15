@@ -11,12 +11,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.equinox.p2.operations.Update;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import info.elexis.server.core.p2.IProvisioner;
 import info.elexis.server.core.p2.internal.RepoInfo;
+import info.elexis.server.core.rest.ResponseStatusUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -42,8 +45,9 @@ public class P2Resource {
 	@Path("updates")
 	@ApiOperation(nickname = "executeUpdate", value = "check for available updates")
 	public Response executeUpdates() {
-		RepoInfo repositoryInfo = provisioner.getRepositoryInfo();
-		return Response.ok(repositoryInfo).build();
+		Collection<Update> availableUpdates = provisioner.getAvailableUpdates();
+		IStatus status = provisioner.update(availableUpdates, new NullProgressMonitor());
+		return ResponseStatusUtil.convert(status);
 	}
 
 	@GET
