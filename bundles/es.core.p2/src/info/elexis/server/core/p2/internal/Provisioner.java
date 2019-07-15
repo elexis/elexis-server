@@ -167,8 +167,7 @@ public class Provisioner implements IProvisioner {
 		ProvisioningSession session = new ProvisioningSession(agent);
 		List<IInstallableUnit> effectiveUpdates = updates.stream().map(ii -> ii.toUpdate).collect(Collectors.toList());
 		UpdateOperation updateOperation = new UpdateOperation(session, effectiveUpdates);
-
-		IStatus result = updateOperation.getResolutionResult();
+		IStatus result = updateOperation.resolveModal(monitor);
 		StatusUtil.logStatus("updateResolutionResult", log, result);
 		if (result.isOK()) {
 			ProvisioningJob job = updateOperation.getProvisioningJob(monitor);
