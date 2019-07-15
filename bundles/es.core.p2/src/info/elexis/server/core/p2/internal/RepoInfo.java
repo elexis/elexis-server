@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class RepoInfo {
 	@XmlElement
-	public List<RepoElement> metadataRepos = new ArrayList<RepoInfo.RepoElement>();
+	public List<RepoElement> metadataRepos = new ArrayList<>();
 	@XmlElement
-	public List<RepoElement> artifactRepos = new ArrayList<RepoInfo.RepoElement>();
+	public List<RepoElement> artifactRepos = new ArrayList<>();
 
 	public void addMetadataRepoElement(String repoName, URI repoLoc) {
 		metadataRepos.add(new RepoElement(repoName, repoLoc));

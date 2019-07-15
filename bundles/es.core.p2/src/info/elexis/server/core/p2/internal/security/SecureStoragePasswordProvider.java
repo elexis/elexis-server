@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.elexis.server.core.common.util.CoreUtil;
+import info.elexis.server.core.p2.Constants;
 
 @SuppressWarnings("restriction")
 public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.storage.provider.PasswordProvider {
@@ -47,8 +48,6 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 	private static final String ALGORITHM = "AES/ECB/PKCS5Padding"; //$NON-NLS-1$
 	private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
 	private static final int BYTE_ARRAY_SIZE = 1024;
-
-	public static final String PLUGIN_ID = "info.elexis.server.core.p2";
 
 	@Override
 	public PBEKeySpec getPassword(IPreferencesContainer container, int passwordType) {
@@ -115,7 +114,7 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 	}
 
 	private SecretKeySpec getKeySpec() {
-		String ksPref = Platform.getPreferencesService().getString(PLUGIN_ID, IPreferenceConstants.CACHED_KEY, "", //$NON-NLS-1$
+		String ksPref = Platform.getPreferencesService().getString(Constants.PLUGIN_ID, IPreferenceConstants.CACHED_KEY, "", //$NON-NLS-1$
 				null);
 		byte[] key = null;
 
@@ -140,7 +139,7 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 				SecretKey skey = kgen.generateKey();
 				key = skey.getEncoded();
 				byte[] b64 = Base64.encode(skey.getEncoded());
-				IEclipsePreferences node = InstanceScope.INSTANCE.getNode(PLUGIN_ID);
+				IEclipsePreferences node = InstanceScope.INSTANCE.getNode(Constants.PLUGIN_ID);
 				node.put(IPreferenceConstants.CACHED_KEY, new String(b64));
 				node.flush();
 			} catch (NoSuchAlgorithmException e) {
