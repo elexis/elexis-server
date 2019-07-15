@@ -1,17 +1,22 @@
 package info.elexis.server.core.p2.jaxrs;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.equinox.p2.operations.Update;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import info.elexis.server.core.p2.IProvisioner;
+import info.elexis.server.core.p2.internal.RepoInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -23,34 +28,29 @@ public class P2Resource {
 
 	@Reference
 	private IProvisioner provisioner;
-	
+
 	@GET
 	@Path("updates")
 	@ApiOperation(nickname = "checkUpdate", value = "check for available updates")
 	public Response checkUpdates() {
-//		Update[] possibleUpdates = ProvisioningHelper.getPossibleUpdates();
-//		List<String> resultList = Arrays.asList(possibleUpdates).stream().map(Update::toString)
-//				.collect(Collectors.toList());
-		return Response.ok(null).build();
+		Collection<Update> availableUpdates = provisioner.getAvailableUpdates();
+		List<String> resultList = availableUpdates.stream().map(Update::toString).collect(Collectors.toList());
+		return Response.ok(resultList).build();
 	}
 
 	@POST
 	@Path("updates")
 	@ApiOperation(nickname = "executeUpdate", value = "check for available updates")
 	public Response executeUpdates() {
-//		IStatus updateAllFeatures = ProvisioningHelper.updateAllFeatures();
-//		if (updateAllFeatures.isOK()) {
-//			return Response.ok().build();
-//		}
-//		return Response.ok().build();
-		return null;
+		RepoInfo repositoryInfo = provisioner.getRepositoryInfo();
+		return Response.ok(repositoryInfo).build();
 	}
 
 	@GET
 	@Path("repositories")
-	public Response listRepositories(@QueryParam("filter") String filter) {
-//		return HTTPServiceHelper.doRepositoryList(filter);
-		return null;
+	public Response listRepositories() {
+		RepoInfo repositoryInfo = provisioner.getRepositoryInfo();
+		return Response.ok(repositoryInfo).build();
 	}
 
 //	@GET
@@ -72,5 +72,5 @@ public class P2Resource {
 //		}
 //		return Response.status(Response.Status.BAD_REQUEST).build();
 //	}
-	
+
 }
