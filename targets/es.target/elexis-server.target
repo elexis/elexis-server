@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1564728527">
+<target name="Elexis-Server" sequenceNumber="1566374226">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -77,10 +77,10 @@
       <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201905211243"/>
       <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201905211243"/>
       <unit id="ch.rgw.utility" version="3.8.0.20190725-1229"/>
-      <unit id="ch.elexis.core" version="3.8.0.20190725-1229"/>
-      <unit id="ch.elexis.core.l10n" version="3.8.0.20190703-1208"/>
-      <unit id="ch.elexis.core.importer.div" version="3.2.0.20190715-0806"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20190416-1216"/>
+      <unit id="ch.elexis.core" version="3.8.0.20190819-1529"/>
+      <unit id="ch.elexis.core.l10n" version="3.8.0.20190819-0833"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.20190821-0631"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20190819-0833"/>
       <unit id="ch.elexis.core.hapi.fhir" version="3.4.0.20190619-0803"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20190619-0803"/>
@@ -91,7 +91,7 @@
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
       <unit id="ch.elexis.core.model" version="1.0.0.20190723-1221"/>
       <unit id="ch.elexis.core.jcifs" version="2.1.2.20190509-1116"/>
-      <unit id="ch.elexis.core.services" version="1.0.0.20190703-1620"/>
+      <unit id="ch.elexis.core.services" version="1.0.0.20190819-1529"/>
       <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20190723-1221"/>
       <unit id="ch.elexis.core.tasks" version="1.0.0.20190627-1227"/>
       <unit id="org.postgresql.jdbc42" version="42.2.5"/>
