@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1566373789">
+<target name="Elexis-Server" sequenceNumber="1567067731">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
       <unit id="jaxb-api-impl-import-java9" version="1.0.0.20190124-1239"/>
       <unit id="ch.rgw.utility" version="3.8.0.20190725-1229"/>
-      <unit id="ch.elexis.core" version="3.8.0.20190819-1529"/>
+      <unit id="ch.elexis.core" version="3.8.0.20190829-0811"/>
       <unit id="ch.elexis.core.l10n" version="3.8.0.20190819-0833"/>
       <unit id="ch.elexis.core.importer.div" version="3.2.0.20190821-0631"/>
       <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20190819-0833"/>
       <unit id="ch.elexis.core.findings" version="1.0.0.20181005-0856"/>
       <unit id="ch.elexis.core.findings.util" version="1.0.0.20190619-0803"/>
       <unit id="ch.elexis.core.test" version="1.0.0.20190508-1245"/>
-      <unit id="ch.elexis.core.jpa" version="1.0.0.20190730-0956"/>
-      <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190730-0933"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20190827-1154"/>
+      <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20190829-0811"/>
       <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20190709-1349"/>
       <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
       <unit id="ch.elexis.core.model" version="1.0.0.20190723-1221"/>
@@ -46,7 +46,7 @@
       <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20190619-1322"/>
       <unit id="at.medevit.atc_codes" version="3.1.0.20190409-1536"/>
       <unit id="ch.elexis.omnivore" version="3.2.0.20190430-1229"/>
-      <unit id="ch.elexis.omnivore.model" version="3.8.0.20190524-0915"/>
+      <unit id="ch.elexis.omnivore.model" version="3.8.0.20190826-1405"/>
       <unit id="ch.elexis.base.ch.labortarif.model" version="1.0.0.20190516-0804"/>
       <repository location="http://download.elexis.info/elexis/f11106/p2/elexis-3-base/"/>
     </location>
@@ -166,7 +166,7 @@
       <unit id="com.sun.activation.javax.activation" version="1.2.0"/>
       <unit id="com.sun.xml.bind.jaxb-osgi" version="2.3.2"/>
       <unit id="jaxb-api" version="2.4.0.b1808300359"/>
-      <unit id="bcprov" version="1.61.0"/>
+      <unit id="bcprov" version="1.62.0"/>
       <unit id="jcl.over.slf4j" version="1.7.25"/>
       <unit id="com.squareup.okhttp3.okhttp" version="3.10.0"/>
       <unit id="com.squareup.okio" version="1.14.0"/>
@@ -216,7 +216,7 @@
       <unit id="javassist" version="3.20.0.GA"/>
       <unit id="woodstox-core-asl" version="4.4.1"/>
       <unit id="javax.xml.stream.stax-api" version="1.0.0.2"/>
-      <unit id="stax2-api" version="3.1.4"/>
+      <unit id="stax2-api" version="4.1.0"/>
       <unit id="net.sf.saxon.Saxon-HE" version="9.6.0.4"/>
       <unit id="com.phloc.commons" version="4.4.6"/>
       <unit id="com.phloc.schematron" version="2.7.1"/>
