@@ -149,6 +149,9 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	javax.transaction-api
 	com.sun.xml.bind.jaxb-osgi
 	jaxb-api
+	jakarta.xml.ws-api
+	jakarta.xml.soap-api
+	jakarta.jws-api
 	//
 	bcprov
 	jcl.over.slf4j
