@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1569316550">
+<target name="Elexis-Server" sequenceNumber="1569322936">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -166,6 +166,9 @@
       <unit id="com.sun.activation.javax.activation" version="1.2.0"/>
       <unit id="com.sun.xml.bind.jaxb-osgi" version="2.3.2"/>
       <unit id="jaxb-api" version="2.4.0.b1808300359"/>
+      <unit id="jakarta.xml.ws-api" version="2.3.2"/>
+      <unit id="jakarta.xml.soap-api" version="1.4.1"/>
+      <unit id="jakarta.jws-api" version="1.1.1"/>
       <unit id="bcprov" version="1.63.0"/>
       <unit id="jcl.over.slf4j" version="1.7.25"/>
       <unit id="com.squareup.okhttp3.okhttp" version="3.10.0"/>

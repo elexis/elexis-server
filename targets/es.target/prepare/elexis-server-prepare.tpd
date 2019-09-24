@@ -184,6 +184,9 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	com.sun.activation.javax.activation [1.2.0,1.2.0]
 	com.sun.xml.bind.jaxb-osgi
 	jaxb-api
+	jakarta.xml.ws-api
+	jakarta.xml.soap-api
+	jakarta.jws-api
 	//
 	bcprov [1.61.0,2.0.0)
 	jcl.over.slf4j
