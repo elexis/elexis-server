@@ -1,13 +1,23 @@
 <configuration>
 	<contextName>ES</contextName>
-	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+	<statusListener
+		class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
 	<contextListener
 		class="info.elexis.server.core.logging.ClassloadingLoggerContextListener" />
 
 	<include file="${user.home}/elexis-server/logback-addition.xml" />
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="rocketchatAppender"
+		class="ch.elexis.core.logback.rocketchat.RocketchatAppender">
+		<!-- deny all events with a level below WARN, that is INFO, TRACE and DEBUG -->
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>WARN</level>
+		</filter>
+	</appender>
+
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>[%t] %d %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
@@ -19,7 +29,8 @@
 	<appender name="ROLLING"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${user.home}/elexis-server/logs/elexis-server.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<maxHistory>28</maxHistory>
 			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.log.zip
 			</fileNamePattern>
@@ -36,7 +47,8 @@
 	<appender name="ROLLING_WARN"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${user.home}/elexis-server/logs/elexis-server.WARN.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
 			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.WARN.log.zip
 			</fileNamePattern>
 			<minIndex>1</minIndex>
@@ -59,7 +71,8 @@
 	<appender name="ROLLING_ERROR"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${user.home}/elexis-server/logs/elexis-server.ERROR.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
 			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.ERROR.log.zip
 			</fileNamePattern>
 			<minIndex>1</minIndex>
@@ -82,16 +95,21 @@
 	<logger name="org.eclipse" level="INFO" />
 	<logger name="org.apache" level="INFO" />
 	<logger name="se.ugli.bigqueue" level="INFO" />
-	<logger name="ch.medelexis.server.connector.rockethealth" level="TRACE" />
+	<logger name="ch.medelexis.server.connector.rockethealth"
+		level="TRACE" />
 	<logger name="ca.uhn.fhir" level="INFO" />
-	<logger name="org.apache.shiro.session.mgt.DefaultSessionManager" level="INFO" />
-	<logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
+	<logger
+		name="org.apache.shiro.session.mgt.DefaultSessionManager" level="INFO" />
+	<logger name="org.eclipse.persistence.logging.metadata"
+		level="WARN" />
 
 	<root level="${root.level:-DEBUG}">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="ROLLING" />
 		<appender-ref ref="ROLLING_WARN" />
 		<appender-ref ref="ROLLING_ERROR" />
+		<!-- will be replace with async appender in ElexisEnvironmentActivator -->
+		<appender-ref ref="rocketchatAppender" />
 	</root>
 
 </configuration>

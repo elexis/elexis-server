@@ -100,6 +100,7 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	ch.elexis.core.services
 	ch.elexis.core.findings.fhir.model
 	ch.elexis.core.tasks
+	ch.elexis.core.logback.rocketchat
 	//
 	org.postgresql.jdbc42
 	org.h2

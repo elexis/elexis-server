@@ -10,6 +10,8 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.elexis.core.services.IContextService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.contrib.ApplicationShutdownRegistrar;
 import info.elexis.server.core.contrib.IApplicationShutdownListener;
 
@@ -28,7 +30,9 @@ public class Application implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception{
-		log.info("Starting {} ...", getClass().getName());
+		String stationId = OsgiServiceUtil.getService(IContextService.class).get().getStationIdentifier();
+		
+		log.info("{}: system starting", stationId);
 		
 		log.info("Settings: TimeZone [{}], user.language [{}], user.region [{}]",
 			TimeZone.getDefault().getID(), System.getProperty("user.language"),
@@ -43,13 +47,13 @@ public class Application implements IApplication {
 		}
 		
 		if (restart) {
-			log.info("Restarting {} ...", getClass().getName());
+			log.warn("{}: system restarting", stationId);
 			// give all services time to shutdown
 			Thread.sleep(2000);
 			return IApplication.EXIT_RESTART;
 		}
 		
-		log.info("Stopping {} ...", getClass().getName());
+		log.warn("{}: system shutting down", stationId);
 		return IApplication.EXIT_OK;
 	}
 	
