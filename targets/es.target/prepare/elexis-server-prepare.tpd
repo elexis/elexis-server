@@ -27,6 +27,7 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 	ch.elexis.core.hapi.fhir
 	ch.elexis.core.findings.fhir.model
 	ch.elexis.core.tasks
+	ch.elexis.core.logback.rocketchat
 	//
 	org.h2
 	org.jdom
