@@ -3,7 +3,7 @@ target "Elexis-Server"
 with source allEnvironments
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
+location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	// Java 11
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
@@ -46,7 +46,7 @@ location "http://download.elexis.info/elexis/f11106/p2/elexis-3-core/" {
 }
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis/f11106/p2/elexis-3-base/" {
+location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
 	at.medevit.ch.artikelstamm.model
