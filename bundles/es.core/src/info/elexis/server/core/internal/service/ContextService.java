@@ -16,6 +16,7 @@ public class ContextService implements IContextService {
 	@Activate
 	public void activate(){
 		rootContext = new Context();
+		rootContext.setNamed("IS_ELEXIS_SERVER", Boolean.TRUE.toString());
 	}
 	
 	@Override

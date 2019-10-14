@@ -13,6 +13,11 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 
+/**
+ * This service is programmatically activated via
+ * 
+ * @see ElexisEnvironmentServiceActivator
+ */
 @Component
 public class ElexisEnvironmentActivator {
 
@@ -25,13 +30,18 @@ public class ElexisEnvironmentActivator {
 	@Activate
 	public void activate() {
 		String hostname = elexisEnvironmentService.getHostname();
-		activateRocketChatLogAppender(hostname);
+		// IS ROCKETCHAT ENABLED?
+		configureRocketchatIntegration(hostname);
+		
 	}
 
-	private void activateRocketChatLogAppender(String hostname) {
+	private void configureRocketchatIntegration(String hostname) {
 
 		String rocketchatIntegrationToken = elexisEnvironmentService.getProperty("EE_RC_ES_INTEGRATION_WEBHOOK_TOKEN");
 		String rocketchatIntegrationUrl = "https://" + hostname + "/chat/hooks/" + rocketchatIntegrationToken;
+
+		// pass the integration token to RocketchatMessageTransporter
+		contextService.getRootContext().setNamed("rocketchat-station-integration-token", rocketchatIntegrationToken);
 
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		Logger slf4jRootLogger = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
@@ -51,7 +61,7 @@ public class ElexisEnvironmentActivator {
 			asyncAppender.addAppender(rocketchatAppender);
 			asyncAppender.start();
 			rootLogger.addAppender(asyncAppender);
-			
+
 		} else {
 			LoggerFactory.getLogger(getClass()).error("Could not get rocketchat appender from root logger");
 		}
