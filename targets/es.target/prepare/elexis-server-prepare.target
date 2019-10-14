@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1571042267">
+<target name="Elexis-Server" sequenceNumber="1571042776">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -23,7 +23,7 @@
       <unit id="ch.elexis.core.services" version="1.0.0.20191004-0855"/>
       <unit id="ch.elexis.core.hapi.fhir" version="3.4.0.20190619-0803"/>
       <unit id="ch.elexis.core.findings.fhir.model" version="1.0.0.20190723-1221"/>
-      <unit id="ch.elexis.core.tasks" version="1.0.0.20191014-0830"/>
+      <unit id="ch.elexis.core.tasks" version="1.0.0.20191014-0831"/>
       <unit id="ch.elexis.core.logback.rocketchat" version="1.0.0.20190927-1247"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.0"/>
