@@ -39,18 +39,23 @@ public class ElexisDBConnectionUtil {
 	public static final Semver MINIMUM_REQUIRED_DB_VERSION = new Semver("3.6.0");
 
 	static {
-		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
-		if (TestSystemPropertyConstants.systemIsInTestMode()) {
-			connection = ElexisDBConnectionUtil.getTestDatabaseConnection();
-			setConnection(connection); // openid requires this file
-		} else if (connectionConfigPath.toFile().exists()) {
-			try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
-				connection = DBConnection.unmarshall(is);
-				log.info("Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
-				StatusUtil.logStatus(log, verifyConnection(connection));
-			} catch (IOException | JAXBException e) {
-				log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
+		try {
+			connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
+			if (TestSystemPropertyConstants.systemIsInTestMode()) {
+				connection = ElexisDBConnectionUtil.getTestDatabaseConnection();
+				setConnection(connection); // openid requires this file
+			} else if (connectionConfigPath.toFile().exists()) {
+				try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
+					connection = DBConnection.unmarshall(is);
+					log.info("Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
+					StatusUtil.logStatus(log, verifyConnection(connection));
+				} catch (IOException | JAXBException e) {
+					log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Initialization error", e);
 		}
 	}
 
