@@ -60,6 +60,18 @@ location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder
 }
 
+location "http://download.eclipse.org/rt/eclipselink/updates/2.7.5.v20191016-ea124dd158/" {
+	jakarta.persistence
+	org.eclipse.persistence.asm
+	org.eclipse.persistence.antlr
+	org.eclipse.persistence.core
+	org.eclipse.persistence.jpa.jpql
+	org.eclipse.persistence.jpa
+	org.eclipse.persistence.extension
+}
+
+// vvvv diffs from elexis
+
 location "http://download.eclipse.org/eclipse/updates/4.9/" {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
@@ -164,15 +176,7 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2018090520190
 	javax.servlet.jsp.jstl.impl
 }
 
-// for es.core.connector.elexis.jpa
-location "http://download.eclipse.org/rt/eclipselink/updates/" {
-	org.eclipse.persistence.jpa.feature.group
-	org.eclipse.persistence.moxy.feature.group
-	org.eclipse.persistence.jpars
-	org.eclipse.persistence.dbws.feature.group
-	javax.validation
-	javax.activation
-}
+
 
 location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 	org.eclipse.gemini.jpa.feature.feature.group

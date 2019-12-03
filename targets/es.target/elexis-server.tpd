@@ -40,6 +40,18 @@ location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder lazy
 }
 
+location "http://download.elexis.info/elexis/master/p2/target/" {
+	jakarta.persistence
+	org.eclipse.persistence.asm
+	org.eclipse.persistence.antlr
+	org.eclipse.persistence.core
+	org.eclipse.persistence.jpa.jpql
+	org.eclipse.persistence.jpa
+	org.eclipse.persistence.extension
+	
+	javax.mail
+}
+
 location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
@@ -148,10 +160,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	javax.servlet.jsp.jstl
 	javax.servlet.jsp.jstl.impl
 	
-	org.eclipse.persistence.jpa.feature.group 
-	org.eclipse.persistence.moxy.feature.group
-	org.eclipse.persistence.jpars
-	org.eclipse.persistence.dbws.feature.group
 	javax.validation
 	javax.activation
 	
