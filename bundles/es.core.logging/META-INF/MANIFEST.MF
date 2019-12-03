@@ -7,4 +7,3 @@ Bundle-Vendor: elexis.info
 Fragment-Host: ch.qos.logback.classic;bundle-version="1.0.7"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Multi-Release: true
-Require-Bundle: javax.mail;bundle-version="1.4.0"

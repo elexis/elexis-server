@@ -7,7 +7,6 @@ Bundle-Vendor: elexis.info
 Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  org.eclipse.osgi.services;bundle-version="3.5.0",
  org.eclipse.core.runtime,
- javax.persistence;bundle-version="2.1.0";visibility:=reexport,
  org.eclipse.persistence.jpa;bundle-version="2.6.1",
  info.elexis.server.core,
  at.medevit.ch.artikelstamm;bundle-version="3.0.0";visibility:=reexport,
@@ -19,7 +18,8 @@ Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  org.h2;bundle-version="1.3.170",
  org.postgresql.jdbc42;bundle-version="42.2.5",
  com.mysql.cj;bundle-version="8.0.13",
- org.apache.commons.lang3;bundle-version="3.7.0"
+ org.apache.commons.lang3;bundle-version="3.7.0",
+ jakarta.persistence;bundle-version="2.2.3"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Multi-Release: true
 Service-Component: OSGI-INF/*.xml

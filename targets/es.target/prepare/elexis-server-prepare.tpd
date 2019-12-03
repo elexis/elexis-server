@@ -56,6 +56,10 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	ch.elexis.base.ch.labortarif.model
 }
 
+location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
+	at.medevit.elexis.agenda.reminder
+}
+
 location "http://download.eclipse.org/eclipse/updates/4.9/" {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group

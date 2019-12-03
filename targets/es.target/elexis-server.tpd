@@ -1,5 +1,45 @@
 target "Elexis-Server" with source allEnvironments
 
+
+location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
+	//
+	ch.rgw.utility lazy
+	ch.elexis.core lazy
+	ch.elexis.core.l10n lazy
+	ch.elexis.core.importer.div lazy
+	ch.elexis.core.hl7.v2x lazy
+	ch.elexis.core.findings lazy
+	ch.elexis.core.findings.util lazy
+	ch.elexis.core.test lazy
+	// JPA
+	ch.elexis.core.jpa lazy
+	ch.elexis.core.jpa.datasource lazy
+	ch.elexis.core.jpa.entities lazy
+	ch.elexis.core.jpa.logging.slf4j lazy
+	ch.elexis.core.model lazy
+	ch.elexis.core.jcifs lazy
+	ch.elexis.core.services lazy
+	ch.elexis.core.hapi.fhir lazy
+	ch.elexis.core.findings.fhir.model lazy
+	ch.elexis.core.tasks lazy
+	ch.elexis.core.logback.rocketchat lazy
+	//
+}
+
+location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
+	ch.elexis.base.ch.ticode lazy
+	at.medevit.ch.artikelstamm lazy
+	at.medevit.ch.artikelstamm.model lazy
+	at.medevit.atc_codes lazy
+	ch.elexis.omnivore lazy
+	ch.elexis.omnivore.model lazy
+	ch.elexis.base.ch.labortarif.model lazy
+}
+
+location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
+	at.medevit.elexis.agenda.reminder lazy
+}
+
 location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
@@ -81,26 +121,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	com.eclipsesource.jaxrs.provider.swagger.feature.feature.group
 	com.eclipsesource.jaxrs.provider.multipart.feature.feature.group
 	
-	ch.rgw.utility
-	ch.elexis.core
-	ch.elexis.core.l10n
-	ch.elexis.core.importer.div
-	ch.elexis.core.hl7.v2x
-	ch.elexis.core.hapi.fhir
-	ch.elexis.core.findings
-	ch.elexis.core.findings.util
-	ch.elexis.core.test
-	// JPA
-	ch.elexis.core.jpa
-	ch.elexis.core.jpa.datasource
-	ch.elexis.core.jpa.entities
-	ch.elexis.core.jpa.logging.slf4j
-	ch.elexis.core.model
-	ch.elexis.core.jcifs
-	ch.elexis.core.services
-	ch.elexis.core.findings.fhir.model
-	ch.elexis.core.tasks
-	ch.elexis.core.logback.rocketchat
 	//
 	org.postgresql.jdbc42
 	org.h2
@@ -116,14 +136,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.dom4j
 	com.healthmarketscience.jackcess
 	org.beanshell.bsh
-	
-	at.medevit.ch.artikelstamm
-	at.medevit.ch.artikelstamm.model
-	ch.elexis.base.ch.ticode
-	at.medevit.atc_codes
-	ch.elexis.omnivore
-	ch.elexis.omnivore.model
-	ch.elexis.base.ch.labortarif.model
 	
 	org.tukaani.xz
 	osgi.enterprise
