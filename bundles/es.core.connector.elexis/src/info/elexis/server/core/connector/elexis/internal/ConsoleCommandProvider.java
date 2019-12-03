@@ -3,6 +3,7 @@ package info.elexis.server.core.connector.elexis.internal;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
@@ -17,9 +18,13 @@ import ch.elexis.core.console.CmdAdvisor;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IConfig;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.model.message.TransientMessage;
 import ch.elexis.core.services.IContextService;
+import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.status.ObjectStatus;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
 import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
@@ -57,6 +62,23 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 				+ lockInfo.getSystemUuid() + "]");
 		}
 		return sb.toString();
+	}
+	
+	@CmdAdvisor(description = "send a message to a given user")
+	public void __elc_message(List<String> args) {
+		if (args.isEmpty()) {
+			fail("usage: elc message userid message");
+		}
+
+		Optional<IMessageService> messageService = OsgiServiceUtil.getService(IMessageService.class);
+		if (messageService.isPresent()) {
+			TransientMessage message = messageService.get().prepare(contextService.getStationIdentifier(),
+					IMessageService.INTERNAL_MESSAGE_URI_SCHEME + ":" + args.get(0));
+			message.setMessageText(args.get(1));
+			ObjectStatus status = messageService.get().send(message);
+			ok(status);
+		}
+		fail("messageService not found");
 	}
 	
 	@CmdAdvisor(description = "list all elexis instances connected to this server instance")

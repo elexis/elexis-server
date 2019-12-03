@@ -35,6 +35,9 @@ public class ElexisDBConnectionUtil {
 
 	static {
 		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
+	}
+
+	public static Optional<DBConnection> getConnection() {
 		if (connectionConfigPath.toFile().exists()) {
 			try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
 				connection = DBConnection.unmarshall(is);
@@ -42,11 +45,11 @@ public class ElexisDBConnectionUtil {
 				StatusUtil.logStatus(log, verifyConnection(connection));
 			} catch (IOException | JAXBException e) {
 				log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
+				System.out.println("Error opening " + connectionConfigPath.toAbsolutePath());
+				e.printStackTrace();
 			}
 		}
-	}
-
-	public static Optional<DBConnection> getConnection() {
+		
 		return Optional.ofNullable(connection);
 	}
 
