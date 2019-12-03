@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.IProvisioningAgentProvider;
 import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.equinox.p2.core.spi.IAgentServiceFactory;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
@@ -68,6 +69,11 @@ public class Provisioner implements IProvisioner {
 	@Reference(service = IProvisioningAgentProvider.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "unsetAgentProvider")
 	protected void setAgentProvider(IProvisioningAgentProvider agentProvider) {
 		this.agentProvider = agentProvider;
+	}
+	
+	@Reference(target = "(p2.agent.servicename=org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager)")
+	protected void setMetadataRepositoryManager(IAgentServiceFactory serviceFactory){
+		// is necessary to have the service loaded on startup
 	}
 
 	protected void unsetAgentProvider(IProvisioningAgentProvider agentProvider) {
