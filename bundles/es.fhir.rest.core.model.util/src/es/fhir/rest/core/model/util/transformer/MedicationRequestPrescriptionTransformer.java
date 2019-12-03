@@ -34,6 +34,7 @@ import ch.elexis.core.model.IPrescription;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.model.builder.IPrescriptionBuilder;
 import ch.elexis.core.model.prescription.EntryType;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -50,11 +51,14 @@ public class MedicationRequestPrescriptionTransformer
 		+ "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
+	@org.osgi.service.component.annotations.Reference
+	private IContextService contextService;
+	
 	private PrescriptionEntryTypeFactory entryTypeFactory = new PrescriptionEntryTypeFactory();
 	
 	@Override
 	public Optional<MedicationRequest> getFhirObject(IPrescription localObject,
-		SummaryEnum summaryEnum,Set<Include> includes){
+		SummaryEnum summaryEnum, Set<Include> includes){
 		MedicationRequest fhirObject = new MedicationRequest();
 		MedicationRequestStatus statusEnum = MedicationRequestStatus.ACTIVE;
 		
@@ -226,8 +230,8 @@ public class MedicationRequestPrescriptionTransformer
 		Optional<IPatient> patient =
 			modelService.load(fhirObject.getSubject().getId(), IPatient.class);
 		if (item.isPresent() && patient.isPresent()) {
-			IPrescription localObject = new IPrescriptionBuilder(modelService, item.get(),
-				patient.get(), getMedicationRequestDosage(fhirObject)).build();
+			IPrescription localObject = new IPrescriptionBuilder(modelService, contextService,
+				item.get(), patient.get(), getMedicationRequestDosage(fhirObject)).build();
 			
 			Optional<LocalDateTime> startDateTime = getMedicationRequestStartDateTime(fhirObject);
 			startDateTime.ifPresent(date -> localObject.setDateFrom(date));
