@@ -1,5 +1,8 @@
 package es.fhir.rest.core.resources.util;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.hl7.fhir.dstu3.model.DateTimeType;
@@ -69,19 +72,19 @@ public class DateRangeParamUtil {
 		if (dateTime == null) {
 			return false;
 		}
-		Date lower = dates.getLowerBoundAsInstant();
-		Date upper = dates.getUpperBoundAsInstant();
+		LocalDate lower = LocalDate.parse(dates.getLowerBound().getValueAsString());
+		LocalDate upper = LocalDate.parse(dates.getUpperBound().getValueAsString());
 
-		Date date = dateTime.getValue();
-		
+		LocalDateTime date = LocalDateTime.parse(dateTime.asStringValue(), DateTimeFormatter.ISO_DATE_TIME);
+
 		if (upper != null) {
-			if (date.after(upper)) {
+			if (date.isAfter(upper.atTime(23, 59, 59))) {
 				return false;
 			}
 		}
 
 		if (lower != null) {
-			if (date.before(lower)) {
+			if (date.isBefore(lower.atStartOfDay())) {
 				return false;
 			}
 		}

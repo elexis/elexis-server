@@ -10,7 +10,6 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -20,6 +19,7 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
@@ -122,7 +122,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	 * @return
 	 */
 	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) IdentifierDt identifier) {
+	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier) {
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
 				&& !identifier.getValue().isEmpty()) {
 			migratorService.migrateConsultationsFindings(identifier.getValue(), IEncounter.class);

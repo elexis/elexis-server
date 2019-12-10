@@ -9,12 +9,14 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.UriType;
 
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+
 public class ServerCapabilityStatementProvider
 		extends org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider {
 
 	@Override
-	public CapabilityStatement getServerConformance(HttpServletRequest theRequest) {
-		CapabilityStatement serverConformance = super.getServerConformance(theRequest);
+	public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails requestDetails) {
+		CapabilityStatement serverConformance = super.getServerConformance(theRequest, requestDetails);
 		serverConformance.getRest().get(0)
 				.setSecurity(getSmartOnFhirCapabilityStatementRestSecurityComponent(theRequest));
 		return serverConformance;

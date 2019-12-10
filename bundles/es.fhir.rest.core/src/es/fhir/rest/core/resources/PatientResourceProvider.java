@@ -18,7 +18,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.Delete;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -36,6 +35,7 @@ import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.model.IPatient;
@@ -99,7 +99,7 @@ public class PatientResourceProvider implements IFhirResourceProvider {
 	}
 
 	@Search()
-	public List<Patient> findPatientByIdentifier(@RequiredParam(name = Patient.SP_IDENTIFIER) IdentifierDt identifier) {
+	public List<Patient> findPatientByIdentifier(@RequiredParam(name = Patient.SP_IDENTIFIER) TokenParam identifier) {
 		if (identifier != null && identifier.getSystem().equals(IdentifierSystem.ELEXIS_PATNR.getSystem())) {
 			INamedQuery<IPatient> namedQuery = modelService.getNamedQuery(IPatient.class, "code");
 			Optional<IPatient> patient = namedQuery.executeWithParametersSingleResult(

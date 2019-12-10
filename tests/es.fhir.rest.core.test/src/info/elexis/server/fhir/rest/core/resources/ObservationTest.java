@@ -148,11 +148,10 @@ public class ObservationTest {
 		
 		// search with date parameter
 		results = client.search().forResource(Observation.class)
-			.where(Observation.SUBJECT
-				.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
-			.and(Observation.DATE.exactly()
-				.day(AllTests.getDate(LocalDateTime.of(2016, Month.DECEMBER, 14, 17, 44, 25))))
-			.returnBundle(Bundle.class).execute();
+				.where(Observation.SUBJECT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.and(Observation.DATE.exactly()
+						.day(AllTests.getDate(LocalDateTime.of(2016, Month.DECEMBER, 14, 17, 44, 25))))
+				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();
 		assertFalse(entries.isEmpty());
