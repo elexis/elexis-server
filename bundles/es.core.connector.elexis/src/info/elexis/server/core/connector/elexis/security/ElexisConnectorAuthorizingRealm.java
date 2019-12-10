@@ -63,7 +63,7 @@ public class ElexisConnectorAuthorizingRealm extends AuthorizingRealm
 					String attemptedPassword = new String(upToken.getPassword());
 					String credentials = sai.getCredentials().toString();
 					String salt = new String(sai.getCredentialsSalt().getBytes());
-					return pes.authenticate(attemptedPassword, credentials, salt);
+					return pes.authenticate(attemptedPassword.toCharArray(), credentials, salt);
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException | DecoderException e) {
 					log.warn("Error verifying password for user [{}].", e);
 				}
