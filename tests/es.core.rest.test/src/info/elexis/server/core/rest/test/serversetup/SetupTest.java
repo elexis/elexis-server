@@ -167,14 +167,14 @@ public class SetupTest {
 		practitioner.setAllowExternal(true);
 		practitioner.addRole(fhirRole);
 		assertTrue(modelService.save(practitioner));
-		assertTrue(userService.verifyPassword(practitioner, USER_PASS_PRACTITIONER));
+		assertTrue(userService.verifyPassword(practitioner, USER_PASS_PRACTITIONER.toCharArray()));
 		
 		IUser esadmin = new IUserBuilder(modelService, USER_PASS_ESADMIN, drGonzo).build();
 		userService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
 		esadmin.setAllowExternal(true);
 		esadmin.addRole(esadminRole);
 		assertTrue(modelService.save(esadmin));
-		assertTrue(userService.verifyPassword(esadmin, USER_PASS_ESADMIN));
+		assertTrue(userService.verifyPassword(esadmin, USER_PASS_ESADMIN.toCharArray()));
 		
 		OsgiServiceUtil.ungetService(userService);
 		OsgiServiceUtil.ungetService(modelService);
