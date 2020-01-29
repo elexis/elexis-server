@@ -35,7 +35,7 @@
 	<description>Elexis-Server for headless operation</description>
 
 	<properties>
-		<tycho.version>1.3.0</tycho.version>
+		<tycho.version>1.6.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 	</properties>
