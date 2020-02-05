@@ -47,10 +47,10 @@ public class RedmineResource {
 				RedmineUtil.INSTANCE.sendLogToRedmine(appenderName, issueId, sizeLimit);
 			return Response.ok(issueUrl, MediaType.TEXT_PLAIN_TYPE).build();
 		} catch (RedmineException | IOException e) {
+			LoggerFactory.getLogger(getClass()).warn("Error sending log", e);
 			if (e instanceof RedmineSecurityException) {
 				return Response.status(Status.UNAUTHORIZED).entity(e.getMessage()).build();
 			}
-			LoggerFactory.getLogger(getClass()).error("Error sending log", e);
 			return Response.serverError().build();
 		}
 		
