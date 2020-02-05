@@ -155,12 +155,12 @@ public enum RedmineUtil {
 	String getIssueSubject(){
 		String eeHostname = System.getenv(ElexisEnvironmentPropertyConstants.EE_HOSTNAME);
 		String organizationName =
-			System.getProperty(ElexisEnvironmentPropertyConstants.ORGANISATION_NAME);
+			System.getenv(ElexisEnvironmentPropertyConstants.ORGANISATION_NAME);
 		if (organizationName != null) {
 			organizationName = organizationName.replace("__", " ");
 		}
 		
-		return "ES@" + eeHostname + " (" + organizationName + ")";
+		return "ES " + eeHostname + " (" + organizationName + ")";
 		
 	}
 	
