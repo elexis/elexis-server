@@ -52,9 +52,7 @@ public class SystemResource {
 	}
 
 	@POST
-	@ApiOperation(nickname = "restartSystem", value = "perform a system restart", authorizations = {
-			@Authorization(value = "esoauth") })
-	@RequiresRoles("esadmin")
+	@ApiOperation(nickname = "restartSystem", value = "perform a system restart")
 	@ApiResponses(value = { @ApiResponse(code = 422, message = "restart was vetoed, see message for reason") })
 	public Response performSystemRestart() {
 		String veto = Application.restart(false);
