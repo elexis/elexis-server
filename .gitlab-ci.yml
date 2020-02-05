@@ -20,7 +20,7 @@ trigger_dockerhub_build:
     script:
     - >- 
          curl 
-         -X POST https://registry.hub.docker.com/u/medevit/elexis-server/trigger/$DOCKERHUB_TRIGGER_TOKEN/
+         -X POST https://hub.docker.com/api/build/v1/source/$DOCKERHUB_TRIGGER_TOKEN_PREFIX/trigger/$DOCKERHUB_TRIGGER_TOKEN/call/
          -d '
          {
          "source_type": "Branch",
