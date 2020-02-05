@@ -43,7 +43,7 @@ public class P2Resource {
 
 	@POST
 	@Path("updates")
-	@ApiOperation(nickname = "executeUpdate", value = "check for available updates")
+	@ApiOperation(nickname = "executeUpdate", value = "execute update")
 	public Response executeUpdates() {
 		Collection<Update> availableUpdates = provisioner.getAvailableUpdates();
 		IStatus status = provisioner.update(availableUpdates, new NullProgressMonitor());
@@ -52,6 +52,7 @@ public class P2Resource {
 
 	@GET
 	@Path("repositories")
+	@ApiOperation(nickname = "listRepositories", value = "list the used p2 repositories")
 	public Response listRepositories() {
 		RepoInfo repositoryInfo = provisioner.getRepositoryInfo();
 		return Response.ok(repositoryInfo).build();
