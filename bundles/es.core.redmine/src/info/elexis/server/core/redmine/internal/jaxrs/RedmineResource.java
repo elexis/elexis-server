@@ -17,6 +17,7 @@ import com.taskadapter.redmineapi.RedmineSecurityException;
 import info.elexis.server.core.redmine.internal.RedmineUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @Api(tags = {
 	"redmine"
@@ -28,7 +29,8 @@ public class RedmineResource {
 	@POST
 	@Path("sendlogfile")
 	@ApiOperation(nickname = "sendLogFile", value = "send log file to redmine")
-	public Response sendLogFileToRedmine(SendLogConfiguration sendConfiguration){
+	public Response sendLogFileToRedmine(
+		@ApiParam(required = false, value = "sendlog configuration") SendLogConfiguration sendConfiguration){
 		
 		String appenderName = null;
 		Integer issueId = null;

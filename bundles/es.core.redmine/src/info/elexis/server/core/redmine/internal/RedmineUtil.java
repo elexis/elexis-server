@@ -51,9 +51,11 @@ public enum RedmineUtil {
 	 *            <code>null</code> or the apiKey to connect to redmine with
 	 * @param issueId
 	 *            <code>null</code> or the issue number to append the logfile to. If
-	 *            <code>null</code> a new issue is created
+	 *            <code>null</code> a new issue is created. For invalid values (<=0)
+	 *            <code>null</code> will be set
 	 * @param sizeLimit
-	 *            <code>null</code> defaults to 1 megabyte, no more than 10mb allowed
+	 *            <code>null</code> defaults to 1 megabyte, no more than 10mb allowed. For invalid
+	 *            values (<=0 or > 10mb) <code>null</code> 1 mb will be set
 	 * @throws RedmineException
 	 * @throws IOException
 	 * @return issueUrl the logfile was attached to
@@ -67,6 +69,10 @@ public enum RedmineUtil {
 		
 		if (sizeLimit == null || sizeLimit < 0 || sizeLimit > (10 * 1024 * 1024)) {
 			sizeLimit = new Long(1024 * 1024);
+		}
+		
+		if (issueId != null && issueId <= 0) {
+			issueId = null;
 		}
 		
 		Appender<ILoggingEvent> appender = ROOT_LOGGER.getAppender(appenderName);
