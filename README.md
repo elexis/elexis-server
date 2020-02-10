@@ -1,7 +1,17 @@
 # Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) [![build status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/commits/master)
 Elexis for server operation
 
-The Elexis server implements a part of the SMART specification. Please consult [SMART: Tech Stack for HealthApps](http://docs.smarthealthit.org/) and  [HL7-FHIR wiki](http://wiki.hl7.org/index.php?title=FHIR) for further details.
+The Elexis server (ES) implements a part of the SMART specification. Please consult [SMART: Tech Stack for HealthApps](http://docs.smarthealthit.org/) and  [HL7-FHIR wiki](http://wiki.hl7.org/index.php?title=FHIR) for further details.
+
+## BREAKING CHANGES
+
+As of current development or ES 1.8, suport for the following services/components is removed:
+
+* ES will not provide HTTPS services
+* OpenID is not integrated in ES anymore
+* Only product builds for linux x86_64 are made
+
+If you want to operate ES standalone with authentication/authorization support, [Elexis-Environment](https://github.com/elexis/elexis-environment) is your solution.
 
 ## Build
 
@@ -24,3 +34,4 @@ the ID of the created instance, in order to restart it again afterwards. Repeate
 you with a newly generated container.
 
 After startup point your browser to http://localhost:8380/services/elexis/connector/v1/status to get information on the database ES is connected to.
+
