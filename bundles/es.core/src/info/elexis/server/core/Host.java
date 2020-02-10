@@ -13,9 +13,7 @@ public class Host {
 
 	public static final String HOSTNAME;
 	public static final int HTTP_PORT;
-	public static final int HTTPS_PORT;
 	public static final String BASE_URL;
-	public static final String BASE_URL_SECURE;
 
 	static {
 		log = LoggerFactory.getLogger(Host.class);
@@ -42,28 +40,7 @@ public class Host {
 			BASE_URL = "http://" + HOSTNAME + "/";
 		}
 
-		String httpsPort = System.getProperty("jetty.ssl.port");
-		if (StringUtils.isNumeric(httpsPort)) {
-			HTTPS_PORT = Integer.parseInt(httpsPort);
-		} else {
-			HTTPS_PORT = 8480;
-		}
-
-		if (HTTPS_PORT != 443) {
-			BASE_URL_SECURE = "https://" + HOSTNAME + ":" + HTTPS_PORT + "/";
-		} else {
-			BASE_URL_SECURE = "https://" + HOSTNAME + "/";
-		}
-
 		log.info("Hostname is [{}]", HOSTNAME);
-	}
-
-	public static String getOpenIDBaseUrl() {
-		return BASE_URL + "openid/";
-	}
-
-	public static String getOpenIDBaseUrlSecure() {
-		return BASE_URL_SECURE + "openid/";
 	}
 
 	public static String getLocalhostBaseUrl() {

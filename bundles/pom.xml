@@ -17,7 +17,6 @@
 
 	<modules>
 		<module>es.core.jetty.homebundle</module>
-		<module>es.core.jetty.osgi.boot.fragment</module>
 		<module>es.core.common</module>
               	<module>es.core</module>
                	<module>es.core.logging</module>
