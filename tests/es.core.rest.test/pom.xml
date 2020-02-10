@@ -22,7 +22,7 @@
 					<testClass>info.elexis.server.core.rest.test.AllTests</testClass>
 					<appArgLine>-consoleLog -console 7234</appArgLine>
 					<!-- Do not linkebreak in argLine - will fail tests -->
-					<argLine>-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.Slf4jLog -Djetty.home.bundle=info.elexis.server.core.jetty.homebundle -Djetty.etc.config.urls=etc/jetty.xml,etc/jetty-http.xml,etc/jetty-ssl-context.xml,etc/jetty-ssl.xml,etc/jetty-https.xml,etc/jetty-deployer.xml -DREFRESH_BUNDLES=false -Dopenid.unit-test=true -DforceExecuteSqlScript=true</argLine>
+					<argLine>-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.Slf4jLog -Djetty.home.bundle=info.elexis.server.core.jetty.homebundle -DREFRESH_BUNDLES=false -Dopenid.unit-test=true -DforceExecuteSqlScript=true</argLine>
 					<bundleStartLevel>
 						<bundle>
 							<id>info.elexis.server.setup.test</id>
