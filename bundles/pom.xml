@@ -29,7 +29,6 @@
 		<module>es.fhir.rest.core</module>
 		<module>es.fhir.rest.core.model.util</module>
 		<module>es.findings.fhir.jpa.service</module>
-		<module>es.openid</module>
 		<module>es.webapp</module>
        </modules>
 </project>

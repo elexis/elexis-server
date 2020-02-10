@@ -21,7 +21,6 @@
 		<module>es.core.platform.feature</module>
 		<module>es.core.connector.elexis.feature</module>
 		<module>es.core.jsp.feature</module>
-		<module>es.openid.feature</module>
 		<module>es.fhir.rest.core.feature</module>
 		<module>es.findings.feature</module>
 	</modules>

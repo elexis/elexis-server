@@ -20,7 +20,7 @@ import okhttp3.OkHttpClient;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	SetupTest.class, AllElexisInstancesTests.class, SwaggerTest.class
+	AllElexisInstancesTests.class, SwaggerTest.class
 })
 public class AllTests {
 	
