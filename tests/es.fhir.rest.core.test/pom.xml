@@ -22,7 +22,7 @@
 					<testClass>info.elexis.server.fhir.rest.core.test.AllTests</testClass>
 					<appArgLine>-consoleLog</appArgLine>
 					<!-- Do not linkebreak in argLine - will fail tests -->
-					<argLine>-Des.test=true -Delexis.test.mode=true -Ddisable.web.security=true -DREFRESH_BUNDLES=false -DacceptMissingLockServiceContributor=true</argLine>
+					<argLine>-Des.test=true -Delexis.test.mode=true -Ddisable.web.security=true -Dorg.osgi.service.http.port=8380 -DREFRESH_BUNDLES=false -DacceptMissingLockServiceContributor=true</argLine>
 					<bundleStartLevel>
 						<bundle>
 							<id>com.eclipsesource.jaxrs.publisher</id>
