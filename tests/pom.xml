@@ -52,11 +52,5 @@
       <version>2.0.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>info.elexis.server</groupId>
-      <artifactId>info.elexis.server.openid.feature</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>
