@@ -67,7 +67,7 @@ public enum RedmineUtil {
 			appenderName = "ROLLING";
 		}
 		
-		if (sizeLimit == null || sizeLimit < 0 || sizeLimit > (10 * 1024 * 1024)) {
+		if (sizeLimit == null || sizeLimit <= 0 || sizeLimit > (10 * 1024 * 1024)) {
 			sizeLimit = new Long(1024 * 1024);
 		}
 		
@@ -93,9 +93,11 @@ public enum RedmineUtil {
 		RedmineManager mgr = getRedmineManager(apiKey);
 		Issue issue = getOrCreateIssue(mgr, issueId);
 		
+		byte[] readFileLengthMax = readFileLengthMax(elexisLog, sizeLimit);
+		
 		Attachment attachment = mgr.getAttachmentManager().uploadAttachment(
 			"elexis_server_" + appenderName + "_log.txt", MimeType.txt.getContentType(),
-			readFileLengthMax(elexisLog, sizeLimit));
+			readFileLengthMax);
 		issue.addAttachment(attachment);
 		mgr.getIssueManager().update(issue);
 		
