@@ -9,6 +9,10 @@ public class SendLogConfiguration {
 	private Long maxsize;
 	private String appender;
 	
+	public SendLogConfiguration(){
+		appender = "ROLLING";
+	}
+	
 	public Integer getIssue(){
 		return issue;
 	}

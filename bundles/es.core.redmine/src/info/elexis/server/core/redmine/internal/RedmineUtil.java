@@ -83,6 +83,12 @@ public enum RedmineUtil {
 		
 		String logFile = ((FileAppender<ILoggingEvent>) appender).getFile();
 		File elexisLog = new File(logFile);
+		if (!elexisLog.exists() || !elexisLog.canRead()) {
+			throw new IOException("Error accessing [" + logFile + "]");
+		}
+		if (elexisLog.length() <= 0) {
+			throw new IOException("File [" + logFile + "] is length 0");
+		}
 		
 		RedmineManager mgr = getRedmineManager(apiKey);
 		Issue issue = getOrCreateIssue(mgr, issueId);
