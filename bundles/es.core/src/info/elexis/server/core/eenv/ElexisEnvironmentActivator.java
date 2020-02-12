@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.eenv.IElexisEnvironmentService;
+import ch.elexis.core.services.IConfigService;
 import ch.elexis.core.services.IContextService;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.LoggerContext;
@@ -26,6 +27,9 @@ public class ElexisEnvironmentActivator {
 
 	@Reference
 	private IContextService contextService;
+	
+	@Reference
+	private IConfigService configService;
 
 	@Activate
 	public void activate() {
@@ -40,8 +44,8 @@ public class ElexisEnvironmentActivator {
 		String rocketchatIntegrationToken = elexisEnvironmentService.getProperty("EE_RC_ES_INTEGRATION_WEBHOOK_TOKEN");
 		String rocketchatIntegrationUrl = "https://" + hostname + "/chat/hooks/" + rocketchatIntegrationToken;
 
-		// pass the integration token to RocketchatMessageTransporter
-		contextService.getRootContext().setNamed("rocketchat-station-integration-token", rocketchatIntegrationToken);
+		// pass the integration token for this station to RocketchatMessageTransporter
+		configService.setLocal("rocketchat-station-integration-token", rocketchatIntegrationToken);
 
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		Logger slf4jRootLogger = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
