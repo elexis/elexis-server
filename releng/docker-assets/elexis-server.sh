@@ -86,7 +86,7 @@ fi
 echo "Effective Java properties: '"$EFFECTIVE_JAVA_PROPERTIES"'"
 
 # Start-up the elexis-server
-/opt/elexis-server/elexis-server -console 7234 --launcher.appendVmargs -vmargs ${EFFECTIVE_JAVA_PROPERTIES} &
+/opt/elexis-server/elexis-server -console 7234 --launcher.appendVmargs -vmargs ${EFFECTIVE_JAVA_PROPERTIES} -XX:-OmitStackTraceInFastThrow &
 PID=$!
 
 echo "Started Elexis-Server launcher with PID [$PID]"
