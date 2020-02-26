@@ -2,7 +2,7 @@ FROM adoptopenjdk/openjdk11:alpine-slim
 MAINTAINER MEDEVIT <office@medevit.at>
 ARG BRANCH=master
 
-RUN apk add --no-cache curl tzdata openvpn iptables sudo bash certbot openssl bind-tools
+RUN apk add --no-cache tzdata bash
 ENV TZ=Europe/Zurich
 RUN addgroup elexis && adduser -S -u 1000 -G elexis -g "" -h /elexis elexis && \
     mkdir -p /opt/elexis-server && \
@@ -12,18 +12,12 @@ RUN addgroup elexis && adduser -S -u 1000 -G elexis -g "" -h /elexis elexis && \
     chown -R elexis:elexis /opt/elexis-server /elexis && \
     ln -s /elexis/letsencrypt /etc/letsencrypt
 
-COPY releng/docker-assets/sudoers /etc/
 COPY releng/docker-assets/elexis-server.sh /
-COPY releng/docker-assets/startopenvpn.sh /
-COPY releng/docker-assets/letsencrypt.sh /
-COPY releng/docker-assets/createESKeystore.sh /
-COPY releng/docker-assets/certbotrenew.sh /etc/periodic/weekly/
 
 USER elexis
 WORKDIR /elexis
 
 USER elexis
-EXPOSE 8480
 EXPOSE 8380
 EXPOSE 7234
 

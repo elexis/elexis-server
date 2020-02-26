@@ -30,11 +30,7 @@ shut_down(){
 }
 
 # dependencies
-mkdir -p /elexis/letsencrypt
 mkdir -p /elexis/elexis-server/logs
-
-# Initialize OpenVPN connection, care for letsencrypt
-sudo /startopenvpn.sh &> /elexis/elexis-server/logs/startopenvpn.log
 
 #
 # Start Elexis-Server
