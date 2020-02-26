@@ -92,12 +92,11 @@
 		</filter>
 	</appender>
 
+	<logger name="jcifs" level="INFO" />
 	<logger name="org.eclipse" level="INFO" />
 	<logger name="org.apache" level="INFO" />
 	<logger name="se.ugli.bigqueue" level="INFO" />
 	<logger name="org.keycloak.saml" level="DEBUG" />
-	<logger name="ch.medelexis.server.connector.rockethealth"
-		level="TRACE" />
 	<logger name="ca.uhn.fhir" level="INFO" />
 	<logger
 		name="org.apache.shiro.session.mgt.DefaultSessionManager" level="INFO" />
@@ -109,7 +108,7 @@
 		<appender-ref ref="ROLLING" />
 		<appender-ref ref="ROLLING_WARN" />
 		<appender-ref ref="ROLLING_ERROR" />
-		<!-- will be replace with async appender in ElexisEnvironmentActivator -->
+		<!-- will be replaced with async appender in ElexisEnvironmentActivator -->
 		<appender-ref ref="rocketchatAppender" />
 	</root>
 
