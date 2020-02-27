@@ -9,15 +9,13 @@ RUN addgroup elexis && adduser -S -u 1000 -G elexis -g "" -h /elexis elexis && \
     wget http://download.elexis.info/elexis-server/${BRANCH}/products/info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
     unzip -d /opt/elexis-server/ info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
     rm info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
-    chown -R elexis:elexis /opt/elexis-server /elexis && \
-    ln -s /elexis/letsencrypt /etc/letsencrypt
+    chown -R elexis:elexis /opt/elexis-server /elexis
 
 COPY releng/docker-assets/elexis-server.sh /
 
 USER elexis
 WORKDIR /elexis
 
-USER elexis
 EXPOSE 8380
 EXPOSE 7234
 
