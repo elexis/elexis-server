@@ -48,6 +48,7 @@ location "http://download.elexis.info/elexis/master/p2/target/" {
 	org.eclipse.persistence.jpa.jpql
 	org.eclipse.persistence.jpa
 	org.eclipse.persistence.extension
+	org.bouncycastle.bcprov
 	
 	javax.mail
 }
