@@ -8,8 +8,8 @@ import org.eclipse.core.runtime.Status;
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.model.IConfig;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
-import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
 
 public class ElexisDBConnection {
 	

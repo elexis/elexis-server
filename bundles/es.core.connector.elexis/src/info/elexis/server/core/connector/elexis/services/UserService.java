@@ -8,17 +8,18 @@ import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
-import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
 
-public class UserService extends PersistenceService2 {
-
+@Deprecated
+public class UserService {
+	
 	/**
 	 * Find the user associated with a given contact, if available
 	 * 
 	 * @param contact
 	 * @return
 	 */
-	public static Optional<IUser> findByContact(IContact contact) {
+	public static Optional<IUser> findByContact(IContact contact){
 		if (contact == null) {
 			return Optional.empty();
 		}
@@ -31,5 +32,5 @@ public class UserService extends PersistenceService2 {
 			return Optional.empty();
 		}
 	}
-
+	
 }

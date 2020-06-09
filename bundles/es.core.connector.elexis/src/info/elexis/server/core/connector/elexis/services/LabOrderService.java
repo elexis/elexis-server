@@ -9,8 +9,10 @@ import ch.elexis.core.model.ILabResult;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
 
-public class LabOrderService extends PersistenceService2 {
+@Deprecated
+public class LabOrderService {
 
 	/**
 	 * Find the LabOrder for a given LabResult, does not consider whether this
@@ -20,7 +22,7 @@ public class LabOrderService extends PersistenceService2 {
 	 * @return
 	 */
 	public static Optional<ILabOrder> findLabOrderByLabResult(ILabResult labResult) {
-		IQuery<ILabOrder> query = modelService.getQuery(ILabOrder.class, true);
+		IQuery<ILabOrder> query = CoreModelServiceHolder.get().getQuery(ILabOrder.class, true);
 		query.and(ModelPackage.Literals.ILAB_ORDER__RESULT, COMPARATOR.EQUALS, labResult);
 		return query.executeSingleResult();
 	}
@@ -33,7 +35,7 @@ public class LabOrderService extends PersistenceService2 {
 	 * @return
 	 */
 	public static List<ILabOrder> findAllLabOrdersInSameOrderIdGroupWithResults(ILabOrder labOrder) {
-		IQuery<ILabOrder> query = modelService.getQuery(ILabOrder.class);
+		IQuery<ILabOrder> query = CoreModelServiceHolder.get().getQuery(ILabOrder.class);
 		query.and(ModelPackage.Literals.ILAB_ORDER__PATIENT, COMPARATOR.EQUALS, labOrder.getPatient());
 		query.and(ModelPackage.Literals.ILAB_ORDER__ORDER_ID, COMPARATOR.EQUALS, labOrder.getOrderId());
 		query.and(ModelPackage.Literals.ILAB_ORDER__RESULT, COMPARATOR.NOT_EQUALS, null);

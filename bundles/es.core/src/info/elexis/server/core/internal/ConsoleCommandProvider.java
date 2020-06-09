@@ -51,6 +51,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		return (vetoReason != null) ? vetoReason : ok();
 	}
 	
+	@CmdAdvisor(description = "system uptime")
 	public String __system_status(){
 		return Application.uptime();
 	}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" immediate="true" name="info.elexis.server.core.connector.elexis.internal.services.scs.StockConsoleCommandProvider">
+   <service>
+      <provide interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+   </service>
+   <reference cardinality="1..1" field="stockCommissioningSystemService" interface="ch.elexis.core.services.IStockCommissioningSystemService" name="stockCommissioningSystemService" target="(role=serverimpl)"/>
+   <reference cardinality="1..1" field="stockService" interface="ch.elexis.core.services.IStockService" name="stockService"/>
+   <implementation class="info.elexis.server.core.connector.elexis.internal.services.scs.StockConsoleCommandProvider"/>
+</scr:component>

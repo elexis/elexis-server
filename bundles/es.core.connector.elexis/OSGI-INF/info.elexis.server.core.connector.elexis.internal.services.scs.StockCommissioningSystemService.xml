@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" name="info.elexis.server.core.connector.elexis.internal.services.scs.StockCommissioningSystemService">
+   <property name="role" value="serverimpl"/>
+   <service>
+      <provide interface="ch.elexis.core.services.IStockCommissioningSystemService"/>
+   </service>
+   <reference cardinality="1..1" field="codeElementService" interface="ch.elexis.core.services.ICodeElementService" name="codeElementService"/>
+   <reference cardinality="1..1" field="coreModelService" interface="ch.elexis.core.services.IModelService" name="coreModelService" target="(service.model.name=ch.elexis.core.model)"/>
+   <reference cardinality="1..1" field="lockService" interface="ch.elexis.core.services.ILocalLockService" name="lockService"/>
+   <reference cardinality="1..1" field="stockService" interface="ch.elexis.core.services.IStockService" name="stockService"/>
+   <reference cardinality="1..1" field="storeToStringService" interface="ch.elexis.core.services.IStoreToStringService" name="storeToStringService"/>
+   <implementation class="info.elexis.server.core.connector.elexis.internal.services.scs.StockCommissioningSystemService"/>
+</scr:component>

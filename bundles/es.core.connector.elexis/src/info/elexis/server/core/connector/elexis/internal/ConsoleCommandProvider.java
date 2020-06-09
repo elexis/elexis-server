@@ -23,11 +23,11 @@ import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
-import info.elexis.server.core.connector.elexis.internal.services.CoreModelServiceHolder;
 import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component(service = CommandProvider.class, immediate = true)
@@ -35,9 +35,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	
 	@Reference
 	private IContextService contextService;
-	
-	//	@Reference(cardinality = ReferenceCardinality.MANDATORY)
-	//	private IStockCommissioningSystemService stockCommissioningSystemService;
 	
 	@Activate
 	public void activate(){

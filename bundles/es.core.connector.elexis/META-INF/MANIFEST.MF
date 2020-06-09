@@ -6,20 +6,12 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: elexis.info
 Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  org.eclipse.osgi.services;bundle-version="3.5.0",
- org.eclipse.core.runtime,
- org.eclipse.persistence.jpa;bundle-version="2.6.1",
+ org.eclipse.core.runtime;bundle-version="3.15.0",
  info.elexis.server.core,
- at.medevit.ch.artikelstamm;bundle-version="3.0.0";visibility:=reexport,
  ch.rgw.utility;bundle-version="3.1.0";visibility:=reexport,
  ch.elexis.core;bundle-version="3.1.0";visibility:=reexport,
  info.elexis.server.core.common;bundle-version="1.0.0",
- org.joda.money;bundle-version="0.11.0",
- org.beanshell.bsh;bundle-version="2.0.0",
- org.h2;bundle-version="1.3.170",
- org.postgresql.jdbc42;bundle-version="42.2.5",
- com.mysql.cj;bundle-version="8.0.13",
- org.apache.commons.lang3;bundle-version="3.7.0",
- jakarta.persistence;bundle-version="2.2.3"
+ ch.elexis.core.services;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Multi-Release: true
 Service-Component: OSGI-INF/*.xml
