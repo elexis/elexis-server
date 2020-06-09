@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1588072031">
+<target name="Elexis-Server" sequenceNumber="1591705971">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -47,8 +47,7 @@
       <unit id="org.eclipse.persistence.jpa.jpql" version="2.7.5.v20191016-ea124dd158"/>
       <unit id="org.eclipse.persistence.jpa" version="2.7.5.v20191016-ea124dd158"/>
       <unit id="org.eclipse.persistence.extension" version="2.7.5.v20191016-ea124dd158"/>
-      <unit id="org.bouncycastle.bcprov" version="1.59.0.v20180328-2148"/>
-      <unit id="javax.mail" version="1.4.0.v201005080615"/>
+      <unit id="org.bouncycastle.bcprov" version="1.64.0.v20191109-0815"/>
       <repository location="http://download.elexis.info/elexis/master/p2/target/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
