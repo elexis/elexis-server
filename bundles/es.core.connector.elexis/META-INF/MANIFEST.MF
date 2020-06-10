@@ -7,11 +7,12 @@ Bundle-Vendor: elexis.info
 Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.300",
  org.eclipse.osgi.services;bundle-version="3.5.0",
  org.eclipse.core.runtime;bundle-version="3.15.0",
- info.elexis.server.core,
  ch.rgw.utility;bundle-version="3.1.0";visibility:=reexport,
  ch.elexis.core;bundle-version="3.1.0";visibility:=reexport,
+ ch.elexis.core.services;bundle-version="1.0.0",
+ info.elexis.server.core,
  info.elexis.server.core.common;bundle-version="1.0.0",
- ch.elexis.core.services;bundle-version="1.0.0"
+ org.apache.commons.lang3;bundle-version="3.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Multi-Release: true
 Service-Component: OSGI-INF/*.xml
