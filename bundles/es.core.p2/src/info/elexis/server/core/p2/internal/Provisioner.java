@@ -233,8 +233,9 @@ public class Provisioner implements IProvisioner {
 
 	@Override
 	public Collection<IInstallableUnit> getAllAvailableFeatures() {
-		// TODO Auto-generated method stub
-		return null;
+		IQueryResult<IInstallableUnit> result =
+			metadataRepositoryManager.query(QueryUtil.createIUGroupQuery(), new NullProgressMonitor());
+		return result.toSet();
 	}
 
 	@Override

@@ -59,6 +59,14 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 				+ i.getProperty("git-repo-url") + "  " + i.getProperty("git-rev")).reduce((u, t) -> u + "\n" + t);
 		return reduce.orElse("fail");
 	}
+	
+	@CmdAdvisor(description = "list all features available for installation")
+	public String __p2_features_listAvailable() {
+		Collection<IInstallableUnit> allAvailableFeatures = provisioner.getAllAvailableFeatures();
+		Optional<String> reduce = allAvailableFeatures.stream().map(i -> i.getId() + " (" + i.getVersion() + ") "
+				+ i.getProperty("git-repo-url") + "  " + i.getProperty("git-rev")).reduce((u, t) -> u + "\n" + t);
+		return reduce.orElse("fail");
+	}
 
 	@CmdAdvisor(description = "install a feature")
 	public String __p2_features_install(Iterator<String> args) {
