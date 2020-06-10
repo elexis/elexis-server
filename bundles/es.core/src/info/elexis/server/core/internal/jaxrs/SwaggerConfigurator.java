@@ -1,4 +1,4 @@
-package info.elexis.server.core.internal;
+package info.elexis.server.core.internal.jaxrs;
 
 import java.io.IOException;
 import java.util.Dictionary;
@@ -12,8 +12,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import info.elexis.server.core.Host;
 
 @Component(immediate = true)
 public class SwaggerConfigurator {
