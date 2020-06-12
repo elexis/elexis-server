@@ -5,6 +5,6 @@
       <provide interface="org.osgi.service.event.EventHandler"/>
    </service>
    <reference cardinality="1..1" field="coreModelService" interface="ch.elexis.core.services.IModelService" name="coreModelService" target="(service.model.name=ch.elexis.core.model)"/>
-   <reference cardinality="1..1" field="scss" interface="info.elexis.server.core.connector.elexis.internal.services.scs.StockCommissioningSystemService" name="scss" target="(role=serverimpl)"/>
+   <reference cardinality="1..1" field="scss" interface="ch.elexis.core.services.IStockCommissioningSystemService" name="scss" target="(role=serverimpl)"/>
    <implementation class="info.elexis.server.core.connector.elexis.internal.services.scs.StockCommissioningSystemServiceEventHandler"/>
 </scr:component>

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.model.IStock;
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.status.StatusUtil;
 
 @Component(property = {
@@ -32,7 +33,8 @@ import ch.elexis.core.status.StatusUtil;
 public class StockCommissioningSystemServiceEventHandler implements EventHandler {
 	
 	@Reference(target = "(role=serverimpl)")
-	private StockCommissioningSystemService scss;
+	private IStockCommissioningSystemService scss;
+	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
 	
