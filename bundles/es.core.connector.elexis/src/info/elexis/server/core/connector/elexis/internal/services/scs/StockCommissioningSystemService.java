@@ -228,8 +228,11 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		List<IStockEntry> currentStockEntries = stockService.findAllStockEntriesForStock(stock);
 		Set<String> currentStockEntryIds =
 			currentStockEntries.stream().map(cse -> cse.getId()).collect(Collectors.toSet());
-		for (IStockEntry inventoryResultStockEntry : inventoryResult) {
+		for (int i = 0; i < inventoryResult.size(); i++) {
+			IStockEntry inventoryResultStockEntry = inventoryResult.get(i);
 			String gtin = inventoryResultStockEntry.getArticle().getGtin();
+			log.trace("{}/{} synchronize [{}] gtin [{}]", i, inventoryResult.size(),
+				inventoryResultStockEntry.getId(), gtin);
 			
 			IStatus status = null;
 			Optional<IStockEntry> seo = currentStockEntries.stream()
