@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.internal.services.scs;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,6 +106,18 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		
 		IStatus performArticleOutlay =
 			stockCommissioningSystemService.performArticleOutlay(findById.get(), 1, null);
+		return StatusUtil.printStatus(performArticleOutlay);
+	}
+	
+	@CmdAdvisor(description = "Synchronize the stock state of the commissioning system to Elexis")
+	public String __stock_scs_sync(String stockId){
+		Optional<IStock> findById = CoreModelServiceHolder.get().load(stockId, IStock.class);
+		if (!findById.isPresent()) {
+			return "Stock not found [" + stockId + "]";
+		}
+		
+		IStatus performArticleOutlay = stockCommissioningSystemService
+			.synchronizeInventory(findById.get(), Collections.emptyList(), null);
 		return StatusUtil.printStatus(performArticleOutlay);
 	}
 	
