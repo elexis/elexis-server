@@ -1,6 +1,10 @@
 package info.elexis.server.core.connector.elexis.common;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Optional;
+
+import javax.sql.DataSource;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -9,6 +13,7 @@ import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.model.IConfig;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 
 public class ElexisDBConnection {
@@ -33,17 +38,24 @@ public class ElexisDBConnection {
 			return "Could not find dbversion entry in config table.";
 		}
 		
-		String connectionString = "null";
-		if (ElexisDBConnectionUtil.getConnection().isPresent()) {
-			connectionString = ElexisDBConnectionUtil.getConnection().get().connectionString;
-		}
-		
 		Optional<IConfig> _elVersion = modelService.load("ElexisVersion", IConfig.class);
 		String elVersion = (_elVersion.isPresent()) ? _elVersion.get().getValue() : "unknown";
 		Optional<IConfig> _created = modelService.load("created", IConfig.class);
 		String created = (_created.isPresent()) ? _created.get().getValue() : "unknown";
+		
+		String dbMetaData = "";
+		Optional<DataSource> dataSource =
+			OsgiServiceUtil.getService(DataSource.class, "(id=default)");
+		if (dataSource.isPresent()) {
+			try {
+				DatabaseMetaData dbmd = dataSource.get().getConnection().getMetaData();
+				dbMetaData += dbmd.getDatabaseProductName();
+				dbMetaData += " " + dbmd.getDatabaseProductVersion();
+			} catch (SQLException e) {}
+		}
+		
 		String statusInfo = "Elexis " + elVersion + " DBv " + dbVersion.get().getValue()
-			+ ", created " + created + " [" + connectionString + "]";
+			+ ", created " + created + " [" + dbMetaData + "] ";
 		return statusInfo;
 		
 	}

@@ -56,7 +56,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
 				+ lockInfo.getElementId() + "\t" + lockInfo.getCreationDate() + "\t["
-				+ lockInfo.getSystemUuid() + "]");
+				+ lockInfo.getSystemUuid() + "]\n");
 		}
 		return sb.toString();
 	}

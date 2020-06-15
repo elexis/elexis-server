@@ -63,6 +63,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		ok();
 	}
 	
+	@CmdAdvisor(description = "reload the logging configuration (e.g. after modification of logback-addition.xml)")
 	public void __system_reloadLogConfig(){
 		ConsoleCommandProvider.reloadLogger();
 		ok();
