@@ -242,7 +242,6 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				currentStockEntryIds.remove(seo.get().getId());
 			} else {
 				status = createStockEntry(stock, inventoryResultStockEntry);
-				currentStockEntryIds.remove(seo.get().getId());
 			}
 			if (status != null && !status.isOK()) {
 				StatusUtil.logStatus(log, status, true);
