@@ -76,6 +76,13 @@ public class LocalLockService implements ILocalLockService {
 		return new LockRequest(lockType, lockInfo);
 	}
 	
+	private LockRequest buildLockRequest(String storeToString, Type lockType){
+		String userId = contextService.getActiveUser().map(IUser::getId).orElse("unknownUser");
+		LockInfo lockInfo =
+			new LockInfo(storeToString, userId, contextService.getStationIdentifier());
+		return new LockRequest(lockType, lockInfo);
+	}
+	
 	@Override
 	public LockResponse acquireLock(Object object){
 		if (object instanceof Identifiable) {
@@ -91,6 +98,11 @@ public class LocalLockService implements ILocalLockService {
 		if (object instanceof Identifiable) {
 			LockRequest lockRequest =
 				buildLockRequest((Identifiable) object, LockRequest.Type.RELEASE);
+			return acquireOrReleaseLocks(lockRequest);
+		} else if (object instanceof LockResponse) {
+			LockResponse lockResponse = (LockResponse) object;
+			LockRequest lockRequest = buildLockRequest(
+				lockResponse.getLockInfo().getElementStoreToString(), LockRequest.Type.RELEASE);
 			return acquireOrReleaseLocks(lockRequest);
 		}
 		throw new IllegalArgumentException("Can not releaseLock on class " + object);
