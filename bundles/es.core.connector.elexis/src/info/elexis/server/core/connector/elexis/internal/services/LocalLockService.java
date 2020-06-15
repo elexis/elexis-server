@@ -24,11 +24,6 @@ import info.elexis.server.core.connector.elexis.locking.ILockService;
 @Component
 public class LocalLockService implements ILocalLockService {
 	
-	/**
-	 * The elexis-server itself acts on a lock
-	 */
-	public static final String ELEXISSERVER_AGENTUSER = "__elexis-server__";
-	
 	private Logger log;
 	
 	@Reference
@@ -70,10 +65,7 @@ public class LocalLockService implements ILocalLockService {
 	
 	private LockRequest buildLockRequest(Identifiable object, Type lockType){
 		String storeToString = storeToStringService.storeToString(object).orElse(null);
-		String userId = contextService.getActiveUser().map(IUser::getId).orElse("unknownUser");
-		LockInfo lockInfo =
-			new LockInfo(storeToString, userId, contextService.getStationIdentifier());
-		return new LockRequest(lockType, lockInfo);
+		return buildLockRequest(storeToString, lockType);
 	}
 	
 	private LockRequest buildLockRequest(String storeToString, Type lockType){
@@ -150,8 +142,8 @@ public class LocalLockService implements ILocalLockService {
 		if (po instanceof Identifiable) {
 			Identifiable lobj = (Identifiable) po;
 			String sts = storeToStringService.storeToString(lobj).orElse(null);
-			LockInfo ls =
-				new LockInfo(sts, ELEXISSERVER_AGENTUSER, SystemPropertyConstants.getStationId());
+			String userId = contextService.getActiveUser().map(IUser::getId).orElse("unknownUser");
+			LockInfo ls = new LockInfo(sts, userId, SystemPropertyConstants.getStationId());
 			log.trace("Trying to acquire lock blocking ({}sec) for [{}].", timeout, sts);
 			LockResponse lr = lockService.acquireLockBlocking(ls, timeout);
 			if (!lr.isOk()) {

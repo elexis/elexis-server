@@ -21,6 +21,7 @@ public class ContextService implements IContextService {
 			protected IContext initialValue(){
 				Context context = new Context();
 				context.setNamed("IS_ELEXIS_SERVER", Boolean.TRUE.toString());
+				context.setTyped(new SystemAgentUser());
 				return context;
 			}
 		};
