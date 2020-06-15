@@ -3,8 +3,11 @@ package info.elexis.server.core.connector.elexis.internal.services;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockRequest;
@@ -15,10 +18,18 @@ import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IStoreToStringService;
+import info.elexis.server.core.SystemPropertyConstants;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 
 @Component
 public class LocalLockService implements ILocalLockService {
+	
+	/**
+	 * The elexis-server itself acts on a lock
+	 */
+	public static final String ELEXISSERVER_AGENTUSER = "__elexis-server__";
+	
+	private Logger log;
 	
 	@Reference
 	private ILockService lockService;
@@ -29,16 +40,22 @@ public class LocalLockService implements ILocalLockService {
 	@Reference
 	private IContextService contextService;
 	
+	@Activate
+	public void activate(){
+		log = LoggerFactory.getLogger(getClass());
+	}
+	
 	@Override
 	public LockResponse acquireOrReleaseLocks(LockRequest request){
-		if(Type.ACQUIRE == request.getRequestType()) {
+		if (Type.ACQUIRE == request.getRequestType()) {
 			return lockService.acquireLock(request.getLockInfo());
 		} else if (Type.RELEASE == request.getRequestType()) {
 			return lockService.releaseLock(request.getLockInfo());
 		} else if (Type.INFO == request.getRequestType()) {
 			// what??
 		}
-		throw new IllegalArgumentException("No support for request type "+request.getRequestType());
+		throw new IllegalArgumentException(
+			"No support for request type " + request.getRequestType());
 	}
 	
 	@Override
@@ -117,8 +134,21 @@ public class LocalLockService implements ILocalLockService {
 	}
 	
 	@Override
-	public LockResponse acquireLockBlocking(Object po, int msTimeout, IProgressMonitor monitor){
-		throw new UnsupportedOperationException();
+	public LockResponse acquireLockBlocking(Object po, int timeout, IProgressMonitor monitor){
+		if (po instanceof Identifiable) {
+			Identifiable lobj = (Identifiable) po;
+			String sts = storeToStringService.storeToString(lobj).orElse(null);
+			LockInfo ls =
+				new LockInfo(sts, ELEXISSERVER_AGENTUSER, SystemPropertyConstants.getStationId());
+			log.trace("Trying to acquire lock blocking ({}sec) for [{}].", timeout, sts);
+			LockResponse lr = lockService.acquireLockBlocking(ls, timeout);
+			if (!lr.isOk()) {
+				log.error("Failed acquiring lock for [{}]",
+					lobj.getClass().getName() + "@" + lobj.getId(), new Throwable("Diagnosis"));
+			}
+			return lr;
+		}
+		return LockResponse.ERROR;
 	}
 	
 	@Override
