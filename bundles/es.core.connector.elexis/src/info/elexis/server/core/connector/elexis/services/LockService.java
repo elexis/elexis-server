@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.lock.types.LockInfo;
+import ch.elexis.core.lock.types.LockRequest.Type;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
 import info.elexis.server.core.common.LocalProperties;
@@ -109,9 +110,9 @@ public class LockService implements ILockService {
 							&& lie.getSystemUuid().equals(lockInfo.getSystemUuid())) {
 						// its the requesters lock (username and systemUuid
 						// match)
-						return LockResponse.OK(lie);
+						return new LockResponse(Status.OK, lie, Type.ACQUIRE);
 					} else {
-						return LockResponse.DENIED(lie);
+						return new LockResponse(Status.DENIED, lie, Type.ACQUIRE);
 					}
 				}
 
@@ -120,7 +121,7 @@ public class LockService implements ILockService {
 					if (!contributors.keySet().containsAll(requiredContributors)) {
 						log.warn(
 								"System defined to require a lock service contributor. None available, denying locks!");
-						return new LockResponse(Status.ERROR, lockInfo);
+						return new LockResponse(Status.ERROR, lockInfo, Type.ACQUIRE);
 					}
 
 					for (ILockServiceContributor iLockServiceContributor : contributors.values()) {
@@ -137,7 +138,7 @@ public class LockService implements ILockService {
 
 				locks.put(lockInfo.getElementId(), lockInfo);
 
-				return LockResponse.OK(lockInfo);
+				return new LockResponse(Status.OK, lockInfo, Type.ACQUIRE);
 			} else {
 				log.warn("Could not acquire locksLock in #acquireLock (request not handled), denying lock [{}]",
 						lockInfo, new Throwable("Diagnosis"));
@@ -160,7 +161,7 @@ public class LockService implements ILockService {
 	public LockResponse releaseLock(LockInfo lockInfo,
 			Class<? extends ILockServiceContributor> lockServiceContributorClass) {
 		if (lockInfo == null) {
-			return LockResponse.DENIED(lockInfo);
+			return new LockResponse(Status.DENIED, lockInfo, Type.RELEASE);
 		}
 
 		try {
@@ -194,15 +195,15 @@ public class LockService implements ILockService {
 
 				log.warn("Denying lock release for [{}] on lie [{}]",
 						lockInfo.getElementStoreToString() + "#" + lockInfo.getUser() + "@" + lockInfo.getSystemUuid(), lie);
-				return LockResponse.DENIED(lockInfo);
+				return new LockResponse(Status.DENIED, lie, Type.RELEASE);
 			} else {
 				log.warn("Could not acquire locksLock in #releaseLock (request not handled), denying lock",
 						new Throwable("Diagnosis"));
-				return LockResponse.DENIED(lockInfo);
+				return new LockResponse(Status.DENIED, lockInfo, Type.RELEASE);
 			}
 		} catch (InterruptedException ie) {
 			log.warn("Interrupted in acquire locksLock in #releaseLock", ie);
-			return LockResponse.DENIED(lockInfo);
+			return new LockResponse(Status.DENIED, lockInfo, Type.RELEASE);
 		} finally {
 			if (locksLock.isHeldByCurrentThread()) {
 				locksLock.unlock();

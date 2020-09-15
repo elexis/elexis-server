@@ -156,11 +156,6 @@ public class LocalLockService implements ILocalLockService {
 	}
 	
 	@Override
-	public Status getStatus(){
-		return Status.LOCAL;
-	}
-	
-	@Override
 	public void shutdown(){}
 	
 }
