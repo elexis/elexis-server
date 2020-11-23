@@ -4,6 +4,9 @@
   <artifactId>info.elexis.server.tests</artifactId>
   <name>Elexis-Server tests</name>
   <packaging>pom</packaging>
+  <properties>
+    <trimStackTrace>false</trimStackTrace>
+  </properties>
   <parent>
     <groupId>info.elexis.server</groupId>
     <artifactId>info.elexis.server.parent</artifactId>
