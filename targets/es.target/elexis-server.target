@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1606742032">
+<target name="Elexis-Server" sequenceNumber="1606742837">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -22,7 +22,6 @@
       <unit id="ch.elexis.core.hapi.fhir" version="0.0.0"/>
       <unit id="ch.elexis.core.findings.fhir.model" version="0.0.0"/>
       <unit id="ch.elexis.core.tasks" version="0.0.0"/>
-      <unit id="ch.elexis.core.pdfbox" version="0.0.0"/>
       <unit id="ch.elexis.core.logback.rocketchat" version="0.0.0"/>
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
     </location>
