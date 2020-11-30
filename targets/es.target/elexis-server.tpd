@@ -21,6 +21,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	ch.elexis.core.services lazy
 	ch.elexis.core.hapi.fhir lazy
 	ch.elexis.core.findings.fhir.model lazy
+	ch.elexis.core.pdfbox lazy
 	ch.elexis.core.tasks lazy
 	ch.elexis.core.logback.rocketchat lazy
 	//
