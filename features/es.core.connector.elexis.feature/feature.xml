@@ -351,13 +351,6 @@
          unpack="false"/>
 
    <plugin
-         id="at.medevit.elexis.agenda.reminder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="ch.elexis.core.pdfbox"
          download-size="0"
          install-size="0"
