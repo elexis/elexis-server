@@ -22,6 +22,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	ch.elexis.core.hapi.fhir lazy
 	ch.elexis.core.findings.fhir.model lazy
 	ch.elexis.core.pdfbox lazy
+	ch.elexis.core.spotlight lazy
 	ch.elexis.core.tasks lazy
 	ch.elexis.core.logback.rocketchat lazy
 	//
@@ -35,6 +36,8 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	ch.elexis.omnivore lazy
 	ch.elexis.omnivore.model lazy
 	ch.elexis.base.ch.labortarif.model lazy
+	org.apache.solr lazy
+	ch.elexis.base.solr lazy
 }
 
 location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
@@ -50,6 +53,13 @@ location "http://download.elexis.info/elexis/master/p2/target/" {
 	org.eclipse.persistence.jpa
 	org.eclipse.persistence.extension
 	org.bouncycastle.bcprov
+	org.apache.commons.io [2.6.0.v20190123-2029,2.6.0.v20190123-2029]
+	
+		// Required plug-in 'org.eclipse.jdt.junit.runtime' could not be found.
+	org.eclipse.pde.core
+	org.eclipse.jdt.junit.runtime
+	org.eclipse.jdt.junit4.runtime
+	org.eclipse.pde.junit.runtime
 }
 
 location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
@@ -89,7 +99,6 @@ location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-se
 	org.apache.commons.lang
 	org.apache.commons.codec
 	org.apache.commons.exec
-	org.apache.commons.io [2.2.0,3.0.0)
 	org.junit
 	org.hamcrest.core
 	org.hamcrest.library

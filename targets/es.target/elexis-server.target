@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1606742968">
+<target name="Elexis-Server" sequenceNumber="1607512017">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -22,6 +22,7 @@
       <unit id="ch.elexis.core.hapi.fhir" version="0.0.0"/>
       <unit id="ch.elexis.core.findings.fhir.model" version="0.0.0"/>
       <unit id="ch.elexis.core.pdfbox" version="0.0.0"/>
+      <unit id="ch.elexis.core.spotlight" version="0.0.0"/>
       <unit id="ch.elexis.core.tasks" version="0.0.0"/>
       <unit id="ch.elexis.core.logback.rocketchat" version="0.0.0"/>
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
@@ -34,6 +35,8 @@
       <unit id="ch.elexis.omnivore" version="0.0.0"/>
       <unit id="ch.elexis.omnivore.model" version="0.0.0"/>
       <unit id="ch.elexis.base.ch.labortarif.model" version="0.0.0"/>
+      <unit id="org.apache.solr" version="0.0.0"/>
+      <unit id="ch.elexis.base.solr" version="0.0.0"/>
       <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -49,6 +52,11 @@
       <unit id="org.eclipse.persistence.jpa" version="2.7.5.v20191016-ea124dd158"/>
       <unit id="org.eclipse.persistence.extension" version="2.7.5.v20191016-ea124dd158"/>
       <unit id="org.bouncycastle.bcprov" version="1.64.0.v20191109-0815"/>
+      <unit id="org.apache.commons.io" version="2.6.0.v20190123-2029"/>
+      <unit id="org.eclipse.pde.core" version="3.13.300.v20200217-1517"/>
+      <unit id="org.eclipse.jdt.junit.runtime" version="3.5.100.v20200214-0716"/>
+      <unit id="org.eclipse.jdt.junit4.runtime" version="1.1.1200.v20200214-0716"/>
+      <unit id="org.eclipse.pde.junit.runtime" version="3.5.700.v20200116-1804"/>
       <repository location="http://download.elexis.info/elexis/master/p2/target/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -86,7 +94,6 @@
       <unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
       <unit id="org.apache.commons.codec" version="1.10.0.v20180409-1845"/>
       <unit id="org.apache.commons.exec" version="1.1.0.v201301240602"/>
-      <unit id="org.apache.commons.io" version="2.5.0"/>
       <unit id="org.junit" version="4.12.0.v201504281640"/>
       <unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
       <unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
