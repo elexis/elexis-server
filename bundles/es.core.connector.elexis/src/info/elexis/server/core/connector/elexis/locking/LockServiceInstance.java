@@ -83,15 +83,15 @@ public enum LockServiceInstance implements ILockService {
 		Optional<String> sts = storeToStringService.storeToString(lobj);
 		if (sts.isPresent()) {
 			log.trace("Trying to acquire lock blocking ({}sec) for [{}].", timeout, sts.get());
-			LockInfo ls = new LockInfo(sts.get(), LockService.getElexisserveragentuser(),
+			LockInfo lockInfo = new LockInfo(sts.get(), LockService.getElexisserveragentuser(),
 				LockService.getSystemuuid());
-			LockResponse lr = acquireLockBlocking(ls, timeout);
+			LockResponse lr = acquireLockBlocking(lockInfo, timeout);
 			if (!lr.isOk()) {
 				log.error("Failed acquiring lock for [{}]",
 					lobj.getClass().getName() + "@" + lobj.getId(), new Throwable("Diagnosis"));
 				return Optional.empty();
 			}
-			return Optional.of(ls);
+			return Optional.of(lockInfo);
 		}
 		log.warn("Could not resolve storeToString for [{}]", lobj);
 		return Optional.empty();

@@ -25,6 +25,7 @@ import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
+import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
@@ -51,7 +52,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
 		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
-		sb.append("StationId:\t" + contextService.getStationIdentifier()+"\n");
+		sb.append("StationId:\t" + contextService.getStationIdentifier() + "\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
@@ -62,14 +63,16 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 	
 	@CmdAdvisor(description = "send a message to a given user")
-	public void __elc_message(List<String> args) {
+	public void __elc_message(List<String> args){
 		if (args.isEmpty()) {
 			fail("usage: elc message userid message");
 		}
-
-		Optional<IMessageService> messageService = OsgiServiceUtil.getService(IMessageService.class);
+		
+		Optional<IMessageService> messageService =
+			OsgiServiceUtil.getService(IMessageService.class);
 		if (messageService.isPresent()) {
-			TransientMessage message = messageService.get().prepare(contextService.getStationIdentifier(),
+			TransientMessage message =
+				messageService.get().prepare(contextService.getStationIdentifier(),
 					IMessageService.INTERNAL_MESSAGE_URI_SCHEME + ":" + args.get(0));
 			message.setMessageText(args.get(1));
 			ObjectStatus status = messageService.get().send(message);
@@ -124,103 +127,30 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 	
-	@CmdAdvisor(description = "list all configuration entries")
+	@CmdAdvisor(description = "list all configuration entries (optional key argument)")
 	public void __elc_config_list(Iterator<String> args){
 		String nodePrefix = args.next();
 		if (StringUtils.isEmpty(nodePrefix)) {
-			nodePrefix = "";
+			nodePrefix = null;
 		}
 		
 		IQuery<IConfig> qre = CoreModelServiceHolder.get().getQuery(IConfig.class);
-		qre.and(ModelPackage.Literals.ICONFIG__KEY, COMPARATOR.LIKE, nodePrefix + "%");
+		if (nodePrefix != null) {
+			qre.and(ModelPackage.Literals.ICONFIG__KEY, COMPARATOR.LIKE, nodePrefix + "%");
+		}
 		List<IConfig> nodes = qre.execute();
-		for (IConfig config : nodes) {
-			ci.println(config);
+		if (nodes.size() == 1) {
+			ci.println("Value: " + nodes.get(0).getValue());
+		} else {
+			prflp("Key", 50);
+			prflp("Value", 50);
+			prflp("LastUpdate", 25, true);
+			for (IConfig config : nodes) {
+				prflp(config.getKey(), 50);
+				prflp(config.getValue(), 50);
+				prflp(TimeUtil.formatSafe(config.getLastupdate()), 25, true);
+			}
 		}
 	}
 	
-	//	public String __stock_list() {
-	//		List<IStock> stocks = modelService.getQuery(IStock.class).execute();
-	//		for (IStock stock : stocks) {
-	//			ci.println(stock.getLabel());
-	//			if (stock.isCommissioningSystem()) {
-	//				ICommissioningSystemDriver instance = stockCommissioningSystemService
-	//						.getDriverInstanceForStock(stock);
-	//				ci.print("\t [  isCommissioningSystem  ] ");
-	//				if (instance != null) {
-	//					IStatus status = instance.getStatus();
-	//					String statusString = StatusUtil.printStatus(status);
-	//					ci.print(statusString);
-	//				} else {
-	//					ci.print("No driver instance found.\n");
-	//				}
-	//			}
-	//		}
-	//		return ok();
-	//	}
-	
-	//	public String __stock_scs(Iterator<String> args) {
-	//		String stockId = args.next();
-	//		String action = args.next();
-	//		if (stockId == null || action == null) {
-	//			return missingArgument("stockId (start | stop)");
-	//		}
-	//
-	//		Optional<IStock> findById = modelService.load(stockId, IStock.class);
-	//		if (!findById.isPresent()) {
-	//			return "Stock not found [" + stockId + "]";
-	//		}
-	//		IStatus status;
-	//		if ("start".equalsIgnoreCase(action)) {
-	//			status = stockCommissioningSystemService.initializeStockCommissioningSystem(findById.get());
-	//		} else {
-	//			status = stockCommissioningSystemService.shutdownStockCommissioningSytem(findById.get());
-	//		}
-	//		return StatusUtil.printStatus(status);
-	//	}
-	
-	//	public String __stock_listForStock(Iterator<String> args) {
-	//		if (args.hasNext()) {
-	//			Optional<IStock> stock = modelService.load(args.next(), IStock.class);
-	//			if (stock.isPresent()) {
-	//				new StockService().findAllStockEntriesForStock(stock.get()).stream()
-	//						.forEach(se -> ci.print(se.getLabel() + "\n"));
-	//				return ok();
-	//			} else {
-	//				return "Invalid stock id";
-	//			}
-	//		} else {
-	//			return missingArgument("stockId");
-	//		}
-	//	}
-	
-	//	public String __stock_seCsOut(Iterator<String> args) {
-	//		if (args.hasNext()) {
-	//			Optional<IStockEntry> se = modelService.load(args.next(), IStockEntry.class);
-	//			if (se.isPresent()) {
-	//				IStatus performArticleOutlay = stockCommissioningSystemService.performArticleOutlay(se.get(), 1,
-	//						null);
-	//				return StatusUtil.printStatus(performArticleOutlay);
-	//			} else {
-	//				return "Invalid stock entry id";
-	//			}
-	//		} else {
-	//			return missingArgument("stockEntryId");
-	//		}
-	//	}
-	
-	//	public String __stock_stockSyncCs(Iterator<String> args) {
-	//		if (args.hasNext()) {
-	//			Optional<IStock> se = modelService.load(args.next(), IStock.class);
-	//			if (se.isPresent()) {
-	//				IStatus performArticleOutlay = stockCommissioningSystemService.synchronizeInventory(se.get(),
-	//						Collections.emptyList(), null);
-	//				return StatusUtil.printStatus(performArticleOutlay);
-	//			} else {
-	//				return "Invalid stock id";
-	//			}
-	//		} else {
-	//			return missingArgument("stockId");
-	//		}
-	//	}
 }

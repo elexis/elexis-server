@@ -39,6 +39,7 @@ public class LocalLockService implements ILocalLockService {
 	public void activate(){
 		log = LoggerFactory.getLogger(getClass());
 	}
+	private IUser systemAgentUser = new SystemAgentUser();
 	
 	@Override
 	public LockResponse acquireOrReleaseLocks(LockRequest request){
@@ -69,9 +70,8 @@ public class LocalLockService implements ILocalLockService {
 	}
 	
 	private LockRequest buildLockRequest(String storeToString, Type lockType){
-		String userId = contextService.getActiveUser().map(IUser::getId).orElse("unknownUser");
 		LockInfo lockInfo =
-			new LockInfo(storeToString, userId, contextService.getStationIdentifier());
+			new LockInfo(storeToString, systemAgentUser.getId(), contextService.getStationIdentifier());
 		return new LockRequest(lockType, lockInfo);
 	}
 	
@@ -142,8 +142,8 @@ public class LocalLockService implements ILocalLockService {
 		if (po instanceof Identifiable) {
 			Identifiable lobj = (Identifiable) po;
 			String sts = storeToStringService.storeToString(lobj).orElse(null);
-			String userId = contextService.getActiveUser().map(IUser::getId).orElse("unknownUser");
-			LockInfo ls = new LockInfo(sts, userId, SystemPropertyConstants.getStationId());
+			LockInfo ls =
+				new LockInfo(sts, systemAgentUser.getId(), SystemPropertyConstants.getStationId());
 			log.trace("Trying to acquire lock blocking ({}sec) for [{}].", timeout, sts);
 			LockResponse lr = lockService.acquireLockBlocking(ls, timeout);
 			if (!lr.isOk()) {
@@ -153,11 +153,6 @@ public class LocalLockService implements ILocalLockService {
 			return lr;
 		}
 		return LockResponse.ERROR;
-	}
-	
-	@Override
-	public Status getStatus(){
-		return Status.LOCAL;
 	}
 	
 	@Override
