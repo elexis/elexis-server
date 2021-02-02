@@ -65,9 +65,9 @@ public class ElexisEnvironmentActivator {
 			asyncAppender.addAppender(rocketchatAppender);
 			asyncAppender.start();
 			rootLogger.addAppender(asyncAppender);
-
+			LoggerFactory.getLogger(getClass()).info("Configured rocketchatAppender to [{}]", rocketchatIntegrationUrl);
 		} else {
-			LoggerFactory.getLogger(getClass()).error("Could not get rocketchat appender from root logger");
+			LoggerFactory.getLogger(getClass()).error("Could not get rocketchatAppender from root logger");
 		}
 	}
 
