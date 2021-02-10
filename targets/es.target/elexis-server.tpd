@@ -5,6 +5,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	//
 	ch.rgw.utility lazy
 	ch.elexis.core lazy
+	ch.elexis.core.documents lazy
 	ch.elexis.core.l10n lazy
 	ch.elexis.core.importer.div lazy
 	ch.elexis.core.hl7.v2x lazy
