@@ -16,6 +16,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	ch.elexis.core.jpa.datasource lazy
 	ch.elexis.core.jpa.entities lazy
 	ch.elexis.core.jpa.logging.slf4j lazy
+	ch.elexis.core.mail lazy
 	ch.elexis.core.model lazy
 	ch.elexis.core.jcifs lazy
 	ch.elexis.core.services lazy
@@ -54,6 +55,7 @@ location "http://download.elexis.info/elexis/master/p2/target/" {
 	org.eclipse.persistence.extension
 	org.bouncycastle.bcprov
 	org.apache.commons.io [2.6.0.v20190123-2029,2.6.0.v20190123-2029]
+	javax.mail.glassfish
 	
 		// Required plug-in 'org.eclipse.jdt.junit.runtime' could not be found.
 	org.eclipse.pde.core

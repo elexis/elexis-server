@@ -448,4 +448,18 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="ch.elexis.core.mail"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.mail.glassfish"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
