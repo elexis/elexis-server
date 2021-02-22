@@ -57,7 +57,7 @@ import info.elexis.server.core.p2.IProvisioner;
 @Component(immediate = true)
 public class Provisioner implements IProvisioner {
 
-	private Logger log;
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private IProvisioningAgentProvider agentProvider;
 	private IProvisioningAgent agent;
@@ -82,8 +82,6 @@ public class Provisioner implements IProvisioner {
 
 	@Activate
 	public void activate(ComponentContext context) throws Exception {
-
-		log = LoggerFactory.getLogger(getClass());
 
 		agent = agentProvider.createAgent(null);
 

@@ -53,6 +53,10 @@ public class MedelexisFeatureManagement {
 		
 		try {
 			List<LicensedFeature> licensedFeatures = getLicensedFeatures();
+			if (licensedFeatures.isEmpty()) {
+				logger.warn("No licensed features found");
+				return;
+			}
 			
 			Collection<IInstallableUnit> installedFeatures = provisioner.getInstalledFeatures();
 			if (installedFeatures.isEmpty()) {
@@ -72,8 +76,8 @@ public class MedelexisFeatureManagement {
 					
 					provisioner.addRepository(licensedFeature.getP2URI(), getP2RepoUsername(),
 						getMisApiKey());
-					IStatus loadRepositoryStatus = provisioner.loadRepository(new ConsoleProgressMonitor(),
-						licensedFeature.getP2URI());
+					IStatus loadRepositoryStatus = provisioner
+						.loadRepository(new ConsoleProgressMonitor(), licensedFeature.getP2URI());
 					StatusUtil.logStatus(logger, loadRepositoryStatus);
 					
 					IInstallableUnit iuToInstall = provisioner.getFeatureInAllAvailableFeatures(
@@ -120,7 +124,7 @@ public class MedelexisFeatureManagement {
 		ResultsWrapper<Issue> issues = redmineManager.getIssueManager().getIssues(params);
 		if (issues.getTotalFoundOnServer() > 100) {
 			// TODO implement paging
-			logger.warn("More thann 100 issue found - paging not implemented!");
+			logger.warn("More than 100 issue found - paging not implemented!");
 		}
 		List<Issue> results = issues.getResults();
 		List<LicensedFeature> licensedFeatures = new ArrayList<>();
