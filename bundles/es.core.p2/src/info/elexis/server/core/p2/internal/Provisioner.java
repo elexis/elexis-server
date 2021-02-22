@@ -294,6 +294,16 @@ public class Provisioner implements IProvisioner {
 
 		registerHttpAuthentication(location, username, password);
 	}
+	
+	@Override
+	public IStatus loadRepository(IProgressMonitor monitor, URI location){
+		try {
+			metadataRepositoryManager.loadRepository(location, monitor);
+			return Status.OK_STATUS;
+		} catch (ProvisionException | OperationCanceledException e) {
+			return new Status(Status.ERROR, "info.elexis.server.core.p2", e.getMessage(), e);
+		}
+	}
 
 	private void registerHttpAuthentication(URI location, String username, String password) {
 		if (username == null || password == null) {

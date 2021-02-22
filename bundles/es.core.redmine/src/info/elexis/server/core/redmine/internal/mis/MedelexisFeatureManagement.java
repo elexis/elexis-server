@@ -69,8 +69,12 @@ public class MedelexisFeatureManagement {
 				if (iu == null) {
 					logger.info("Preparing installation for licensed feature [{}] from [{}]",
 						licensedFeature.getId(), licensedFeature.getP2URI());
+					
 					provisioner.addRepository(licensedFeature.getP2URI(), getP2RepoUsername(),
 						getMisApiKey());
+					IStatus loadRepositoryStatus = provisioner.loadRepository(new ConsoleProgressMonitor(),
+						licensedFeature.getP2URI());
+					StatusUtil.logStatus(logger, loadRepositoryStatus);
 					
 					IInstallableUnit iuToInstall = provisioner.getFeatureInAllAvailableFeatures(
 						new ConsoleProgressMonitor(), licensedFeature.getId());

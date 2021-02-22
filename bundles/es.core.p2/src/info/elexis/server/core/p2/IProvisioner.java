@@ -68,8 +68,24 @@ public interface IProvisioner {
 	 */
 	public IInstallableUnit getInstalledFeature(IInstallableUnit iu);
 
+	/**
+	 * Add a repository (does not load it, use {@link #loadRepository(IProgressMonitor, URI)} to
+	 * check)
+	 * 
+	 * @param location
+	 * @param username
+	 * @param password
+	 */
 	public void addRepository(URI location, String username, String password);
-
+	
+	/**
+	 * Try to load a repository
+	 * @param monitor
+	 * @param location
+	 * @return
+	 */
+	public IStatus loadRepository(IProgressMonitor monitor, URI location);
+	
 	/**
 	 * 
 	 * @param location
