@@ -19,7 +19,7 @@ public class LicensedFeature {
 		return id;
 	}
 	
-	public URI getP2Url(){
+	public URI getP2URI(){
 		try {
 			return new URI(p2RepoUrl);
 		} catch (URISyntaxException e) {

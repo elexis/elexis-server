@@ -42,16 +42,18 @@ public interface IProvisioner {
 
 	/**
 	 * @return all features available on the update site
+	 * @param 
 	 */
-	public Collection<IInstallableUnit> getAllAvailableFeatures();
+	public Collection<IInstallableUnit> getAllAvailableFeatures(IProgressMonitor monitor);
 
 	/**
 	 * 
+	 * @param
 	 * @param id the feature id
 	 * @return a single {@link IInstallableUnit} by its id out of the pool of
 	 *         {@link #getAllAvailableFeatures()}, <code>null</code> if none found
 	 */
-	public IInstallableUnit getFeatureInAllAvailableFeatures(String id);
+	public IInstallableUnit getFeatureInAllAvailableFeatures(IProgressMonitor monitor, String id);
 
 	/**
 	 * 

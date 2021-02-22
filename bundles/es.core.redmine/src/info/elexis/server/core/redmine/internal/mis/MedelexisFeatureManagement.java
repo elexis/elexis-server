@@ -67,13 +67,13 @@ public class MedelexisFeatureManagement {
 			for (LicensedFeature licensedFeature : licensedFeatures) {
 				IInstallableUnit iu = installedFeaturesMap.get(licensedFeature.getId());
 				if (iu == null) {
-					logger.info("Preparing installation for licensed feature [{}]",
-						licensedFeature.getId());
-					provisioner.addRepository(licensedFeature.getP2Url(), getP2RepoUsername(),
+					logger.info("Preparing installation for licensed feature [{}] from [{}]",
+						licensedFeature.getId(), licensedFeature.getP2URI());
+					provisioner.addRepository(licensedFeature.getP2URI(), getP2RepoUsername(),
 						getMisApiKey());
 					
-					IInstallableUnit iuToInstall =
-						provisioner.getFeatureInAllAvailableFeatures(licensedFeature.getId());
+					IInstallableUnit iuToInstall = provisioner.getFeatureInAllAvailableFeatures(
+						new ConsoleProgressMonitor(), licensedFeature.getId());
 					if (iuToInstall == null) {
 						logger.warn("Could not find feature [{}] in available repositories",
 							licensedFeature.getId());

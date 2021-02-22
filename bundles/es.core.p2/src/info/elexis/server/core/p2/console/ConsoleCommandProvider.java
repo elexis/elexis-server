@@ -62,9 +62,12 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	
 	@CmdAdvisor(description = "list all features available for installation")
 	public String __p2_features_listAvailable() {
-		Collection<IInstallableUnit> allAvailableFeatures = provisioner.getAllAvailableFeatures();
-		Optional<String> reduce = allAvailableFeatures.stream().map(i -> i.getId() + " (" + i.getVersion() + ") "
-				+ i.getProperty("git-repo-url") + "  " + i.getProperty("git-rev")).reduce((u, t) -> u + "\n" + t);
+		Collection<IInstallableUnit> allAvailableFeatures =
+			provisioner.getAllAvailableFeatures(new ConsoleProgressMonitor(ci));
+		Optional<String> reduce = allAvailableFeatures
+			.stream().map(i -> i.getId() + " (" + i.getVersion() + ") "
+				+ i.getProperty("git-repo-url") + "  " + i.getProperty("git-rev"))
+			.reduce((u, t) -> u + "\n" + t);
 		return reduce.orElse("fail");
 	}
 

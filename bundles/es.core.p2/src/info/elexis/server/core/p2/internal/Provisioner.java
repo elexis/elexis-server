@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -157,7 +156,7 @@ public class Provisioner implements IProvisioner {
 	}
 
 	private IInstallableUnit findFeature(String feature) {
-		List<IInstallableUnit> features = new ArrayList<IInstallableUnit>(getAllAvailableFeatures());
+		List<IInstallableUnit> features = new ArrayList<IInstallableUnit>(getAllAvailableFeatures(null));
 		// sort in order to have the newest feature on top
 		Collections.sort(features, Collections.reverseOrder());
 
@@ -233,15 +232,18 @@ public class Provisioner implements IProvisioner {
 	}
 
 	@Override
-	public Collection<IInstallableUnit> getAllAvailableFeatures() {
+	public Collection<IInstallableUnit> getAllAvailableFeatures(IProgressMonitor monitor) {
+		if(monitor == null) {
+			monitor = new NullProgressMonitor();
+		}
 		IQueryResult<IInstallableUnit> result =
-			metadataRepositoryManager.query(QueryUtil.createIUGroupQuery(), new NullProgressMonitor());
+			metadataRepositoryManager.query(QueryUtil.createIUGroupQuery(), monitor);
 		return result.toSet();
 	}
 
 	@Override
-	public IInstallableUnit getFeatureInAllAvailableFeatures(String id){
-		Collection<IInstallableUnit> allAvailableFeatures = getAllAvailableFeatures();
+	public IInstallableUnit getFeatureInAllAvailableFeatures(IProgressMonitor monitor, String id){
+		Collection<IInstallableUnit> allAvailableFeatures = getAllAvailableFeatures(monitor);
 		for (IInstallableUnit iu : allAvailableFeatures) {
 			if (iu.getId().equalsIgnoreCase(id))
 				return iu;
