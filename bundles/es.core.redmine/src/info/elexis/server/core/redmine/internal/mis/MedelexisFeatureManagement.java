@@ -100,7 +100,7 @@ public class MedelexisFeatureManagement {
 				requiresReboot = true;
 			}
 			
-		} catch (RedmineException e) {
+		} catch (Exception e) {
 			logger.warn("Error in feature management", e);
 		}
 		
