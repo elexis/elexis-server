@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -239,8 +240,12 @@ public class Provisioner implements IProvisioner {
 	}
 
 	@Override
-	public IInstallableUnit getFeatureInAllAvailableFeatures(String id) {
-		// TODO Auto-generated method stub
+	public IInstallableUnit getFeatureInAllAvailableFeatures(String id){
+		Collection<IInstallableUnit> allAvailableFeatures = getAllAvailableFeatures();
+		for (IInstallableUnit iu : allAvailableFeatures) {
+			if (iu.getId().equalsIgnoreCase(id))
+				return iu;
+		}
 		return null;
 	}
 

@@ -16,4 +16,14 @@ public class Constants {
 	public static final String DEFAULT_REDMINE_BASE_URL = "https://redmine.medelexis.ch";
 	public static final String DEFAULT_REDMINE_PROJECT = "qfeedback3";
 	
+	/**
+	 * Environment variable containing the users apiKey for the Medelexis Management Information
+	 * System (MIS)
+	 */
+	public static final String ENV_VAR_MIS_API_KEY = "MIS_APIKEY";
+	
+	/**
+	 * The numeric Id of the mis project
+	 */
+	public static final String ENV_VAR_MIS_PROJECTID = "MIS_PROJECTID";
 }
