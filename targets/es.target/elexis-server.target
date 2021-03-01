@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1612963202">
+<target name="Elexis-Server" sequenceNumber="1614582534">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -36,6 +36,7 @@
       <unit id="at.medevit.atc_codes" version="0.0.0"/>
       <unit id="ch.elexis.omnivore" version="0.0.0"/>
       <unit id="ch.elexis.omnivore.model" version="0.0.0"/>
+      <unit id="ch.elexis.base.ch.arzttarife.model" version="0.0.0"/>
       <unit id="ch.elexis.base.ch.labortarif.model" version="0.0.0"/>
       <unit id="org.apache.solr" version="0.0.0"/>
       <unit id="ch.elexis.base.solr" version="0.0.0"/>

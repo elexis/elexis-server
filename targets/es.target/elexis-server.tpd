@@ -37,6 +37,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	at.medevit.atc_codes lazy
 	ch.elexis.omnivore lazy
 	ch.elexis.omnivore.model lazy
+	ch.elexis.base.ch.arzttarife.model lazy
 	ch.elexis.base.ch.labortarif.model lazy
 	org.apache.solr lazy
 	ch.elexis.base.solr lazy
