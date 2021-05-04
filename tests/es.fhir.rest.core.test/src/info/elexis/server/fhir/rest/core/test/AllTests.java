@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -17,6 +18,7 @@ import org.osgi.framework.ServiceReference;
 
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
+import ch.elexis.core.services.IConfigService;
 import ch.elexis.core.services.IElexisEntityManager;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
@@ -55,9 +57,17 @@ public class AllTests {
 		"(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
 	private static IElexisEntityManager entityManager =
 		OsgiServiceUtil.getService(IElexisEntityManager.class).get();
+	private static IConfigService configService =
+		OsgiServiceUtil.getService(IConfigService.class).get();
 	
 	private static TestDatabaseInitializer testDatabaseInitializer =
 		new TestDatabaseInitializer(modelService, entityManager);
+	
+	
+	@BeforeClass
+	public static void beforeClass() {
+		testDatabaseInitializer.setConfigService(configService);
+	}
 	
 	public static Date getDate(LocalDateTime localDateTime){
 		ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
