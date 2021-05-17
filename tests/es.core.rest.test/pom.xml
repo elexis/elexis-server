@@ -6,7 +6,7 @@
 	<packaging>eclipse-test-plugin</packaging>
 	<parent>
 		<artifactId>info.elexis.server.tests</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.8.0-SNAPSHOT</version>
 		<groupId>info.elexis.server</groupId>
 	</parent>
 	<build>

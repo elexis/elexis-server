@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1614582534">
+<target name="Elexis-Server" sequenceNumber="1621240759">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -27,7 +27,7 @@
       <unit id="ch.elexis.core.spotlight" version="0.0.0"/>
       <unit id="ch.elexis.core.tasks" version="0.0.0"/>
       <unit id="ch.elexis.core.logback.rocketchat" version="0.0.0"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
+      <repository location="http://download.elexis.info/elexis/3.8/p2/elexis-3-core/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.elexis.base.ch.ticode" version="0.0.0"/>
@@ -40,11 +40,11 @@
       <unit id="ch.elexis.base.ch.labortarif.model" version="0.0.0"/>
       <unit id="org.apache.solr" version="0.0.0"/>
       <unit id="ch.elexis.base.solr" version="0.0.0"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
+      <repository location="http://download.elexis.info/elexis/3.8/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="at.medevit.elexis.agenda.reminder" version="0.0.0"/>
-      <repository location="https://download.medelexis.ch/medelexis/master/p2/medelexis-3/"/>
+      <repository location="https://download.medelexis.ch/medelexis/3.8/p2/medelexis-3/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="jakarta.persistence" version="2.2.3"/>
@@ -61,7 +61,7 @@
       <unit id="org.eclipse.jdt.junit.runtime" version="3.5.100.v20200214-0716"/>
       <unit id="org.eclipse.jdt.junit4.runtime" version="1.1.1200.v20200214-0716"/>
       <unit id="org.eclipse.pde.junit.runtime" version="3.5.700.v20200116-1804"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/target/"/>
+      <repository location="http://download.elexis.info/elexis/3.8/p2/target/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>

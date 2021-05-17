@@ -3,7 +3,7 @@ target "Elexis-Server"
 with source allEnvironments
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
+location "http://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
 	// Java 11
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
@@ -46,7 +46,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 }
 
 // switch to appropriate Elexis branch on branching ES
-location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
+location "http://download.elexis.info/elexis/3.8/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode
 	at.medevit.ch.artikelstamm
 	at.medevit.ch.artikelstamm.model
@@ -56,11 +56,11 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	ch.elexis.base.ch.labortarif.model
 }
 
-location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
+location "https://download.medelexis.ch/medelexis/3.8/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder
 }
 
-location "http://download.eclipse.org/rt/eclipselink/updates/2.7.5.v20191016-ea124dd158/" {
+location "https://download.eclipse.org/rt/eclipselink/updates/2.7.5.v20191016-ea124dd158/" {
 	jakarta.persistence
 	org.eclipse.persistence.asm
 	org.eclipse.persistence.antlr
@@ -72,7 +72,7 @@ location "http://download.eclipse.org/rt/eclipselink/updates/2.7.5.v20191016-ea1
 
 // vvvv diffs from elexis
 
-location "http://download.eclipse.org/eclipse/updates/4.9/" {
+location "https://download.eclipse.org/eclipse/updates/4.15/" {
 	org.eclipse.equinox.sdk.feature.group
 	org.eclipse.core.runtime.feature.feature.group
 	org.eclipse.emf.common.feature.group
@@ -81,16 +81,10 @@ location "http://download.eclipse.org/eclipse/updates/4.9/" {
 	org.eclipse.ecf.core.ssl.feature.feature.group
 	org.eclipse.ecf.filetransfer.feature.feature.group
 	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
-	org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group
-	org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group
 	org.eclipse.equinox.p2.core.feature.feature.group
 	org.eclipse.equinox.p2.extras.feature.feature.group
 	org.eclipse.equinox.p2.discovery.feature.feature.group
-	org.eclipse.core.net
-	org.eclipse.core.net.linux.x86
-	org.eclipse.core.net.linux.x86_64
-	org.eclipse.core.net.win32.x86
-	org.eclipse.core.net.win32.x86_64
 	org.junit
 	javax.annotation
 	javax.inject
@@ -102,7 +96,7 @@ location "http://download.eclipse.org/eclipse/updates/4.9/" {
 	org.eclipse.core.commands
 }
 
-location "http://download.eclipse.org/releases/2018-09/" {
+location "https://download.eclipse.org/releases/2020-03/" {
 	ch.qos.logback.classic
 	ch.qos.logback.core
 	ch.qos.logback.slf4j
@@ -112,10 +106,13 @@ location "http://download.eclipse.org/releases/2018-09/" {
 	org.hamcrest.library
 	org.eclipse.ecf.remoteservice.sdk.feature.feature.group
 	javax.xml
+	org.eclipse.core.net
+	org.eclipse.core.net.linux.x86_64
+	org.eclipse.core.net.win32.x86_64
 }
 
 // Jetty p2 repo for (updated) 2018-09 included version
-location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.14.v20181113/" {
+location "http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.27.v20200227/" {
 	// override bundles from updates/4.7
 	org.eclipse.jetty.http
 	org.eclipse.jetty.continuation
@@ -159,16 +156,16 @@ location "http://medevit.github.io/osgi-jax-rs-connector/5.3.100/" {
 
 // Eclipse Orbit Recommended Wed, 5 Sep 2018 -- 20:19 (UTC)	2018-09
 // https://download.eclipse.org/tools/orbit/downloads/
-location "http://download.eclipse.org/tools/orbit/downloads/drops/R20180905201904/repository/" {
+location "http://download.eclipse.org/tools/orbit/downloads/drops/R20200224183213/repository/" {
 	org.tukaani.xz
 	osgi.enterprise
 	javax.ejb // required by org.eclipse.persistence.jpars
 	javax.transaction // required by org.eclipse.persistence.jpars
 	javax.xml.rpc // required by org.eclipse.persistence.jpars
 	javax.xml.soap // required by org.eclipse.persistence.jpars
-	com.google.guava [18.0.0.v20161115-1643,18.0.0.v20161115-1643]
+	com.google.guava
 	org.apache.commons.collections
-	org.apache.commons.codec [1.9.0.v20170208-1614,1.9.0.v20170208-1614]
+	org.apache.commons.codec [1.13.0.v20200108-0001,1.13.0.v20200108-0001]
 	// JSP
 	org.apache.xalan
 	org.apache.xml.serializer
@@ -266,9 +263,9 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	org.apache.taglibs.standard-impl [1.2.5,1.2.5]
 	org.apache.aries.spifly.static.bundle
 	org.apache.aries.spifly.dynamic.bundle
-	org.apache.aries.spifly.org.apache.aries.spifly.core-internal
-	org.apache.aries.spifly.org.apache.aries.spifly.static.tool
-	org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal
+	org.apache.aries.spifly.core-internal
+	org.apache.aries.spifly.static.tool
+	org.apache.aries.spifly.weaver-internal
 	org.apache.aries.util
 	org.glassfish.web.javax.servlet.jsp.jstl
 	org.objectweb.asm [6.1.1,6.1.1]

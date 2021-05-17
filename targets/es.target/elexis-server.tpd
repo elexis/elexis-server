@@ -1,7 +1,7 @@
 target "Elexis-Server" with source allEnvironments
 
 
-location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
+location "http://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
 	//
 	ch.rgw.utility lazy
 	ch.elexis.core lazy
@@ -30,7 +30,7 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	//
 }
 
-location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
+location "http://download.elexis.info/elexis/3.8/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode lazy
 	at.medevit.ch.artikelstamm lazy
 	at.medevit.ch.artikelstamm.model lazy
@@ -43,11 +43,11 @@ location "http://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	ch.elexis.base.solr lazy
 }
 
-location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
+location "https://download.medelexis.ch/medelexis/3.8/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder lazy
 }
 
-location "http://download.elexis.info/elexis/master/p2/target/" {
+location "http://download.elexis.info/elexis/3.8/p2/target/" {
 	jakarta.persistence
 	org.eclipse.persistence.asm
 	org.eclipse.persistence.antlr
@@ -59,14 +59,14 @@ location "http://download.elexis.info/elexis/master/p2/target/" {
 	org.apache.commons.io [2.6.0.v20190123-2029,2.6.0.v20190123-2029]
 	javax.mail.glassfish
 	
-		// Required plug-in 'org.eclipse.jdt.junit.runtime' could not be found.
+	// Required plug-in 'org.eclipse.jdt.junit.runtime' could not be found.
 	org.eclipse.pde.core
 	org.eclipse.jdt.junit.runtime
 	org.eclipse.jdt.junit4.runtime
 	org.eclipse.pde.junit.runtime
 }
 
-location "http://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
+location "http://download.elexis.info/elexis-server/1.8/p2/target/" elexis-server {
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
 	
