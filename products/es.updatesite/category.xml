@@ -5,6 +5,5 @@
    <feature url="features/info.elexis.server.core.connector.elexis.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.connector.elexis.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.core.p2.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.p2.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.rootfiles.feature_1.0.0.qualifier.jar" id="info.elexis.server.rootfiles.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.core.jsp.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.jsp.feature" version="1.0.0.qualifier"/>
    <feature url="features/info.elexis.server.fhir.rest.core.feature_2.0.0.qualifier.jar" id="info.elexis.server.fhir.rest.core.feature" version="2.0.0.qualifier"/>
 </site>

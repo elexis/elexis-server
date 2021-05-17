@@ -1,7 +1,7 @@
 target "Elexis-Server" with source allEnvironments
 
 
-location "http://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
+location "https://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
 	//
 	ch.rgw.utility lazy
 	ch.elexis.core lazy
@@ -30,7 +30,7 @@ location "http://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
 	//
 }
 
-location "http://download.elexis.info/elexis/3.8/p2/elexis-3-base/" {
+location "https://download.elexis.info/elexis/3.8/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode lazy
 	at.medevit.ch.artikelstamm lazy
 	at.medevit.ch.artikelstamm.model lazy
@@ -47,7 +47,7 @@ location "https://download.medelexis.ch/medelexis/3.8/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder lazy
 }
 
-location "http://download.elexis.info/elexis/3.8/p2/target/" {
+location "https://download.elexis.info/elexis/3.8/p2/target/" {
 	jakarta.persistence
 	org.eclipse.persistence.asm
 	org.eclipse.persistence.antlr
@@ -59,14 +59,18 @@ location "http://download.elexis.info/elexis/3.8/p2/target/" {
 	org.apache.commons.io [2.6.0.v20190123-2029,2.6.0.v20190123-2029]
 	javax.mail.glassfish
 	
+	javax.activation
+
 	// Required plug-in 'org.eclipse.jdt.junit.runtime' could not be found.
 	org.eclipse.pde.core
 	org.eclipse.jdt.junit.runtime
 	org.eclipse.jdt.junit4.runtime
 	org.eclipse.pde.junit.runtime
+	
+	
 }
 
-location "http://download.elexis.info/elexis-server/1.8/p2/target/" elexis-server {
+location "https://download.elexis.info/elexis-server/1.8/p2/target/" elexis-server {
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
 	
@@ -78,15 +82,12 @@ location "http://download.elexis.info/elexis-server/1.8/p2/target/" elexis-serve
 	org.eclipse.ecf.core.ssl.feature.feature.group
 	org.eclipse.ecf.filetransfer.feature.feature.group
 	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
-	org.eclipse.ecf.filetransfer.httpclient4.feature.feature.group
-	org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group
 	org.eclipse.equinox.p2.core.feature.feature.group
 	org.eclipse.equinox.p2.extras.feature.feature.group
 	org.eclipse.equinox.p2.discovery.feature.feature.group
 	org.eclipse.core.net
-	org.eclipse.core.net.linux.x86
 	org.eclipse.core.net.linux.x86_64
-	org.eclipse.core.net.win32.x86
 	org.eclipse.core.net.win32.x86_64
 	javax.annotation
 	javax.xml
@@ -173,8 +174,6 @@ location "http://download.elexis.info/elexis-server/1.8/p2/target/" elexis-serve
 	javax.servlet.jsp.jstl
 	javax.servlet.jsp.jstl.impl
 	
-	javax.validation
-	javax.activation
 	
 	org.eclipse.gemini.jpa.feature.feature.group
 	
@@ -242,9 +241,9 @@ location "http://download.elexis.info/elexis-server/1.8/p2/target/" elexis-serve
 	org.apache.taglibs.standard-impl
 	org.apache.aries.spifly.static.bundle
 	org.apache.aries.spifly.dynamic.bundle
-	org.apache.aries.spifly.org.apache.aries.spifly.core-internal
-	org.apache.aries.spifly.org.apache.aries.spifly.static.tool
-	org.apache.aries.spifly.org.apache.aries.spifly.weaver-internal
+	org.apache.aries.spifly.core-internal
+	org.apache.aries.spifly.static.tool
+	org.apache.aries.spifly.weaver-internal
 	org.apache.aries.util
 	org.glassfish.web.javax.servlet.jsp.jstl
 	org.objectweb.asm

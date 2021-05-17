@@ -16,9 +16,9 @@ Require-Bundle: org.eclipse.equinox.common,
  org.apache.httpcomponents.httpcore;bundle-version="4.4.9",
  org.apache.commons.lang3;bundle-version="3.7.0",
  org.apache.commons.codec;bundle-version="1.10.0",
- ch.elexis.core;bundle-version="3.9.0",
  info.elexis.server.core;bundle-version="1.0.0",
- info.elexis.server.core.p2;bundle-version="1.0.0"
+ info.elexis.server.core.p2;bundle-version="1.0.0",
+ ch.elexis.core;bundle-version="3.8.0"
 Import-Package: io.swagger.annotations;version="1.5.21",
  javax.ws.rs;version="2.0.0",
  javax.ws.rs.core;version="2.0.0",
