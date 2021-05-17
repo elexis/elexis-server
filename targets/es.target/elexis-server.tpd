@@ -28,6 +28,7 @@ location "https://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
 	ch.elexis.core.tasks lazy
 	ch.elexis.core.logback.rocketchat lazy
 	//
+	org.slf4j.api [1.7.30.v20200204-2150,1.7.30.v20200204-2150]
 }
 
 location "https://download.elexis.info/elexis/3.8/p2/elexis-3-base/" {
