@@ -16,8 +16,8 @@
 
   <modules>
     <module>es.core.connector.elexis.test</module>
-    <!--
     <module>es.fhir.rest.core.test</module>
+    <!--
     <module>es.core.rest.test</module>
     -->
   </modules>
