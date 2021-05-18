@@ -83,6 +83,7 @@
         <setEntry value="ch.rgw.utility@default:default"/>
         <setEntry value="com.eclipsesource.jaxrs.consumer@default:default"/>
         <setEntry value="com.eclipsesource.jaxrs.jersey-all-nojavax@default:default"/>
+        <setEntry value="com.eclipsesource.jaxrs.jersey-all@default:default"/>
         <setEntry value="com.eclipsesource.jaxrs.jersey-min@default:default"/>
         <setEntry value="com.eclipsesource.jaxrs.publisher@default:true"/>
         <setEntry value="com.eclipsesource.jaxrs.swagger-all@default:default"/>
@@ -145,13 +146,14 @@
         <setEntry value="org.eclipse.equinox.transforms.hook@default:false"/>
         <setEntry value="org.eclipse.equinox.weaving.hook@default:false"/>
         <setEntry value="org.eclipse.gemini.jpa@2:true"/>
-        <setEntry value="org.eclipse.jetty.http*9.4.14.v20181113@default:default"/>
-        <setEntry value="org.eclipse.jetty.io*9.4.14.v20181113@default:default"/>
-        <setEntry value="org.eclipse.jetty.security*9.4.14.v20181113@default:default"/>
-        <setEntry value="org.eclipse.jetty.server*9.4.14.v20181113@default:default"/>
-        <setEntry value="org.eclipse.jetty.servlet*9.4.14.v20181113@default:default"/>
+        <setEntry value="org.eclipse.jetty.http@default:default"/>
+        <setEntry value="org.eclipse.jetty.io@default:default"/>
+        <setEntry value="org.eclipse.jetty.osgi-servlet-api@default:default"/>
+        <setEntry value="org.eclipse.jetty.security@default:default"/>
+        <setEntry value="org.eclipse.jetty.server@default:default"/>
+        <setEntry value="org.eclipse.jetty.servlet@default:default"/>
         <setEntry value="org.eclipse.jetty.servlets@default:default"/>
-        <setEntry value="org.eclipse.jetty.util*9.4.14.v20181113@default:default"/>
+        <setEntry value="org.eclipse.jetty.util@default:default"/>
         <setEntry value="org.eclipse.osgi.compatibility.state@default:false"/>
         <setEntry value="org.eclipse.osgi.services@default:default"/>
         <setEntry value="org.eclipse.osgi.util@default:default"/>
@@ -171,7 +173,8 @@
         <setEntry value="org.junit@default:default"/>
         <setEntry value="org.osgi.framework.system.packages.extra@default:false"/>
         <setEntry value="org.postgresql.jdbc42@default:default"/>
-        <setEntry value="org.slf4j.api@default:default"/>
+        <setEntry value="org.slf4j.api*1.7.2.v20121108-1250@default:default"/>
+        <setEntry value="org.slf4j.api*1.7.30.v20200204-2150@default:default"/>
         <setEntry value="org.springframework.spring-web@default:default"/>
         <setEntry value="org.thymeleaf@default:default"/>
         <setEntry value="osgi.enterprise@default:default"/>
@@ -179,6 +182,8 @@
         <setEntry value="woodstox-core-asl@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="at.medevit.logback.mattermost@default:default"/>
+        <setEntry value="at.medevit.logback.pushnotification@default:default"/>
         <setEntry value="info.elexis.server.core.common@default:default"/>
         <setEntry value="info.elexis.server.core.connector.elexis.test@default:false"/>
         <setEntry value="info.elexis.server.core.connector.elexis@default:default"/>

@@ -59,7 +59,7 @@
         <setEntry value="ch.elexis.core.jpa.logging.slf4j@default:false"/>
         <setEntry value="ch.elexis.core.jpa@default:default"/>
         <setEntry value="ch.elexis.core.l10n@default:default"/>
-        <setEntry value="ch.elexis.core.logback.rocketchat@default:default"/>
+        <setEntry value="ch.elexis.core.logback.rocketchat@default:false"/>
         <setEntry value="ch.elexis.core.model@default:default"/>
         <setEntry value="ch.elexis.core.services@default:default"/>
         <setEntry value="ch.elexis.core.test@default:default"/>
@@ -83,7 +83,7 @@
         <setEntry value="javax.servlet@default:default"/>
         <setEntry value="javax.transaction@default:false"/>
         <setEntry value="javax.xml@default:default"/>
-        <setEntry value="jaxb-api-impl-import-java9@default:default"/>
+        <setEntry value="jaxb-api-impl-import-java9@default:false"/>
         <setEntry value="jaxb-api@default:default"/>
         <setEntry value="org.apache.commons.beanutils@default:default"/>
         <setEntry value="org.apache.commons.codec@default:default"/>
@@ -141,7 +141,7 @@
         <setEntry value="org.eclipse.persistence.antlr*3.5.2.v201711011707@default:default"/>
         <setEntry value="org.eclipse.persistence.asm@default:default"/>
         <setEntry value="org.eclipse.persistence.core*2.7.5.v20191016-ea124dd158@default:default"/>
-        <setEntry value="org.eclipse.persistence.extension@default:default"/>
+        <setEntry value="org.eclipse.persistence.extension@default:false"/>
         <setEntry value="org.eclipse.persistence.jpa.jpql@default:default"/>
         <setEntry value="org.eclipse.persistence.jpa@default:true"/>
         <setEntry value="org.h2@default:default"/>
@@ -151,19 +151,19 @@
         <setEntry value="org.joda.money@default:default"/>
         <setEntry value="org.json@default:default"/>
         <setEntry value="org.junit@default:default"/>
-        <setEntry value="org.osgi.framework.system.packages.extra@default:default"/>
+        <setEntry value="org.osgi.framework.system.packages.extra@default:false"/>
         <setEntry value="org.postgresql.jdbc42@default:default"/>
         <setEntry value="org.slf4j.api*1.7.2.v20121108-1250@default:default"/>
         <setEntry value="org.slf4j.api*1.7.30.v20200204-2150@default:default"/>
         <setEntry value="osgi.enterprise@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
-        <setEntry value="at.medevit.logback.mattermost@default:default"/>
-        <setEntry value="at.medevit.logback.pushnotification@default:default"/>
+        <setEntry value="at.medevit.logback.mattermost@default:false"/>
+        <setEntry value="at.medevit.logback.pushnotification@default:false"/>
         <setEntry value="info.elexis.server.core.common@default:default"/>
         <setEntry value="info.elexis.server.core.connector.elexis.test@default:false"/>
         <setEntry value="info.elexis.server.core.connector.elexis@default:default"/>
-        <setEntry value="info.elexis.server.core.logging@default:default"/>
+        <setEntry value="info.elexis.server.core.logging@default:false"/>
         <setEntry value="info.elexis.server.core@default:default"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>

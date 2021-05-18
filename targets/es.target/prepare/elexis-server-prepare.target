@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1621241133">
+<target name="Elexis-Server" sequenceNumber="1621322489">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
       <unit id="jaxb-api-impl-import-java9" version="1.0.0.20200630-0744"/>
-      <unit id="ch.rgw.utility" version="0.0.0"/>
-      <unit id="ch.elexis.core" version="0.0.0"/>
-      <unit id="ch.elexis.core.l10n" version="0.0.0"/>
-      <unit id="ch.elexis.core.importer.div" version="0.0.0"/>
-      <unit id="ch.elexis.core.hl7.v2x" version="0.0.0"/>
-      <unit id="ch.elexis.core.findings" version="0.0.0"/>
-      <unit id="ch.elexis.core.findings.util" version="0.0.0"/>
-      <unit id="ch.elexis.core.test" version="0.0.0"/>
-      <unit id="ch.elexis.core.jpa" version="0.0.0"/>
-      <unit id="ch.elexis.core.jpa.datasource" version="0.0.0"/>
-      <unit id="ch.elexis.core.jpa.entities" version="0.0.0"/>
-      <unit id="ch.elexis.core.jpa.logging.slf4j" version="0.0.0"/>
-      <unit id="ch.elexis.core.model" version="0.0.0"/>
-      <unit id="ch.elexis.core.jcifs" version="0.0.0"/>
-      <unit id="ch.elexis.core.services" version="0.0.0"/>
-      <unit id="ch.elexis.core.hapi.fhir" version="0.0.0"/>
-      <unit id="ch.elexis.core.findings.fhir.model" version="0.0.0"/>
-      <unit id="ch.elexis.core.tasks" version="0.0.0"/>
-      <unit id="ch.elexis.core.logback.rocketchat" version="0.0.0"/>
+      <unit id="ch.rgw.utility" version="3.9.1.20210409-0606"/>
+      <unit id="ch.elexis.core" version="3.8.0.20210517-1104"/>
+      <unit id="ch.elexis.core.l10n" version="3.8.0.20210419-1531"/>
+      <unit id="ch.elexis.core.importer.div" version="3.2.0.20210517-1104"/>
+      <unit id="ch.elexis.core.hl7.v2x" version="3.2.0.20210212-1717"/>
+      <unit id="ch.elexis.core.findings" version="1.1.0.20201203-1103"/>
+      <unit id="ch.elexis.core.findings.util" version="1.1.0.20210315-0843"/>
+      <unit id="ch.elexis.core.test" version="1.0.0.20210505-1208"/>
+      <unit id="ch.elexis.core.jpa" version="1.0.0.20210507-1754"/>
+      <unit id="ch.elexis.core.jpa.datasource" version="1.0.0.20200630-0904"/>
+      <unit id="ch.elexis.core.jpa.entities" version="1.0.0.20210507-1754"/>
+      <unit id="ch.elexis.core.jpa.logging.slf4j" version="1.0.0.20181009-1221"/>
+      <unit id="ch.elexis.core.model" version="1.0.0.20210517-1104"/>
+      <unit id="ch.elexis.core.jcifs" version="2.1.5.20210505-1208"/>
+      <unit id="ch.elexis.core.services" version="1.0.0.20210423-0940"/>
+      <unit id="ch.elexis.core.hapi.fhir" version="4.1.0.20200630-0904"/>
+      <unit id="ch.elexis.core.findings.fhir.model" version="1.1.0.20201203-1103"/>
+      <unit id="ch.elexis.core.tasks" version="1.0.0.20210507-1754"/>
+      <unit id="ch.elexis.core.logback.rocketchat" version="1.0.0.20210212-1717"/>
       <unit id="org.h2" version="1.3.170"/>
       <unit id="org.jdom" version="1.1.0"/>
       <unit id="org.apache.commons.dbcp" version="1.4.0.v201204271417"/>
@@ -42,13 +42,13 @@
       <repository location="http://download.elexis.info/elexis/3.8/p2/elexis-3-core/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="ch.elexis.base.ch.ticode" version="0.0.0"/>
-      <unit id="at.medevit.ch.artikelstamm" version="0.0.0"/>
-      <unit id="at.medevit.ch.artikelstamm.model" version="0.0.0"/>
-      <unit id="at.medevit.atc_codes" version="0.0.0"/>
-      <unit id="ch.elexis.omnivore" version="0.0.0"/>
-      <unit id="ch.elexis.omnivore.model" version="0.0.0"/>
-      <unit id="ch.elexis.base.ch.labortarif.model" version="0.0.0"/>
+      <unit id="ch.elexis.base.ch.ticode" version="3.2.0.20210423-0940"/>
+      <unit id="at.medevit.ch.artikelstamm" version="3.3.0.20200625-1327"/>
+      <unit id="at.medevit.ch.artikelstamm.model" version="1.0.0.20210514-1227"/>
+      <unit id="at.medevit.atc_codes" version="3.1.0.20190409-1536"/>
+      <unit id="ch.elexis.omnivore" version="3.2.0.20190430-1229"/>
+      <unit id="ch.elexis.omnivore.model" version="3.8.0.20210303-1238"/>
+      <unit id="ch.elexis.base.ch.labortarif.model" version="1.0.0.20210505-1243"/>
       <repository location="http://download.elexis.info/elexis/3.8/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -159,6 +159,10 @@
       <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20200224183213/repository/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="jaxb-api" version="2.4.0.b1808300359"/>
+      <repository location="http://download.elexis.info/elexis-server/master/p2/target/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.201307051903"/>
       <repository location="http://download.elexis.info/elexis-server/misc/gemini-jpa/"/>
     </location>
@@ -168,7 +172,6 @@
       <unit id="javax.interceptor-api" version="1.2.2"/>
       <unit id="com.sun.activation.javax.activation" version="1.2.0"/>
       <unit id="com.sun.xml.bind.jaxb-osgi" version="2.3.3"/>
-      <unit id="jaxb-api" version="2.3.1"/>
       <unit id="jakarta.xml.ws-api" version="2.3.2"/>
       <unit id="jakarta.xml.soap-api" version="1.4.2"/>
       <unit id="jakarta.jws-api" version="1.1.1"/>

@@ -173,7 +173,10 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2020022418321
 	javax.servlet.jsp.jstl.impl
 }
 
-
+location "http://download.elexis.info/elexis-server/master/p2/target/" {
+	// workaround for damn com.sun.internal problem
+	jaxb-api [2.4.0.b1808300359,2.4.0.b1808300359]
+}
 
 location "http://download.elexis.info/elexis-server/misc/gemini-jpa/" {
 	org.eclipse.gemini.jpa.feature.feature.group
@@ -189,7 +192,6 @@ location "http://download.elexis.info/elexis-server/elexis-server-dependencies/"
 	// jaxb
 	com.sun.activation.javax.activation [1.2.0,1.2.0]
 	com.sun.xml.bind.jaxb-osgi
-	jaxb-api
 	jakarta.xml.ws-api
 	jakarta.xml.soap-api
 	jakarta.jws-api

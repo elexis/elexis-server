@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="1.0.0" useFeatures="true" includeLaunchers="true">
+<product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="1.8.0" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -30,6 +30,7 @@
    </launcher>
 
    <vm>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11</macos>
    </vm>
 
    <plugins>
