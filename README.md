@@ -1,4 +1,4 @@
-# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) [![build status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/commits/master)
+# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) [![build status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/1.8/build.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/commits/master)
 Elexis for server operation
 
 The Elexis server (ES) implements a part of the SMART specification. Please consult [SMART: Tech Stack for HealthApps](http://docs.smarthealthit.org/) and  [HL7-FHIR wiki](http://wiki.hl7.org/index.php?title=FHIR) for further details.
