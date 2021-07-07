@@ -4,7 +4,7 @@
   <parent>
     <groupId>info.elexis.server</groupId>
     <artifactId>info.elexis.server.parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>3.9.0-SNAPSHOT</version>
     <relativePath>../releng/es.parent</relativePath>
   </parent>
 

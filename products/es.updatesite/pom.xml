@@ -1,23 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>info.elexis.server.updatesite</artifactId>
-  <packaging>eclipse-repository</packaging>
-  <parent>
-  	<groupId>info.elexis.server.products</groupId>
-  	<artifactId>pom</artifactId>
-  	<version>1.0.0-SNAPSHOT</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <build>
-   <plugins>
-      <plugin>
-         <groupId>org.eclipse.tycho</groupId>
-         <artifactId>tycho-p2-repository-plugin</artifactId>
-         <version>${tycho.version}</version>
-         <configuration>
-            <includeAllDependencies>true</includeAllDependencies>
-         </configuration>
-      </plugin>
-   </plugins>
-</build>
+	<parent>
+		<groupId>info.elexis.server.products</groupId>
+		<artifactId>pom</artifactId>
+		<version>3.9.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>info.elexis.server.updatesite</artifactId>
+	<packaging>eclipse-repository</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<includeAllDependencies>true</includeAllDependencies>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
