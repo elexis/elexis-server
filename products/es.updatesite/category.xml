@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/info.elexis.server.core.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.core.platform.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.platform.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.core.connector.elexis.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.connector.elexis.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.core.p2.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.p2.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.rootfiles.feature_1.0.0.qualifier.jar" id="info.elexis.server.rootfiles.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.core.jsp.feature_1.0.0.qualifier.jar" id="info.elexis.server.core.jsp.feature" version="1.0.0.qualifier"/>
-   <feature url="features/info.elexis.server.fhir.rest.core.feature_2.0.0.qualifier.jar" id="info.elexis.server.fhir.rest.core.feature" version="2.0.0.qualifier"/>
+   <feature url="features/info.elexis.server.core.feature_0.0.0.jar" id="info.elexis.server.core.feature" version="0.0.0"/>
+   <feature url="features/info.elexis.server.core.platform.feature_0.0.0.jar" id="info.elexis.server.core.platform.feature" version="0.0.0"/>
+   <feature url="features/info.elexis.server.core.connector.elexis.feature_0.0.0.jar" id="info.elexis.server.core.connector.elexis.feature" version="0.0.0"/>
+   <feature url="features/info.elexis.server.core.p2.feature_0.0.0.jar" id="info.elexis.server.core.p2.feature" version="0.0.0"/>
+   <feature url="features/info.elexis.server.rootfiles.feature_0.0.0.jar" id="info.elexis.server.rootfiles.feature" version="0.0.0"/>
+   <feature url="features/info.elexis.server.core.jsp.feature_0.0.0.jar" id="info.elexis.server.core.jsp.feature" version="0.0.0"/>
+   <feature url="features/info.elexis.server.fhir.rest.core.feature_0.0.0.jar" id="info.elexis.server.fhir.rest.core.feature" version="0.0.0"/>
 </site>
