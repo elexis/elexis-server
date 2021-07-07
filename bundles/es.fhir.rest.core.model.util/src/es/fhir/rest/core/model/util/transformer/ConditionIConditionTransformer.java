@@ -17,7 +17,7 @@ import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 
-@Component(immediate = true)
+@Component
 public class ConditionIConditionTransformer implements IFhirTransformer<Condition, ICondition> {
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
