@@ -41,27 +41,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="at.medevit.logback.pushnotification"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="at.medevit.logback.mattermost"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="info.elexis.server.webapp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="ch.elexis.core.logback.rocketchat"
          download-size="0"
          install-size="0"

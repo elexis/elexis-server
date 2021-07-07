@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.webapp.ConnectorDatabaseConfigurationWebappStatic">
-   <property name="osgi.http.whiteboard.resource.pattern" value="/web/elexis-connector/connection/static/*"/>
-   <property name="osgi.http.whiteboard.resource.prefix" value="/web/elexis-connector/connection/static"/>
-   <service>
-      <provide interface="info.elexis.server.webapp.ConnectorDatabaseConfigurationWebappStatic"/>
-   </service>
-   <implementation class="info.elexis.server.webapp.ConnectorDatabaseConfigurationWebappStatic"/>
-</scr:component>
