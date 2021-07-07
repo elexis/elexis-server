@@ -2,13 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis Server Core Common
 Bundle-SymbolicName: info.elexis.server.core.common
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 3.9.0.qualifier
 Bundle-Vendor: elexis.info
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.core.runtime;bundle-version="3.11.1",
- org.apache.shiro.core;bundle-version="1.4.0";visibility:=reexport
-Import-Package: org.slf4j
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Import-Package: org.apache.shiro.authc;version="1.7.1",
+ org.apache.shiro.authc.credential;version="1.7.1",
+ org.apache.shiro.authz;version="1.7.1",
+ org.apache.shiro.realm;version="1.7.1",
+ org.apache.shiro.subject;version="1.7.1",
+ org.apache.shiro.util;version="1.7.1",
+ org.slf4j
 Export-Package: info.elexis.server.core.common,
- info.elexis.server.core.common.converter,
  info.elexis.server.core.common.security,
  info.elexis.server.core.common.util
+Require-Bundle: ch.elexis.core

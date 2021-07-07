@@ -38,7 +38,8 @@ public class SlotResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Slot getResourceById(@IdParam IdType theId){
+	public Slot getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IAppointment> appointment = modelService.load(idPart, IAppointment.class);

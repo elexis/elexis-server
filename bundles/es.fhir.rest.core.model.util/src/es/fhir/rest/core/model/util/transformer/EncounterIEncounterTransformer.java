@@ -44,7 +44,8 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 	}
 	
 	@Override
-	public Optional<Encounter> getFhirObject(IEncounter localObject, SummaryEnum summaryEnum,Set<Include> includes){
+	public Optional<Encounter> getFhirObject(IEncounter localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Encounter) resource.get());
@@ -81,7 +82,8 @@ public class EncounterIEncounterTransformer implements IFhirTransformer<Encounte
 			contentHelper.setResource(fhirObject, iEncounter);
 			patientKontakt.ifPresent(k -> iEncounter.setPatientId(k.getId()));
 			performerKontakt.ifPresent(k -> iEncounter.setMandatorId(k.getId()));
-			Optional<ch.elexis.core.model.IEncounter> behandlung = encounterHelper.createIEncounter(iEncounter);
+			Optional<ch.elexis.core.model.IEncounter> behandlung =
+				encounterHelper.createIEncounter(iEncounter);
 			behandlung.ifPresent(cons -> {
 				iEncounter.setConsultationId(cons.getId());
 				AbstractHelper.acquireAndReleaseLock(cons);

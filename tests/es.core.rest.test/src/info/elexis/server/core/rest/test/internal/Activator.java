@@ -6,13 +6,13 @@ import org.h2.tools.DeleteDbFiles;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import info.elexis.server.core.common.util.CoreUtil;
+import ch.elexis.core.utils.CoreUtil;
 import info.elexis.server.core.connector.elexis.Properties;
 
 public class Activator implements BundleActivator {
 
-	private File esConnectionFile = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml").toFile();
-	private File esConnectionFileTestBackup = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml.testBackup")
+	private File esConnectionFile = CoreUtil.getElexisServerHomeDirectory().resolve("elexis-connection.xml").toFile();
+	private File esConnectionFileTestBackup = CoreUtil.getElexisServerHomeDirectory().resolve("elexis-connection.xml.testBackup")
 			.toFile();
 
 	private static BundleContext bundleContext;

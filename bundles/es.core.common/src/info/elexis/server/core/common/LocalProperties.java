@@ -1,5 +1,6 @@
 package info.elexis.server.core.common;
 
+import ch.elexis.core.utils.CoreUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,11 +16,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.common.util.CoreUtil;
 
 public class LocalProperties {
 	private static Logger log = LoggerFactory.getLogger(LocalProperties.class);
-	private static File propertiesFile = CoreUtil.getHomeDirectory().resolve("elexis-server.properties").toFile();
+	private static File propertiesFile = CoreUtil.getElexisServerHomeDirectory().resolve("elexis-server.properties").toFile();
 
 	private static final String LIST_SEPARATOR = ",";
 

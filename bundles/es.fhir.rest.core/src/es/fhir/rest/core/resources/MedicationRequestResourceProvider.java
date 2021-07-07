@@ -50,7 +50,8 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 	}
 	
 	@Read
-	public MedicationRequest getResourceById(@IdParam IdType theId){
+	public MedicationRequest getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IPrescription> prescription = modelService.load(idPart, IPrescription.class);
@@ -65,14 +66,16 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 	
 	@Search()
 	public List<MedicationRequest> findMedicationsByPatient(
-		@RequiredParam(name = MedicationRequest.SP_PATIENT) IdType thePatientId){
+		@RequiredParam(name = MedicationRequest.SP_PATIENT)
+		IdType thePatientId){
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient =
 				modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					IQuery<IPrescription> query = modelService.getQuery(IPrescription.class);
-					query.and(ModelPackage.Literals.IPRESCRIPTION__PATIENT, COMPARATOR.EQUALS, patient.get());
+					query.and(ModelPackage.Literals.IPRESCRIPTION__PATIENT, COMPARATOR.EQUALS,
+						patient.get());
 					// TODO
 					//					qbe.add(Prescription_.rezeptID, JPAQuery.QUERY.EQUALS, null);
 					List<IPrescription> prescriptions = query.execute();
@@ -92,7 +95,8 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 	}
 	
 	@Update
-	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationRequest updateOrder){
+	public MethodOutcome updateMedicationOrder(@ResourceParam
+	MedicationRequest updateOrder){
 		Optional<IPrescription> localObject = getTransformer().getLocalObject(updateOrder);
 		MethodOutcome outcome = new MethodOutcome();
 		outcome.setCreated(false);

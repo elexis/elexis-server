@@ -30,8 +30,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import ch.elexis.core.utils.CoreUtil;
 import info.elexis.server.core.Host;
-import info.elexis.server.core.common.util.CoreUtil;
 
 public class OAuth2ClientService {
 
@@ -130,7 +130,7 @@ public class OAuth2ClientService {
 	 * @throws IOException
 	 */
 	private void initIntrospectionEndpointBasicAuthHeaderValue() throws IOException {
-		Path fileName = CoreUtil.getHomeDirectory().resolve("es-introspection-client.auth");
+		Path fileName = CoreUtil.getElexisServerHomeDirectory().resolve("es-introspection-client.auth");
 		List<String> readAllLines = Files.readAllLines(fileName);
 		for (String credentialLine : readAllLines) {
 			if (!credentialLine.startsWith("#")) {

@@ -19,24 +19,25 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class ClaimResourceProvider implements IFhirResourceProvider {
-
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return Claim.class;
 	}
-
+	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Claim, List<IBilled>> getTransformer() {
-		return (IFhirTransformer<Claim, List<IBilled>>) transformerRegistry.getTransformerFor(Claim.class,
-				List.class);
+	public IFhirTransformer<Claim, List<IBilled>> getTransformer(){
+		return (IFhirTransformer<Claim, List<IBilled>>) transformerRegistry
+			.getTransformerFor(Claim.class, List.class);
 	}
-
+	
 	@Create
-	public MethodOutcome createClaim(@ResourceParam Claim claim) {
+	public MethodOutcome createClaim(@ResourceParam
+	Claim claim){
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<List<IBilled>> created = getTransformer().createLocalObject(claim);
 		if (created.isPresent() && !created.get().isEmpty()) {

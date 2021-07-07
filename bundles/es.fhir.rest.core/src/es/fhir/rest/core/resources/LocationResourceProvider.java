@@ -16,28 +16,30 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class LocationResourceProvider implements IFhirResourceProvider {
-
+	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return Location.class;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Location, String> getTransformer() {
-		return (IFhirTransformer<Location, String>) transformerRegistry.getTransformerFor(Location.class, String.class);
+	public IFhirTransformer<Location, String> getTransformer(){
+		return (IFhirTransformer<Location, String>) transformerRegistry
+			.getTransformerFor(Location.class, String.class);
 	}
-
+	
 	@Read
-	public Location getResourceById(@IdParam IdType theId) {
+	public Location getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (Objects.equals("mainLocation", idPart)) {
 			return getTransformer().getFhirObject(idPart).get();
 		}
 		return null;
 	}
-
+	
 }

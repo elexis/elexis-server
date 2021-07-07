@@ -31,7 +31,8 @@ public class ObservationIObservationTransformer
 	private FindingsContentHelper contentHelper = new FindingsContentHelper();
 	
 	@Override
-	public Optional<Observation> getFhirObject(IObservation localObject, SummaryEnum summaryEnum,Set<Include> includes){
+	public Optional<Observation> getFhirObject(IObservation localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Observation) resource.get());

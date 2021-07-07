@@ -55,7 +55,8 @@ public class MedicationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Medication getResourceById(@IdParam IdType theId){
+	public Medication getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		
 		if (StringUtils.isNotEmpty(idPart)) {
@@ -80,9 +81,9 @@ public class MedicationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Medication> findMedications(
-		@RequiredParam(name = Medication.SP_CODE) TokenParam code){
-	
+	public List<Medication> findMedications(@RequiredParam(name = Medication.SP_CODE)
+	TokenParam code){
+		
 		IQuery<IArticle> coreQuery = coreModelService.getQuery(IArticle.class);
 		IQuery<IArtikelstammItem> artikelstammQuery =
 			artikelstammModelService.getQuery(IArtikelstammItem.class);
