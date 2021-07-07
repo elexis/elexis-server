@@ -44,7 +44,7 @@ import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
 @SuiteClasses({
 	CORSTest.class, AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
 	AppointmentTest.class, CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class,
-	EncounterTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, ConditionTest.class,
+	ConditionTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, EncounterTest.class,
 	ProcedureRequestTest.class, MedicationRequestTest.class, ClaimTest.class, MedicationTest.class
 })
 public class AllTests {
