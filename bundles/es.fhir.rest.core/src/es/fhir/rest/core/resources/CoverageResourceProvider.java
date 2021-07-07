@@ -46,7 +46,7 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Activate
-	public void activate() {
+	public void activate(){
 		log = LoggerFactory.getLogger(getClass());
 		resourceProviderUtil = new ResourceProviderUtil();
 	}
@@ -59,7 +59,8 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Coverage getResourceById(@IdParam IdType theId){
+	public Coverage getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<ICoverage> coverage = modelService.load(idPart, ICoverage.class);
@@ -72,8 +73,8 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Coverage> findCoverageByBeneficiary(
-		@RequiredParam(name = Coverage.SP_BENEFICIARY) IdType theBeneficiaryId){
+	public List<Coverage> findCoverageByBeneficiary(@RequiredParam(name = Coverage.SP_BENEFICIARY)
+	IdType theBeneficiaryId){
 		if (theBeneficiaryId != null) {
 			Optional<IPatient> patient =
 				modelService.load(theBeneficiaryId.getIdPart(), IPatient.class);
@@ -93,7 +94,8 @@ public class CoverageResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Create
-	public MethodOutcome createCoverage(@ResourceParam Coverage coverage){
+	public MethodOutcome createCoverage(@ResourceParam
+	Coverage coverage){
 		return resourceProviderUtil.createResource(getTransformer(), coverage, log);
 	}
 }

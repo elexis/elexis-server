@@ -2,7 +2,6 @@ package es.fhir.rest.core.resources;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -17,13 +16,17 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.Search;
+import ch.elexis.core.model.agenda.Area;
+import ch.elexis.core.services.IAppointmentService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
 public class ScheduleResourceProvider implements IFhirResourceProvider {
+	
+	@Reference
+	private IAppointmentService appointmentService;
 	
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
@@ -41,7 +44,8 @@ public class ScheduleResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Schedule getResourceById(@IdParam IdType theId){
+	public Schedule getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<Schedule> fhirSchedule = getTransformer().getFhirObject(idPart);
@@ -52,9 +56,9 @@ public class ScheduleResourceProvider implements IFhirResourceProvider {
 	
 	@Search
 	public List<Schedule> findSchedules(){
-		Set<String> agendaAreas = TerminService.getAgendaAreas();
+		List<Area> agendaAreas = appointmentService.getAreas();
 		List<Schedule> areas = agendaAreas.stream()
-			.map(areaName -> getTransformer().getFhirObject(DigestUtils.md5Hex(areaName)))
+			.map(area -> getTransformer().getFhirObject(DigestUtils.md5Hex(area.getName())))
 			.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		return areas;
 	}

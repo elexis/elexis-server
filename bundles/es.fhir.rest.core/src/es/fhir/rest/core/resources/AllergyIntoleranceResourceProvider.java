@@ -53,7 +53,8 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	
 	@Search()
 	public List<AllergyIntolerance> findAllergyIntolerance(
-		@RequiredParam(name = AllergyIntolerance.SP_PATIENT) IdType patientId){
+		@RequiredParam(name = AllergyIntolerance.SP_PATIENT)
+		IdType patientId){
 		if (patientId != null && !patientId.isEmpty()) {
 			Optional<IPatient> patient = modelService.load(patientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
@@ -78,8 +79,8 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	}
 	
 	@Create
-	public MethodOutcome createAllergyIntolerance(
-		@ResourceParam AllergyIntolerance allergyIntolerance){
+	public MethodOutcome createAllergyIntolerance(@ResourceParam
+	AllergyIntolerance allergyIntolerance){
 		MethodOutcome outcome = new MethodOutcome();
 		
 		Optional<IAllergyIntolerance> exists = getTransformer().getLocalObject(allergyIntolerance);
@@ -100,7 +101,8 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	}
 	
 	@Read
-	public AllergyIntolerance getResourceById(@IdParam IdType theId){
+	public AllergyIntolerance getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IAllergyIntolerance> optionalAllergyIntolerance =

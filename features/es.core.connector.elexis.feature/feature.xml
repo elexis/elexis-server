@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.core.connector.elexis.feature"
       label="Elexis Connector"
-      version="1.0.0.qualifier"
+      version="3.9.0.qualifier"
       provider-name="medevit.at">
 
    <description url="http://www.example.com/description">
@@ -71,13 +71,6 @@
 
    <plugin
          id="org.eclipse.persistence.moxy"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.h2"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -225,13 +218,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.postgresql.jdbc42"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.mysql.cj"
          download-size="0"
          install-size="0"
@@ -365,13 +351,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.bouncycastle.bcprov"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.eclipsesource.jaxrs.consumer"
          download-size="0"
          install-size="0"
@@ -471,6 +450,27 @@
 
    <plugin
          id="ch.elexis.base.ch.arzttarife.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="bcprov"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.postgresql.jdbc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.h2database"
          download-size="0"
          install-size="0"
          version="0.0.0"

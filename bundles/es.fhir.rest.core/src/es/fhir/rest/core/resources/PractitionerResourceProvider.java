@@ -21,19 +21,22 @@ import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IUserService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import info.elexis.server.core.connector.elexis.services.UserService;
 
 @Component
 public class PractitionerResourceProvider implements IFhirResourceProvider {
 	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
+	
+	@Reference
+	private IUserService userService;
 	
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
@@ -48,7 +51,8 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Practitioner getResourceById(@IdParam IdType theId){
+	public Practitioner getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IMandator> practitioner = modelService.load(idPart, IMandator.class);
@@ -62,8 +66,8 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Practitioner> findPractitioner(
-		@RequiredParam(name = Practitioner.SP_NAME) String name){
+	public List<Practitioner> findPractitioner(@RequiredParam(name = Practitioner.SP_NAME)
+	String name){
 		if (name != null) {
 			IQuery<IMandator> query = modelService.getQuery(IMandator.class);
 			query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE,
@@ -74,7 +78,7 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			if (!practitioners.isEmpty()) {
 				// only Kontakt with existing user entry
 				practitioners = practitioners.stream()
-					.filter(contact -> UserService.findByContact(contact).isPresent())
+					.filter(contact -> userService.findByContact(contact).isPresent())
 					.collect(Collectors.toList());
 				List<Practitioner> ret = new ArrayList<Practitioner>();
 				for (IMandator practitioner : practitioners) {

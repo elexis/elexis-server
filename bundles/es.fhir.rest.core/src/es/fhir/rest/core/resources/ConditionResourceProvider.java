@@ -34,33 +34,34 @@ import es.fhir.rest.core.resources.util.CodeTypeUtil;
 
 @Component
 public class ConditionResourceProvider implements IFhirResourceProvider {
-
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IMigratorService migratorService;
-
+	
 	@Reference
 	private IFindingsService findingsService;
-
+	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return Condition.class;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Condition, ICondition> getTransformer() {
+	public IFhirTransformer<Condition, ICondition> getTransformer(){
 		return (IFhirTransformer<Condition, ICondition>) transformerRegistry
-					.getTransformerFor(Condition.class, ICondition.class);
+			.getTransformerFor(Condition.class, ICondition.class);
 	}
-
+	
 	@Read
-	public Condition getResourceById(@IdParam IdType theId) {
+	public Condition getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<ICondition> condition = findingsService.findById(idPart, ICondition.class);
@@ -71,21 +72,22 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 		}
 		return null;
 	}
-
+	
 	@Search()
-	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId,
-			@OptionalParam(name = Condition.SP_CATEGORY) CodeType categoryCode) {
+	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT)
+	IdType thePatientId, @OptionalParam(name = Condition.SP_CATEGORY)
+	CodeType categoryCode){
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<IPatient> patient = modelService.load(thePatientId.getIdPart(), IPatient.class);
+			Optional<IPatient> patient =
+				modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate diagnose condition first
 					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
 						ICondition.class, null);
-
+					
 					List<ICondition> findings = findingsService
-						.getPatientsFindings(thePatientId.getIdPart(),
-							ICondition.class);
+						.getPatientsFindings(thePatientId.getIdPart(), ICondition.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Condition> ret = new ArrayList<Condition>();
 						for (ICondition iFinding : findings) {
@@ -104,9 +106,10 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 		}
 		return Collections.emptyList();
 	}
-
+	
 	@Create
-	public MethodOutcome createCondition(@ResourceParam Condition condition) {
+	public MethodOutcome createCondition(@ResourceParam
+	Condition condition){
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<ICondition> exists = getTransformer().getLocalObject(condition);
 		if (exists.isPresent()) {
@@ -123,12 +126,12 @@ public class ConditionResourceProvider implements IFhirResourceProvider {
 		}
 		return outcome;
 	}
-
-	private boolean isConditionCategory(ICondition iCondition, CodeType categoryCode) {
+	
+	private boolean isConditionCategory(ICondition iCondition, CodeType categoryCode){
 		Optional<String> codeCode = CodeTypeUtil.getCode(categoryCode);
-
+		
 		ConditionCategory category = iCondition.getCategory();
 		return category.name().equalsIgnoreCase(codeCode.orElse(""))
-				|| category.getCode().equalsIgnoreCase(codeCode.orElse(""));
+			|| category.getCode().equalsIgnoreCase(codeCode.orElse(""));
 	}
 }

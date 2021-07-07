@@ -23,25 +23,28 @@ import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.services.IElexisDataSource;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.status.StatusUtil;
-import info.elexis.server.core.common.util.CoreUtil;
+import ch.elexis.core.utils.CoreUtil;
 import info.elexis.server.core.connector.elexis.internal.Activator;
 
 public class ElexisDBConnectionUtil {
-
+	
 	private static DBConnection connection;
 	private static Path connectionConfigPath;
-
+	
 	private static Logger log = LoggerFactory.getLogger(ElexisDBConnectionUtil.class);
-
+	
 	static {
-		connectionConfigPath = CoreUtil.getHomeDirectory().resolve("elexis-connection.xml");
+		connectionConfigPath =
+			CoreUtil.getElexisServerHomeDirectory().resolve("elexis-connection.xml");
 	}
-
-	public static Optional<DBConnection> getConnection() {
+	
+	public static Optional<DBConnection> getConnection(){
 		if (connectionConfigPath.toFile().exists()) {
-			try (InputStream is = Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
+			try (InputStream is =
+				Files.newInputStream(connectionConfigPath, StandardOpenOption.READ)) {
 				connection = DBConnection.unmarshall(is);
-				log.info("Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
+				log.info(
+					"Initialized elexis connection from " + connectionConfigPath.toAbsolutePath());
 				StatusUtil.logStatus(log, verifyConnection(connection));
 			} catch (IOException | JAXBException e) {
 				log.warn("Error opening " + connectionConfigPath.toAbsolutePath(), e);
@@ -52,31 +55,33 @@ public class ElexisDBConnectionUtil {
 		
 		return Optional.ofNullable(connection);
 	}
-
-	public static IStatus setConnection(IElexisDataSource elexisDataSource, DBConnection connection) {
+	
+	public static IStatus setConnection(IElexisDataSource elexisDataSource,
+		DBConnection connection){
 		IStatus status = verifyConnection(connection);
 		if (status.isOK()) {
 			try {
 				status = doSetConnection(elexisDataSource, connection);
 			} catch (IOException | JAXBException | InterruptedException e) {
 				log.error("Error setting database connection", e);
-				return new Status(Status.ERROR, Activator.BUNDLE_ID, "Error setting database connection", e);
+				return new Status(Status.ERROR, Activator.BUNDLE_ID,
+					"Error setting database connection", e);
 			}
 		}
 		return status;
 	}
-
+	
 	/**
 	 * Verify if the provided connection matches the Elexis-Server requirements.
 	 * 
 	 * @param dbConnection
 	 * @return
 	 */
-	private static IStatus verifyConnection(DBConnection dbConnection) {
+	private static IStatus verifyConnection(DBConnection dbConnection){
 		if (dbConnection == null) {
 			return new Status(Status.ERROR, Activator.BUNDLE_ID, "Connection is null");
 		}
-
+		
 		try {
 			switch (dbConnection.rdbmsType) {
 			case H2:
@@ -94,9 +99,9 @@ public class ElexisDBConnectionUtil {
 		} catch (Exception e) {
 			return new Status(Status.ERROR, Activator.BUNDLE_ID, e.getMessage());
 		}
-
-		try (Connection connection = DriverManager.getConnection(dbConnection.connectionString, dbConnection.username,
-				dbConnection.password)) {
+		
+		try (Connection connection = DriverManager.getConnection(dbConnection.connectionString,
+			dbConnection.username, dbConnection.password)) {
 			boolean valid = connection.isValid(10);
 			if (!valid) {
 				return new Status(Status.ERROR, Activator.BUNDLE_ID, "Invalid connection");
@@ -104,29 +109,31 @@ public class ElexisDBConnectionUtil {
 		} catch (SQLException e) {
 			return new Status(Status.ERROR, Activator.BUNDLE_ID, e.getMessage());
 		}
-
+		
 		return Status.OK_STATUS;
 	}
-
-	private static IStatus doSetConnection(IElexisDataSource elexisDataSource, DBConnection connection)
-			throws IOException, JAXBException, InterruptedException {
+	
+	private static IStatus doSetConnection(IElexisDataSource elexisDataSource,
+		DBConnection connection) throws IOException, JAXBException, InterruptedException{
 		persistDBConnection(connection);
 		IStatus elexisDataSourceStatus = elexisDataSource.setDBConnection(connection);
 		if (elexisDataSourceStatus.isOK()) {
-			ServiceTracker<Object, Object> serviceTracker = new ServiceTracker<>(Activator.getContext(),
-					IModelService.class.getName(), null);
+			ServiceTracker<Object, Object> serviceTracker =
+				new ServiceTracker<>(Activator.getContext(), IModelService.class.getName(), null);
 			serviceTracker.waitForService(5000);
 		}
 		return elexisDataSourceStatus;
 	}
-
-	private static void persistDBConnection(DBConnection connection) throws IOException, JAXBException {
+	
+	private static void persistDBConnection(DBConnection connection)
+		throws IOException, JAXBException{
 		if (connection != null) {
-			try (OutputStream fos = Files.newOutputStream(connectionConfigPath, StandardOpenOption.CREATE)) {
+			try (OutputStream fos =
+				Files.newOutputStream(connectionConfigPath, StandardOpenOption.CREATE)) {
 				connection.marshall(fos);
 			}
 			ElexisDBConnectionUtil.connection = connection;
 		}
 	}
-
+	
 }

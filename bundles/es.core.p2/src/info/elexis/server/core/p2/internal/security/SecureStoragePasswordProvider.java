@@ -38,32 +38,33 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.common.util.CoreUtil;
+import ch.elexis.core.utils.CoreUtil;
 import info.elexis.server.core.p2.Constants;
 
 @SuppressWarnings("restriction")
-public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.storage.provider.PasswordProvider {
+public class SecureStoragePasswordProvider
+		extends org.eclipse.equinox.security.storage.provider.PasswordProvider {
 	private static Logger log = LoggerFactory.getLogger(SecureStoragePasswordProvider.class);
-
+	
 	private static final String ALGORITHM = "AES/ECB/PKCS5Padding"; //$NON-NLS-1$
 	private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
 	private static final int BYTE_ARRAY_SIZE = 1024;
-
+	
 	@Override
-	public PBEKeySpec getPassword(IPreferencesContainer container, int passwordType) {
-		if (CoreUtil.getHomeDirectory().toString() == null)
+	public PBEKeySpec getPassword(IPreferencesContainer container, int passwordType){
+		if (CoreUtil.getElexisServerHomeDirectory().toString() == null)
 			return null;
-
+		
 		final boolean newPassword = ((passwordType & CREATE_NEW_PASSWORD) != 0);
 		final boolean passwordChange = ((passwordType & PASSWORD_CHANGE) != 0);
-
+		
 		try {
 			if (!newPassword && !passwordChange) {
 				char[] existing = getPassword();
 				if (existing != null && existing.length != 0)
 					return new PBEKeySpec(existing);
 			}
-
+			
 			String password = UUID.randomUUID().toString();
 			if (password == null || password.trim().length() == 0)
 				return null;
@@ -74,8 +75,8 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 		}
 		return null;
 	}
-
-	private void writePassword(String password) throws IOException {
+	
+	private void writePassword(String password) throws IOException{
 		SecretKeySpec key = getKeySpec();
 		byte[] encrypted = encrypt(key, password);
 		if (encrypted != null && encrypted.length > 0) {
@@ -83,13 +84,13 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 			write(b64, new FileOutputStream(getPasswordFile()));
 		}
 	}
-
-	private char[] getPassword() throws IOException {
+	
+	private char[] getPassword() throws IOException{
 		byte[] encrypted = getEncryptedPassword();
 		if (encrypted == null)
 			return new char[0];
 		byte[] bytes = Base64.decode(encrypted);
-
+		
 		if (bytes != null) {
 			SecretKeySpec key = getKeySpec();
 			byte[] decrypted = decrypt(key, bytes);
@@ -99,25 +100,28 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 		}
 		return new char[0];
 	}
-
-	private byte[] getEncryptedPassword() throws IOException {
+	
+	private byte[] getEncryptedPassword() throws IOException{
 		File file = getPasswordFile();
 		if (!file.exists())
 			return null;
 		return read(new FileInputStream(file), ENCODING);
 	}
-
-	private File getPasswordFile() throws IOException {
-		File file = new File(CoreUtil.getHomeDirectory() + File.separator + ".elexis-server-secure", ".store"); //$NON-NLS-1$ //$NON-NLS-2$
+	
+	private File getPasswordFile() throws IOException{
+		File file = new File(
+			CoreUtil.getElexisServerHomeDirectory() + File.separator + ".elexis-server-secure", //$NON-NLS-1$
+			".store"); //$NON-NLS-1$
 		file.getParentFile().mkdirs();
 		return file;
 	}
-
-	private SecretKeySpec getKeySpec() {
-		String ksPref = Platform.getPreferencesService().getString(Constants.PLUGIN_ID, IPreferenceConstants.CACHED_KEY, "", //$NON-NLS-1$
-				null);
+	
+	private SecretKeySpec getKeySpec(){
+		String ksPref = Platform.getPreferencesService().getString(Constants.PLUGIN_ID,
+			IPreferenceConstants.CACHED_KEY, "", //$NON-NLS-1$
+			null);
 		byte[] key = null;
-
+		
 		if (!"".equals(ksPref)) //$NON-NLS-1$
 		{
 			try {
@@ -129,13 +133,13 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 				log.error(Messages.PasswordProvider_ERR_UnableToDecodeExistingKey, e);
 			}
 		}
-
+		
 		KeyGenerator kgen;
 		if (key == null || key.length == 0) {
 			try {
 				kgen = KeyGenerator.getInstance("AES"); //$NON-NLS-1$
 				kgen.init(128);
-
+				
 				SecretKey skey = kgen.generateKey();
 				key = skey.getEncoded();
 				byte[] b64 = Base64.encode(skey.getEncoded());
@@ -152,8 +156,8 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 		}
 		return new SecretKeySpec(key, "AES"); //$NON-NLS-1$
 	}
-
-	private byte[] encrypt(SecretKeySpec skeySpec, String password) {
+	
+	private byte[] encrypt(SecretKeySpec skeySpec, String password){
 		try {
 			Cipher cipher = Cipher.getInstance(ALGORITHM);
 			cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
@@ -173,8 +177,8 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 		}
 		return null;
 	}
-
-	private byte[] decrypt(SecretKeySpec skeySpec, byte[] encryptedPassword) {
+	
+	private byte[] decrypt(SecretKeySpec skeySpec, byte[] encryptedPassword){
 		try {
 			Cipher cipher = Cipher.getInstance(ALGORITHM);
 			cipher.init(Cipher.DECRYPT_MODE, skeySpec);
@@ -192,24 +196,24 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 		}
 		return null;
 	}
-
-	private static byte[] read(InputStream stream, String charset) {
+	
+	private static byte[] read(InputStream stream, String charset){
 		if (stream == null)
 			return null;
-
+		
 		ByteArrayOutputStream out = new ByteArrayOutputStream(BYTE_ARRAY_SIZE);
 		try {
 			if (!(stream instanceof BufferedInputStream)) {
 				stream = new BufferedInputStream(stream);
 			}
-
+			
 			// byte[] theBytes = new byte[stream.available()];
 			// stream.read(theBytes);
-
+			
 			// TODO Read whatever is available, not in 1024 chunks?
 			byte[] buffer = new byte[BYTE_ARRAY_SIZE];
 			int len;
-
+			
 			while ((len = stream.read(buffer)) >= 0)
 				out.write(buffer, 0, len);
 			return out.toByteArray();
@@ -229,8 +233,8 @@ public class SecureStoragePasswordProvider extends org.eclipse.equinox.security.
 		}
 		return null;
 	}
-
-	private static void write(byte[] bytes, OutputStream stream) {
+	
+	private static void write(byte[] bytes, OutputStream stream){
 		try {
 			stream.write(bytes);
 		} catch (IOException e) {

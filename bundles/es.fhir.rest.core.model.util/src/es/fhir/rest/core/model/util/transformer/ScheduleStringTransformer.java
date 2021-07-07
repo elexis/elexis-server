@@ -16,10 +16,10 @@ import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IContact;
+import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.resources.util.TerminUtil;
-import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
 public class ScheduleStringTransformer implements IFhirTransformer<Schedule, String> {
@@ -28,8 +28,12 @@ public class ScheduleStringTransformer implements IFhirTransformer<Schedule, Str
 		+ "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
+	@org.osgi.service.component.annotations.Reference
+	private IAppointmentService appointmentService;
+	
 	@Override
-	public Optional<Schedule> getFhirObject(String localObject, SummaryEnum summaryEnum,Set<Include> includes){
+	public Optional<Schedule> getFhirObject(String localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Schedule schedule = getSchedules().get(localObject);
 		return Optional.ofNullable(schedule);
 	}
@@ -45,14 +49,15 @@ public class ScheduleStringTransformer implements IFhirTransformer<Schedule, Str
 	private Map<String, Schedule> getSchedules(){
 		Map<String, Schedule> schedules = new HashMap<>();
 		
-		Map<String, String> agendaAreas = TerminUtil.getAgendaAreas();
+		Map<String, String> agendaAreas = new TerminUtil(appointmentService).getAgendaAreas();
 		for (Entry<String, String> entry : agendaAreas.entrySet()) {
 			Schedule schedule = new Schedule();
 			String areaId = entry.getKey();
 			String area = entry.getValue();
 			// id might not be rest compatible, if we use the plain area name
 			
-			Optional<IContact> assignedContact = TerminService.resolveAssignedContact(area);
+			Optional<IContact> assignedContact =
+				appointmentService.resolveAreaAssignedContact(area);
 			Reference actor;
 			if (assignedContact.isPresent() && assignedContact.get().isMandator()) {
 				actor = new Reference(

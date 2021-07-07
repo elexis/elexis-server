@@ -17,10 +17,10 @@ import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.services.IXidService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
-import info.elexis.server.core.connector.elexis.services.UserService;
 
 @Component
 public class PractitionerIMandatorTransformer implements IFhirTransformer<Practitioner, IMandator> {
@@ -31,15 +31,19 @@ public class PractitionerIMandatorTransformer implements IFhirTransformer<Practi
 	@Reference
 	private IXidService xidService;
 	
+	@Reference
+	private IUserService userService;
+	
 	private IContactHelper contactHelper;
 	
 	@Activate
 	private void activate(){
-		contactHelper = new IContactHelper(modelService, xidService);
+		contactHelper = new IContactHelper(xidService, userService);
 	}
 	
 	@Override
-	public Optional<Practitioner> getFhirObject(IMandator localObject,SummaryEnum summaryEnum, Set<Include> includes){
+	public Optional<Practitioner> getFhirObject(IMandator localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Practitioner practitioner = new Practitioner();
 		
 		practitioner.setId(new IdDt("Practitioner", localObject.getId()));
@@ -54,7 +58,7 @@ public class PractitionerIMandatorTransformer implements IFhirTransformer<Practi
 			practitioner.setGender(contactHelper.getGender(mandatorPerson.getGender()));
 			practitioner.setBirthDate(contactHelper.getBirthDate(mandatorPerson));
 			
-			Optional<IUser> userLocalObject = UserService.findByContact(mandatorPerson);
+			Optional<IUser> userLocalObject = userService.findByContact(mandatorPerson);
 			if (userLocalObject.isPresent()) {
 				practitioner.setActive(userLocalObject.get().isActive());
 			}

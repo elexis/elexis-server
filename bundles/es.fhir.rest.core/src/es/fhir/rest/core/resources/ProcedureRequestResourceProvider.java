@@ -31,70 +31,73 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
-
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IFindingsService findingsService;
-
+	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return ProcedureRequest.class;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<ProcedureRequest, IProcedureRequest> getTransformer() {
+	public IFhirTransformer<ProcedureRequest, IProcedureRequest> getTransformer(){
 		return (IFhirTransformer<ProcedureRequest, IProcedureRequest>) transformerRegistry
-				.getTransformerFor(ProcedureRequest.class, IProcedureRequest.class);
+			.getTransformerFor(ProcedureRequest.class, IProcedureRequest.class);
 	}
-
+	
 	@Read
-	public ProcedureRequest getResourceById(@IdParam IdType theId) {
+	public ProcedureRequest getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IProcedureRequest> procedureRequest =
 				findingsService.findById(idPart, IProcedureRequest.class);
 			if (procedureRequest.isPresent()) {
-				Optional<ProcedureRequest> fhirProcedureRequest = getTransformer()
-					.getFhirObject(procedureRequest.get());
+				Optional<ProcedureRequest> fhirProcedureRequest =
+					getTransformer().getFhirObject(procedureRequest.get());
 				return fhirProcedureRequest.get();
 			}
 		}
 		return null;
 	}
-
+	
 	@Search()
 	public List<ProcedureRequest> findProcedureRequest(
-			@RequiredParam(name = ProcedureRequest.SP_PATIENT) IdType thePatientId,
-			@OptionalParam(name = ProcedureRequest.SP_ENCOUNTER) IdType theEncounterId) {
+		@RequiredParam(name = ProcedureRequest.SP_PATIENT)
+		IdType thePatientId, @OptionalParam(name = ProcedureRequest.SP_ENCOUNTER)
+		IdType theEncounterId){
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<IPatient> patient = modelService.load(thePatientId.getIdPart(), IPatient.class);
+			Optional<IPatient> patient =
+				modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<IProcedureRequest> findings = findingsService
-						.getPatientsFindings(thePatientId.getIdPart(),
-							IProcedureRequest.class);
-					if(theEncounterId != null) {
+						.getPatientsFindings(thePatientId.getIdPart(), IProcedureRequest.class);
+					if (theEncounterId != null) {
 						Optional<IEncounter> encounter =
 							findingsService.findById(theEncounterId.getIdPart(), IEncounter.class);
-						if(encounter.isPresent()) {
+						if (encounter.isPresent()) {
 							IEncounter iEncounter = encounter.get();
 							String consid = iEncounter.getConsultationId();
 							if (consid != null && !consid.isEmpty()) {
-								findings = findingsService.getConsultationsFindings(consid, IProcedureRequest.class);
+								findings = findingsService.getConsultationsFindings(consid,
+									IProcedureRequest.class);
 							}
 						}
 					}
 					if (findings != null && !findings.isEmpty()) {
 						List<ProcedureRequest> ret = new ArrayList<ProcedureRequest>();
 						for (IProcedureRequest iFinding : findings) {
-							Optional<ProcedureRequest> fhirProcedureRequest = getTransformer()
-								.getFhirObject(iFinding);
+							Optional<ProcedureRequest> fhirProcedureRequest =
+								getTransformer().getFhirObject(iFinding);
 							fhirProcedureRequest.ifPresent(pr -> ret.add(pr));
 						}
 						return ret;
@@ -104,16 +107,18 @@ public class ProcedureRequestResourceProvider implements IFhirResourceProvider {
 		}
 		return Collections.emptyList();
 	}
-
+	
 	@Create
-	public MethodOutcome createProcedureRequest(@ResourceParam ProcedureRequest procedureRequest) {
+	public MethodOutcome createProcedureRequest(@ResourceParam
+	ProcedureRequest procedureRequest){
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<IProcedureRequest> exists = getTransformer().getLocalObject(procedureRequest);
 		if (exists.isPresent()) {
 			outcome.setCreated(false);
 			outcome.setId(new IdType(procedureRequest.getId()));
 		} else {
-			Optional<IProcedureRequest> created = getTransformer().createLocalObject(procedureRequest);
+			Optional<IProcedureRequest> created =
+				getTransformer().createLocalObject(procedureRequest);
 			if (created.isPresent()) {
 				outcome.setCreated(true);
 				outcome.setId(new IdType(created.get().getId()));

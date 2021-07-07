@@ -30,7 +30,7 @@ import es.fhir.rest.core.resources.util.CodeTypeUtil;
 @Component
 public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
@@ -49,7 +49,8 @@ public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public PractitionerRole getResourceById(@IdParam IdType theId){
+	public PractitionerRole getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IUser> user = modelService.load(idPart, IUser.class);
@@ -64,7 +65,8 @@ public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 	
 	@Search()
 	public List<PractitionerRole> findPractitionerRole(
-		@RequiredParam(name = PractitionerRole.SP_ROLE) CodeType roleCode){
+		@RequiredParam(name = PractitionerRole.SP_ROLE)
+		CodeType roleCode){
 		if (roleCode != null) {
 			Optional<String> codeSystem = CodeTypeUtil.getSystem(roleCode);
 			Optional<String> codeCode = CodeTypeUtil.getCode(roleCode);
@@ -107,7 +109,7 @@ public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 			for (IUser user : practitioners) {
 				Optional<PractitionerRole> fhirPractitionerRole =
 					getTransformer().getFhirObject(user);
-				fhirPractitionerRole.ifPresent(fp -> ret.add(fp));				
+				fhirPractitionerRole.ifPresent(fp -> ret.add(fp));
 			}
 		}
 		return ret;

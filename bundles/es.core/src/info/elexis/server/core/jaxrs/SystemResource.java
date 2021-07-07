@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.osgi.service.component.annotations.Component;
 
+import ch.elexis.core.utils.CoreUtil;
 import info.elexis.server.core.Application;
-import info.elexis.server.core.common.util.CoreUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -42,7 +42,7 @@ public class SystemResource {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = File.class) })
 	@RequiresRoles("esadmin")
 	public Response getLogFileOfToday() {
-		File logFile = CoreUtil.getHomeDirectory().resolve("logs/elexis-server.log").toFile();
+		File logFile = CoreUtil.getElexisServerHomeDirectory().resolve("logs/elexis-server.log").toFile();
 		if (logFile.exists() && logFile.canRead()) {
 			ResponseBuilder response = Response.ok((Object) logFile);
 			response.header("Content-Disposition", "attachment;filename=" + logFile.getName() + ".txt");

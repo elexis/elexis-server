@@ -33,17 +33,22 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.IUser;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
-import info.elexis.server.core.connector.elexis.services.UserService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 
 public class PractitionerRoleTest {
 	
 	private static IGenericClient client;
 	
+	private static IUserService userService;
+	
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException{
 		AllTests.getTestDatabaseInitializer().initializeMandant();
+		
+		userService = OsgiServiceUtil.getService(IUserService.class).get();
 		
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
@@ -82,7 +87,7 @@ public class PractitionerRoleTest {
 	 */
 	@Test
 	public void getPractitionerProperties(){
-		Optional<IUser> user = UserService.findByContact(TestDatabaseInitializer.getMandant());
+		Optional<IUser> user = userService.findByContact(TestDatabaseInitializer.getMandant());
 		assertTrue(user.isPresent());
 		PractitionerRole readPractitionerRole =
 			client.read().resource(PractitionerRole.class).withId(user.get().getId()).execute();

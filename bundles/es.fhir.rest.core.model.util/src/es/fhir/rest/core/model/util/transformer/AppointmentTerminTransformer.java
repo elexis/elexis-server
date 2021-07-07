@@ -28,10 +28,10 @@ import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IAppointmentHelper;
-import info.elexis.server.core.connector.elexis.services.TerminService;
 
 @Component
 public class AppointmentTerminTransformer implements IFhirTransformer<Appointment, IAppointment> {
@@ -43,6 +43,9 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 	@org.osgi.service.component.annotations.Reference(target = "(" + IModelService.SERVICEMODELNAME
 		+ "=ch.elexis.core.model)")
 	private IModelService modelService;
+	
+	@org.osgi.service.component.annotations.Reference
+	private IAppointmentService appointmentService;
 	
 	private IAppointmentHelper appointmentHelper;
 	
@@ -89,7 +92,7 @@ public class AppointmentTerminTransformer implements IFhirTransformer<Appointmen
 		List<AppointmentParticipantComponent> participant = appointment.getParticipant();
 		
 		Optional<IContact> assignedContact =
-			TerminService.resolveAssignedContact(localObject.getSchedule());
+			appointmentService.resolveAreaAssignedContact(localObject.getSchedule());
 		if (assignedContact.isPresent() && assignedContact.get().isMandator()) {
 			AppointmentParticipantComponent hcp = new AppointmentParticipantComponent();
 			hcp.setActor(new Reference(

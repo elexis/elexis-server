@@ -1,16 +1,14 @@
 package es.fhir.rest.core;
 
 /**
- * Registry definition used to collect all {@link IFhirTransformer} services
- * available.
+ * Registry definition used to collect all {@link IFhirTransformer} services available.
  * 
  * @author thomas
  *
  */
 public interface IFhirTransformerRegistry {
 	/**
-	 * Get an {@link IFhirTransformer} instance that matches the types of
-	 * fhirClazz and localClazz.
+	 * Get an {@link IFhirTransformer} instance that matches the types of fhirClazz and localClazz.
 	 * 
 	 * @param fhirClazz
 	 * @param localClazz

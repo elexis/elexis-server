@@ -2,26 +2,22 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis Server Core
 Bundle-SymbolicName: info.elexis.server.core;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 3.9.0.qualifier
 Bundle-Activator: info.elexis.server.core.internal.Activator
 Bundle-Vendor: elexis.info
-Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.200",
- org.eclipse.osgi.services;bundle-version="3.5.100",
- org.eclipse.core.runtime;bundle-version="3.12.0",
- ch.qos.logback.classic;bundle-version="1.0.7",
- ch.qos.logback.core;bundle-version="1.0.7",
- org.apache.shiro.jaxrs;bundle-version="1.4.0",
- org.apache.shiro.web;bundle-version="1.4.0",
- com.eclipsesource.jaxrs.publisher;bundle-version="5.3.1",
- org.apache.httpcomponents.httpcore,
- org.apache.httpcomponents.httpclient,
- org.apache.oltu.oauth2.resourceserver;bundle-version="1.0.2",
- info.elexis.server.core.common;bundle-version="1.0.0",
- ch.elexis.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Multi-Release: true
-Import-Package: com.google.gson;version="2.8.0",
- io.swagger.annotations;version="1.5.17",
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Import-Package: ch.qos.logback.classic;version="1.2.3",
+ ch.qos.logback.classic.joran;version="1.2.3",
+ ch.qos.logback.classic.spi;version="1.2.3",
+ ch.qos.logback.classic.util;version="1.2.3",
+ ch.qos.logback.core;version="1.2.3",
+ ch.qos.logback.core.joran;version="1.2.3",
+ ch.qos.logback.core.joran.spi;version="1.2.3",
+ ch.qos.logback.core.spi;version="1.2.3",
+ ch.qos.logback.core.util;version="1.2.3",
+ com.eclipsesource.jaxrs.publisher;version="5.3.1",
+ com.google.gson;version="2.8.0",
+ io.swagger.annotations;version="1.5.18",
  javax.annotation.security;version="1.2.0",
  javax.inject;version="1.0.0",
  javax.servlet;version="3.1.0",
@@ -36,7 +32,35 @@ Import-Package: com.google.gson;version="2.8.0",
  org.apache.commons.codec.binary;version="1.10.0",
  org.apache.commons.io;version="2.5.0",
  org.apache.commons.lang3;version="3.7.0",
+ org.apache.http;version="4.4.12",
+ org.apache.http.client;version="4.5.10",
+ org.apache.http.client.entity;version="4.5.10",
+ org.apache.http.client.methods;version="4.5.10",
+ org.apache.http.impl.client;version="4.5.10",
+ org.apache.http.message;version="4.4.12",
+ org.apache.http.util;version="4.4.12",
+ org.apache.shiro;version="1.7.1",
+ org.apache.shiro.authc;version="1.7.1",
+ org.apache.shiro.authc.credential;version="1.7.1",
+ org.apache.shiro.authz;version="1.7.1",
+ org.apache.shiro.authz.annotation;version="1.7.1",
+ org.apache.shiro.mgt;version="1.7.1",
+ org.apache.shiro.realm;version="1.7.1",
+ org.apache.shiro.session;version="1.7.1",
+ org.apache.shiro.session.mgt;version="1.7.1",
+ org.apache.shiro.subject;version="1.7.1",
+ org.apache.shiro.subject.support;version="1.7.1",
+ org.apache.shiro.util;version="1.7.1",
+ org.apache.shiro.web.filter;version="1.7.1",
+ org.apache.shiro.web.filter.authc;version="1.7.1",
+ org.apache.shiro.web.filter.authz;version="1.7.1",
+ org.apache.shiro.web.jaxrs;version="1.7.1",
+ org.apache.shiro.web.servlet;version="1.7.1",
+ org.apache.shiro.web.session.mgt;version="1.7.1",
+ org.apache.shiro.web.util;version="1.7.1",
  org.eclipse.equinox.http.servlet;version="1.2.0",
+ org.eclipse.osgi.framework.console;version="1.1.0",
+ org.osgi.service.http;version="1.2.1",
  org.slf4j;version="1.7.2"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
@@ -45,5 +69,9 @@ Export-Package: info.elexis.server.core,
  info.elexis.server.core.rest,
  info.elexis.server.core.security,
  info.elexis.server.core.security.oauth2
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/org.apache.oltu.oauth2.common-1.0.2.jar,
+ lib/org.apache.oltu.oauth2.resourceserver-filter-1.0.2.jar
+Require-Bundle: info.elexis.server.core.common;bundle-version="3.9.0",
+ ch.elexis.core;bundle-version="3.9.0"
 

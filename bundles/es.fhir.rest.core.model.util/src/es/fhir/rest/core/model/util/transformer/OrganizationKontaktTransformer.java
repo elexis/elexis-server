@@ -16,7 +16,7 @@ import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IOrganization;
-import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.services.IXidService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
@@ -25,8 +25,8 @@ import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
 public class OrganizationKontaktTransformer
 		implements IFhirTransformer<Organization, IOrganization> {
 	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
-	private IModelService modelService;
+	@Reference
+	private IUserService userService;
 	
 	@Reference
 	private IXidService xidService;
@@ -34,12 +34,13 @@ public class OrganizationKontaktTransformer
 	private IContactHelper contactHelper;
 	
 	@Activate
-	public void activate() {
-		contactHelper = new IContactHelper(modelService, xidService);
+	public void activate(){
+		contactHelper = new IContactHelper(xidService, userService);
 	}
 	
 	@Override
-	public Optional<Organization> getFhirObject(IOrganization localObject,SummaryEnum summaryEnum, Set<Include> includes){
+	public Optional<Organization> getFhirObject(IOrganization localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Organization organization = new Organization();
 		
 		organization.setId(new IdDt("Organization", localObject.getId()));

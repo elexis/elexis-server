@@ -26,7 +26,6 @@ import es.fhir.rest.core.model.util.transformer.helper.IMedicationHelper;
 @Component
 public class MedicationIArticleTransformer implements IFhirTransformer<Medication, IArticle> {
 	
-	
 	@org.osgi.service.component.annotations.Reference(target = "(" + IModelService.SERVICEMODELNAME
 		+ "=ch.elexis.core.model)")
 	private IModelService coreModelService;
@@ -42,7 +41,8 @@ public class MedicationIArticleTransformer implements IFhirTransformer<Medicatio
 	}
 	
 	@Override
-	public Optional<Medication> getFhirObject(IArticle localObject, SummaryEnum summaryEnum,Set<Include> includes){
+	public Optional<Medication> getFhirObject(IArticle localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Medication medication = new Medication();
 		medication.setId(new IdDt("Medication", localObject.getTyp() + "." + localObject.getId()));
 		

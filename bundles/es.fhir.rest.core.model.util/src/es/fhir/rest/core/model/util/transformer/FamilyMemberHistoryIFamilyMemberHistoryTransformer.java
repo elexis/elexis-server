@@ -37,7 +37,7 @@ public class FamilyMemberHistoryIFamilyMemberHistoryTransformer
 	
 	@Override
 	public Optional<FamilyMemberHistory> getFhirObject(IFamilyMemberHistory localObject,
-		SummaryEnum summaryEnum,Set<Include> includes){
+		SummaryEnum summaryEnum, Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((FamilyMemberHistory) resource.get());

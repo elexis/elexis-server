@@ -3,6 +3,7 @@
    <service>
       <provide interface="es.fhir.rest.core.IFhirResourceProvider"/>
    </service>
+   <reference cardinality="1..1" field="appointmentService" interface="ch.elexis.core.services.IAppointmentService" name="appointmentService"/>
    <reference cardinality="1..1" field="transformerRegistry" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="transformerRegistry" policy="static"/>
    <implementation class="es.fhir.rest.core.resources.ScheduleResourceProvider"/>
 </scr:component>

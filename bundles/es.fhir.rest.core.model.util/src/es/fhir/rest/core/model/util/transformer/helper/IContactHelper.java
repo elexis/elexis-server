@@ -22,19 +22,18 @@ import ch.elexis.core.model.IOrganization;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.IXid;
-import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.services.IXidService;
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.services.UserService;
 
 public class IContactHelper extends AbstractHelper {
 	
-	private IModelService modelService;
 	private IXidService xidService;
+	private IUserService userService;
 	
-	public IContactHelper(IModelService modelService, IXidService xidService){
-		this.modelService = modelService;
+	public IContactHelper(IXidService xidService, IUserService userService){
 		this.xidService = xidService;
+		this.userService = userService;
 	}
 	
 	public List<HumanName> getHumanNames(IPerson person){
@@ -49,7 +48,7 @@ public class IContactHelper extends AbstractHelper {
 			ret.add(humanName);
 		}
 		if (person.isUser()) {
-			Optional<IUser> userLocalObject = UserService.findByContact(person);
+			Optional<IUser> userLocalObject = userService.findByContact(person);
 			if (userLocalObject.isPresent()) {
 				HumanName sysName = new HumanName();
 				sysName.setText(userLocalObject.get().getId());

@@ -3,6 +3,7 @@
    <service>
       <provide interface="es.fhir.rest.core.IFhirTransformer"/>
    </service>
+   <reference cardinality="1..1" field="appointmentService" interface="ch.elexis.core.services.IAppointmentService" name="appointmentService"/>
    <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService" target="(service.model.name=ch.elexis.core.model)"/>
    <reference cardinality="1..1" field="patientTransformer" interface="es.fhir.rest.core.IFhirTransformer" name="patientTransformer" target="(transformer.id=Patient.IPatient)"/>
    <implementation class="es.fhir.rest.core.model.util.transformer.AppointmentTerminTransformer"/>
