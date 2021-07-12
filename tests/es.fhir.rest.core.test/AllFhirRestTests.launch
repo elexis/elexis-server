@@ -159,6 +159,8 @@
         <setEntry value="osgi.enterprise@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="at.medevit.atc_codes@default:default"/>
+        <setEntry value="at.medevit.ch.artikelstamm.model@default:default"/>
         <setEntry value="at.medevit.ch.artikelstamm@default:default"/>
         <setEntry value="at.medevit.logback.mattermost@default:false"/>
         <setEntry value="at.medevit.logback.pushnotification@default:false"/>
