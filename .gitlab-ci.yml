@@ -1,8 +1,3 @@
-# Build script used by gitlab.medelexis.ch
-stages:
-    - build
-    - build_container
-
 build:
   stage: build
   script: 
@@ -18,10 +13,10 @@ build:
       junit:
         - tests/**/target/surefire-reports/TEST-*.xml
 build_container:
-    stage: build_container
+    stage: deploy
     tags:
     - docker-host
     script:
     - docker pull adoptopenjdk/openjdk11:alpine-slim
-    - docker build --build-arg BRANCH=$CI_COMMIT_REF_NAME -t medevit/elexis-server:$CI_COMMIT_REF_NAME
+    - docker build --build-arg BRANCH=$CI_COMMIT_REF_NAME -t medevit/elexis-server:$CI_COMMIT_REF_NAME .
     - docker push medevit/elexis-server:$CI_COMMIT_REF_NAME
