@@ -1,30 +1,22 @@
-# Build script used by gitlab.medelexis.ch
-stages:
-    - build
-    - trigger_other_builds
-
 build:
   stage: build
   script: 
   - find features -type f -name p2.inf -exec sed -i "s@REPLACE_WITH_GIT_REV@$CI_COMMIT_SHA@g" {} \;
   - find features -type f -name p2.inf -exec sed -i "s|REPLACE_WITH_GIT_REPO_URL|$CI_PROJECT_URL|g" {} \;
   - mvn -f releng/es.parent/pom.xml clean verify -P sonar -Dsonar.login=$SONAR_LOGIN_TOKEN
-  - jo token="$WEBHOOK_TOKEN" info="elexis-server $CI_JOB_ID $ORIGIN_BRANCH $CI_COMMIT_REF_NAME $CI_COMMIT_SHA" binary=%$(find products/es.updatesite/target/*.zip) destDir=elexis-server/$CI_COMMIT_REF_NAME/p2/elexis-server | curl -k -H "Content-Type:application/json" -X POST -d @- $WEBHOOK_URL/deploy-zip
-  - for file in products/es.core.product.runtime/target/products/*.zip; do jo token="$WEBHOOK_TOKEN" destFilename="${file##*/}" binary=%${file} destDir=elexis-server/$CI_COMMIT_REF_NAME/products/ | curl -k -H "Content-Type:application/json" -X POST -d @- $WEBHOOK_URL/deploy-file; done
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY_ED25519_BASE64" | base64 -d)
+  - rsync -aiv --delete -e ssh products/es.updatesite/target/repository/ deploy@download.medelexis.ch:download.elexis.info/elexis-server/$CI_COMMIT_REF_NAME/p2/elexis-server/
+  - rsync -aiv --no-recursive -e ssh products/es.core.product.runtime/target/products/* deploy@download.medelexis.ch:download.elexis.info/elexis-server/$CI_COMMIT_REF_NAME/products/
   artifacts:
     reports:
       junit:
         - tests/**/target/surefire-reports/TEST-*.xml
-trigger_dockerhub_build:
-    stage: trigger_other_builds
+build_container:
+    stage: deploy
+    tags:
+    - docker-host
     script:
-    - >- 
-         curl 
-         -X POST https://hub.docker.com/api/build/v1/source/$DOCKERHUB_TRIGGER_TOKEN_PREFIX/trigger/$DOCKERHUB_TRIGGER_TOKEN/call/
-         -d '
-         {
-         "source_type": "Branch",
-         "source_name": "'"$CI_COMMIT_REF_NAME"'"
-         }
-         '
-         -H "Content-Type: application/json"
+    - docker pull adoptopenjdk/openjdk11:alpine-slim
+    - docker build --build-arg BRANCH=$CI_COMMIT_REF_NAME -t medevit/elexis-server:$CI_COMMIT_REF_NAME .
+    - docker push medevit/elexis-server:$CI_COMMIT_REF_NAME
