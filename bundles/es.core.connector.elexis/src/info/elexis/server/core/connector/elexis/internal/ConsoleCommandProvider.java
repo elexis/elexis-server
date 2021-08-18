@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -29,6 +31,8 @@ import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
+import info.elexis.server.core.connector.elexis.locking.LogLockServiceContributor;
 import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component(service = CommandProvider.class, immediate = true)
@@ -109,6 +113,26 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			ci.println(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
 				+ lockInfo.getElementId() + "\t" + lockInfo.getCreationDate() + "\t["
 				+ lockInfo.getSystemUuid() + "]");
+		}
+	}
+	
+	private ServiceRegistration<ILockServiceContributor> logLockService;
+	
+	@CmdAdvisor(description = "enable lock request logging")
+	public void __elc_locks_log_enable() throws InvalidSyntaxException{
+		if (logLockService == null) {
+			logLockService = Activator.getContext().registerService(ILockServiceContributor.class,
+				new LogLockServiceContributor(), null);
+			ok();
+		}
+	}
+	
+	@CmdAdvisor(description = "disable lock request logging")
+	public void __elc_locks_log_disable() throws InvalidSyntaxException{
+		if (logLockService != null) {
+			logLockService.unregister();
+			logLockService = null;
+			ok();
 		}
 	}
 	
