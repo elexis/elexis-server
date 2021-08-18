@@ -21,10 +21,10 @@ import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IUserService;
 import es.fhir.rest.core.IFhirResourceProvider;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.IFhirTransformerRegistry;
-import info.elexis.server.core.connector.elexis.services.UserService;
 
 @Component
 public class PractitionerResourceProvider implements IFhirResourceProvider {
@@ -34,6 +34,9 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
+	
+	@Reference
+	private IUserService userService;
 	
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
@@ -74,7 +77,7 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			if (!practitioners.isEmpty()) {
 				// only Kontakt with existing user entry
 				practitioners = practitioners.stream()
-					.filter(contact -> UserService.findByContact(contact).isPresent())
+					.filter(contact -> !userService.getUsersByAssociatedContact(contact).isEmpty())
 					.collect(Collectors.toList());
 				List<Practitioner> ret = new ArrayList<Practitioner>();
 				for (IMandator practitioner : practitioners) {

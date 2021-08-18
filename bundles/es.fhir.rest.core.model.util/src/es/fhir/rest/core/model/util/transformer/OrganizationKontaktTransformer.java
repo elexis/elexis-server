@@ -17,6 +17,7 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ch.elexis.core.model.IOrganization;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.services.IXidService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.IContactHelper;
@@ -31,11 +32,14 @@ public class OrganizationKontaktTransformer
 	@Reference
 	private IXidService xidService;
 	
+	@Reference
+	private IUserService userService;
+	
 	private IContactHelper contactHelper;
 	
 	@Activate
 	public void activate() {
-		contactHelper = new IContactHelper(modelService, xidService);
+		contactHelper = new IContactHelper(modelService, xidService, userService);
 	}
 	
 	@Override
