@@ -151,12 +151,12 @@ public class SetupTest {
 		IRole esadminRole = modelService.create(IRole.class);
 		esadminRole.setId("esadmin");
 		esadminRole.setSystemRole(true);
-		assertTrue(modelService.save(esadminRole));
+		modelService.save(esadminRole);
 		
 		IRole fhirRole = modelService.create(IRole.class);
 		fhirRole.setId("fhir");
 		fhirRole.setSystemRole(true);
-		assertTrue(modelService.save(fhirRole));
+		modelService.save(fhirRole);
 		
 		IPerson drGonzo = new IContactBuilder.PersonBuilder(modelService, "Oscar", "Zeta Acosta",
 			LocalDate.of(1935, 4, 8), Gender.MALE).mandator().buildAndSave();
@@ -167,14 +167,14 @@ public class SetupTest {
 		userService.setPasswordForUser(practitioner, USER_PASS_PRACTITIONER);
 		practitioner.setAllowExternal(true);
 		practitioner.addRole(fhirRole);
-		assertTrue(modelService.save(practitioner));
+		modelService.save(practitioner);
 		assertTrue(userService.verifyPassword(practitioner, USER_PASS_PRACTITIONER.toCharArray()));
 		
 		IUser esadmin = new IUserBuilder(modelService, USER_PASS_ESADMIN, drGonzo).build();
 		userService.setPasswordForUser(esadmin, USER_PASS_ESADMIN);
 		esadmin.setAllowExternal(true);
 		esadmin.addRole(esadminRole);
-		assertTrue(modelService.save(esadmin));
+		modelService.save(esadmin);
 		assertTrue(userService.verifyPassword(esadmin, USER_PASS_ESADMIN.toCharArray()));
 		
 		OsgiServiceUtil.ungetService(userService);
