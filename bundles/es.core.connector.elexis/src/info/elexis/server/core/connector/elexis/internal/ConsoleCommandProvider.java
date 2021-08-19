@@ -1,6 +1,8 @@
 package info.elexis.server.core.connector.elexis.internal;
 
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +15,10 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 
+import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
 import ch.elexis.core.console.CmdAdvisor;
@@ -31,6 +36,7 @@ import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.internal.services.LogEventHandler;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 import info.elexis.server.core.connector.elexis.locking.LogLockServiceContributor;
 import info.elexis.server.core.connector.elexis.services.LockService;
@@ -40,6 +46,10 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	
 	@Reference
 	private IContextService contextService;
+
+	private ServiceRegistration<ILockServiceContributor> logLockService;
+	private ServiceRegistration<EventHandler> logEventHandler;
+	
 	
 	@Activate
 	public void activate(){
@@ -64,6 +74,30 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 				+ lockInfo.getSystemUuid() + "]\n");
 		}
 		return sb.toString();
+	}
+	
+	@CmdAdvisor(description = "enable elexis event logging, optional topic parameter")
+	public void __elc_eventlog_enable(String topic){
+		if (topic == null) {
+			topic = ElexisEventTopics.BASE + "*";
+		}
+		
+		if (logEventHandler == null) {
+			Dictionary<String, Object> properties = new Hashtable<>();
+			properties.put(EventConstants.EVENT_TOPIC, topic);
+			logEventHandler = Activator.getContext().registerService(EventHandler.class,
+				new LogEventHandler(), properties);
+			ok(logEventHandler.getReference());
+		}
+	}
+	
+	@CmdAdvisor(description = "disable elexis event logging")
+	public void __elc_eventlog_disable() {
+		if (logEventHandler != null) {
+			logEventHandler.unregister();
+			logEventHandler = null;
+			ok("unregistered");
+		}
 	}
 	
 	@CmdAdvisor(description = "send a message to a given user")
@@ -116,7 +150,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 	
-	private ServiceRegistration<ILockServiceContributor> logLockService;
+
 	
 	@CmdAdvisor(description = "enable lock request logging")
 	public void __elc_locks_log_enable() throws InvalidSyntaxException{
