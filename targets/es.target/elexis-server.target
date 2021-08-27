@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1614582534">
+<target name="Elexis-Server" sequenceNumber="1630062227">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -27,7 +27,7 @@
       <unit id="ch.elexis.core.spotlight" version="0.0.0"/>
       <unit id="ch.elexis.core.tasks" version="0.0.0"/>
       <unit id="ch.elexis.core.logback.rocketchat" version="0.0.0"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
+      <repository location="https://download.elexis.info/elexis/master/p2/elexis-3-core/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.elexis.base.ch.ticode" version="0.0.0"/>
@@ -40,7 +40,7 @@
       <unit id="ch.elexis.base.ch.labortarif.model" version="0.0.0"/>
       <unit id="org.apache.solr" version="0.0.0"/>
       <unit id="ch.elexis.base.solr" version="0.0.0"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
+      <repository location="https://download.elexis.info/elexis/master/p2/elexis-3-base/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="at.medevit.elexis.agenda.reminder" version="0.0.0"/>
@@ -61,7 +61,13 @@
       <unit id="org.eclipse.jdt.junit.runtime" version="3.5.100.v20200214-0716"/>
       <unit id="org.eclipse.jdt.junit4.runtime" version="1.1.1200.v20200214-0716"/>
       <unit id="org.eclipse.pde.junit.runtime" version="3.5.700.v20200116-1804"/>
-      <repository location="http://download.elexis.info/elexis/master/p2/target/"/>
+      <repository location="https://download.elexis.info/elexis/master/p2/target/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.apache.poi" version="4.1.1.v20200604-1524"/>
+      <unit id="org.apache.poi.ooxml" version="4.1.1.v20200820-1148"/>
+      <unit id="org.apache.poi.ooxml.schemas" version="4.1.1.v20200922-2105"/>
+      <repository location="http://download.elexis.info/elexis/target/2021-03-java11/eclipse-p2"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
@@ -142,11 +148,6 @@
       <unit id="org.apache.commons.pool" version="1.6.0.v201204271246"/>
       <unit id="com.ibm.icu" version="62.1.0.v20180727-1652"/>
       <unit id="ca.uhn.hapi.osgi-base" version="2.3.0"/>
-      <unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-      <unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
-      <unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
-      <unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
-      <unit id="org.dom4j" version="1.6.1.v20170815-1500"/>
       <unit id="com.healthmarketscience.jackcess" version="2.1.9"/>
       <unit id="org.beanshell.bsh" version="2.0.0.0b4"/>
       <unit id="org.tukaani.xz" version="1.8.0.v20180207-1613"/>
@@ -233,7 +234,7 @@
       <unit id="org.objectweb.asm.tree" version="6.1.1"/>
       <unit id="com.eclipsesource.restfuse" version="1.10.0.201601141215"/>
       <unit id="net.sf.opencsv" version="1.8.0"/>
-      <repository id="elexis-server" location="http://download.elexis.info/elexis-server/master/p2/target/"/>
+      <repository id="elexis-server" location="https://download.elexis.info/elexis-server/master/p2/target/"/>
     </location>
   </locations>
 </target>

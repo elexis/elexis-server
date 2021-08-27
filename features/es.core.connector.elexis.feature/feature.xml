@@ -295,20 +295,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.xmlbeans"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.dom4j"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="ca.uhn.hapi.osgi-base"
          download-size="0"
          install-size="0"
@@ -359,13 +345,6 @@
 
    <plugin
          id="ch.elexis.omnivore.model"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.bouncycastle.bcprov"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -471,6 +450,20 @@
 
    <plugin
          id="ch.elexis.base.ch.arzttarife.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.bouncycastle.bcprov"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.sf.opencsv"
          download-size="0"
          install-size="0"
          version="0.0.0"
