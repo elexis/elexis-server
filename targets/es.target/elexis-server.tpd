@@ -71,6 +71,11 @@ location "http://download.elexis.info/elexis/target/2021-03-java11/eclipse-p2" {
 	org.apache.poi.ooxml
 	org.apache.poi.ooxml.schemas
 }
+location "http://download.elexis.info/elexis/target/2021-03-java11/maven-p2" {
+	org.apache.commons.commons-collections4
+	org.apache.commons.math3
+	org.apache.commons.collections
+}
 
 location "https://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
 	org.osgi.framework.system.packages.extra
@@ -215,8 +220,6 @@ location "https://download.elexis.info/elexis-server/master/p2/target/" elexis-s
 	org.apache.oltu.oauth2.resourceserver-filter
 	org.apache.oltu.oauth2.client
 	org.apache.oltu.oauth2.httpclient4
-	org.apache.commons.collections
-	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
 	com.mysql.cj
