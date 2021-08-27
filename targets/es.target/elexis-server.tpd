@@ -100,7 +100,6 @@ location "https://download.elexis.info/elexis-server/master/p2/target/" elexis-s
 	org.eclipse.core.net.win32.x86
 	org.eclipse.core.net.win32.x86_64
 	javax.annotation
-	javax.xml
 	javax.inject
 	org.eclipse.jdt.core
 	org.eclipse.core.resources
