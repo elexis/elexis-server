@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
@@ -67,6 +68,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
 		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
 		sb.append("StationId:\t" + contextService.getStationIdentifier() + "\n");
+		sb.append("Default-TZ:\t"+ TimeZone.getDefault().getID()+"\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"

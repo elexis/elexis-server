@@ -51,6 +51,7 @@ public class ElexisDBConnection {
 				DatabaseMetaData dbmd = dataSource.get().getConnection().getMetaData();
 				dbMetaData += dbmd.getDatabaseProductName();
 				dbMetaData += " " + dbmd.getDatabaseProductVersion();
+				dbMetaData += " @ " + dbmd.getURL();
 			} catch (SQLException e) {}
 		}
 		
