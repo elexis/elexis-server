@@ -4,10 +4,11 @@ import java.util.Optional;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.services.IElexisDataSource;
-import ch.elexis.core.utils.CoreUtil;
+import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnectionUtil;
 import info.elexis.server.core.contrib.ApplicationShutdownRegistrar;
@@ -29,15 +30,21 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception{
 		Activator.context = bundleContext;
 		
-		Optional<IElexisDataSource> datasource = OsgiServiceUtil.getService(IElexisDataSource.class);
+		Optional<IElexisDataSource> datasource =
+			OsgiServiceUtil.getService(IElexisDataSource.class);
+		ObjectStatus currentConnectionStatus = datasource.get().getCurrentConnectionStatus();
+		Optional<DBConnection> configConnection = ElexisDBConnectionUtil.getConnection();
 		
-		if (!CoreUtil.isTestMode()) {
-			Optional<DBConnection> connection = ElexisDBConnectionUtil.getConnection();
-			if (connection.isPresent()) {
-				datasource.get().setDBConnection(connection.get());
+		if (configConnection.isPresent()) {
+			if (currentConnectionStatus == null) {
+				datasource.get().setDBConnection(configConnection.get());
+			} else {
+				LoggerFactory.getLogger(getClass()).warn(
+					"DB Connection already provided [{}], will NOT initialize via xml file",
+					currentConnectionStatus.getCode());
 			}
-		} 
-
+		}
+		
 		ApplicationShutdownRegistrar.addShutdownListener(iasl);
 	}
 	
