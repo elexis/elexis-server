@@ -11,5 +11,4 @@ Import-Package: org.slf4j
 Export-Package: info.elexis.server.core.common,
  info.elexis.server.core.common.converter,
  info.elexis.server.core.common.security,
- info.elexis.server.core.common.test,
  info.elexis.server.core.common.util
