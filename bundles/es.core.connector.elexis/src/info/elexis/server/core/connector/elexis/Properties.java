@@ -7,12 +7,6 @@ import info.elexis.server.core.connector.elexis.services.LockService;
 public class Properties {
 
 	/**
-	 * A network path, mounted in the local file-system, used by omnivore to
-	 * network-store documents. Used by DocHandleService
-	 */
-	public static final String PROPERTY_OMNIVORE_NETWORK_PATH = BundleConstants.BUNDLE_ID + ".omnivoreNetworkPath";
-
-	/**
 	 * A comma separated list of {@link ILockServiceContributor} instances required
 	 * to be available to run the {@link LockService}. Used by {@link LockService}
 	 */
