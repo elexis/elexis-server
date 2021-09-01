@@ -213,4 +213,32 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 	
+	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)")
+	public void __elc_config_set(String key, String value){
+		if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
+			missingArgument("key value|null");
+			return;
+		}
+		
+		boolean remove = "null".equalsIgnoreCase(value);
+		
+		IConfig config = CoreModelServiceHolder.get().load(key, IConfig.class).orElse(null);
+		if (config == null) {
+			if (remove) {
+				ok("remove");
+				return;
+			}
+			config = CoreModelServiceHolder.get().create(IConfig.class);
+			config.setKey(key);
+		}
+		if (remove) {
+			CoreModelServiceHolder.get().remove(config);
+			ok("remove");
+			return;
+		}
+		config.setValue(value);
+		CoreModelServiceHolder.get().save(config);
+		ok(config);
+	}
+	
 }
