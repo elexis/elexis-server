@@ -1,5 +1,6 @@
 package info.elexis.server.core.redmine.internal.mis;
 
+import java.net.Authenticator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,6 +49,11 @@ public class MedelexisFeatureManagement {
 				Constants.ENV_VAR_MIS_API_KEY);
 			return;
 		}
+		
+		// register authenticator for *.medelexis.ch
+		Authenticator makba =
+			new MisApiKeyBasicAuthenticator(getP2RepoUsername(), getMisApiKey().toCharArray());
+		Authenticator.setDefault(makba);
 		
 		boolean requiresReboot = false;
 		
