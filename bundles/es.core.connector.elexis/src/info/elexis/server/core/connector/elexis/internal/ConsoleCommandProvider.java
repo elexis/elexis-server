@@ -80,13 +80,17 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	
 	@CmdAdvisor(description = "enable elexis event logging, optional topic parameter")
 	public void __elc_eventlog_enable(String topic){
-		if (topic == null) {
-			topic = ElexisEventTopics.BASE + "*";
-		}
-		
 		if (logEventHandler == null) {
 			Dictionary<String, Object> properties = new Hashtable<>();
-			properties.put(EventConstants.EVENT_TOPIC, topic);
+			Object _topic;
+			if (topic != null) {
+				_topic = topic;
+			} else {
+				_topic = new String[] {
+					ElexisEventTopics.BASE + "*", "remote/" + ElexisEventTopics.BASE + "*"
+				};
+			}
+			properties.put(EventConstants.EVENT_TOPIC, _topic);
 			logEventHandler = Activator.getContext().registerService(EventHandler.class,
 				new LogEventHandler(), properties);
 			ok(logEventHandler.getReference());
