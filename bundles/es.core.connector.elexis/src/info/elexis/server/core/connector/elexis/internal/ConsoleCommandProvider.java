@@ -36,11 +36,12 @@ import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
-import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.internal.services.InstanceService;
 import info.elexis.server.core.connector.elexis.internal.services.LogEventHandler;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LockService;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LogLockServiceContributor;
+import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
-import info.elexis.server.core.connector.elexis.locking.LogLockServiceContributor;
-import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
@@ -48,6 +49,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	@Reference
 	private IContextService contextService;
 
+	@Reference
+	private ILockService lockService;
+	
 	private ServiceRegistration<ILockServiceContributor> logLockService;
 	private ServiceRegistration<EventHandler> logEventHandler;
 	
@@ -66,7 +70,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	public String __elc_status(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
-		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
+		sb.append("LS UUID:\t[" + lockService.getSystemUuid() + "]\n");
 		sb.append("StationId:\t" + contextService.getStationIdentifier() + "\n");
 		sb.append("Default-TZ:\t"+ TimeZone.getDefault().getID()+"\n");
 		sb.append("Locks:");

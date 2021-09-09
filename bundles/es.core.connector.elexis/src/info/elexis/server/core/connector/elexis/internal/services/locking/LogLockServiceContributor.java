@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.locking;
+package info.elexis.server.core.connector.elexis.internal.services.locking;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,7 @@ import org.slf4j.MarkerFactory;
 
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
+import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 
 public class LogLockServiceContributor implements ILockServiceContributor {
 	

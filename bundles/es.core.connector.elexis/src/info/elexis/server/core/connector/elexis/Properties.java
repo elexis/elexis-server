@@ -1,8 +1,8 @@
 package info.elexis.server.core.connector.elexis;
 
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
-import info.elexis.server.core.connector.elexis.services.LockService;
 
 public class Properties {
 

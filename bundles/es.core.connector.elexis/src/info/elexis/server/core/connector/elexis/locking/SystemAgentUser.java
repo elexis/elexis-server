@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.internal.services;
+package info.elexis.server.core.connector.elexis.locking;
 
 import java.util.List;
 

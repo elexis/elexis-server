@@ -19,7 +19,6 @@ import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.Identifiable;
-import info.elexis.server.core.connector.elexis.locking.LockServiceInstance;
 
 public class AbstractHelper {
 	
@@ -63,9 +62,9 @@ public class AbstractHelper {
 	}
 	
 	public static void acquireAndReleaseLock(Identifiable dbObj){
-		Optional<LockInfo> lr = LockServiceInstance.INSTANCE.acquireLockBlocking(dbObj, 5);
+		Optional<LockInfo> lr = LockServiceHolder.get().acquireLockBlocking(dbObj, 5);
 		if (lr.isPresent()) {
-			LockResponse lrs = LockServiceInstance.INSTANCE.releaseLock(lr.get());
+			LockResponse lrs = LockServiceHolder.get().releaseLock(lr.get());
 			if (!lrs.isOk()) {
 				logger.warn("Could not release lock for [{}] [{}]", dbObj.getClass().getName(),
 					dbObj.getId());
@@ -77,11 +76,11 @@ public class AbstractHelper {
 	}
 	
 	public static Optional<LockInfo> acquireLock(Identifiable dbObj){
-		return LockServiceInstance.INSTANCE.acquireLockBlocking(dbObj, 5);
+		return LockServiceHolder.get().acquireLockBlocking(dbObj, 5);
 	}
 	
 	public static void releaseLock(LockInfo lockInfo){
-		LockServiceInstance.INSTANCE.releaseLock(lockInfo);
+		LockServiceHolder.get().releaseLock(lockInfo);
 	}
 	
 	public void setText(DomainResource domainResource, String text){

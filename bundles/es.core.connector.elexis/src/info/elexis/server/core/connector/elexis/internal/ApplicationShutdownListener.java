@@ -3,7 +3,7 @@ package info.elexis.server.core.connector.elexis.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.elexis.server.core.connector.elexis.services.LockService;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LockService;
 import info.elexis.server.core.contrib.IApplicationShutdownListener;
 
 public class ApplicationShutdownListener implements IApplicationShutdownListener {
