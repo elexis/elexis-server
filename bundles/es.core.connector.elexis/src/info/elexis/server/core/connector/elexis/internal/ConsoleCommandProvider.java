@@ -1,5 +1,6 @@
 package info.elexis.server.core.connector.elexis.internal;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -31,7 +32,9 @@ import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IVirtualFilesystemService.IVirtualFilesystemHandle;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
+import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
@@ -247,6 +250,23 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		config.setValue(value);
 		CoreModelServiceHolder.get().save(config);
 		ok(config);
+	}
+	
+	@CmdAdvisor(description = "list the contents of a given url directory: vfsUrl [long]")
+	public void __elc_vfs_list(String vfsurl, String _long) throws IOException{
+		IVirtualFilesystemHandle of = VirtualFilesystemServiceHolder.get().of(vfsurl);
+		if (of.isDirectory()) {
+			IVirtualFilesystemHandle[] handles = of.listHandles();
+			for (IVirtualFilesystemHandle handle : handles) {
+				prflp(handle.isDirectory() ? "D " : "F ", 4);
+				prflp(Long.toString(handle.getContentLenght()), 20);
+				if (_long != null) {
+					ci.print(handle.getAbsolutePath() + "\n");
+				} else {
+					ci.print(handle.getName() + "\n");
+				}
+			}
+		}
 	}
 	
 }
