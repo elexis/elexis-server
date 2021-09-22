@@ -14,7 +14,6 @@ import org.junit.runners.Suite.SuiteClasses;
 import ch.elexis.core.common.DBConnection;
 import ch.elexis.core.jpa.datasource.test.TestDatabaseConnection;
 import info.elexis.server.core.rest.test.elexisinstances.AllElexisInstancesTests;
-import info.elexis.server.core.rest.test.serversetup.SetupTest;
 import info.elexis.server.core.rest.test.swagger.SwaggerTest;
 import okhttp3.OkHttpClient;
 
