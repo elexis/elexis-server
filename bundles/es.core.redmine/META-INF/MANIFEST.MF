@@ -23,8 +23,8 @@ Import-Package: io.swagger.annotations;version="1.5.18",
  javax.ws.rs.core;version="2.0.0",
  javax.xml.bind;version="2.3.0",
  javax.xml.bind.annotation;version="2.3.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Service-Component: OSGI-INF/info.elexis.server.core.redmine.internal.console.ConsoleCommandProvider.xml,
  OSGI-INF/info.elexis.server.core.redmine.internal.jaxrs.RedmineResource.xml,
  OSGI-INF/info.elexis.server.core.redmine.internal.mis.MedelexisFeatureManagement.xml
-Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11

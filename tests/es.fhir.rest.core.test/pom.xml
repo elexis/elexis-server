@@ -9,16 +9,17 @@
 		<version>3.9.0-SNAPSHOT</version>
 		<groupId>info.elexis.server</groupId>
 	</parent>
-	
+
 	<artifactId>info.elexis.server.fhir.rest.core.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-	
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
 				<configuration>
 					<dependency-resolution>
 						<extraRequirements>
@@ -84,11 +85,14 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tycho.version}</version>
 				<configuration>
 					<useUIHarness>false</useUIHarness>
 					<testClass>info.elexis.server.fhir.rest.core.test.AllTests</testClass>
 					<showEclipseLog>true</showEclipseLog>
-					<argLine>-Dorg.osgi.service.http.port=8380 -DREFRESH_BUNDLES=false -DacceptMissingLockServiceContributor=true -Des.test=true -Ddisable.web.security=true -Delexis.test.mode=true</argLine>
+					<argLine>-Dorg.osgi.service.http.port=8380 -DREFRESH_BUNDLES=false
+						-DacceptMissingLockServiceContributor=true -Des.test=true
+						-Ddisable.web.security=true -Delexis.test.mode=true</argLine>
 					<dependencies>
 						<dependency>
 							<type>eclipse-plugin</type>
@@ -599,7 +603,7 @@
 						</bundle>
 						<bundle>
 							<id>org.eclipse.equinox.http.jetty</id>
-							<level>4</level>
+							<level>3</level>
 							<autoStart>true</autoStart>
 						</bundle>
 					</bundleStartLevel>
