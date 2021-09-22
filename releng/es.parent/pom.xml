@@ -35,9 +35,9 @@
 	<description>Elexis-Server for headless operation</description>
 
 	<properties>
-		<elexis.target>2021-03-java11</elexis.target>
-		<elexis.branch>target-2021-03-java11</elexis.branch>
-		<tycho.version>2.3.0</tycho.version>
+		<elexis.target>2021-06-java11</elexis.target>
+		<elexis.branch>2021-06-java11</elexis.branch>
+		<tycho.version>2.4.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 	</properties>
