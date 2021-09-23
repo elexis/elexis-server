@@ -146,7 +146,7 @@
         <setEntry value="at.medevit.logback.mattermost@default:false"/>
         <setEntry value="at.medevit.logback.pushnotification@default:false"/>
         <setEntry value="ch.elexis.core.jcifs@default:default"/>
-        <setEntry value="ch.elexis.core.jpa.datasource@default:default"/>
+        <setEntry value="ch.elexis.core.jpa.datasource@2:true"/>
         <setEntry value="ch.elexis.core.jpa.entities@default:default"/>
         <setEntry value="ch.elexis.core.jpa.logging.slf4j@default:false"/>
         <setEntry value="ch.elexis.core.jpa@default:default"/>
