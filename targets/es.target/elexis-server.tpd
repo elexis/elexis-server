@@ -66,12 +66,12 @@ location "https://download.elexis.info/elexis/master/p2/target/" {
 	org.eclipse.pde.junit.runtime
 }
 
-location "http://download.elexis.info/elexis/target/2021-03-java11/eclipse-p2" {
+location "http://download.elexis.info/elexis/target/2021-09-java11/eclipse-p2" {
 	org.apache.poi
 	org.apache.poi.ooxml
 	org.apache.poi.ooxml.schemas
 }
-location "http://download.elexis.info/elexis/target/2021-03-java11/maven-p2" {
+location "http://download.elexis.info/elexis/target/2021-09-java11/maven-p2" {
 	org.apache.commons.commons-collections4
 	org.apache.commons.math3
 	org.apache.commons.collections

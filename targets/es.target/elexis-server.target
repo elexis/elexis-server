@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Elexis-Server" sequenceNumber="1630065069">
+<target name="Elexis-Server" sequenceNumber="1634026415">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.rgw.utility" version="0.0.0"/>
@@ -67,13 +67,13 @@
       <unit id="org.apache.poi" version="4.1.1.v20200604-1524"/>
       <unit id="org.apache.poi.ooxml" version="4.1.1.v20200820-1148"/>
       <unit id="org.apache.poi.ooxml.schemas" version="4.1.1.v20200922-2105"/>
-      <repository location="http://download.elexis.info/elexis/target/2021-03-java11/eclipse-p2"/>
+      <repository location="http://download.elexis.info/elexis/target/2021-09-java11/eclipse-p2"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.apache.commons.commons-collections4" version="4.4.0"/>
       <unit id="org.apache.commons.math3" version="3.6.1"/>
       <unit id="org.apache.commons.collections" version="3.2.2"/>
-      <repository location="http://download.elexis.info/elexis/target/2021-03-java11/maven-p2"/>
+      <repository location="http://download.elexis.info/elexis/target/2021-09-java11/maven-p2"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.osgi.framework.system.packages.extra" version="1.0.0.20190124-1239"/>
