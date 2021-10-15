@@ -1,7 +1,11 @@
 target "Elexis-Server" with source allEnvironments
 
 
+<<<<<<< HEAD
 location "https://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
+=======
+location "https://download.elexis.info/elexis/master/p2/elexis-3-core/" {
+>>>>>>> refs/heads/master
 	//
 	ch.rgw.utility lazy
 	ch.elexis.core lazy
@@ -31,7 +35,11 @@ location "https://download.elexis.info/elexis/3.8/p2/elexis-3-core/" {
 	org.slf4j.api [1.7.30.v20200204-2150,1.7.30.v20200204-2150]
 }
 
+<<<<<<< HEAD
 location "https://download.elexis.info/elexis/3.8/p2/elexis-3-base/" {
+=======
+location "https://download.elexis.info/elexis/master/p2/elexis-3-base/" {
+>>>>>>> refs/heads/master
 	ch.elexis.base.ch.ticode lazy
 	at.medevit.ch.artikelstamm lazy
 	at.medevit.ch.artikelstamm.model lazy
@@ -48,7 +56,11 @@ location "https://download.medelexis.ch/medelexis/3.8/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder lazy
 }
 
+<<<<<<< HEAD
 location "https://download.elexis.info/elexis/3.8/p2/target/" {
+=======
+location "https://download.elexis.info/elexis/master/p2/target/" {
+>>>>>>> refs/heads/master
 	jakarta.persistence
 	org.eclipse.persistence.asm
 	org.eclipse.persistence.antlr
@@ -71,7 +83,22 @@ location "https://download.elexis.info/elexis/3.8/p2/target/" {
 	
 }
 
+<<<<<<< HEAD
 location "https://download.elexis.info/elexis-server/1.8/p2/target/" elexis-server {
+=======
+location "http://download.elexis.info/elexis/target/2021-09-java11/eclipse-p2" {
+	org.apache.poi
+	org.apache.poi.ooxml
+	org.apache.poi.ooxml.schemas
+}
+location "http://download.elexis.info/elexis/target/2021-09-java11/maven-p2" {
+	org.apache.commons.commons-collections4
+	org.apache.commons.math3
+	org.apache.commons.collections
+}
+
+location "https://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
+>>>>>>> refs/heads/master
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
 	
@@ -91,7 +118,6 @@ location "https://download.elexis.info/elexis-server/1.8/p2/target/" elexis-serv
 	org.eclipse.core.net.linux.x86_64
 	org.eclipse.core.net.win32.x86_64
 	javax.annotation
-	javax.xml
 	javax.inject
 	org.eclipse.jdt.core
 	org.eclipse.core.resources
@@ -156,11 +182,6 @@ location "https://download.elexis.info/elexis-server/1.8/p2/target/" elexis-serv
 	org.apache.commons.pool
 	com.ibm.icu
 	ca.uhn.hapi.osgi-base
-	org.apache.poi
-	org.apache.poi.ooxml
-	org.apache.poi.ooxml.schemas
-	org.apache.xmlbeans
-	org.dom4j
 	com.healthmarketscience.jackcess
 	org.beanshell.bsh
 	
@@ -214,8 +235,6 @@ location "https://download.elexis.info/elexis-server/1.8/p2/target/" elexis-serv
 	org.apache.oltu.oauth2.resourceserver-filter
 	org.apache.oltu.oauth2.client
 	org.apache.oltu.oauth2.httpclient4
-	org.apache.commons.collections
-	org.apache.commons.collections4
 	com.google.guava
 	se.ugli.bigqueue
 	com.mysql.cj

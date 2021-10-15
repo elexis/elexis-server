@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Address.AddressUse;
@@ -23,18 +22,20 @@ import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.IXid;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.services.IXidService;
 import ch.elexis.core.types.Gender;
-import info.elexis.server.core.connector.elexis.services.UserService;
 
 public class IContactHelper extends AbstractHelper {
 	
 	private IModelService modelService;
 	private IXidService xidService;
+	private IUserService userService;
 	
-	public IContactHelper(IModelService modelService, IXidService xidService){
+	public IContactHelper(IModelService modelService, IXidService xidService, IUserService userService){
 		this.modelService = modelService;
 		this.xidService = xidService;
+		this.userService = userService;
 	}
 	
 	public List<HumanName> getHumanNames(IPerson person){
@@ -49,10 +50,10 @@ public class IContactHelper extends AbstractHelper {
 			ret.add(humanName);
 		}
 		if (person.isUser()) {
-			Optional<IUser> userLocalObject = UserService.findByContact(person);
-			if (userLocalObject.isPresent()) {
+			List<IUser> userLocalObject = userService.getUsersByAssociatedContact(person);
+			if (!userLocalObject.isEmpty()) {
 				HumanName sysName = new HumanName();
-				sysName.setText(userLocalObject.get().getId());
+				sysName.setText(userLocalObject.get(0).getId());
 				sysName.setUse(NameUse.ANONYMOUS);
 				ret.add(sysName);
 			}

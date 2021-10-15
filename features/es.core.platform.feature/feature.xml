@@ -240,13 +240,6 @@
          unpack="false"/>
 
    <plugin
-         id="javax.xml"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.core.contenttype"
          download-size="0"
          install-size="0"
@@ -340,6 +333,21 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.ecf.provider.filetransfer.httpclient4"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.ecf.provider.filetransfer.ssl"
          download-size="0"
          install-size="0"
@@ -363,13 +371,6 @@
 
    <plugin
          id="org.apache.commons.logging"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.collections4"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -595,21 +596,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.filetransfer.httpclient45"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.sf.opencsv"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.xml.stream.stax-api"
+         id="org.apache.commons.commons-collections4"
          download-size="0"
          install-size="0"
          version="0.0.0"

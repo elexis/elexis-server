@@ -36,6 +36,7 @@ import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.MaritalStatus;
 import ch.elexis.core.model.MimeType;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
 import ch.elexis.core.services.IXidService;
 import ch.elexis.core.types.Country;
 import ch.elexis.core.types.Gender;
@@ -45,9 +46,10 @@ public class IPatientPatientAttributeMapper implements IdentifiableDomainResourc
 
 	private IContactHelper contactHelper;
 	private IModelService coreModelService;
-
-	public IPatientPatientAttributeMapper(IModelService coreModelService, IXidService xidService) {
-		this.contactHelper = new IContactHelper(coreModelService, xidService);
+	private IUserService userService;
+	
+	public IPatientPatientAttributeMapper(IModelService coreModelService, IXidService xidService, IUserService userService) {
+		this.contactHelper = new IContactHelper(coreModelService, xidService, userService);
 		this.coreModelService = coreModelService;
 	}
 

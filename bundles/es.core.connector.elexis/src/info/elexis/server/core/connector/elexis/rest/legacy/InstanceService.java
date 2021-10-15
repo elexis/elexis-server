@@ -20,14 +20,14 @@ public class InstanceService implements IInstanceService {
 
 	@Override
 	public Response updateStatus(InstanceStatus request) {
-		info.elexis.server.core.connector.elexis.instances.InstanceService.updateInstanceStatus(request,
+		info.elexis.server.core.connector.elexis.internal.services.InstanceService.updateInstanceStatus(request,
 				hsrRequest.getRemoteAddr());
 		return Response.ok().build();
 	}
 
 	@Override
 	public Response getStatus() {
-		List<InstanceStatus> statusList = info.elexis.server.core.connector.elexis.instances.InstanceService
+		List<InstanceStatus> statusList = info.elexis.server.core.connector.elexis.internal.services.InstanceService
 				.getInstanceStatus();
 		final GenericEntity<List<InstanceStatus>> list = new GenericEntity<List<InstanceStatus>>(statusList) {
 		};

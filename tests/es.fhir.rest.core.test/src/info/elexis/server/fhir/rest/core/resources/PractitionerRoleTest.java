@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -33,8 +32,8 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.IUser;
+import ch.elexis.core.services.holder.UserServiceHolder;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
-import info.elexis.server.core.connector.elexis.services.UserService;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 
 public class PractitionerRoleTest {
@@ -82,10 +81,10 @@ public class PractitionerRoleTest {
 	 */
 	@Test
 	public void getPractitionerProperties(){
-		Optional<IUser> user = UserService.findByContact(TestDatabaseInitializer.getMandant());
-		assertTrue(user.isPresent());
+		List<IUser> user = UserServiceHolder.get().getUsersByAssociatedContact(TestDatabaseInitializer.getMandant());
+		assertFalse(user.isEmpty());
 		PractitionerRole readPractitionerRole =
-			client.read().resource(PractitionerRole.class).withId(user.get().getId()).execute();
+			client.read().resource(PractitionerRole.class).withId(user.get(0).getId()).execute();
 		assertNotNull(readPractitionerRole);
 		assertNotNull(readPractitionerRole.getPractitioner());
 		

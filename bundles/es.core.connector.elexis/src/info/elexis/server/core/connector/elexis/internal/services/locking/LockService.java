@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.services;
+package info.elexis.server.core.connector.elexis.internal.services.locking;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,11 +56,6 @@ public class LockService implements ILockService {
 	 * A unique id for this instance of Elexis. Changes on every restart
 	 */
 	public static final UUID systemUuid = UUID.randomUUID();
-
-	/**
-	 * The elexis-server itself acts on a lock
-	 */
-	public static final String elexisServerAgentUser = "__elexis-server__";
 
 	@Reference(service = ILockServiceContributor.class, cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "unsetLockServiceContributor")
 	protected void setLockServiceContributor(ILockServiceContributor isc) {
@@ -316,12 +311,9 @@ public class LockService implements ILockService {
 		return false;
 	}
 
-	public static String getSystemuuid() {
+	@Override
+	public String getSystemUuid() {
 		return systemUuid.toString();
-	}
-
-	public static String getElexisserveragentuser() {
-		return elexisServerAgentUser;
 	}
 
 	private class LockEvictionTask extends TimerTask {
@@ -341,7 +333,7 @@ public class LockService implements ILockService {
 						for (String key : keys) {
 							LockInfo lockInfo = locks.get(key);
 							// do not evict locks set by server system
-							if (getSystemuuid().equals(lockInfo.getSystemUuid())) {
+							if (getSystemUuid().equals(lockInfo.getSystemUuid())) {
 								continue;
 							}
 							if (lockInfo.evict(currentMillis)) {

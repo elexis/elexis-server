@@ -17,22 +17,22 @@ import ch.elexis.core.server.IEventService;
 
 @Component
 public class EventService implements IEventService {
-
+	
 	private static Logger log = LoggerFactory.getLogger(EventService.class);
-
+	
 	private static EventAdmin eventAdmin;
-
+	
 	@Reference(service = EventAdmin.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "unsetEventAdmin")
-	protected synchronized void setEventAdmin(EventAdmin ea) {
+	protected synchronized void setEventAdmin(EventAdmin ea){
 		EventService.eventAdmin = ea;
 	}
-
-	protected synchronized void unsetEventAdmin(EventAdmin ea) {
+	
+	protected synchronized void unsetEventAdmin(EventAdmin ea){
 		EventService.eventAdmin = null;
 	}
-
+	
 	@Override
-	public Response postEvent(ElexisEvent elexisEvent) {
+	public Response postEvent(ElexisEvent elexisEvent){
 		if (elexisEvent == null || elexisEvent.getTopic() == null) {
 			return Response.serverError().build();
 		}
@@ -40,7 +40,7 @@ public class EventService implements IEventService {
 		if (!topic.startsWith(ElexisEventTopics.BASE)) {
 			topic = ElexisEventTopics.BASE + topic;
 		}
-		Event event = new Event(topic, elexisEvent.getProperties());
+		Event event = new Event("remote/" + topic, elexisEvent.getProperties());
 		if (EventService.eventAdmin != null) {
 			EventService.eventAdmin.postEvent(event);
 		} else {
@@ -48,5 +48,5 @@ public class EventService implements IEventService {
 		}
 		return Response.ok().build();
 	}
-
+	
 }

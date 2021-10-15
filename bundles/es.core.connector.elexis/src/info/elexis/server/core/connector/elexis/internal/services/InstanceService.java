@@ -1,4 +1,4 @@
-package info.elexis.server.core.connector.elexis.instances;
+package info.elexis.server.core.connector.elexis.internal.services;
 
 import java.util.ArrayList;
 import java.util.Collections;

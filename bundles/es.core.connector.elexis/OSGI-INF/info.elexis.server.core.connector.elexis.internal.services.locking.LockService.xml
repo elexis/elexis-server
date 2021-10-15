@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.core.connector.elexis.services.LockService">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.core.connector.elexis.internal.services.locking.LockService">
    <service>
       <provide interface="info.elexis.server.core.connector.elexis.locking.ILockService"/>
    </service>
    <reference bind="setLockServiceContributor" cardinality="0..n" interface="info.elexis.server.core.connector.elexis.locking.ILockServiceContributor" name="LockServiceContributor" policy="dynamic" unbind="unsetLockServiceContributor"/>
-   <implementation class="info.elexis.server.core.connector.elexis.services.LockService"/>
+   <implementation class="info.elexis.server.core.connector.elexis.internal.services.locking.LockService"/>
 </scr:component>

@@ -25,7 +25,6 @@ import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.model.stock.ICommissioningSystemDriver;
 import ch.elexis.core.model.stock.ICommissioningSystemDriverFactory;
 import ch.elexis.core.services.ICodeElementService;
-import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -35,6 +34,7 @@ import ch.elexis.core.services.IStoreToStringService;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
+import info.elexis.server.core.connector.elexis.locking.ILockService;
 
 @Component(property = "role=serverimpl")
 public class StockCommissioningSystemService implements IStockCommissioningSystemService {
@@ -50,7 +50,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	@Reference
 	private ICodeElementService codeElementService;
 	@Reference
-	private ILocalLockService lockService;
+	private ILockService lockService;
 	
 	private Logger log;
 	
@@ -311,7 +311,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				se.setCurrentStock(0);
 				se.setDeleted(true);
 				coreModelService.save(se);
-				LockResponse lrs = lockService.releaseLock(lr);
+				LockResponse lrs = lockService.releaseLock(lr.getLockInfo());
 				if (!lrs.isOk()) {
 					log.warn("Could not release lock for StockEntry [{}]", se.getId());
 				}
@@ -335,7 +335,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			log.debug("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
 			LockResponse lr = lockService.acquireLockBlocking(se, 5, null);
 			if (lr.isOk()) {
-				LockResponse lrs = lockService.releaseLock(lr);
+				LockResponse lrs = lockService.releaseLock(lr.getLockInfo());
 				if (!lrs.isOk()) {
 					log.warn("Could not release lock for StockEntry [{}]", se.getId());
 				}
@@ -357,7 +357,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		if (lr.isOk()) {
 			se.setCurrentStock(currentStock);
 			coreModelService.save(se);
-			LockResponse lrs = lockService.releaseLock(lr);
+			LockResponse lrs = lockService.releaseLock(lr.getLockInfo());
 			if (!lrs.isOk()) {
 				log.warn("Could not release lock for StockEntry [{}]", se.getId());
 			}

@@ -1,11 +1,13 @@
 package info.elexis.server.core.connector.elexis.internal;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
@@ -30,16 +32,19 @@ import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IVirtualFilesystemService.IVirtualFilesystemHandle;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
+import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
-import info.elexis.server.core.connector.elexis.instances.InstanceService;
+import info.elexis.server.core.connector.elexis.internal.services.InstanceService;
 import info.elexis.server.core.connector.elexis.internal.services.LogEventHandler;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LockService;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LogLockServiceContributor;
+import info.elexis.server.core.connector.elexis.locking.ILockService;
 import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
-import info.elexis.server.core.connector.elexis.locking.LogLockServiceContributor;
-import info.elexis.server.core.connector.elexis.services.LockService;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
@@ -47,6 +52,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	@Reference
 	private IContextService contextService;
 
+	@Reference
+	private ILockService lockService;
+	
 	private ServiceRegistration<ILockServiceContributor> logLockService;
 	private ServiceRegistration<EventHandler> logEventHandler;
 	
@@ -65,8 +73,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	public String __elc_status(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
-		sb.append("LS UUID:\t[" + LockService.getSystemuuid() + "]\n");
+		sb.append("LS UUID:\t[" + lockService.getSystemUuid() + "]\n");
 		sb.append("StationId:\t" + contextService.getStationIdentifier() + "\n");
+		sb.append("Default-TZ:\t"+ TimeZone.getDefault().getID()+"\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
@@ -78,13 +87,17 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	
 	@CmdAdvisor(description = "enable elexis event logging, optional topic parameter")
 	public void __elc_eventlog_enable(String topic){
-		if (topic == null) {
-			topic = ElexisEventTopics.BASE + "*";
-		}
-		
 		if (logEventHandler == null) {
 			Dictionary<String, Object> properties = new Hashtable<>();
-			properties.put(EventConstants.EVENT_TOPIC, topic);
+			Object _topic;
+			if (topic != null) {
+				_topic = topic;
+			} else {
+				_topic = new String[] {
+					ElexisEventTopics.BASE + "*", "remote/" + ElexisEventTopics.BASE + "*"
+				};
+			}
+			properties.put(EventConstants.EVENT_TOPIC, _topic);
 			logEventHandler = Activator.getContext().registerService(EventHandler.class,
 				new LogEventHandler(), properties);
 			ok(logEventHandler.getReference());
@@ -207,6 +220,51 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 				prflp(config.getKey(), 50);
 				prflp(config.getValue(), 50);
 				prflp(TimeUtil.formatSafe(config.getLastupdate()), 25, true);
+			}
+		}
+	}
+	
+	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)")
+	public void __elc_config_set(String key, String value){
+		if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
+			missingArgument("key value|null");
+			return;
+		}
+		
+		boolean remove = "null".equalsIgnoreCase(value);
+		
+		IConfig config = CoreModelServiceHolder.get().load(key, IConfig.class).orElse(null);
+		if (config == null) {
+			if (remove) {
+				ok("remove");
+				return;
+			}
+			config = CoreModelServiceHolder.get().create(IConfig.class);
+			config.setKey(key);
+		}
+		if (remove) {
+			CoreModelServiceHolder.get().remove(config);
+			ok("remove");
+			return;
+		}
+		config.setValue(value);
+		CoreModelServiceHolder.get().save(config);
+		ok(config);
+	}
+	
+	@CmdAdvisor(description = "list the contents of a given url directory: vfsUrl [long]")
+	public void __elc_vfs_list(String vfsurl, String _long) throws IOException{
+		IVirtualFilesystemHandle of = VirtualFilesystemServiceHolder.get().of(vfsurl);
+		if (of.isDirectory()) {
+			IVirtualFilesystemHandle[] handles = of.listHandles();
+			for (IVirtualFilesystemHandle handle : handles) {
+				prflp(handle.isDirectory() ? "D " : "F ", 4);
+				prflp(Long.toString(handle.getContentLenght()), 20);
+				if (_long != null) {
+					ci.print(handle.getAbsolutePath() + "\n");
+				} else {
+					ci.print(handle.getName() + "\n");
+				}
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import org.junit.Test;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
+import info.elexis.server.core.connector.elexis.internal.services.locking.LockService;
 
 public class LockServiceTest {
 

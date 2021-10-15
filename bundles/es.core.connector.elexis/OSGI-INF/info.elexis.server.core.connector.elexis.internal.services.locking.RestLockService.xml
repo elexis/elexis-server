@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="info.elexis.server.core.connector.elexis.internal.services.locking.RestLockService">
+   <service>
+      <provide interface="ch.elexis.core.server.ILockService"/>
+   </service>
+   <reference cardinality="1..1" field="theLockService" interface="info.elexis.server.core.connector.elexis.locking.ILockService" name="theLockService"/>
+   <implementation class="info.elexis.server.core.connector.elexis.internal.services.locking.RestLockService"/>
+</scr:component>
