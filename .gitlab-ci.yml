@@ -11,6 +11,7 @@ build:
   - ssh-add <(echo "$SSH_PRIVATE_KEY_ED25519_BASE64" | base64 -d)
   - rsync -aiv --delete --mkpath -e ssh products/es.updatesite/target/repository/ deploy@download.medelexis.ch:download.elexis.info/elexis-server/$CI_COMMIT_REF_NAME/p2/elexis-server/
   - rsync -aiv --no-recursive -e ssh products/es.core.product.runtime/target/products/* deploy@download.medelexis.ch:download.elexis.info/elexis-server/$CI_COMMIT_REF_NAME/products/
+  - eval $(ssh-agent -k)
   artifacts:
     reports:
       junit:
