@@ -470,13 +470,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.math3"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="ch.elexis.base.ch.ticode"
          download-size="0"
          install-size="0"
