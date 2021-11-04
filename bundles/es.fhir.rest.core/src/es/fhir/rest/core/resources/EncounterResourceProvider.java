@@ -35,32 +35,33 @@ import es.fhir.rest.core.resources.util.DateRangeParamUtil;
 @Component
 public class EncounterResourceProvider implements IFhirResourceProvider {
 	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
+	
 	@Reference
 	private IMigratorService migratorService;
-
+	
 	@Reference
 	private IFindingsService findingsService;
-
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return Encounter.class;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Encounter, IEncounter> getTransformer() {
-		return (IFhirTransformer<Encounter, IEncounter>) transformerRegistry.getTransformerFor(Encounter.class,
-				IEncounter.class);
+	public IFhirTransformer<Encounter, IEncounter> getTransformer(){
+		return (IFhirTransformer<Encounter, IEncounter>) transformerRegistry
+			.getTransformerFor(Encounter.class, IEncounter.class);
 	}
-
+	
 	@Read
-	public Encounter getResourceById(@IdParam IdType theId) {
+	public Encounter getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IEncounter> encounter = findingsService.findById(idPart, IEncounter.class);
@@ -71,35 +72,40 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		}
 		return null;
 	}
-
+	
 	/**
-	 * Search for all encounters by the patient id. Optional the date range of the
-	 * returned encounters can be specified.
+	 * Search for all encounters by the patient id. Optional the date range of the returned
+	 * encounters can be specified.
 	 * 
 	 * @param thePatientId
 	 * @param dates
 	 * @return
 	 */
 	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
-			@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates) {
+	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT)
+	IdType thePatientId, @OptionalParam(name = Encounter.SP_DATE)
+	DateRangeParam dates){
 		if (thePatientId != null && !thePatientId.isEmpty()) {
-			Optional<IPatient> patient = modelService.load(thePatientId.getIdPart(), IPatient.class);
+			Optional<IPatient> patient =
+				modelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate encounters first
-					migratorService.migratePatientsFindings(thePatientId.getIdPart(), IEncounter.class, null);
-
-					List<IEncounter> findings = findingsService.getPatientsFindings(patient.get().getId(),
-							IEncounter.class);
+					migratorService.migratePatientsFindings(thePatientId.getIdPart(),
+						IEncounter.class, null);
+					
+					List<IEncounter> findings = findingsService
+						.getPatientsFindings(patient.get().getId(), IEncounter.class);
 					if (findings != null && !findings.isEmpty()) {
 						List<Encounter> ret = new ArrayList<Encounter>();
-
+						
 						for (IEncounter iFinding : findings) {
-							Optional<Encounter> fhirEncounter = getTransformer().getFhirObject(iFinding);
+							Optional<Encounter> fhirEncounter =
+								getTransformer().getFhirObject(iFinding);
 							fhirEncounter.ifPresent(fe -> {
 								if (dates != null) {
-									if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(), dates)) {
+									if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(),
+										dates)) {
 										return;
 									}
 								}
@@ -113,7 +119,7 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Search for an Encounter with a matching Elexis consultation id.
 	 * 
@@ -122,17 +128,19 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	 * @return
 	 */
 	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier) {
+	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER)
+	TokenParam identifier){
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
-				&& !identifier.getValue().isEmpty()) {
+			&& !identifier.getValue().isEmpty()) {
 			migratorService.migrateConsultationsFindings(identifier.getValue(), IEncounter.class);
-
-			List<IEncounter> findings = findingsService.getConsultationsFindings(identifier.getValue(),
-					IEncounter.class);
+			
+			List<IEncounter> findings =
+				findingsService.getConsultationsFindings(identifier.getValue(), IEncounter.class);
 			if (findings != null && !findings.isEmpty()) {
 				List<Encounter> ret = new ArrayList<Encounter>();
 				for (IFinding iFinding : findings) {
-					Optional<Encounter> fhirEncounter = getTransformer().getFhirObject((IEncounter) iFinding);
+					Optional<Encounter> fhirEncounter =
+						getTransformer().getFhirObject((IEncounter) iFinding);
 					fhirEncounter.ifPresent(fe -> ret.add(fe));
 				}
 				return ret;
@@ -140,9 +148,10 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		}
 		return null;
 	}
-
+	
 	@Create
-	public MethodOutcome createEncounter(@ResourceParam Encounter encounter) {
+	public MethodOutcome createEncounter(@ResourceParam
+	Encounter encounter){
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<IEncounter> exists = getTransformer().getLocalObject(encounter);
 		if (exists.isPresent()) {

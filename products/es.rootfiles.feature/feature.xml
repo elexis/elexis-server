@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.rootfiles.feature"
       label="feature to include rootfiles"
-      version="1.0.0.qualifier"
+      version="3.9.0.qualifier"
       provider-name="elexis.info">
 
    <description url="http://www.example.com/description">

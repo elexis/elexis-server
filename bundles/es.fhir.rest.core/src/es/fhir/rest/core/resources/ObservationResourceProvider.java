@@ -73,7 +73,8 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Observation getResourceById(@IdParam IdType theId){
+	public Observation getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			// do lookup in findings first, then lab results
@@ -95,12 +96,12 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Observation> findObservation(
-		@RequiredParam(name = Observation.SP_SUBJECT) IdType theSubjectId,
-		@OptionalParam(name = Observation.SP_CATEGORY) CodeType categoryCode,
-		@OptionalParam(name = Observation.SP_CODE) CodeType code,
-		@OptionalParam(name = Observation.SP_DATE) DateRangeParam dates,
-		@OptionalParam(name = Observation.SP_CONTEXT) IdType contextId){
+	public List<Observation> findObservation(@RequiredParam(name = Observation.SP_SUBJECT)
+	IdType theSubjectId, @OptionalParam(name = Observation.SP_CATEGORY)
+	CodeType categoryCode, @OptionalParam(name = Observation.SP_CODE)
+	CodeType code, @OptionalParam(name = Observation.SP_DATE)
+	DateRangeParam dates, @OptionalParam(name = Observation.SP_CONTEXT)
+	IdType contextId){
 		if (theSubjectId != null && !theSubjectId.isEmpty()) {
 			Optional<IPatient> patient =
 				modelService.load(theSubjectId.getIdPart(), IPatient.class);
@@ -233,7 +234,8 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Create
-	public MethodOutcome createObservation(@ResourceParam Observation observation){
+	public MethodOutcome createObservation(@ResourceParam
+	Observation observation){
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<IObservation> exists = getTransformer().getLocalObject(observation);
 		if (exists.isPresent()) {

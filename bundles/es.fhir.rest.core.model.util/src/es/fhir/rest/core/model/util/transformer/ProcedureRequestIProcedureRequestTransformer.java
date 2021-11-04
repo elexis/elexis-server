@@ -33,36 +33,37 @@ import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 @Component
 public class ProcedureRequestIProcedureRequestTransformer
 		implements IFhirTransformer<ProcedureRequest, IProcedureRequest> {
-
-	private static Logger logger = LoggerFactory.getLogger(ProcedureRequestIProcedureRequestTransformer.class);
-
+	
+	private static Logger logger =
+		LoggerFactory.getLogger(ProcedureRequestIProcedureRequestTransformer.class);
+	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IFindingsService findingsService;
-
+	
 	@Reference
 	private ICodingService codingService;
-
-	private FindingsContentHelper contentHelper;
-
 	
-	public void activate() {
+	private FindingsContentHelper contentHelper;
+	
+	public void activate(){
 		contentHelper = new FindingsContentHelper();
 	}
-
+	
 	@Override
-	public Optional<ProcedureRequest> getFhirObject(IProcedureRequest localObject, SummaryEnum summaryEnum,Set<Include> includes) {
+	public Optional<ProcedureRequest> getFhirObject(IProcedureRequest localObject,
+		SummaryEnum summaryEnum, Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((ProcedureRequest) resource.get());
 		}
 		return Optional.empty();
 	}
-
+	
 	@Override
-	public Optional<IProcedureRequest> getLocalObject(ProcedureRequest fhirObject) {
+	public Optional<IProcedureRequest> getLocalObject(ProcedureRequest fhirObject){
 		if (fhirObject != null && fhirObject.getId() != null) {
 			Optional<IProcedureRequest> existing =
 				findingsService.findById(fhirObject.getId(), IProcedureRequest.class);
@@ -72,14 +73,15 @@ public class ProcedureRequestIProcedureRequestTransformer
 		}
 		return Optional.empty();
 	}
-
+	
 	@Override
-	public Optional<IProcedureRequest> updateLocalObject(ProcedureRequest fhirObject, IProcedureRequest localObject) {
+	public Optional<IProcedureRequest> updateLocalObject(ProcedureRequest fhirObject,
+		IProcedureRequest localObject){
 		return Optional.empty();
 	}
-
+	
 	@Override
-	public Optional<IProcedureRequest> createLocalObject(ProcedureRequest fhirObject) {
+	public Optional<IProcedureRequest> createLocalObject(ProcedureRequest fhirObject){
 		IProcedureRequest iProcedureRequest = findingsService.create(IProcedureRequest.class);
 		contentHelper.setResource(fhirObject, iProcedureRequest);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
@@ -102,16 +104,17 @@ public class ProcedureRequestIProcedureRequestTransformer
 		}
 		return Optional.of(iProcedureRequest);
 	}
-
-	private void writeBehandlungSoapText(IEncounter iEncounter, ProcedureRequest procedureRequest) {
-		Optional<ch.elexis.core.model.IEncounter> behandlung = modelService.load(iEncounter.getConsultationId(), ch.elexis.core.model.IEncounter.class);
+	
+	private void writeBehandlungSoapText(IEncounter iEncounter, ProcedureRequest procedureRequest){
+		Optional<ch.elexis.core.model.IEncounter> behandlung = modelService
+			.load(iEncounter.getConsultationId(), ch.elexis.core.model.IEncounter.class);
 		behandlung.ifPresent(cons -> {
 			Optional<LockInfo> lockInfo = AbstractHelper.acquireLock(cons);
 			if (lockInfo.isPresent()) {
 				String subjectivText = getSubjectiveText(iEncounter);
 				String assessmentText = getAssessmentText(iEncounter);
 				String procedureText = getProcedureText(behandlung.get());
-
+				
 				StringBuilder text = new StringBuilder();
 				if (!subjectivText.isEmpty()) {
 					text.append("A:\n" + subjectivText);
@@ -128,9 +131,10 @@ public class ProcedureRequestIProcedureRequestTransformer
 					}
 					text.append("P:\n" + procedureText);
 				}
-
-				logger.debug("Updating SOAP text of cons [" + cons.getId() + "]\n" + text.toString());
-
+				
+				logger
+					.debug("Updating SOAP text of cons [" + cons.getId() + "]\n" + text.toString());
+				
 				VersionedResource vResource = VersionedResource.load(null);
 				vResource.update(text.toString(), "From FHIR");
 				cons.setVersionedEntry(vResource);
@@ -139,11 +143,12 @@ public class ProcedureRequestIProcedureRequestTransformer
 			}
 		});
 	}
-
-	private String getProcedureText(ch.elexis.core.model.IEncounter behandlung) {
+	
+	private String getProcedureText(ch.elexis.core.model.IEncounter behandlung){
 		StringBuilder ret = new StringBuilder();
 		@SuppressWarnings("unchecked")
-		List<IProcedureRequest> procedureRequests = (List<IProcedureRequest>) ((Object) findingsService
+		List<IProcedureRequest> procedureRequests =
+			(List<IProcedureRequest>) ((Object) findingsService
 				.getConsultationsFindings(behandlung.getId(), IProcedureRequest.class));
 		if (procedureRequests != null && !procedureRequests.isEmpty()) {
 			for (IProcedureRequest iProcedureRequest : procedureRequests) {
@@ -158,8 +163,8 @@ public class ProcedureRequestIProcedureRequestTransformer
 		}
 		return ret.toString();
 	}
-
-	private String getAssessmentText(IEncounter iEncounter) {
+	
+	private String getAssessmentText(IEncounter iEncounter){
 		List<ICondition> indication = iEncounter.getIndication();
 		StringBuilder ret = new StringBuilder();
 		for (ICondition iCondition : indication) {
@@ -186,11 +191,10 @@ public class ProcedureRequestIProcedureRequestTransformer
 		}
 		return ret.toString();
 	}
-
-	private String getSubjectiveText(IEncounter iEncounter) {
+	
+	private String getSubjectiveText(IEncounter iEncounter){
 		List<IObservation> observations = findingsService
-			.getConsultationsFindings(iEncounter.getConsultationId(),
-				IObservation.class);
+			.getConsultationsFindings(iEncounter.getConsultationId(), IObservation.class);
 		StringBuilder ret = new StringBuilder();
 		for (IObservation iObservation : observations) {
 			if (iObservation.getCategory() == ObservationCategory.SOAP_SUBJECTIVE) {
@@ -203,10 +207,11 @@ public class ProcedureRequestIProcedureRequestTransformer
 		}
 		return ret.toString();
 	}
-
+	
 	@Override
-	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
-		return ProcedureRequest.class.equals(fhirClazz) && IProcedureRequest.class.equals(localClazz);
+	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz){
+		return ProcedureRequest.class.equals(fhirClazz)
+			&& IProcedureRequest.class.equals(localClazz);
 	}
-
+	
 }

@@ -17,29 +17,29 @@ import ch.elexis.core.services.IModelService;
 import es.fhir.rest.core.IFhirTransformer;
 import es.fhir.rest.core.model.util.transformer.helper.FindingsContentHelper;
 
-
-@Component(immediate = true)
+@Component
 public class ConditionIConditionTransformer implements IFhirTransformer<Condition, ICondition> {
-
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IFindingsService findingsService;
 	
 	private FindingsContentHelper contentHelper = new FindingsContentHelper();
-
+	
 	@Override
-	public Optional<Condition> getFhirObject(ICondition localObject, SummaryEnum summaryEnum,Set<Include> includes) {
+	public Optional<Condition> getFhirObject(ICondition localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Optional<IBaseResource> resource = contentHelper.getResource(localObject);
 		if (resource.isPresent()) {
 			return Optional.of((Condition) resource.get());
 		}
 		return Optional.empty();
 	}
-
+	
 	@Override
-	public Optional<ICondition> getLocalObject(Condition fhirObject) {
+	public Optional<ICondition> getLocalObject(Condition fhirObject){
 		if (fhirObject != null && fhirObject.getId() != null) {
 			Optional<ICondition> existing =
 				findingsService.findById(fhirObject.getId(), ICondition.class);
@@ -49,14 +49,14 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 		}
 		return Optional.empty();
 	}
-
+	
 	@Override
-	public Optional<ICondition> updateLocalObject(Condition fhirObject, ICondition localObject) {
+	public Optional<ICondition> updateLocalObject(Condition fhirObject, ICondition localObject){
 		return Optional.empty();
 	}
-
+	
 	@Override
-	public Optional<ICondition> createLocalObject(Condition fhirObject) {
+	public Optional<ICondition> createLocalObject(Condition fhirObject){
 		ICondition iCondition = findingsService.create(ICondition.class);
 		contentHelper.setResource(fhirObject, iCondition);
 		if (fhirObject.getSubject() != null && fhirObject.getSubject().hasReference()) {
@@ -67,10 +67,10 @@ public class ConditionIConditionTransformer implements IFhirTransformer<Conditio
 		findingsService.saveFinding(iCondition);
 		return Optional.of(iCondition);
 	}
-
+	
 	@Override
-	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz) {
+	public boolean matchesTypes(Class<?> fhirClazz, Class<?> localClazz){
 		return Condition.class.equals(fhirClazz) && ICondition.class.equals(localClazz);
 	}
-
+	
 }

@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.fhir.rest.core.feature"
       label="FHIR Core including HAPI FHIR libraries"
-      version="2.0.0.qualifier">
+      version="3.9.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -29,41 +29,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.phloc.commons"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.phloc.schematron"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="findbugsAnnotations"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.thymeleaf"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="woodstox-core-asl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="javassist"
          download-size="0"
          install-size="0"
@@ -72,34 +37,6 @@
 
    <plugin
          id="at.medevit.ch.artikelstamm"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.sf.saxon.Saxon-HE"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="ognl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.attoparser"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.unbescape"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -135,6 +72,13 @@
 
    <plugin
          id="ch.elexis.core.hapi.fhir"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="info.elexis.target.hapi.fhir"
          download-size="0"
          install-size="0"
          version="0.0.0"

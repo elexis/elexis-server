@@ -23,7 +23,8 @@ public class PractitionerRoleUserTransformer implements IFhirTransformer<Practit
 	private MandantHelper mandantHelper = new MandantHelper();
 	
 	@Override
-	public Optional<PractitionerRole> getFhirObject(IUser localObject, SummaryEnum summaryEnum,Set<Include> includes){
+	public Optional<PractitionerRole> getFhirObject(IUser localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		PractitionerRole practitionerRole = new PractitionerRole();
 		practitionerRole.setId(new IdDt("PractitionerRole", localObject.getId()));
 		

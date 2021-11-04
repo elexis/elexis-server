@@ -13,36 +13,41 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class ServerCapabilityStatementProvider
 		extends org.hl7.fhir.dstu3.hapi.rest.server.ServerCapabilityStatementProvider {
-
+	
 	@Override
-	public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails requestDetails) {
-		CapabilityStatement serverConformance = super.getServerConformance(theRequest, requestDetails);
+	public CapabilityStatement getServerConformance(HttpServletRequest theRequest,
+		RequestDetails requestDetails){
+		CapabilityStatement serverConformance =
+			super.getServerConformance(theRequest, requestDetails);
 		serverConformance.getRest().get(0)
-				.setSecurity(getSmartOnFhirCapabilityStatementRestSecurityComponent(theRequest));
+			.setSecurity(getSmartOnFhirCapabilityStatementRestSecurityComponent(theRequest));
 		return serverConformance;
 	}
-
+	
 	private CapabilityStatementRestSecurityComponent getSmartOnFhirCapabilityStatementRestSecurityComponent(
-			HttpServletRequest theRequest) {
-		CapabilityStatementRestSecurityComponent csrsc = new CapabilityStatementRestSecurityComponent();
-
+		HttpServletRequest theRequest){
+		CapabilityStatementRestSecurityComponent csrsc =
+			new CapabilityStatementRestSecurityComponent();
+		
 		CodeableConcept smartOnFhirConcept = new CodeableConcept();
 		Coding coding = new Coding();
 		coding.setSystem("http://hl7.org/fhir/restful-security-service");
 		coding.setCode("SMART-on-FHIR");
 		smartOnFhirConcept.addCoding(coding);
-		smartOnFhirConcept.setText("OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)");
-
+		smartOnFhirConcept
+			.setText("OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)");
+		
 		String baseUrl = getBaseUrl(theRequest);
-
+		
 		Extension oauthExtension = new Extension();
-		oauthExtension.setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
+		oauthExtension
+			.setUrl("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris");
 		
 		Extension oauthTokenExtension = new Extension();
 		oauthTokenExtension.setUrl("token");
 		oauthTokenExtension.setValue(new UriType(baseUrl + "/openid/token"));
 		oauthExtension.getExtension().add(oauthTokenExtension);
-
+		
 		Extension oauthAuthorizeExtension = new Extension();
 		oauthAuthorizeExtension.setUrl("authorize");
 		oauthAuthorizeExtension.setValue(new UriType(baseUrl + "/openid/authorize"));
@@ -60,13 +65,14 @@ public class ServerCapabilityStatementProvider
 		
 		csrsc.getService().add(smartOnFhirConcept);
 		csrsc.getExtension().add(oauthExtension);
-
+		
 		return csrsc;
 	}
-
-	private String getBaseUrl(HttpServletRequest theRequest) {
+	
+	private String getBaseUrl(HttpServletRequest theRequest){
 		// TODO consider String XForwardedProto = theRequest.getHeader("X-Forwarded-Proto");
-		return theRequest.getScheme() + "://" + theRequest.getServerName() + ":" + theRequest.getServerPort();
+		return theRequest.getScheme() + "://" + theRequest.getServerName() + ":"
+			+ theRequest.getServerPort();
 	}
-
+	
 }

@@ -38,7 +38,8 @@ public class CoverageICoverageTransformer implements IFhirTransformer<Coverage, 
 	}
 	
 	@Override
-	public Optional<Coverage> getFhirObject(ICoverage localObject, SummaryEnum summaryEnum,Set<Include> includes){
+	public Optional<Coverage> getFhirObject(ICoverage localObject, SummaryEnum summaryEnum,
+		Set<Include> includes){
 		Coverage coverage = new Coverage();
 		
 		coverage.setId(new IdDt("Coverage", localObject.getId()));
@@ -79,12 +80,12 @@ public class CoverageICoverageTransformer implements IFhirTransformer<Coverage, 
 	@Override
 	public Optional<ICoverage> createLocalObject(Coverage fhirObject){
 		if (fhirObject.hasBeneficiary()) {
-			Optional<IPatient> patient =
-				modelService.load(fhirObject.getBeneficiary().getReferenceElement().getIdPart(), IPatient.class);
+			Optional<IPatient> patient = modelService.load(
+				fhirObject.getBeneficiary().getReferenceElement().getIdPart(), IPatient.class);
 			Optional<String> type = coverageHelper.getType(fhirObject);
 			if (patient.isPresent() && type.isPresent()) {
-				ICoverage created = new ICoverageBuilder(modelService, patient.get(), "online created",
-					FallConstants.TYPE_DISEASE, type.get()).buildAndSave();
+				ICoverage created = new ICoverageBuilder(modelService, patient.get(),
+					"online created", FallConstants.TYPE_DISEASE, type.get()).buildAndSave();
 				String dependent = fhirObject.getDependent();
 				if (dependent != null) {
 					coverageHelper.setBin(created, dependent);

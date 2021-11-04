@@ -29,31 +29,32 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvider {
-
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
-
+	
 	@Reference
 	private IFindingsService findingsService;
 	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return FamilyMemberHistory.class;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<FamilyMemberHistory, IFamilyMemberHistory> getTransformer(){
 		return (IFhirTransformer<FamilyMemberHistory, IFamilyMemberHistory>) transformerRegistry
 			.getTransformerFor(FamilyMemberHistory.class, IFamilyMemberHistory.class);
 	}
-
+	
 	@Search()
 	public List<FamilyMemberHistory> findFamilyMemberHistory(
-		@RequiredParam(name = FamilyMemberHistory.SP_PATIENT) IdType patientId){
+		@RequiredParam(name = FamilyMemberHistory.SP_PATIENT)
+		IdType patientId){
 		if (patientId != null && !patientId.isEmpty()) {
 			Optional<IPatient> patient = modelService.load(patientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
@@ -78,8 +79,8 @@ public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvide
 	}
 	
 	@Create
-	public MethodOutcome createFamilyMemberHistory(
-		@ResourceParam FamilyMemberHistory familyMemberHistory){
+	public MethodOutcome createFamilyMemberHistory(@ResourceParam
+	FamilyMemberHistory familyMemberHistory){
 		MethodOutcome outcome = new MethodOutcome();
 		
 		Optional<IFamilyMemberHistory> exists =
@@ -101,7 +102,8 @@ public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvide
 	}
 	
 	@Read
-	public FamilyMemberHistory getResourceById(@IdParam IdType theId){
+	public FamilyMemberHistory getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IFamilyMemberHistory> optionalFam =

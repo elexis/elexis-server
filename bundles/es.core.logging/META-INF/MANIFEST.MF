@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis-Server logging configuration
 Bundle-SymbolicName: info.elexis.server.core.logging
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 3.9.0.qualifier
 Bundle-Vendor: elexis.info
 Fragment-Host: ch.qos.logback.classic;bundle-version="1.0.7"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Multi-Release: true
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Import-Package: javax.activation

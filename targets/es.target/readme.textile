@@ -1,19 +1,5 @@
 h1. Elexis-server development target
 
-This bundle contains two different target files, while the target to be used is located in the root folder called @elexis-server.target@. The code and target files located in the @prepare@ directory are used to build the required p2 repository
-to provide the required production target.
+# TODO
 
-h2. Modifying the production target
-
-The production target is created by executing the ant script within the  @production@ directory. This will merge all the
-installable units referenced in @elexis-server-prepare.target@ into a single p2 repository to be used within @elexis-server.target@.
-
-This allows for a consistent build of the production target, and also to set-up a local mirror to speedup the build process.
-
-Please see "https://wiki.eclipse.org/Tycho/Target_Platform/Authentication_and_Mirrors":https://wiki.eclipse.org/Tycho/Target_Platform/Authentication_and_Mirrors and "https://maven.apache.org/guides/mini/guide-mirror-settings.html":https://maven.apache.org/guides/mini/guide-mirror-settings.html for detailed information on setting up a mirror. The @settings.xml@ file reference in this article has to go to @${HOME}/.m2/settings.xml@. The @id@ for the main target is @elexis-server@.
-
-h2. References
-
-The idea was taken from "https://dzone.com/articles/simplifying-p2-process-part-2":https://dzone.com/articles/simplifying-p2-process-part-2  and "http://codeandme.blogspot.co.at/2012/12/tycho-build-8-using-target-platform.html":http://codeandme.blogspot.co.at/2012/12/tycho-build-8-using-target-platform.html
-
-Please see "https://srv.elexis.info/jenkins/view/elexis-server/job/Build_elexis-server_target":https://srv.elexis.info/jenkins/view/elexis-server/job/Build_elexis-server_target for a configured build process executing this script.
+Ant script to download and install ide.target

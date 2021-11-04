@@ -74,10 +74,7 @@ if [ ! -z $DISABLE_WEB_SECURITY ]; then
 	EFFECTIVE_JAVA_PROPERTIES+=" -Ddisable.web.security=true"
 fi
 
-if [ ! -z $JAVA_PROPERTIES ]; then
-	echo "Appending Java properties: '"$JAVA_PROPERTIES"'"
-	EFFECTIVE_JAVA_PROPERTIES+=" $JAVA_PROPERTIES"
-fi
+EFFECTIVE_JAVA_PROPERTIES+=" $ES_JAVA_PROPERTIES"
 
 echo "Effective Java properties: '"$EFFECTIVE_JAVA_PROPERTIES"'"
 

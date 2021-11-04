@@ -22,28 +22,29 @@ import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class CodeSystemResourceProvider implements IFhirResourceProvider {
-
+	
 	@Override
-	public Class<? extends IBaseResource> getResourceType() {
+	public Class<? extends IBaseResource> getResourceType(){
 		return CodeSystem.class;
 	}
-
+	
 	private IFhirTransformerRegistry transformerRegistry;
-
+	
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "-")
-	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry) {
+	protected void bindIFhirTransformerRegistry(IFhirTransformerRegistry transformerRegistry){
 		this.transformerRegistry = transformerRegistry;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<CodeSystem, String> getTransformer() {
-		return (IFhirTransformer<CodeSystem, String>) transformerRegistry.getTransformerFor(CodeSystem.class,
-				String.class);
+	public IFhirTransformer<CodeSystem, String> getTransformer(){
+		return (IFhirTransformer<CodeSystem, String>) transformerRegistry
+			.getTransformerFor(CodeSystem.class, String.class);
 	}
-
+	
 	@Read
-	public CodeSystem getResourceById(@IdParam IdType theId) {
+	public CodeSystem getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<CodeSystem> fhirCodeSystem = getTransformer().getFhirObject(idPart);
@@ -53,9 +54,10 @@ public class CodeSystemResourceProvider implements IFhirResourceProvider {
 		}
 		return null;
 	}
-
+	
 	@Search()
-	public List<CodeSystem> findCodeSystem(@RequiredParam(name = CodeSystem.SP_SYSTEM) String system) {
+	public List<CodeSystem> findCodeSystem(@RequiredParam(name = CodeSystem.SP_SYSTEM)
+	String system){
 		if (system != null) {
 			Optional<CodeSystem> fhirCodeSystem = getTransformer().getFhirObject(system);
 			if (fhirCodeSystem.isPresent()) {

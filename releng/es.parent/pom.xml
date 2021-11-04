@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>info.elexis.server</groupId>
 	<artifactId>info.elexis.server.parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>3.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Elexis-Server</name>
 
@@ -34,18 +35,37 @@
 	<description>Elexis-Server for headless operation</description>
 
 	<properties>
-		<tycho.version>1.6.0</tycho.version>
+		<elexis.target>2021-09-java11</elexis.target>
+		<elexis.branch>2021-09-java11</elexis.branch>
+		<tycho.version>2.5.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 	</properties>
 
 	<modules>
-		<module>../../targets</module>
 		<module>../../bundles</module>
 		<module>../../features</module>
 		<module>../../products</module>
 		<module>../../tests</module>
 	</modules>
+
+	<repositories>
+		<repository>
+			<id>elexis.3.target</id>
+			<url>https://download.elexis.info/elexis/target/${elexis.target}/</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>elexis.3.core</id>
+			<url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-core</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>elexis.3.base</id>
+			<url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-base</url>
+			<layout>p2</layout>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
@@ -60,18 +80,8 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<resolver>p2</resolver>
-					<ignoreTychoRepositories>true</ignoreTychoRepositories>
+					<executionEnvironment>JavaSE-11</executionEnvironment>
 					<pomDependencies>consider</pomDependencies>
-					<executionEnvironment>JavaSE-1.8</executionEnvironment>
-					<target>
-						<artifact>
-							<groupId>info.elexis.server.targets</groupId>
-							<artifactId>elexis-server</artifactId>
-							<version>1.0.0-SNAPSHOT</version>
-							<classifier>elexis-server</classifier>
-						</artifact>
-					</target>
 					<environments>
 						<environment>
 							<os>linux</os>
@@ -79,10 +89,16 @@
 							<arch>x86_64</arch>
 						</environment>
 					</environments>
+					<dependency-resolution>
+						<profileProperties>
+							<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
+						</profileProperties>
+					</dependency-resolution>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
 	<distributionManagement>
 		<site>
 			<id>www.elexis.info</id>
