@@ -70,13 +70,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.persistence.moxy"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="ch.rgw.utility"
          download-size="0"
          install-size="0"
@@ -134,13 +127,6 @@
 
    <plugin
          id="org.eclipse.emf.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.joda.money"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -288,41 +274,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.dom4j"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="ca.uhn.hapi.osgi-base"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.jws-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.xml.soap-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.xml.ws-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="jakarta.persistence"
          download-size="0"
          install-size="0"
@@ -429,13 +380,6 @@
 
    <plugin
          id="ch.elexis.core.mail"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.mail.glassfish"
          download-size="0"
          install-size="0"
          version="0.0.0"
