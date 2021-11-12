@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.CodeSystem;
-import org.hl7.fhir.dstu3.model.CodeSystem.ConceptDefinitionComponent;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.CodeSystem.ConceptDefinitionComponent;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.hapi.fhir.FhirUtil;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class CodesySystemTest {
+public class CodeSystemTest {
 
 	private static IGenericClient client;
 

@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.model.CodeType;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Observation;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -30,17 +30,16 @@ import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.IObservation;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.findings.util.CodeTypeUtil;
+import ch.elexis.core.findings.util.DateRangeParamUtil;
+import ch.elexis.core.findings.util.fhir.IFhirTransformer;
+import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.ILabResult;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
-import es.fhir.rest.core.IFhirResourceProvider;
-import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.IFhirTransformerRegistry;
-import es.fhir.rest.core.resources.util.CodeTypeUtil;
-import es.fhir.rest.core.resources.util.DateRangeParamUtil;
 
 @Component
 public class ObservationResourceProvider implements IFhirResourceProvider {
@@ -100,7 +99,7 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	IdType theSubjectId, @OptionalParam(name = Observation.SP_CATEGORY)
 	CodeType categoryCode, @OptionalParam(name = Observation.SP_CODE)
 	CodeType code, @OptionalParam(name = Observation.SP_DATE)
-	DateRangeParam dates, @OptionalParam(name = Observation.SP_CONTEXT)
+	DateRangeParam dates, @OptionalParam(name = Observation.SP_ENCOUNTER)
 	IdType contextId){
 		if (theSubjectId != null && !theSubjectId.isEmpty()) {
 			Optional<IPatient> patient =
@@ -213,9 +212,9 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 		ArrayList<Observation> ret = new ArrayList<>();
 		if (idType.getValue() != null) {
 			for (Observation observation : observations) {
-				if (observation.getContext() != null
-					&& observation.getContext().hasReferenceElement() && idType.getValue()
-						.equals(observation.getContext().getReferenceElement().getIdPart())) {
+				if (observation.getEncounter() != null
+					&& observation.getEncounter().hasReferenceElement() && idType.getValue()
+						.equals(observation.getEncounter().getReferenceElement().getIdPart())) {
 					ret.add(observation);
 				}
 			}

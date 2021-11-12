@@ -15,15 +15,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.Observation;
-import org.hl7.fhir.dstu3.model.Observation.ObservationReferenceRangeComponent;
-import org.hl7.fhir.dstu3.model.Quantity;
-import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationReferenceRangeComponent;
+import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.StringType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,10 +40,10 @@ import ch.elexis.core.findings.ObservationComponent;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.findings.util.commands.UpdateFindingTextCommand;
 import ch.elexis.core.findings.util.model.TransientCoding;
-import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.ILabResult;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 public class ObservationTest {
 
@@ -223,7 +223,7 @@ public class ObservationTest {
 		results = client.search().forResource(Observation.class)
 			.where(Observation.SUBJECT
 				.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
-			.and(Observation.CONTEXT.hasId(findingsCreated.get(2).getId()))
+			.and(Observation.ENCOUNTER.hasId(findingsCreated.get(2).getId()))
 			.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		entries = results.getEntry();

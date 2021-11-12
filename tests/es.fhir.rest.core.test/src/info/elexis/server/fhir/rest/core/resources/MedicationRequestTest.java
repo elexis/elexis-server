@@ -10,21 +10,21 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.CodeType;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.MedicationRequest;
-import org.hl7.fhir.dstu3.model.MedicationRequest.MedicationRequestStatus;
-import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestStatus;
+import org.hl7.fhir.r4.model.Patient;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.prescription.EntryType;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 public class MedicationRequestTest {
 

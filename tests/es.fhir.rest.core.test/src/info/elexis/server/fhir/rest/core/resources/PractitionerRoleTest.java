@@ -12,29 +12,29 @@ import java.time.Month;
 import java.util.Date;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.Address;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.ContactPoint;
-import org.hl7.fhir.dstu3.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.dstu3.model.HumanName;
-import org.hl7.fhir.dstu3.model.HumanName.NameUse;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Practitioner;
-import org.hl7.fhir.dstu3.model.PractitionerRole;
+import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.HumanName.NameUse;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.PractitionerRole;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.constants.XidConstants;
-import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.holder.UserServiceHolder;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 public class PractitionerRoleTest {
 	
@@ -53,8 +53,8 @@ public class PractitionerRoleTest {
 		// search by role
 		Bundle results = client.search().forResource(PractitionerRole.class)
 			.where(PractitionerRole.ROLE.exactly().systemAndCode(
-				org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.getSystem(),
-				org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.toCode()))
+				org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.getSystem(),
+				org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.toCode()))
 			.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
@@ -66,9 +66,9 @@ public class PractitionerRoleTest {
 			List<Coding> codings = role.getCoding();
 			for (Coding coding : codings) {
 				if (coding.getSystem().equals(
-					org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.getSystem())
+					org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.getSystem())
 					&& coding.getCode().equals(
-						org.hl7.fhir.dstu3.model.codesystems.PractitionerRole.DOCTOR.toCode())) {
+						org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.toCode())) {
 					doctorRoleFound = true;
 				}
 			}

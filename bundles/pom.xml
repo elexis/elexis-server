@@ -24,7 +24,6 @@
 		<module>es.core.redmine</module>
                	<module>es.core.connector.elexis</module>
 		<module>es.fhir.rest.core</module>
-		<module>es.fhir.rest.core.model.util</module>
 		<module>es.findings.fhir.jpa.service</module>
        </modules>
 </project>

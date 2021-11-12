@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.AllergyIntolerance;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.r4.model.AllergyIntolerance;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Narrative;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,8 +20,8 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IAllergyIntolerance;
-import ch.elexis.core.hapi.fhir.FhirUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 public class AllergyIntoleranceTest {
 	

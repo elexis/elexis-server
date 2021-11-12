@@ -1,6 +1,7 @@
-package es.fhir.rest.core;
+package es.fhir.rest.core.resources;
 
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 
 /**
  * Definition of REST resource provider using {@link IFhirTransformer} instances.

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -16,20 +16,19 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ch.elexis.core.findings.util.fhir.IFhirTransformer;
+import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IUserService;
-import es.fhir.rest.core.IFhirResourceProvider;
-import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.IFhirTransformerRegistry;
 
 @Component
 public class PractitionerResourceProvider implements IFhirResourceProvider {
 	
-	@Reference(target="("+IModelService.SERVICEMODELNAME+"=ch.elexis.core.model)")
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
 	
 	@Reference
@@ -51,7 +50,8 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Practitioner getResourceById(@IdParam IdType theId){
+	public Practitioner getResourceById(@IdParam
+	IdType theId){
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<IMandator> practitioner = modelService.load(idPart, IMandator.class);
@@ -65,8 +65,8 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Practitioner> findPractitioner(
-		@RequiredParam(name = Practitioner.SP_NAME) String name){
+	public List<Practitioner> findPractitioner(@RequiredParam(name = Practitioner.SP_NAME)
+	String name){
 		if (name != null) {
 			IQuery<IMandator> query = modelService.getQuery(IMandator.class);
 			query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE,

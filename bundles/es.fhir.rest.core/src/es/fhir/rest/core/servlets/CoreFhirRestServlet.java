@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-import es.fhir.rest.core.IFhirResourceProvider;
-import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
+import es.fhir.rest.core.resources.IFhirResourceProvider;
 import info.elexis.server.core.SystemPropertyConstants;
 
 @Component(service = CoreFhirRestServlet.class, immediate = true)
@@ -66,10 +65,10 @@ public class CoreFhirRestServlet extends RestfulServer {
 	}
 	
 	public CoreFhirRestServlet(){
-		super(FhirContext.forDstu3());
+		super(FhirContext.forR4());
 		setServerName("Elexis-Server FHIR");
-		setServerVersion("1.0");
-		setServerConformanceProvider(new ServerCapabilityStatementProvider());
+		setServerVersion("3.9");
+//		setServerConformanceProvider(new ServerCapabilityStatementProvider(this));
 	}
 	
 	@Activate

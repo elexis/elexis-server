@@ -3,16 +3,16 @@ package es.fhir.rest.core.resources;
 import java.util.Optional;
 
 import org.apache.shiro.SecurityUtils;
-import org.hl7.fhir.dstu3.model.BaseResource;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.r4.model.BaseResource;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.slf4j.Logger;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.model.Identifiable;
-import es.fhir.rest.core.IFhirTransformer;
 
 public class ResourceProviderUtil {
 	
