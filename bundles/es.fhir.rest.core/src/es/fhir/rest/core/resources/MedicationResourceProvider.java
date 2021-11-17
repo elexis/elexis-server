@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Medication;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Medication;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -19,16 +19,15 @@ import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ch.elexis.core.findings.util.fhir.IFhirTransformer;
+import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
+import ch.elexis.core.findings.util.fhir.MedicamentCoding;
 import ch.elexis.core.model.IArticle;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.types.ArticleTyp;
-import es.fhir.rest.core.IFhirResourceProvider;
-import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.IFhirTransformerRegistry;
-import es.fhir.rest.core.coding.MedicamentCoding;
 
 @Component
 public class MedicationResourceProvider implements IFhirResourceProvider {
@@ -107,7 +106,7 @@ public class MedicationResourceProvider implements IFhirResourceProvider {
 		results.addAll(artikelstammResult);
 		
 		return results.parallelStream().map(a -> getTransformer().getFhirObject(a).get())
-			.collect(Collectors.toCollection(ArrayList::new));
+			.collect(Collectors.toList());
 	}
 	
 }

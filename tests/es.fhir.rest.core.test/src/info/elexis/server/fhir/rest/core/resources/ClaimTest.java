@@ -8,17 +8,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.Claim.ItemComponent;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Coverage;
-import org.hl7.fhir.dstu3.model.Encounter;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.SimpleQuantity;
-import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.Claim.ItemComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Coverage;
+import org.hl7.fhir.r4.model.Encounter;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.SimpleQuantity;
+import org.hl7.fhir.r4.model.StringType;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,10 +28,10 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.hapi.fhir.FhirUtil;
 import ch.elexis.core.model.IBilled;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 @Ignore
 public class ClaimTest {
@@ -74,11 +74,11 @@ public class ClaimTest {
 			new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
 		claim.addDiagnosis().setDiagnosis(new CodeableConcept().addCoding(
 			new Coding(CodingSystem.ELEXIS_DIAGNOSE_TESSINERCODE.getSystem(), "A1", "")));
-		claim.addInformation().setValue(new StringType("Encounter/" + encounter.getId()));
+		claim.addSupportingInfo().setValue(new StringType("Encounter/" + encounter.getId()));
 		
 		ItemComponent item = claim.addItem();
-		item.setQuantity((SimpleQuantity) new SimpleQuantity().setValue(1));
-		item.setService(new CodeableConcept()
+		item.setQuantity(new SimpleQuantity().setValue(1));
+		item.setProductOrService(new CodeableConcept()
 			.addCoding(new Coding("www.elexis.info/billing/tarmed", "00.0010", "")));
 		
 		List<IBilled> before = AllTests.getModelService().getQuery(IBilled.class).execute();

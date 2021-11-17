@@ -10,24 +10,24 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.Appointment;
-import org.hl7.fhir.dstu3.model.Appointment.AppointmentParticipantComponent;
-import org.hl7.fhir.dstu3.model.Appointment.AppointmentStatus;
-import org.hl7.fhir.dstu3.model.Appointment.ParticipantRequired;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Practitioner;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.Schedule;
-import org.hl7.fhir.dstu3.model.Slot;
-import org.hl7.fhir.dstu3.model.Slot.SlotStatus;
+import org.hl7.fhir.r4.model.Appointment;
+import org.hl7.fhir.r4.model.Appointment.AppointmentParticipantComponent;
+import org.hl7.fhir.r4.model.Appointment.AppointmentStatus;
+import org.hl7.fhir.r4.model.Appointment.ParticipantRequired;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Schedule;
+import org.hl7.fhir.r4.model.Slot;
+import org.hl7.fhir.r4.model.Slot.SlotStatus;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ch.elexis.core.hapi.fhir.FhirUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 public class AppointmentTest {
 

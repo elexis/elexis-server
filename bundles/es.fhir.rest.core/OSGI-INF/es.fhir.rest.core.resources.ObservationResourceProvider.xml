@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="es.fhir.rest.core.resources.ObservationResourceProvider">
    <service>
-      <provide interface="es.fhir.rest.core.IFhirResourceProvider"/>
+      <provide interface="es.fhir.rest.core.resources.IFhirResourceProvider"/>
    </service>
    <reference cardinality="1..1" field="findingsService" interface="ch.elexis.core.findings.IFindingsService" name="findingsService"/>
    <reference cardinality="1..1" field="modelService" interface="ch.elexis.core.services.IModelService" name="modelService" target="(service.model.name=ch.elexis.core.model)"/>
-   <reference cardinality="1..1" field="transformerRegistry" interface="es.fhir.rest.core.IFhirTransformerRegistry" name="transformerRegistry"/>
+   <reference cardinality="1..1" field="transformerRegistry" interface="ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry" name="transformerRegistry"/>
    <implementation class="es.fhir.rest.core.resources.ObservationResourceProvider"/>
 </scr:component>

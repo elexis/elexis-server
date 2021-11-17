@@ -1,17 +1,16 @@
 package es.fhir.rest.core.resources;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.model.Appointment;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Schedule;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Appointment;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Schedule;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,6 +32,9 @@ import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceOrListParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import ch.elexis.core.findings.util.TerminUtil;
+import ch.elexis.core.findings.util.fhir.IFhirTransformer;
+import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IAppointmentService;
@@ -40,11 +42,7 @@ import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.time.DateConverter;
-import es.fhir.rest.core.IFhirResourceProvider;
-import es.fhir.rest.core.IFhirTransformer;
-import es.fhir.rest.core.IFhirTransformerRegistry;
 import es.fhir.rest.core.resources.util.QueryUtil;
-import es.fhir.rest.core.resources.util.TerminUtil;
 
 @Component
 public class AppointmentResourceProvider implements IFhirResourceProvider {
@@ -160,7 +158,7 @@ public class AppointmentResourceProvider implements IFhirResourceProvider {
 		
 		return termine.parallelStream()
 			.map(a -> getTransformer().getFhirObject(a, SummaryEnum.FALSE, theIncludes).get())
-			.collect(Collectors.toCollection(ArrayList::new));
+			.collect(Collectors.toList());
 	}
 	
 	@Update

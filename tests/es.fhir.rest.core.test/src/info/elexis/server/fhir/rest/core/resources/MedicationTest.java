@@ -10,19 +10,19 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Medication;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Medication;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ch.elexis.core.hapi.fhir.FhirUtil;
+import ch.elexis.core.findings.util.fhir.MedicamentCoding;
 import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.types.ArticleTyp;
-import es.fhir.rest.core.coding.MedicamentCoding;
 import info.elexis.server.fhir.rest.core.test.AllTests;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
 public class MedicationTest {
 	

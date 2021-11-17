@@ -6,8 +6,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -37,15 +37,15 @@ import info.elexis.server.fhir.rest.core.resources.ObservationTest;
 import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
 import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
-import info.elexis.server.fhir.rest.core.resources.ProcedureRequestTest;
 import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
+import info.elexis.server.fhir.rest.core.resources.ServiceRequestTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
 	CORSTest.class, AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
 	AppointmentTest.class, CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class,
 	ConditionTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, EncounterTest.class,
-	ProcedureRequestTest.class, MedicationRequestTest.class, ClaimTest.class, MedicationTest.class
+	ServiceRequestTest.class, MedicationRequestTest.class, ClaimTest.class, MedicationTest.class
 })
 public class AllTests {
 	

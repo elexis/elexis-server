@@ -16,8 +16,13 @@ import ca.uhn.fhir.rest.client.api.IHttpRequest;
 import ca.uhn.fhir.rest.client.api.IHttpResponse;
 import ca.uhn.fhir.rest.client.method.HttpGetClientInvocation;
 import ca.uhn.fhir.rest.client.method.MethodUtil;
-import ch.elexis.core.hapi.fhir.FhirUtil;
+import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
+// TODO remove
+/** 
+ * @deprecated functionality to be taken over by NGINX
+ */
+@Deprecated
 public class CORSTest {
 	
 	private static IGenericClient client;
