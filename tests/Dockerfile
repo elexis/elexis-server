@@ -28,7 +28,7 @@ RUN git clone https://github.com/elexis/elexis-server.git /opt/elexis-server
 # as the the next commands fails at the moment (2016-12-18)
 # RUN cd  /opt/elexis-server &&  mvn --show-version --file releng/es.parent/pom.xml clean verify -Dmaven.test.skip
 # we download and install the generated product from the Jenkins
-RUN mkdir app && cd /app && wget --quiet  http://download.elexis.info/elexis-server/products/master/info.elexis.server.runtime.product-linux.gtk.x86_64.zip
+RUN mkdir app && cd /app && wget --quiet  http://download.elexis.info/elexis-server/products/3.9/info.elexis.server.runtime.product-linux.gtk.x86_64.zip
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends expect
 # procs to allow ps for debugging

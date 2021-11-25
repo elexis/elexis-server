@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk11:alpine-slim
 MAINTAINER MEDEVIT <office@medevit.at>
-ARG BRANCH=master
+ARG BRANCH=3.9
 
 RUN apk add --no-cache tzdata bash
 ENV TZ=Europe/Zurich

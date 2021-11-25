@@ -1,7 +1,7 @@
 target "Elexis-Server" with source allEnvironments
 
 
-location "https://download.elexis.info/elexis/master/p2/elexis-3-core/" {
+location "https://download.elexis.info/elexis/3.9/p2/elexis-3-core/" {
 	//
 	ch.rgw.utility lazy
 	ch.elexis.core lazy
@@ -31,7 +31,7 @@ location "https://download.elexis.info/elexis/master/p2/elexis-3-core/" {
 	//
 }
 
-location "https://download.elexis.info/elexis/master/p2/elexis-3-base/" {
+location "https://download.elexis.info/elexis/3.9/p2/elexis-3-base/" {
 	ch.elexis.base.ch.ticode lazy
 	at.medevit.ch.artikelstamm lazy
 	at.medevit.ch.artikelstamm.model lazy
@@ -44,11 +44,11 @@ location "https://download.elexis.info/elexis/master/p2/elexis-3-base/" {
 	ch.elexis.base.solr lazy
 }
 
-location "https://download.medelexis.ch/medelexis/master/p2/medelexis-3/" {
+location "https://download.medelexis.ch/medelexis/3.9/p2/medelexis-3/" {
 	at.medevit.elexis.agenda.reminder lazy
 }
 
-location "https://download.elexis.info/elexis/master/p2/target/" {
+location "https://download.elexis.info/elexis/3.9/p2/target/" {
 	jakarta.persistence
 	org.eclipse.persistence.asm
 	org.eclipse.persistence.antlr
@@ -78,7 +78,7 @@ location "http://download.elexis.info/elexis/target/2021-09-java11/maven-p2" {
 	org.apache.commons.collections
 }
 
-location "https://download.elexis.info/elexis-server/master/p2/target/" elexis-server {
+location "https://download.elexis.info/elexis-server/3.9/p2/target/" elexis-server {
 	org.osgi.framework.system.packages.extra
 	jaxb-api-impl-import-java9
 	

@@ -74,7 +74,7 @@
     <setupTask
         xsi:type="setup:EclipseIniTask"
         option="-Doomph.redirection.elexis-serversetup"
-        value="=https://raw.githubusercontent.com/elexis/elexis-server/master/elexis-server.setup->${elexis-server.git.clone.location|uri}/elexis-server.setup"
+        value="=https://raw.githubusercontent.com/elexis/elexis-server/3.9/elexis-server.setup->${elexis-server.git.clone.location|uri}/elexis-server.setup"
         vm="true"/>
     <setupTask
         xsi:type="setup:EclipseIniTask"
@@ -148,8 +148,8 @@
       xsi:type="jdt:JRETask"
       version="JavaSE-9"
       location="${jre.location-9}"/>
-  <stream name="master"
-      label="Master">
+  <stream name="3.9"
+      label="3.9">
     <setupTask
         xsi:type="setup:CompoundTask"
         name="User Preferences">
