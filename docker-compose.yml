@@ -1,36 +1,32 @@
 # MEDEVIT <office@medevit.at>
-# Docker-compose image to run ES with MySQL,
-# requires docker-compose tool
+# Docker-Compose template to run ES
 #
-# Adapted from https://docs.docker.com/compose/wordpress/
 # to start: docker-compose up -d
-# after start connect to https://localhost:8480/web/elexis-connector/connection
-# to fully remove including volume: docker-compose down -v
+# to fstop and fully remove including volume: docker-compose down -v
+#
+# FHIR API: Patient query http://localhost:8380/fhir/Patient?name=b
+# REST API: Uptime http://localhost:8380/services/system/uptime
 version: '3'
 services:
-    database:
-        image: mysql:5.7
-        volumes:
-            - db_data:/var/lib/mysql
-        ports:
-            - "33306:3306" # provide mysql access on port 33306
-        restart: always
-        command: --lower_case_table_names=1
-        environment:
-            MYSQL_ROOT_PASSWORD: somerootpassword
-            MYSQL_DATABASE: elexisdb
-            MYSQL_USER: elexisuser
-            MYSQL_PASSWORD: elexispassword
-    elexisserver:
-        depends_on:
-            - database
-        image: medevit/elexis-server:latest
+    elexis-server:    
+        image: medevit/elexis-server:master
         ports:
             - "8380:8380"
-            - "8480:8480"
             - "7234:7234"
-        restart: always
+        volumes:
+          - elexis_home:/elexis
         environment:
-            TZ: Europe/Zurich
+            # disable web security (requires EE if false)
+            - DISABLE_WEB_SECURITY=true
+            # enable demo database, alternatively connect to existing database
+            - DEMO_MODE=true
+            # configure external database
+            # - DB_TYPE=mysql
+            # - DB_HOST=marcos-mbp-2019.intra.herzpraxis.at:330
+            # - DB_DATABASE=ee_elexis
+            # - DB_USERNAME=elexis
+            # - DB_PASSWORD=elexis
+            # - DB_JDBC_PARAMETER_STRING=useSSL=false&serverTimezone=Europe/Zurich
+
 volumes:
-    db_data:
+    elexis_home:
