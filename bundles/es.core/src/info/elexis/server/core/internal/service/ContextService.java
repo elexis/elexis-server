@@ -50,5 +50,9 @@ public class ContextService implements IContextService {
 	public void postEvent(String eventTopic, Object object){
 		throw new UnsupportedOperationException();	
 	}
-	
+
+	@Override
+	public void sendEvent(String eventTopic, Object object) {
+		throw new UnsupportedOperationException();
+	}
 }
