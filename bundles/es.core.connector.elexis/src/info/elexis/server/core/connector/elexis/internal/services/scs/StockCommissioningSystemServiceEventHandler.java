@@ -1,6 +1,6 @@
 package info.elexis.server.core.connector.elexis.internal.services.scs;
 
-import static ch.elexis.core.common.ElexisEventTopics.BASE;
+import static ch.elexis.core.common.ElexisEventTopics.BASE_STOCK_COMMISSIONING;
 import static ch.elexis.core.common.ElexisEventTopics.STOCK_COMMISSIONING_OUTLAY;
 import static ch.elexis.core.common.ElexisEventTopics.STOCK_COMMISSIONING_PROPKEY_LIST_ARTICLE_ID;
 import static ch.elexis.core.common.ElexisEventTopics.STOCK_COMMISSIONING_PROPKEY_QUANTITY;
@@ -28,7 +28,8 @@ import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.status.StatusUtil;
 
 @Component(property = {
-	EventConstants.EVENT_TOPIC + "=" + BASE + "*"
+	EventConstants.EVENT_TOPIC + "=" + BASE_STOCK_COMMISSIONING + "*", 
+	EventConstants.EVENT_TOPIC + "=" +"remote/"+  BASE_STOCK_COMMISSIONING + "*"
 })
 public class StockCommissioningSystemServiceEventHandler implements EventHandler {
 	
