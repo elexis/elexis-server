@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.resources.IFhirResourceProvider;
 import info.elexis.server.core.SystemPropertyConstants;
@@ -103,6 +104,14 @@ public class CoreFhirRestServlet extends RestfulServer {
 	 */
 	@Override
 	protected void initialize() throws ServletException{
+		/*
+		 *  This interceptor is used to generate a new log line (via SLF4j) for each incoming request.
+		 */
+		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+		registerInterceptor(loggingInterceptor);
+		loggingInterceptor.setMessageFormat("REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters}");
+		loggingInterceptor.setErrorMessageFormat("REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters} - ${exceptionMessage}");
+		
 		/*
 		 * This server interceptor causes the server to return nicely formatter and
 		 * coloured responses instead of plain JSON/XML if the request is coming from a
