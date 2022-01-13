@@ -28,6 +28,7 @@ import org.hl7.fhir.r4.model.HumanName.NameUse;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -112,7 +113,7 @@ public class PatientTest {
 
 	@Test
 	public void searchPatientSingleNameValue() {
-		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))
+		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.contains().value("Test"))
 				.returnBundle(Bundle.class).execute();
 		assertEquals(3, results.getEntry().size());
 		Optional<BundleEntryComponent> found = results.getEntry().stream().filter(
@@ -122,6 +123,7 @@ public class PatientTest {
 	}
 
 	@Test
+	@Ignore("unclear use case, deactivated")
 	public void searchPatientMultipleNameValue() {
 		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))
 				.and(Patient.NAME.matches().value("name")).returnBundle(Bundle.class).execute();

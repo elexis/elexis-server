@@ -2,14 +2,19 @@ package es.fhir.rest.core.resources.util;
 
 import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.param.ParamPrefixEnum;
+import ca.uhn.fhir.rest.param.StringParam;
+import ch.elexis.core.model.IContact;
+import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IQuery.ORDER;
 
 public class QueryUtil {
-	
-	private QueryUtil(){}
-	
-	public static COMPARATOR prefixParamToToQueryParam(ParamPrefixEnum prefix){
+
+	private QueryUtil() {
+	}
+
+	public static COMPARATOR prefixParamToToQueryParam(ParamPrefixEnum prefix) {
 		switch (prefix) {
 		case EQUAL:
 			return COMPARATOR.EQUALS;
@@ -28,9 +33,22 @@ public class QueryUtil {
 		}
 		throw new UnsupportedOperationException();
 	}
-	
-	public static ORDER sortOrderEnumToLocal(SortOrderEnum order){
+
+	public static ORDER sortOrderEnumToLocal(SortOrderEnum order) {
 		return (SortOrderEnum.ASC == order) ? ORDER.ASC : ORDER.DESC;
 	}
-	
+
+	public static void andContactNameCriterion(IQuery<? extends IContact> query, StringParam name) {
+
+		String value = name.getValue();
+		if (name.isContains()) {
+			value = "%" + value + "%";
+		}
+
+		query.startGroup();
+		query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE, value, true);
+		query.or(ModelPackage.Literals.ICONTACT__DESCRIPTION2, COMPARATOR.LIKE, value, true);
+		query.andJoinGroups();
+	}
+
 }

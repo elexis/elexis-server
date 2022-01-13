@@ -38,7 +38,7 @@ public class OrganizationTest {
 	public void getOrganization() {
 		// search by name
 		Bundle results = client.search().forResource(Organization.class)
-				.where(Organization.NAME.matches().value("Test")).returnBundle(Bundle.class).execute();
+				.where(Organization.NAME.contains().value("Test")).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
