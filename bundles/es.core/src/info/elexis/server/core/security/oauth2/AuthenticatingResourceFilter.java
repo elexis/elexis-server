@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * OAuth2 Authenticating Resource filter
  */
+@Deprecated
 public class AuthenticatingResourceFilter extends AuthenticatingFilter {
 
 	private Logger log = LoggerFactory.getLogger(AuthenticatingResourceFilter.class);

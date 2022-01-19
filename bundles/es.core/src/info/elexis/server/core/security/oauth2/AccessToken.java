@@ -2,6 +2,7 @@ package info.elexis.server.core.security.oauth2;
 
 import org.apache.shiro.authc.HostAuthenticationToken;
 
+@Deprecated
 public class AccessToken implements HostAuthenticationToken {
 
 	private static final long serialVersionUID = -757378077275108680L;

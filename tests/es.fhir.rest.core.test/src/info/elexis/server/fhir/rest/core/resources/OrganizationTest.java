@@ -33,6 +33,19 @@ public class OrganizationTest {
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
+	
+	@Test
+	public void crud() {
+		
+		// load sample
+
+		// create 
+		// read
+		// update
+		// read
+		// delete
+		
+	}
 
 	@Test
 	public void getOrganization() {

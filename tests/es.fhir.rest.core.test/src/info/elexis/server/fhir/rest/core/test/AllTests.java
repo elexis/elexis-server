@@ -1,5 +1,7 @@
 package info.elexis.server.fhir.rest.core.test;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -25,7 +27,6 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.resources.AllergyIntoleranceTest;
 import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
-import info.elexis.server.fhir.rest.core.resources.CORSTest;
 import info.elexis.server.fhir.rest.core.resources.ClaimTest;
 import info.elexis.server.fhir.rest.core.resources.ConditionTest;
 import info.elexis.server.fhir.rest.core.resources.CoverageTest;
@@ -42,10 +43,11 @@ import info.elexis.server.fhir.rest.core.resources.ServiceRequestTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	CORSTest.class, AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
+	AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
 	AppointmentTest.class, CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class,
 	ConditionTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, EncounterTest.class,
-	ServiceRequestTest.class, MedicationRequestTest.class, ClaimTest.class, MedicationTest.class
+	ServiceRequestTest.class, MedicationRequestTest.class, ClaimTest.class
+	// MedicationTest.class
 })
 public class AllTests {
 	
@@ -65,8 +67,10 @@ public class AllTests {
 	
 	
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException, SQLException {
 		testDatabaseInitializer.setConfigService(configService);
+		testDatabaseInitializer.initializeDb();
+		testDatabaseInitializer.initializeMandant();
 	}
 	
 	public static Date getDate(LocalDateTime localDateTime){

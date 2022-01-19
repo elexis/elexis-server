@@ -1,15 +1,15 @@
 package es.fhir.rest.core.servlets;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.shiro.web.servlet.IniShiroFilter;
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
+import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -21,18 +21,28 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import ch.elexis.core.eenv.IElexisEnvironmentService;
+import ch.elexis.core.services.IContextService;
+import ch.elexis.core.services.IModelService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import es.fhir.rest.core.resources.IFhirResourceProvider;
+import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import info.elexis.server.core.SystemPropertyConstants;
+import info.elexis.server.core.servlet.filter.ContextSettingFilter;
+import info.elexis.server.core.servlet.filter.ElexisEnvironmentKeycloakConfigResolver;
 
 @Component(service = CoreFhirRestServlet.class, immediate = true)
 public class CoreFhirRestServlet extends RestfulServer {
 	
 	private static final String FHIR_BASE_URL = "/fhir";
+	private static final String OAUTH_CLIENT_POSTFIX = "fhir-api";
+	private final String SKIP_PATTERN = "/fhir/metadata";
 	
 	private static Logger logger = LoggerFactory.getLogger(CoreFhirRestServlet.class);
 	
@@ -41,52 +51,85 @@ public class CoreFhirRestServlet extends RestfulServer {
 	@Reference
 	private HttpService httpService;
 	
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
+	protected IModelService coreModelService;
+	
+	@Reference
+	private IContextService contextService;
+	
 	// resource providers
-	private List<IFhirResourceProvider> providers;
+	private List<IFhirResourceProvider<?, ?>> providers;
 	
 	@Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
-	public synchronized void bindFhirProvider(IFhirResourceProvider provider){
+	public synchronized void bindFhirProvider(IFhirResourceProvider<?, ?> provider){
 		if (providers == null) {
-			providers = new ArrayList<IFhirResourceProvider>();
+			providers = new ArrayList<IFhirResourceProvider<?, ?>>();
 		}
 		providers.add(provider);
 		registerProvider(provider);
 	}
 	
-	public void unbindFhirProvider(IFhirResourceProvider provider){
+	public void unbindFhirProvider(IFhirResourceProvider<?, ?> provider){
 		if (providers == null) {
-			providers = new ArrayList<IFhirResourceProvider>();
+			providers = new ArrayList<IFhirResourceProvider<?, ?>>();
 		}
 		providers.remove(provider);
 		try {
 			unregisterProvider(provider);
 		} catch (Exception e) {
-			// ignore
+			logger.warn("Exception unbinding provider [{}]", provider.getClass().getName(), e);
 		}
 	}
 	
 	public CoreFhirRestServlet(){
 		super(FhirContext.forR4());
 		setServerName("Elexis-Server FHIR");
-		setServerVersion("3.9");
-//		setServerConformanceProvider(new ServerCapabilityStatementProvider(this));
+		setServerVersion("3.10");
 	}
 	
 	@Activate
 	public void activate(){
+		
+		//		https://stackoverflow.com/questions/9117030/jul-to-slf4j-bridge
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+		java.util.logging.Logger.getLogger("").setLevel(Level.FINEST);
+		
+		KeycloakConfigResolver keycloakConfigResolver = null;
+		
+		if (!SystemPropertyConstants.isDisableWebSecurity()) {
+			// web security required -  only available via EE / Keycloak setup
+			IElexisEnvironmentService elexisEnvironmentService =
+				OsgiServiceUtil.getService(IElexisEnvironmentService.class).orElseThrow();
+			
+			keycloakConfigResolver = new ElexisEnvironmentKeycloakConfigResolver(
+				elexisEnvironmentService, OAUTH_CLIENT_POSTFIX);
+			
+			setServerConformanceProvider(
+				new ServerCapabilityStatementProvider(this, keycloakConfigResolver.resolve(null)));
+		}
+		
 		Thread.currentThread().setContextClassLoader(CoreFhirRestServlet.class.getClassLoader());
 		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 		try {
-			String shiroConfig =
-				(SystemPropertyConstants.isDisableWebSecurity()) ? "shiro-fhir-nosec.ini"
-						: "shiro-fhir.ini";
+			if (keycloakConfigResolver != null) {
+				Hashtable<String, String> filterParams = new Hashtable<>();
+				// see https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter
+				filterParams.put(KeycloakOIDCFilter.SKIP_PATTERN_PARAM, SKIP_PATTERN);
+				// TODO role fhir-api-access required? https://www.baeldung.com/spring-boot-keycloak
+				extHttpService.registerFilter("/*", new KeycloakOIDCFilter(keycloakConfigResolver),
+					filterParams, null);
+				
+				extHttpService.registerFilter("/*",
+					new ContextSettingFilter(contextService, coreModelService, SKIP_PATTERN),
+					new Hashtable<>(), null);
+			} else {
+				logger.error("--- UNPROTECTED FHIR API ---");
+			}
+			
 			httpService.registerServlet(FHIR_BASE_URL + "/*", this, null, null);
-			String config = IOUtils.toString(this.getClass().getResourceAsStream(shiroConfig),
-				Charset.forName("UTF-8"));
-			IniShiroFilter iniShiroFilter = new IniShiroFilter();
-			iniShiroFilter.setConfig(config);
-			extHttpService.registerFilter(FHIR_BASE_URL, iniShiroFilter, null, null);
-		} catch (ServletException | NamespaceException | IOException e) {
+			
+		} catch (ServletException | NamespaceException e) {
 			logger.error("Could not register FHIR servlet.", e);
 		}
 	}
@@ -109,8 +152,10 @@ public class CoreFhirRestServlet extends RestfulServer {
 		 */
 		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 		registerInterceptor(loggingInterceptor);
-		loggingInterceptor.setMessageFormat("REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters}");
-		loggingInterceptor.setErrorMessageFormat("REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters} - ${exceptionMessage}");
+		loggingInterceptor.setMessageFormat(
+			"REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters}");
+		loggingInterceptor.setErrorMessageFormat(
+			"REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters} - ${exceptionMessage}");
 		
 		/*
 		 * This server interceptor causes the server to return nicely formatter and

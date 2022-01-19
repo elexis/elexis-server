@@ -19,6 +19,7 @@ import java.util.Set;
 /**
  * Copied and adapted from http://mitreid-connect.github.io/
  */
+@Deprecated
 public interface OAuth2AccessToken {
 
 	public static String BEARER_TYPE = "Bearer";

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis Server Core Common
 Bundle-SymbolicName: info.elexis.server.core.common
-Bundle-Version: 3.9.0.qualifier
+Bundle-Version: 3.10.0.qualifier
 Bundle-Vendor: elexis.info
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: org.apache.shiro.authc;version="1.7.1",

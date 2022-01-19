@@ -15,5 +15,4 @@ Require-Bundle: org.junit,
  ch.elexis.core.jpa.datasource;bundle-version="3.9.0",
  ch.elexis.core.model;bundle-version="3.9.0"
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/info.elexis.server.core.connector.elexis.mocks.MockStockCommissioningSystemDriverFactory.xml
 Import-Package: ch.elexis.core.model

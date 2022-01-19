@@ -1,35 +1,38 @@
 package es.fhir.rest.core.resources;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.param.StringAndListParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IMandator;
-import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
-import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IUserService;
+import es.fhir.rest.core.resources.util.IContactSearchFilterQueryAdapter;
+import es.fhir.rest.core.resources.util.QueryUtil;
 
-@Component
-public class PractitionerResourceProvider implements IFhirResourceProvider {
+@Component(service = IFhirResourceProvider.class)
+public class PractitionerResourceProvider
+		extends AbstractFhirCrudResourceProvider<Practitioner, IMandator> {
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
-	private IModelService modelService;
+	protected IModelService coreModelService;
+	
+	public PractitionerResourceProvider(){
+		super(IMandator.class);
+	}
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -42,6 +45,11 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 		return Practitioner.class;
 	}
 	
+	@Activate
+	public void activate(){
+		setCoreModelService(coreModelService);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Practitioner, IMandator> getTransformer(){
@@ -49,45 +57,24 @@ public class PractitionerResourceProvider implements IFhirResourceProvider {
 			.getTransformerFor(Practitioner.class, IMandator.class);
 	}
 	
-	@Read
-	public Practitioner getResourceById(@IdParam
-	IdType theId){
-		String idPart = theId.getIdPart();
-		if (idPart != null) {
-			Optional<IMandator> practitioner = modelService.load(idPart, IMandator.class);
-			if (practitioner.isPresent()) {
-				Optional<Practitioner> fhirPractitioner =
-					getTransformer().getFhirObject(practitioner.get());
-				return fhirPractitioner.get();
-			}
+	@Search
+	public List<Practitioner> search(@OptionalParam(name = Practitioner.SP_NAME) StringParam name,
+		@OptionalParam(name = ca.uhn.fhir.rest.api.Constants.PARAM_FILTER) StringAndListParam theFtFilter){
+		IQuery<IMandator> query = coreModelService.getQuery(IMandator.class);
+		
+		if (name != null) {
+			QueryUtil.andContactNameCriterion(query, name);
 		}
-		return null;
+		
+		if (theFtFilter != null) {
+			new IContactSearchFilterQueryAdapter().adapt(query, theFtFilter);
+		}
+		
+		List<IMandator> practitioners = query.execute();
+		List<Practitioner> _practitioners =
+			practitioners.parallelStream().map(org -> getTransformer().getFhirObject(org))
+				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+		return _practitioners;
 	}
 	
-	@Search()
-	public List<Practitioner> findPractitioner(@RequiredParam(name = Practitioner.SP_NAME)
-	String name){
-		if (name != null) {
-			IQuery<IMandator> query = modelService.getQuery(IMandator.class);
-			query.and(ModelPackage.Literals.ICONTACT__DESCRIPTION1, COMPARATOR.LIKE,
-				"%" + name + "%", true);
-			query.or(ModelPackage.Literals.ICONTACT__DESCRIPTION2, COMPARATOR.LIKE,
-				"%" + name + "%", true);
-			List<IMandator> practitioners = query.execute();
-			if (!practitioners.isEmpty()) {
-				// only Kontakt with existing user entry
-				practitioners = practitioners.stream()
-					.filter(contact -> !userService.getUsersByAssociatedContact(contact).isEmpty())
-					.collect(Collectors.toList());
-				List<Practitioner> ret = new ArrayList<Practitioner>();
-				for (IMandator practitioner : practitioners) {
-					Optional<Practitioner> fhirPractitioner =
-						getTransformer().getFhirObject(practitioner);
-					fhirPractitioner.ifPresent(fp -> ret.add(fp));
-				}
-				return ret;
-			}
-		}
-		return Collections.emptyList();
-	}
 }

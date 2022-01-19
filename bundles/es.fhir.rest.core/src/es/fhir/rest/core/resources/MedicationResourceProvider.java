@@ -30,7 +30,7 @@ import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.types.ArticleTyp;
 
 @Component
-public class MedicationResourceProvider implements IFhirResourceProvider {
+public class MedicationResourceProvider implements IFhirResourceProvider<Medication, IArticle> {
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
@@ -54,8 +54,7 @@ public class MedicationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Read
-	public Medication getResourceById(@IdParam
-	IdType theId){
+	public Medication getResourceById(@IdParam IdType theId){
 		String idPart = theId.getIdPart();
 		
 		if (StringUtils.isNotEmpty(idPart)) {
@@ -80,8 +79,8 @@ public class MedicationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Medication> findMedications(@RequiredParam(name = Medication.SP_CODE)
-	TokenParam code){
+	public List<Medication> findMedications(
+		@RequiredParam(name = Medication.SP_CODE) TokenParam code){
 		
 		IQuery<IArticle> coreQuery = coreModelService.getQuery(IArticle.class);
 		IQuery<IArtikelstammItem> artikelstammQuery =

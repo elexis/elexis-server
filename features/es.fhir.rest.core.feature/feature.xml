@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.fhir.rest.core.feature"
       label="FHIR Core including HAPI FHIR libraries"
-      version="3.9.0.qualifier">
+      version="3.10.0.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

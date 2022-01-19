@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis Server Core
 Bundle-SymbolicName: info.elexis.server.core;singleton:=true
-Bundle-Version: 3.9.0.qualifier
+Bundle-Version: 3.10.0.qualifier
 Bundle-Activator: info.elexis.server.core.internal.Activator
 Bundle-Vendor: elexis.info
 Bundle-RequiredExecutionEnvironment: JavaSE-11
@@ -60,6 +60,11 @@ Import-Package: ch.qos.logback.classic;version="1.2.3",
  org.apache.shiro.web.util;version="1.7.1",
  org.eclipse.equinox.http.servlet;version="1.2.0",
  org.eclipse.osgi.framework.console;version="1.1.0",
+ org.keycloak;version="12.0.4",
+ org.keycloak.adapters;version="12.0.4",
+ org.keycloak.adapters.spi;version="12.0.4",
+ org.keycloak.representations;version="12.0.4",
+ org.keycloak.representations.adapters.config;version="12.0.4",
  org.osgi.service.http;version="1.2.1",
  org.slf4j;version="1.7.2"
 Bundle-ActivationPolicy: lazy
@@ -68,10 +73,11 @@ Export-Package: info.elexis.server.core,
  info.elexis.server.core.contrib,
  info.elexis.server.core.rest,
  info.elexis.server.core.security,
- info.elexis.server.core.security.oauth2
+ info.elexis.server.core.security.oauth2,
+ info.elexis.server.core.servlet.filter
 Bundle-ClassPath: .,
  lib/org.apache.oltu.oauth2.common-1.0.2.jar,
  lib/org.apache.oltu.oauth2.resourceserver-filter-1.0.2.jar
-Require-Bundle: info.elexis.server.core.common;bundle-version="3.9.0",
+Require-Bundle: info.elexis.server.core.common;bundle-version="3.10.0",
  ch.elexis.core;bundle-version="3.9.0"
 

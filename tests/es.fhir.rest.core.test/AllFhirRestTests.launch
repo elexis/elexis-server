@@ -64,6 +64,10 @@
         <setEntry value="ch.qos.logback.slf4j@default:false"/>
         <setEntry value="com.eclipsesource.jaxrs.consumer@default:default"/>
         <setEntry value="com.eclipsesource.jaxrs.publisher@default:true"/>
+        <setEntry value="com.fasterxml.jackson.core.jackson-annotations@default:default"/>
+        <setEntry value="com.fasterxml.jackson.core.jackson-core@default:default"/>
+        <setEntry value="com.fasterxml.jackson.core.jackson-databind@default:default"/>
+        <setEntry value="com.fasterxml.jackson.dataformat.jackson-dataformat-yaml@default:default"/>
         <setEntry value="com.google.gson@default:default"/>
         <setEntry value="com.google.guava@default:default"/>
         <setEntry value="com.google.protobuf@default:default"/>
@@ -161,9 +165,17 @@
         <setEntry value="org.jdom@default:default"/>
         <setEntry value="org.junit@default:default"/>
         <setEntry value="org.jvnet.mimepull@default:default"/>
+        <setEntry value="org.keycloak.keycloak-adapter-core@default:default"/>
+        <setEntry value="org.keycloak.keycloak-adapter-spi@default:default"/>
+        <setEntry value="org.keycloak.keycloak-authz-client@default:default"/>
+        <setEntry value="org.keycloak.keycloak-common@default:default"/>
+        <setEntry value="org.keycloak.keycloak-core@default:default"/>
+        <setEntry value="org.keycloak.keycloak-servlet-filter-adapter@default:default"/>
         <setEntry value="org.owasp.encoder@default:default"/>
         <setEntry value="org.postgresql.jdbc@default:default"/>
         <setEntry value="org.slf4j.api@default:default"/>
+        <setEntry value="org.slf4j.jul@default:default"/>
+        <setEntry value="org.yaml.snakeyaml@default:default"/>
         <setEntry value="osgi.enterprise@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
@@ -180,15 +192,14 @@
         <setEntry value="ch.elexis.core.l10n@default:default"/>
         <setEntry value="ch.elexis.core.model@default:default"/>
         <setEntry value="ch.elexis.core.services@default:default"/>
+        <setEntry value="ch.elexis.core.test.logging@default:false"/>
         <setEntry value="ch.elexis.core.test@default:default"/>
         <setEntry value="ch.elexis.core@default:default"/>
         <setEntry value="ch.rgw.utility@default:default"/>
         <setEntry value="info.elexis.server.core.common@default:default"/>
         <setEntry value="info.elexis.server.core.connector.elexis.test@default:false"/>
         <setEntry value="info.elexis.server.core.connector.elexis@default:default"/>
-        <setEntry value="info.elexis.server.core.logging@default:false"/>
         <setEntry value="info.elexis.server.core@default:default"/>
-        <setEntry value="info.elexis.server.fhir.rest.core.model.util@default:default"/>
         <setEntry value="info.elexis.server.fhir.rest.core.test@default:false"/>
         <setEntry value="info.elexis.server.fhir.rest.core@default:default"/>
         <setEntry value="info.elexis.server.findings.fhir.jpa.service@default:default"/>
