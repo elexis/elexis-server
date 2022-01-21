@@ -1,10 +1,5 @@
 package info.elexis.server.core.redmine.internal.mis;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.slf4j.LoggerFactory;
-
 public class LicensedFeature {
 	
 	private String id;
@@ -19,14 +14,12 @@ public class LicensedFeature {
 		return id;
 	}
 	
-	public URI getP2URI(){
-		try {
-			return new URI(p2RepoUrl);
-		} catch (URISyntaxException e) {
-			LoggerFactory.getLogger(getClass()).warn("Invalid URI [{}] in feature [{}]", p2RepoUrl,
-				id, e);
-		}
-		return null;
+	/**
+	 * @return the repository url this feature is installable from, may contain the {{p2.branch}}
+	 *         variable
+	 */
+	public String getP2RepoUrl(){
+		return p2RepoUrl;
 	}
 	
 }
