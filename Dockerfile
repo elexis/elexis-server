@@ -4,6 +4,7 @@ ARG BRANCH=3.9
 
 RUN apk add --no-cache tzdata bash
 ENV TZ=Europe/Zurich
+ENV ELEXIS-BRANCH=${BRANCH}
 RUN addgroup --gid 1001 elexis && adduser -S -u 1001 -G elexis -g "" -h /elexis elexis && \
     mkdir -p /opt/elexis-server && \
     wget http://download.elexis.info/elexis-server/${BRANCH}/products/info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
