@@ -68,7 +68,7 @@ public enum RedmineUtil {
 		}
 		
 		if (sizeLimit == null || sizeLimit <= 0 || sizeLimit > (10 * 1024 * 1024)) {
-			sizeLimit = new Long(1024 * 1024);
+			sizeLimit = Long.valueOf(1024 * 1024);
 		}
 		
 		if (issueId != null && issueId <= 0) {
