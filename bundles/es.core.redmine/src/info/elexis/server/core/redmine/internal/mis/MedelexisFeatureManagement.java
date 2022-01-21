@@ -154,6 +154,13 @@ public class MedelexisFeatureManagement {
 		List<LicensedFeature> licensedFeatures = new ArrayList<>();
 		for (Issue issue : results) {
 			CustomField customFieldByName = issue.getCustomFieldByName("p2RepoUrl");
+			CustomField aboState = issue.getCustomFieldByName("Abostatus");
+
+			if("EXPIRED".equalsIgnoreCase(aboState.getValue())) {
+				logger.info("[{}] is EXPIRED, skipping installation.", issue.getSubject());
+				continue;
+			}
+			
 			licensedFeatures
 				.add(new LicensedFeature(issue.getSubject(), customFieldByName.getValue()));
 		}
