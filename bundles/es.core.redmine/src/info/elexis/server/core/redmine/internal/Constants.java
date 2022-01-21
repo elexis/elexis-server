@@ -2,6 +2,7 @@ package info.elexis.server.core.redmine.internal;
 
 public class Constants {
 	
+	
 	/**
 	 * Expected environment variable containing the api key to use for the redmine connection
 	 */
@@ -26,4 +27,9 @@ public class Constants {
 	 * The numeric Id of the mis project
 	 */
 	public static final String ENV_VAR_MIS_PROJECTID = "MIS_PROJECTID";
+
+	/**
+	 * The Elexis branch of this installation (added via DockerFile during build)
+	 */
+	public static final String ENV_VAR_ELEXIS_BRANCH = "ELEXIS-BRANCH";
 }

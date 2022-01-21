@@ -1,6 +1,8 @@
 package info.elexis.server.core.redmine.internal.mis;
 
 import java.net.Authenticator;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,13 +79,19 @@ public class MedelexisFeatureManagement {
 			for (LicensedFeature licensedFeature : licensedFeatures) {
 				IInstallableUnit iu = installedFeaturesMap.get(licensedFeature.getId());
 				if (iu == null) {
-					logger.info("Preparing installation for licensed feature [{}] from [{}]",
-						licensedFeature.getId(), licensedFeature.getP2URI());
 					
-					provisioner.addRepository(licensedFeature.getP2URI(), getP2RepoUsername(),
-						getMisApiKey());
-					IStatus loadRepositoryStatus = provisioner
-						.loadRepository(new ConsoleProgressMonitor(), licensedFeature.getP2URI());
+					URI p2repoUrl = replaceP2BranchVariable(licensedFeature.getP2RepoUrl());
+					if(p2repoUrl == null) {
+						logger.warn("Invalid repo url, continuing.");
+						continue;
+					}
+					
+					logger.info("Preparing installation for licensed feature [{}] from [{}]",
+						licensedFeature.getId(), p2repoUrl);
+					
+					provisioner.addRepository(p2repoUrl, getP2RepoUsername(), getMisApiKey());
+					IStatus loadRepositoryStatus =
+						provisioner.loadRepository(new ConsoleProgressMonitor(), p2repoUrl);
 					StatusUtil.logStatus(logger, loadRepositoryStatus);
 					
 					IInstallableUnit iuToInstall = provisioner.getFeatureInAllAvailableFeatures(
@@ -115,6 +123,16 @@ public class MedelexisFeatureManagement {
 			Application.restart(false);
 		}
 		
+	}
+	
+	private URI replaceP2BranchVariable(String p2RepoUrl){
+		String _url = p2RepoUrl.replaceAll("\\{\\{p2.branch\\}\\}", getElexisBranch());
+		try {
+			return new URI(_url);
+		} catch (URISyntaxException e) {
+			logger.warn("Error resolving url []", _url);
+			return null;
+		}
 	}
 	
 	List<LicensedFeature> getLicensedFeatures() throws RedmineException{
@@ -162,6 +180,10 @@ public class MedelexisFeatureManagement {
 	
 	private String getP2RepoUsername(){
 		return DigestUtils.md5Hex(getMisApiKey());
+	}
+	
+	String getElexisBranch(){
+		return System.getenv(Constants.ENV_VAR_ELEXIS_BRANCH);
 	}
 	
 	String getMisApiKey(){
