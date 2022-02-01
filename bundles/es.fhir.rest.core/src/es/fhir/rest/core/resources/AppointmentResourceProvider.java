@@ -1,33 +1,21 @@
 package es.fhir.rest.core.resources;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Appointment;
-import org.hl7.fhir.r4.model.Schedule;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import ca.uhn.fhir.model.api.Include;
-import ca.uhn.fhir.model.api.annotation.Description;
-import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
-import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.ReferenceOrListParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ch.elexis.core.findings.codes.CodingSystem;
-import ch.elexis.core.findings.util.TerminUtil;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
@@ -76,7 +64,8 @@ public class AppointmentResourceProvider
 	@Search
 	public List<Appointment> search(
 		@OptionalParam(name = Appointment.SP_DATE) DateRangeParam dateParam,
-		@OptionalParam(name = Appointment.SP_SERVICE_CATEGORY) TokenParam serviceCategoryParam){
+		@OptionalParam(name = Appointment.SP_SERVICE_CATEGORY) TokenParam serviceCategoryParam,
+		@OptionalParam(name = Appointment.SP_PATIENT) StringParam patientParam){
 		
 		// TODO default limit, offset, paging
 		
@@ -86,10 +75,11 @@ public class AppointmentResourceProvider
 		
 		if (serviceCategoryParam != null && StringUtils.equalsIgnoreCase(
 			CodingSystem.ELEXIS_AGENDA_AREA_ID.getSystem(), serviceCategoryParam.getSystem())) {
-			query.and(ModelPackage.Literals.IAPPOINTMENT__SCHEDULE, COMPARATOR.EQUALS, serviceCategoryParam.getValue());
+			query.and(ModelPackage.Literals.IAPPOINTMENT__SCHEDULE, COMPARATOR.EQUALS,
+				serviceCategoryParam.getValue());
 		}
 		
-		if(dateParam != null) {
+		if (dateParam != null) {
 			DateConverter dateConverter = new DateConverter();
 			if (dateParam.getLowerBound() != null) {
 				LocalDate dayParam =
@@ -106,7 +96,13 @@ public class AppointmentResourceProvider
 				query.and("tag", compare2, dayParam2);
 			}
 		}
-	
+		
+		if (patientParam != null) {
+			String patientId = patientParam.getValue();
+			query.and(ModelPackage.Literals.IAPPOINTMENT__SUBJECT_OR_PATIENT, COMPARATOR.EQUALS,
+				patientId);
+		}
+		
 		return super.handleExecute(query);
 	}
 	
