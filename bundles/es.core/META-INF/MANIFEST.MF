@@ -79,5 +79,5 @@ Bundle-ClassPath: .,
  lib/org.apache.oltu.oauth2.common-1.0.2.jar,
  lib/org.apache.oltu.oauth2.resourceserver-filter-1.0.2.jar
 Require-Bundle: info.elexis.server.core.common;bundle-version="3.10.0",
- ch.elexis.core;bundle-version="3.10.0"
+ ch.elexis.core;bundle-version="3.9.0"
 
