@@ -5,6 +5,7 @@ import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.spi.HttpFacade.Request;
 import org.keycloak.representations.adapters.config.AdapterConfig;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.eenv.IElexisEnvironmentService;
 
@@ -39,8 +40,17 @@ public class ElexisEnvironmentKeycloakConfigResolver implements KeycloakConfigRe
 		// redirecting to login page
 		adapterConfig.setBearerOnly(true);
 		
+		// TODO get secret
+		// FIXME fals in production!!!
+//		adapterConfig.setDisableTrustManager(true);
+		
 		adapterConfig.getCredentials().put("secret", secret);
-		keycloakDeployment = KeycloakDeploymentBuilder.build(adapterConfig);
+		try {
+			keycloakDeployment = KeycloakDeploymentBuilder.build(adapterConfig);
+		} catch (Exception e) {
+			LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
