@@ -42,7 +42,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 	
 	private static final String FHIR_BASE_URL = "/fhir";
 	private static final String OAUTH_CLIENT_POSTFIX = "fhir-api";
-	private final String SKIP_PATTERN = "/fhir/metadata";
+	private final String SKIP_PATTERN = FHIR_BASE_URL + "/metadata";
 	
 	private static Logger logger = LoggerFactory.getLogger(CoreFhirRestServlet.class);
 	
@@ -90,6 +90,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 	@Activate
 	public void activate(){
 		
+		// TODO extract for general usage
 		//		https://stackoverflow.com/questions/9117030/jul-to-slf4j-bridge
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
@@ -101,7 +102,6 @@ public class CoreFhirRestServlet extends RestfulServer {
 			// web security required -  only available via EE / Keycloak setup
 			IElexisEnvironmentService elexisEnvironmentService =
 				OsgiServiceUtil.getService(IElexisEnvironmentService.class).orElseThrow();
-			
 			keycloakConfigResolver = new ElexisEnvironmentKeycloakConfigResolver(
 				elexisEnvironmentService, OAUTH_CLIENT_POSTFIX);
 			
@@ -117,10 +117,10 @@ public class CoreFhirRestServlet extends RestfulServer {
 				// see https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter
 				filterParams.put(KeycloakOIDCFilter.SKIP_PATTERN_PARAM, SKIP_PATTERN);
 				// TODO role fhir-api-access required? https://www.baeldung.com/spring-boot-keycloak
-				extHttpService.registerFilter("/*", new KeycloakOIDCFilter(keycloakConfigResolver),
-					filterParams, null);
+				extHttpService.registerFilter(FHIR_BASE_URL + "/*",
+					new KeycloakOIDCFilter(keycloakConfigResolver), filterParams, null);
 				
-				extHttpService.registerFilter("/*",
+				extHttpService.registerFilter(FHIR_BASE_URL + "/*",
 					new ContextSettingFilter(contextService, coreModelService, SKIP_PATTERN),
 					new Hashtable<>(), null);
 			} else {
@@ -153,9 +153,9 @@ public class CoreFhirRestServlet extends RestfulServer {
 		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 		registerInterceptor(loggingInterceptor);
 		loggingInterceptor.setMessageFormat(
-			"REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters}");
+			"REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters}: [${requestBodyFhir}]");
 		loggingInterceptor.setErrorMessageFormat(
-			"REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters} - ${exceptionMessage}");
+			"REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters} - ${exceptionMessage}: [${requestBodyFhir}]");
 		
 		/*
 		 * This server interceptor causes the server to return nicely formatter and

@@ -39,7 +39,10 @@ public class ElexisEnvironmentKeycloakConfigResolver implements KeycloakConfigRe
 		// redirecting to login page
 		adapterConfig.setBearerOnly(true);
 		
-		//		adapterConfig.setDisableTrustManager(true);
+				adapterConfig.setDisableTrustManager(true);
+				
+				
+				
 		adapterConfig.getCredentials().put("secret", secret);
 		keycloakDeployment = KeycloakDeploymentBuilder.build(adapterConfig);
 	}
