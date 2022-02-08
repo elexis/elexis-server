@@ -17,7 +17,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IBilled;
 
 @Component
-public class ClaimResourceProvider implements IFhirResourceProvider {
+public class ClaimResourceProvider implements IFhirResourceProvider<Claim, List<IBilled>> {
 	
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
@@ -29,14 +29,12 @@ public class ClaimResourceProvider implements IFhirResourceProvider {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IFhirTransformer<Claim, List<IBilled>> getTransformer(){
-		return (IFhirTransformer<Claim, List<IBilled>>) transformerRegistry
-			.getTransformerFor(Claim.class, List.class);
+	public IFhirTransformer getTransformer(){
+		return transformerRegistry.getTransformerFor(Claim.class, List.class);
 	}
 	
 	@Create
-	public MethodOutcome createClaim(@ResourceParam
-	Claim claim){
+	public MethodOutcome createClaim(@ResourceParam Claim claim){
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<List<IBilled>> created = getTransformer().createLocalObject(claim);
 		if (created.isPresent() && !created.get().isEmpty()) {

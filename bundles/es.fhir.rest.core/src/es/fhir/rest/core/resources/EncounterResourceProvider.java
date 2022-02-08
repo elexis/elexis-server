@@ -7,20 +7,15 @@ import java.util.Optional;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.IdType;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import ca.uhn.fhir.rest.annotation.Create;
-import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
-import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
@@ -31,11 +26,12 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IModelService;
 
-@Component
-public class EncounterResourceProvider implements IFhirResourceProvider {
+@Component(service = IFhirResourceProvider.class)
+public class EncounterResourceProvider
+		extends AbstractFhirCrudResourceProvider<Encounter, IEncounter> {
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
-	private IModelService modelService;
+	private IModelService coreModelService;
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -46,30 +42,24 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	@Reference
 	private IFindingsService findingsService;
 	
+	public EncounterResourceProvider(){
+		super(IEncounter.class);
+	}
+	
+	@Activate
+	public void activate(){
+		super.setCoreModelService(coreModelService);
+	}
+	
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
 		return Encounter.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Encounter, IEncounter> getTransformer(){
 		return (IFhirTransformer<Encounter, IEncounter>) transformerRegistry
 			.getTransformerFor(Encounter.class, IEncounter.class);
-	}
-	
-	@Read
-	public Encounter getResourceById(@IdParam
-	IdType theId){
-		String idPart = theId.getIdPart();
-		if (idPart != null) {
-			Optional<IEncounter> encounter = findingsService.findById(idPart, IEncounter.class);
-			if (encounter.isPresent()) {
-				Optional<Encounter> fhirEncounter = getTransformer().getFhirObject(encounter.get());
-				return fhirEncounter.get();
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -80,13 +70,13 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	 * @param dates
 	 * @return
 	 */
-	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_PATIENT)
-	IdType thePatientId, @OptionalParam(name = Encounter.SP_DATE)
-	DateRangeParam dates){
+	@Search
+	public List<Encounter> searchReqPatientOptDate(
+		@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
+		@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates){
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient =
-				modelService.load(thePatientId.getIdPart(), IPatient.class);
+				coreModelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					// migrate encounters first
@@ -126,9 +116,9 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 	 * @param identifier
 	 * @return
 	 */
-	@Search()
-	public List<Encounter> findEncounter(@RequiredParam(name = Encounter.SP_IDENTIFIER)
-	TokenParam identifier){
+	@Search
+	public List<Encounter> searchReqIdentifier(
+		@RequiredParam(name = Encounter.SP_IDENTIFIER) TokenParam identifier){
 		if (identifier != null && !identifier.isEmpty() && identifier.getValue() != null
 			&& !identifier.getValue().isEmpty()) {
 			migratorService.migrateConsultationsFindings(identifier.getValue(), IEncounter.class);
@@ -148,23 +138,4 @@ public class EncounterResourceProvider implements IFhirResourceProvider {
 		return null;
 	}
 	
-	@Create
-	public MethodOutcome createEncounter(@ResourceParam
-	Encounter encounter){
-		MethodOutcome outcome = new MethodOutcome();
-		Optional<IEncounter> exists = getTransformer().getLocalObject(encounter);
-		if (exists.isPresent()) {
-			outcome.setCreated(false);
-			outcome.setId(new IdType(encounter.getId()));
-		} else {
-			Optional<IEncounter> created = getTransformer().createLocalObject(encounter);
-			if (created.isPresent()) {
-				outcome.setCreated(true);
-				outcome.setId(new IdType(created.get().getId()));
-			} else {
-				throw new InternalErrorException("Creation failed");
-			}
-		}
-		return outcome;
-	}
 }

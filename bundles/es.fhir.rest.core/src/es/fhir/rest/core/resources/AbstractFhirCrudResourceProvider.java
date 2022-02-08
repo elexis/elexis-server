@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.r4.model.Appointment;
 import org.hl7.fhir.r4.model.BaseResource;
 import org.hl7.fhir.r4.model.IdType;
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.model.Deleteable;
-import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -45,8 +43,16 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 	}
 	
 	@Create
-	public MethodOutcome create(@ResourceParam FHIR patient){
-		return resourceProviderUtil.createResource(getTransformer(), patient, log);
+	public MethodOutcome create(@ResourceParam FHIR fhirObject){
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<ELEXIS> exists = getTransformer().getLocalObject(fhirObject);
+		if (exists.isPresent()) {
+			outcome.setCreated(false);
+			outcome.setId(new IdType(fhirObject.getId()));
+		} else {
+			outcome = resourceProviderUtil.createResource(getTransformer(), fhirObject, log);
+		}
+		return outcome;
 	}
 	
 	@Read
@@ -64,9 +70,16 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 	}
 	
 	@Update
-	public MethodOutcome update(@IdParam IdType theId, @ResourceParam FHIR patient){
+	public MethodOutcome update(@IdParam IdType theId, @ResourceParam FHIR fhirObject){
 		// FIXME request lock or fail
-		return resourceProviderUtil.updateResource(theId, getTransformer(), patient, log);
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<ELEXIS> exists = getTransformer().getLocalObject(fhirObject);
+		if (exists.isPresent()) {
+			outcome = resourceProviderUtil.updateResource(theId, getTransformer(), fhirObject, log);
+		} else {
+			outcome = create(fhirObject);
+		}
+		return outcome;
 	}
 	
 	@Delete
@@ -80,7 +93,7 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 			coreModelService.delete(resource.get());
 		}
 	}
-
+	
 	public List<FHIR> handleExecute(IQuery<ELEXIS> query){
 		// TODO add limit?
 		
