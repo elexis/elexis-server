@@ -19,6 +19,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.common.InstanceStatus;
@@ -38,6 +39,7 @@ import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.utils.OsgiServiceUtil;
+import ch.qos.logback.classic.Level;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.internal.services.InstanceService;
 import info.elexis.server.core.connector.elexis.internal.services.LogEventHandler;
@@ -51,13 +53,12 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	
 	@Reference
 	private IContextService contextService;
-
+	
 	@Reference
 	private ILockService lockService;
 	
 	private ServiceRegistration<ILockServiceContributor> logLockService;
 	private ServiceRegistration<EventHandler> logEventHandler;
-	
 	
 	@Activate
 	public void activate(){
@@ -75,7 +76,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
 		sb.append("LS UUID:\t[" + lockService.getSystemUuid() + "]\n");
 		sb.append("StationId:\t" + contextService.getStationIdentifier() + "\n");
-		sb.append("Default-TZ:\t"+ TimeZone.getDefault().getID()+"\n");
+		sb.append("Default-TZ:\t" + TimeZone.getDefault().getID() + "\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
 			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
@@ -105,11 +106,26 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 	
 	@CmdAdvisor(description = "disable elexis event logging")
-	public void __elc_eventlog_disable() {
+	public void __elc_eventlog_disable(){
 		if (logEventHandler != null) {
 			logEventHandler.unregister();
 			logEventHandler = null;
 			ok("unregistered");
+		}
+	}
+	
+	@CmdAdvisor(description = "enable/disable SQL logging - true | false")
+	public void __elc_sqllog(String booleanString){
+		ch.qos.logback.classic.Logger _logger =
+			(ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence");
+		if (_logger != null) {
+			boolean _enable = Boolean.valueOf(booleanString);
+			if (_enable) {
+				_logger.setLevel(Level.DEBUG);
+			} else {
+				_logger.setLevel(Level.WARN);
+			}
+			ok(_enable);
 		}
 	}
 	
@@ -162,8 +178,6 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 				+ lockInfo.getSystemUuid() + "]");
 		}
 	}
-	
-
 	
 	@CmdAdvisor(description = "enable lock request logging")
 	public void __elc_locks_log_enable() throws InvalidSyntaxException{
