@@ -5,7 +5,16 @@ The Elexis server (ES) implements a part of the SMART specification. Please cons
 
 ## BREAKING CHANGES
 
-As of current development or ES 1.8, suport for the following services/components is removed:
+
+### ES 3.10
+
+* Removal of Shiro
+* Security layer is now realized via Keycloak Filter
+### ES 3.9
+
+* Change of version handling. It is now merged with elexis-3-core
+* DB Connection configuration via Environment Variables
+### ES 1.8
 
 * ES will not provide HTTPS services
 * OpenID is not integrated in ES anymore
@@ -15,23 +24,37 @@ If you want to operate ES standalone with authentication/authorization support, 
 
 ## Build
 
-Requires maven 3.3 and java 8. Build can be started by executing `mvn -f releng/es.parent/pom.xml clean verify -DskipTests` 
+Requires maven 3.3 and java 11. Build can be started by executing `mvn -f releng/es.parent/pom.xml clean verify -DskipTests` 
 
-## Configuration, startup and checking the elexis server
+## Configuration, startup and testing the elexis server
 
 Documented in [es.core.product.runtime](products/es.core.product.runtime/Readme.md).
 
-## Running inside docker
+## Running via docker
 
-Use the following command to start an elexis-server docker image, omit (for latest) or replace `:tag` with the [tag](https://hub.docker.com/r/medevit/elexis-server/tags/) to use. 
+You may either run this image using the enclosed `docker-compose.yml` file, or via a direct docker call. 
+For an overview of the available versions (tags), see https://hub.docker.com/r/medevit/elexis-server/tags/
+Replace `master` with the resp. tag if another version is required.
+### Docker-Compose
+
+To get a fresh and clean run of ES perform the following commands in the given order:
+
+- `docker-compose rm -f` Remove an already existing container
+- `docker volume rm elexis-server_elexis_home` Remove the volume holding the ES home-directory
+- `docker-compose pull` Fetch the newest image of the server
+- `docker-compose up` Run the server in foreground mode. Append `-d` to run in background.
+
+### Direct docker call
 
 ```bash
-docker run -e DEMO_MODE='true' -e TZ=Europe/Zurich -p 8380:8380 -p 8480:8480 -p 7234:7234 medevit/elexis-server:tag
+docker run -e DEMO_MODE='true' -e TZ=Europe/Zurich -p 8380:8380  -p 7234:7234 medevit/elexis-server:master
 ```
 
 After initially creating a container out of this image (which is what the `run` command does), note
 the ID of the created instance, in order to restart it again afterwards. Repeatedly executing this command, always leaves
 you with a newly generated container.
 
-After startup point your browser to http://localhost:8380/services/elexis/connector/v1/status to get information on the database ES is connected to.
+### Parameters to use
 
+- `DISABLE_WEB_SECURITY=true` (DC) or `-e DISABLE_WEB_SECURITY='true'` - disable the web security layer
+- `DEMO_MODE=true` (DC) or `-e DEMO_MODE='true'` - download the demo database (only if not already downloaded)

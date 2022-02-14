@@ -2,10 +2,10 @@
 # Docker-Compose template to run ES
 #
 # to start: docker-compose up -d
-# to fstop and fully remove including volume: docker-compose down -v
+# to stop and fully remove including volume: docker-compose down -v
 #
 # FHIR API: Patient query http://localhost:8380/fhir/Patient?name=b
-# REST API: Uptime http://localhost:8380/services/system/uptime
+# REST API: Uptime http://localhost:8380/services/public/uptime
 version: '3'
 services:
     elexis-server:    

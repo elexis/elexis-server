@@ -7,20 +7,11 @@ Current snapshot binaries are available at [download](http://download.elexis.inf
 
 ## Configuration
 
-While Elexis-Server is can be operated on both Windows, MacOS and Linux, development is heavily focused on usage within the Linux operating system. We additionally focus on operation using Debian 8.
-
-### Required files
-
-For correct configuration the following files are required to be located in `${user.home}/elexis-server`. The directory `elexis-server` will be created on start if not available.
-
-*   `shiro.ini`
-*   `elexis-connection.xml` 
-
-You may just copy the bundles/es.core/shiro.ini and bundles/es.core.connector.elexis/rsc/devel/elexis-connection.xml to ~/elexis-server and modify them there.
+While Elexis-Server is can be operated on both Windows, MacOS and Linux, development is heavily focused on usage within the Linux operating system. We additionally focus on operation using Debian.
 
 ## Operation
 
-In order to start up elexis-server the enclosed shell script `linux-start.sh` should be used. This creates a local telnet socket on port 7234 bound to the OSGI console.
+In order to start up elexis-server the enclosed shell script `linux-start.sh` should be used. This creates a local telnet socket on port 7234 bound to the OSGi console.
 
 On Windows use the provided script `win-start.bat`. To install telnet client to access the OSGi console see [Microsoft help](https://technet.microsoft.com/en-us/library/cc771275.aspx).
 
@@ -29,10 +20,9 @@ a line like
 
 `20:26:59.350 ERROR i.e.s.c.c.e.i.ElexisEntityManager - System locale [de_CH] does not match required database locale [null]`
 
-After you should be able to see the uptime of the elexis server, if you visit with your browser http://localhost:8380/services. It should report something like `Uptime: 0 days, 0 hours, 0 min, 19 sec`
+After you should be able to see the uptime of the elexis server, if you visit with your browser http://localhost:8380/services/public/uptime. It should report something like `Uptime: 0 days, 0 hours, 0 min, 19 sec`
 
-Now you must install the FHIR REST feature by opening a telnet console via `telnet localhost 7234` and calling `es_p2 features install info.elexis.server.fhir.rest.core.feature.feature.group`
-Now it should be possible to visit with your browser URLs like http://localhost:8380/fhir/Patient?name=TestPatient, which should start a window containing something like
+It should be possible to visit with your browser URLs like http://localhost:8380/fhir/Patient?_filter=name%20co%20%22a%22, which should start a window containing something like
 
 ```
 This result is being rendered in HTML for easy viewing. You may access this content as Raw JSON or Raw XML, or view this content in HTML JSON or HTML XML.
@@ -95,16 +85,8 @@ This result is being rendered in HTML for easy viewing. You may access this cont
 </Bundle>
 ```
 
-## Console commands
+## OSGI console
 
-Elexis-server bundles partially provide console commands to be executed:
+Connecting to port 7234 using telnet gives access to the OSGi console. Entering `lxs` gives you an overview of the available commands.
 
 
-* Core `es (status | launch | system)` 
-* P2 `es_p2  (system | repositories | features)` 
-
-Example installing the FHIR REST feature:
-
-* `es_p2 executeUpdate` update with the newest versions from the p2 site
-* `es_p2 features install info.elexis.server.fhir.rest.core.feature.feature.group` install the feature
-* `es system halt` halt the running elexis server, restart using a start script
