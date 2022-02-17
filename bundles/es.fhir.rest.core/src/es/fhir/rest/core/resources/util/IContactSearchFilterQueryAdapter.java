@@ -17,6 +17,7 @@ import ch.elexis.core.services.IQuery.COMPARATOR;
 import es.fhir.rest.core.resources.util.SearchFilterParser.CompareOperation;
 import es.fhir.rest.core.resources.util.SearchFilterParser.Filter;
 import es.fhir.rest.core.resources.util.SearchFilterParser.FilterLogical;
+import es.fhir.rest.core.resources.util.SearchFilterParser.FilterLogicalOperation;
 import es.fhir.rest.core.resources.util.SearchFilterParser.FilterParameter;
 import es.fhir.rest.core.resources.util.SearchFilterParser.FilterParameterPath;
 import es.fhir.rest.core.resources.util.SearchFilterParser.FilterSyntaxException;
@@ -72,23 +73,16 @@ public class IContactSearchFilterQueryAdapter {
 				}
 			}
 			if (translateParamPath.size() > 1) {
-				// query.orJoinGroups();
+				 query.orJoinGroups();
 			}
 
 		} else if (filter instanceof FilterLogical) {
 			// _filter=identifier eq "www.elexis.info%2Fpatnr%7C11223" or address co "11223"
-			// / ??
 			FilterLogical filterLogical = (FilterLogical) filter;
-			query.startGroup();
+			int _op = (FilterLogicalOperation.and == filterLogical.getOperation()) ? 1 : 2;
 
-			handleFilter(query, filterLogical.getFilter1(), 2);
-			handleFilter(query, filterLogical.getFilter2(), 2);
-
-			query.andJoinGroups();
-
-			// if(filterLogical.getOperation().equals(FilterLogicalOperation.or)) {
-			// query.orJoinGroups();
-			// }
+			handleFilter(query, filterLogical.getFilter1(), _op);
+			handleFilter(query, filterLogical.getFilter2(), _op);
 		}
 
 	}
