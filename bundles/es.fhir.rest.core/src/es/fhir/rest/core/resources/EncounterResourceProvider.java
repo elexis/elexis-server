@@ -3,6 +3,7 @@ package es.fhir.rest.core.resources;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Encounter;
@@ -11,6 +12,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
@@ -73,7 +76,10 @@ public class EncounterResourceProvider
 	@Search
 	public List<Encounter> searchReqPatientOptDate(
 		@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
-		@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates){
+		@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates, @IncludeParam(allow = {
+			"Encounter.diagnosis"
+		}) Set<Include> theIncludes){
+		
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient =
 				coreModelService.load(thePatientId.getIdPart(), IPatient.class);
