@@ -153,9 +153,9 @@ public class CoreFhirRestServlet extends RestfulServer {
 		LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
 		registerInterceptor(loggingInterceptor);
 		loggingInterceptor.setMessageFormat(
-			"REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters}: [${requestBodyFhir}]");
+			"REQ ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} [${requestParameters}] [${requestBodyFhir}]");
 		loggingInterceptor.setErrorMessageFormat(
-			"REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} ${requestParameters} - ${exceptionMessage}: [${requestBodyFhir}]");
+			"REQ_ERR ${requestHeader.user-agent}@${remoteAddr} ${operationType} ${idOrResourceName} [${requestParameters}] - ${exceptionMessage} [${requestBodyFhir}]");
 		
 		/*
 		 * This server interceptor causes the server to return nicely formatter and
