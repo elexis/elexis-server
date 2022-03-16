@@ -36,7 +36,7 @@
     <dependency>
       <groupId>info.elexis.server</groupId>
       <artifactId>info.elexis.server.core.platform.feature</artifactId>
-      <version>3.10.0-SNAPSHOT</version>
+      <version>3.9.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>info.elexis.server</groupId>
       <artifactId>info.elexis.server.fhir.rest.core.feature</artifactId>
-      <version>3.10.0-SNAPSHOT</version>
+      <version>3.9.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
