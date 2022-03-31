@@ -1,5 +1,0 @@
-h1. Elexis-server development target
-
-# TODO
-
-Ant script to download and install ide.target
