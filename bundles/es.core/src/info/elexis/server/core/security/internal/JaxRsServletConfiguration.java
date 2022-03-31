@@ -55,7 +55,13 @@ public class JaxRsServletConfiguration implements ServletConfiguration {
 		if (!SystemPropertyConstants.isDisableWebSecurity()) {
 			// web security required -  only available via EE / Keycloak setup
 			IElexisEnvironmentService elexisEnvironmentService =
-				OsgiServiceUtil.getService(IElexisEnvironmentService.class).orElseThrow();
+				OsgiServiceUtil.getService(IElexisEnvironmentService.class).orElse(null);
+			if (elexisEnvironmentService == null) {
+				log.error(
+					"Web security enabled, but IElexisEnvironmentService is not available. Aborting JAXRS service setup.");
+				throw new IllegalStateException();
+			}
+			
 			keycloakConfigResolver = new ElexisEnvironmentKeycloakConfigResolver(
 				elexisEnvironmentService, OAUTH_CLIENT_POSTFIX);
 		}
