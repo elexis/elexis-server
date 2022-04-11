@@ -1,8 +1,8 @@
-FROM adoptopenjdk/openjdk11:alpine-slim
+FROM eclipse-temurin:17-jre-alpine
 MAINTAINER MEDEVIT <office@medevit.at>
 ARG BRANCH=master
 
-RUN apk add --no-cache tzdata bash
+RUN apk add --no-cache tzdata bash gcompat
 ENV TZ=Europe/Zurich
 ENV ELEXIS-BRANCH=${BRANCH}
 RUN addgroup --gid 1001 elexis && adduser -S -u 1001 -G elexis -g "" -h /elexis elexis && \
