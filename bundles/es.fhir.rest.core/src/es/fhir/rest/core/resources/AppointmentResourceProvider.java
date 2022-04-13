@@ -77,12 +77,6 @@ public class AppointmentResourceProvider
 		// TODO configurable
 		query.and(ModelPackage.Literals.IAPPOINTMENT__TYPE, COMPARATOR.NOT_EQUALS, "gesperrt");
 		
-		if (serviceCategoryParam != null && StringUtils.equalsIgnoreCase(
-			CodingSystem.ELEXIS_AGENDA_AREA_ID.getSystem(), serviceCategoryParam.getSystem())) {
-			query.and(ModelPackage.Literals.IAPPOINTMENT__SCHEDULE, COMPARATOR.EQUALS,
-				serviceCategoryParam.getValue());
-		}
-		
 		if (dateParam != null) {
 			DateConverter dateConverter = new DateConverter();
 			if (dateParam.getLowerBound() != null) {
