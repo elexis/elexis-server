@@ -2,28 +2,35 @@ package es.fhir.rest.core.resources;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Appointment;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Slot;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.Count;
+import ca.uhn.fhir.rest.annotation.IncludeParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Sort;
 import ca.uhn.fhir.rest.api.SortOrderEnum;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import ch.elexis.core.findings.codes.CodingSystem;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
+import ch.elexis.core.findings.util.fhir.IFhirTransformerException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.model.agenda.Area;
 import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -69,8 +76,12 @@ public class AppointmentResourceProvider
 		@OptionalParam(name = Appointment.SP_DATE) DateRangeParam dateParam,
 		@OptionalParam(name = Appointment.SP_SERVICE_CATEGORY) TokenParam serviceCategoryParam,
 		@OptionalParam(name = Appointment.SP_PATIENT) StringParam patientParam,
-		@Sort SortSpec theSort, @Count Integer theCount){
-		
+		@OptionalParam(name = Appointment.SP_SLOT, chainWhitelist = {
+			Slot.SP_SCHEDULE
+		}) ReferenceParam scheduleParam, @IncludeParam(allow = {
+			"Appointment.patient", "Appointment.slot"
+		}) Set<Include> theIncludes, @Sort SortSpec theSort, @Count Integer theCount){
+			
 		// TODO default limit, offset, paging
 		
 		IQuery<IAppointment> query = coreModelService.getQuery(IAppointment.class);
@@ -101,6 +112,17 @@ public class AppointmentResourceProvider
 				patientId);
 		}
 		
+		if (scheduleParam != null) {
+			Area area = appointmentService.getAreaByNameOrId(scheduleParam.getValue());
+			if (area == null) {
+				OperationOutcome opOutcome = new ResourceProviderUtil().generateOperationOutcome(
+					new IFhirTransformerException("WARNING", "Invalid area id", 412));
+				throw new PreconditionFailedException("Invalid area id", opOutcome);
+			}
+			query.and(ModelPackage.Literals.IAPPOINTMENT__SCHEDULE, COMPARATOR.EQUALS,
+				area.getName());
+		}
+		
 		if (theSort == null) {
 			theSort = new SortSpec(Appointment.SP_DATE, SortOrderEnum.ASC);
 		}
@@ -124,7 +146,7 @@ public class AppointmentResourceProvider
 			query.limit(theCount.intValue());
 		}
 		
-		return super.handleExecute(query);
+		return super.handleExecute(query, null, theIncludes);
 	}
 	
 	//	/**

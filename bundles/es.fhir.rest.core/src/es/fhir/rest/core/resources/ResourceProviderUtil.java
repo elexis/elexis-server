@@ -92,7 +92,7 @@ public class ResourceProviderUtil {
 		throw new InternalErrorException("Creation failed");
 	}
 
-	private OperationOutcome generateOperationOutcome(IFhirTransformerException e){
+	public OperationOutcome generateOperationOutcome(IFhirTransformerException e){
 		OperationOutcome opOutcome = new OperationOutcome();
 		OperationOutcomeIssueComponent ooc = new OperationOutcomeIssueComponent();
 		OperationOutcome.IssueSeverity severity =

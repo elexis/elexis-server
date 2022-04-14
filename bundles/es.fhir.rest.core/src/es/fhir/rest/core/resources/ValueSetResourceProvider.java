@@ -11,11 +11,9 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import ca.uhn.fhir.model.api.annotation.SearchParamDefinition;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
-import ca.uhn.fhir.rest.param.BaseParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 import ch.elexis.core.fhir.CodeSystem;
@@ -46,7 +44,6 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 			.getTransformerFor(ValueSet.class, List.class);
 	}
 	
-	
 	@Search
 	public ValueSet search(@RequiredParam(name = ValueSet.SP_URL) UriParam urlParam,
 		@OptionalParam(name = "_text") StringParam textParam){
@@ -57,13 +54,18 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 			getCodeElementServiceContributionByUri(codeElementService, urlParam.getValue());
 		
 		if (contribution.isPresent()) {
-			Map<Object, Object> singletonMap = Collections.singletonMap(
-				ICodeElementServiceContribution.CONTEXT_KEYS.DISPLAY, textParam.getValue());
-			List<ICodeElement> elements = contribution.get().getElements(singletonMap);
-			ValueSet valueSet = getTransformer().getFhirObject(elements).get();
+			Map<Object, Object> argumentsMap = null;
+			if (textParam != null) {
+				argumentsMap = Collections.singletonMap(
+					ICodeElementServiceContribution.CONTEXT_KEYS.DISPLAY, textParam.getValue());
+			}
+			List<ICodeElement> elements = contribution.get().getElements(argumentsMap);
+			if (!elements.isEmpty()) {
+				ValueSet valueSet = getTransformer().getFhirObject(elements).get();
+				valueSet.getCompose().getInclude().get(0).setSystem(urlParam.getValue());
+				return valueSet;
+			}
 			
-			valueSet.getCompose().getInclude().get(0).setSystem(urlParam.getValue());
-			return valueSet;
 		}
 		
 		return null;
@@ -71,6 +73,7 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 	
 	private Optional<ICodeElementServiceContribution> getCodeElementServiceContributionByUri(
 		ICodeElementService codeElementService, String uri){
+		
 		
 		if (StringUtils.startsWith(uri, CodeSystem.CODEELEMENT.getUrl())) {
 			String codeElementTypAndcodeSystemName =

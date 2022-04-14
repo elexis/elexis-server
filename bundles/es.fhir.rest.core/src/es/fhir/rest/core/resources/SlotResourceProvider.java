@@ -16,7 +16,7 @@ import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.services.IModelService;
 
 @Component
-public class SlotResourceProvider implements IFhirResourceProvider {
+public class SlotResourceProvider implements IFhirResourceProvider<Slot, IAppointment> {
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
@@ -29,7 +29,6 @@ public class SlotResourceProvider implements IFhirResourceProvider {
 		return Slot.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Slot, IAppointment> getTransformer(){
 		return (IFhirTransformer<Slot, IAppointment>) transformerRegistry

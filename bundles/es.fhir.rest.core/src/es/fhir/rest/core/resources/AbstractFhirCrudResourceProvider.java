@@ -3,6 +3,7 @@ package es.fhir.rest.core.resources;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.BaseResource;
@@ -10,6 +11,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.Delete;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -17,6 +19,7 @@ import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.model.Deleteable;
 import ch.elexis.core.model.Identifiable;
@@ -94,15 +97,17 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 		}
 	}
 	
-	public List<FHIR> handleExecute(IQuery<ELEXIS> query){
+	public List<FHIR> handleExecute(IQuery<ELEXIS> query, SummaryEnum summaryEnum, Set<Include> includes){
 		// TODO add limit?
 		
 		List<ELEXIS> objects = query.execute();
 		if (objects.isEmpty()) {
 			return Collections.emptyList();
 		}
+		// TODO WARN - parallelStream does loose the ThreadContext,
+		// thus will not be able to resolve user specific data
 		List<FHIR> _objects =
-			objects.parallelStream().map(org -> getTransformer().getFhirObject(org))
+			objects.stream().map(object -> getTransformer().getFhirObject(object, summaryEnum, includes))
 				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		return _objects;
 	}

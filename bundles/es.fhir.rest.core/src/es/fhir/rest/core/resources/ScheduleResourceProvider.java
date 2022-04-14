@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Schedule;
@@ -49,7 +48,6 @@ public class ScheduleResourceProvider implements IFhirResourceProvider<Schedule,
 	@Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
 	private IFhirTransformerRegistry transformerRegistry;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Schedule, String> getTransformer(){
 		return (IFhirTransformer<Schedule, String>) transformerRegistry
@@ -88,8 +86,8 @@ public class ScheduleResourceProvider implements IFhirResourceProvider<Schedule,
 					.filter(a -> Objects.equals(a.getContactId(), assignedContact.getId()))
 					.findFirst();
 				if (userContactArea.isPresent()) {
-					Schedule schedule = getTransformer()
-						.getFhirObject(DigestUtils.md5Hex(userContactArea.get().getName())).get();
+					Schedule schedule =
+						getTransformer().getFhirObject(userContactArea.get().getId()).get();
 					return schedule;
 				}
 			}
@@ -100,8 +98,8 @@ public class ScheduleResourceProvider implements IFhirResourceProvider<Schedule,
 	@Search
 	public List<Schedule> search(){
 		List<Schedule> areas = appointmentService.getAreas().stream()
-			.map(area -> getTransformer().getFhirObject(DigestUtils.md5Hex(area.getName())))
-			.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+			.map(area -> getTransformer().getFhirObject(area.getId())).filter(Optional::isPresent)
+			.map(Optional::get).collect(Collectors.toList());
 		return areas;
 	}
 	
