@@ -23,6 +23,7 @@ import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringAndListParam;
+import ca.uhn.fhir.rest.param.StringOrListParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ch.elexis.core.findings.IdentifierSystem;
@@ -66,7 +67,8 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 	}
 	
 	@Search
-	public List<Patient> search(@OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
+	public List<Patient> search(@OptionalParam(name="_id") StringAndListParam theId, 
+		@OptionalParam(name = Patient.SP_IDENTIFIER) TokenParam identifier,
 		@OptionalParam(name = Patient.SP_NAME) StringParam theName,
 		@OptionalParam(name = Patient.SP_BIRTHDATE) DateParam theBirthDate,
 		@OptionalParam(name = Patient.SP_ACTIVE) StringParam isActive,
@@ -75,6 +77,13 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 		
 		boolean includeDeleted = (isActive != null) ? Boolean.valueOf(isActive.getValue()) : false;
 		IQuery<IPatient> query = coreModelService.getQuery(IPatient.class, includeDeleted);
+		
+		if(theId != null) {
+			List<StringOrListParam> id_values = theId.getValuesAsQueryTokens();
+			for (StringOrListParam id_value : id_values) {
+				query.and("id", COMPARATOR.EQUALS, id_value.getValuesAsQueryTokens().get(0).getValue());
+			}
+		}
 		
 		if (identifier != null
 			&& Objects.equals(IdentifierSystem.ELEXIS_PATNR.getSystem(), identifier.getSystem())) {
