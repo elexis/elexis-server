@@ -75,11 +75,12 @@ public class AppointmentResourceProvider
 	public List<Appointment> search(
 		@OptionalParam(name = Appointment.SP_DATE) DateRangeParam dateParam,
 		@OptionalParam(name = Appointment.SP_SERVICE_CATEGORY) TokenParam serviceCategoryParam,
+		@OptionalParam(name = Appointment.SP_PRACTITIONER) StringParam practitionerParam,
 		@OptionalParam(name = Appointment.SP_PATIENT) StringParam patientParam,
 		@OptionalParam(name = Appointment.SP_SLOT, chainWhitelist = {
 			Slot.SP_SCHEDULE
 		}) ReferenceParam scheduleParam, @IncludeParam(allow = {
-			"Appointment.patient", "Appointment.slot"
+			"Appointment:actor", "Appointment:slot"
 		}) Set<Include> theIncludes, @Sort SortSpec theSort, @Count Integer theCount){
 			
 		// TODO default limit, offset, paging

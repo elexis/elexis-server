@@ -81,7 +81,7 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 		if(theId != null) {
 			List<StringOrListParam> id_values = theId.getValuesAsQueryTokens();
 			for (StringOrListParam id_value : id_values) {
-				query.and("id", COMPARATOR.EQUALS, id_value.getValuesAsQueryTokens().get(0).getValue());
+				query.or("id", COMPARATOR.EQUALS, id_value.getValuesAsQueryTokens().get(0).getValue());
 			}
 		}
 		
