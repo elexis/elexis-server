@@ -38,7 +38,7 @@ public class IContactSearchFilterQueryAdapter {
 				
 				try {
 					Filter filter = SearchFilterParser.parse(stringParam.getValue());
-					handleFilter(query, filter, 1);
+					handleFilter(query, filter, null);
 					
 				} catch (FilterSyntaxException | IllegalArgumentException e) {
 					OperationOutcome opOutcome = generateOperationOutcome(e);
@@ -60,7 +60,7 @@ public class IContactSearchFilterQueryAdapter {
 		return opOutcome;
 	}
 	
-	private void handleFilter(IQuery<? extends IContact> query, Filter filter, int op){
+	private void handleFilter(IQuery<? extends IContact> query, Filter filter, Integer op){
 		
 		if (filter instanceof FilterParameter) {
 			// e.g. _filter=email eq "mymail@address.ch"
@@ -73,6 +73,11 @@ public class IContactSearchFilterQueryAdapter {
 			if (translateParamPath.size() > 1) {
 				query.startGroup();
 			}
+			
+			if (op == null) {
+				op = (filterParameter.getOperation() == CompareOperation.co) ? 2 : 1;
+			}
+			
 			for (EStructuralFeature eStructuralFeature : translateParamPath) {
 				String value = filterParameter.getValue();
 				if (CompareOperation.co == filterParameter.getOperation()) {
@@ -88,17 +93,20 @@ public class IContactSearchFilterQueryAdapter {
 						value, true);
 				}
 			}
-			if (translateParamPath.size() > 1) {
-				query.orJoinGroups();
-			}
 			
 		} else if (filter instanceof FilterLogical) {
 			// _filter=identifier eq "www.elexis.info%2Fpatnr%7C11223" or address co "11223"
 			FilterLogical filterLogical = (FilterLogical) filter;
 			int _op = (FilterLogicalOperation.and == filterLogical.getOperation()) ? 1 : 2;
-			
+
+			query.startGroup();
 			handleFilter(query, filterLogical.getFilter1(), _op);
 			handleFilter(query, filterLogical.getFilter2(), _op);
+			if(_op == 1) {
+				query.andJoinGroups();
+			} else {
+				query.orJoinGroups();
+			}
 		}
 		
 	}
@@ -127,7 +135,8 @@ public class IContactSearchFilterQueryAdapter {
 		case Patient.SP_BIRTHDATE:
 			return Collections.singleton(ModelPackage.Literals.IPERSON__DATE_OF_BIRTH);
 		case Patient.SP_ADDRESS:
-			return Collections.singleton(ModelPackage.Literals.ICONTACT__STREET);
+			return Set.of(ModelPackage.Literals.ICONTACT__STREET,
+					ModelPackage.Literals.ICONTACT__CITY);
 		default:
 			break;
 		}
