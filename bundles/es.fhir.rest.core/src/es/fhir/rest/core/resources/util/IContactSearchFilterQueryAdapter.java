@@ -38,7 +38,7 @@ public class IContactSearchFilterQueryAdapter {
 				
 				try {
 					Filter filter = SearchFilterParser.parse(stringParam.getValue());
-					handleFilter(query, filter, null);
+					handleFilter(query, filter);
 					
 				} catch (FilterSyntaxException | IllegalArgumentException e) {
 					OperationOutcome opOutcome = generateOperationOutcome(e);
@@ -60,7 +60,7 @@ public class IContactSearchFilterQueryAdapter {
 		return opOutcome;
 	}
 	
-	private void handleFilter(IQuery<? extends IContact> query, Filter filter, Integer op){
+	private void handleFilter(IQuery<? extends IContact> query, Filter filter){
 		
 		if (filter instanceof FilterParameter) {
 			// e.g. _filter=email eq "mymail@address.ch"
@@ -74,9 +74,7 @@ public class IContactSearchFilterQueryAdapter {
 				query.startGroup();
 			}
 			
-			if (op == null) {
-				op = (filterParameter.getOperation() == CompareOperation.co) ? 2 : 1;
-			}
+			int	op = (filterParameter.getOperation() == CompareOperation.co) ? 2 : 1;
 			
 			for (EStructuralFeature eStructuralFeature : translateParamPath) {
 				String value = filterParameter.getValue();
@@ -97,12 +95,11 @@ public class IContactSearchFilterQueryAdapter {
 		} else if (filter instanceof FilterLogical) {
 			// _filter=identifier eq "www.elexis.info%2Fpatnr%7C11223" or address co "11223"
 			FilterLogical filterLogical = (FilterLogical) filter;
-			int _op = (FilterLogicalOperation.and == filterLogical.getOperation()) ? 1 : 2;
 
 			query.startGroup();
-			handleFilter(query, filterLogical.getFilter1(), _op);
-			handleFilter(query, filterLogical.getFilter2(), _op);
-			if(_op == 1) {
+			handleFilter(query, filterLogical.getFilter1());
+			handleFilter(query, filterLogical.getFilter2());
+			if(filterLogical.getOperation() == FilterLogicalOperation.and) {
 				query.andJoinGroups();
 			} else {
 				query.orJoinGroups();
