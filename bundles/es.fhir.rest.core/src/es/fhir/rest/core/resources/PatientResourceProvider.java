@@ -75,7 +75,7 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 		@OptionalParam(name = ca.uhn.fhir.rest.api.Constants.PARAM_FILTER) StringAndListParam theFtFilter,
 		@Sort SortSpec theSort, SummaryEnum theSummary){
 		
-		boolean includeDeleted = (isActive != null) ? Boolean.valueOf(isActive.getValue()) : false;
+		boolean includeDeleted = ! ( (isActive != null) ? Boolean.valueOf(isActive.getValue()) : true);
 		IQuery<IPatient> query = coreModelService.getQuery(IPatient.class, includeDeleted);
 		
 		if(theId != null) {
