@@ -188,7 +188,6 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 							lastUpdated.getTime());
 					List<IAppointment> queryResult = query.execute();
 					if (queryResult.size() > 0) {
-						logger.debug("[{}] send notification to [{}]", subscription.getId());
 						status = subscriptionResourceUtil.handleNotification(queryResult, subscription);
 					}
 				}

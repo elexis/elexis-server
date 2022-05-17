@@ -15,10 +15,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.hl7.fhir.r4.model.Subscription;
 import org.hl7.fhir.r4.model.Subscription.SubscriptionChannelComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IAppointment;
 
 public class SubscriptionResourceUtil {
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private HttpClient httpClient;
 
@@ -42,6 +46,7 @@ public class SubscriptionResourceUtil {
 			CompletableFuture<HttpResponse<String>> response = getHttpClient().sendAsync(request,
 					HttpResponse.BodyHandlers.ofString());
 			try {
+				logger.debug("[{}] Sending HTTP POST to [{}]", subscription.getId(), channel.getEndpoint());
 				Integer statusCode = response.thenApply(HttpResponse::statusCode).get(2, TimeUnit.SECONDS);
 				if (statusCode == 200) {
 					return Status.OK_STATUS;
