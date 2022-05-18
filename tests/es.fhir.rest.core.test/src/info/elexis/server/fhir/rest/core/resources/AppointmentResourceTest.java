@@ -88,6 +88,19 @@ public class AppointmentResourceTest {
 		assertEquals(8, results.getEntry().size());
 	}
 
+	@Test
+	public void searchByMultipleChainedSlotSchedule() {
+		// Praxis
+		String searchUrl = "Appointment?slot.schedule=5495888F8AAE05023409B5CF853BBBCE";
+		Bundle results = client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+		assertEquals(3, results.getEntry().size());
+
+		// Praxis and Arzt 1
+		searchUrl = "Appointment?slot.schedule=5495888F8AAE05023409B5CF853BBBCE,81DF9C49C3DAE56BD7DE851682E2B34F";
+		results = client.search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
+		assertEquals(6, results.getEntry().size());
+	}
+
 	@Ignore // FIX ME
 	@Test
 	public void testSearchByDateParamsAndSlot() {
@@ -95,8 +108,8 @@ public class AppointmentResourceTest {
 		Bundle results = client.search().forResource(Appointment.class)
 				.where(Appointment.DATE.afterOrEquals().day("2016-12-01"))
 				.and(Appointment.DATE.before().day("2016-12-30"))
-				.and(Appointment.ACTOR.hasId("Schedule/68a891b86923dd1740345627dbb92c9f"))
-				.returnBundle(Bundle.class).execute();
+				.and(Appointment.ACTOR.hasId("Schedule/68a891b86923dd1740345627dbb92c9f")).returnBundle(Bundle.class)
+				.execute();
 		assertEquals(2, results.getEntry().size());
 		for (BundleEntryComponent entry : results.getEntry()) {
 			Appointment appointment = (Appointment) entry.getResource();
@@ -117,7 +130,7 @@ public class AppointmentResourceTest {
 		System.out.println(results);
 		assertEquals(4, results.getEntry().size());
 
-	    System.out.println(FhirUtil.serializeToString(results));
+		System.out.println(FhirUtil.serializeToString(results));
 	}
 
 	@Ignore // FIX ME
@@ -125,10 +138,11 @@ public class AppointmentResourceTest {
 	public void updateAppointmentTest() {
 		Appointment result = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
 		assertEquals(AppointmentStatus.BOOKED, result.getStatus());
-		result.setStatus(AppointmentStatus.FULFILLED);	
+		result.setStatus(AppointmentStatus.FULFILLED);
 		client.update().resource(result).execute();
-		Appointment resultUpdated = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
+		Appointment resultUpdated = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177")
+				.execute();
 		assertEquals(AppointmentStatus.FULFILLED, resultUpdated.getStatus());
 	}
-	
+
 }
