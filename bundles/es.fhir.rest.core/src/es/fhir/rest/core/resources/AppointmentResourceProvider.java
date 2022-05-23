@@ -33,6 +33,7 @@ import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.model.agenda.Area;
 import ch.elexis.core.services.IAppointmentService;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -49,6 +50,9 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 	private IAppointmentService appointmentService;
 
 	@Reference
+	private ILocalLockService localLockService;
+	
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 
 	public AppointmentResourceProvider() {
@@ -63,6 +67,7 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 	@Activate
 	public void activate() {
 		super.setCoreModelService(coreModelService);
+		super.setLocalLockService(localLockService);
 	}
 
 	@Override

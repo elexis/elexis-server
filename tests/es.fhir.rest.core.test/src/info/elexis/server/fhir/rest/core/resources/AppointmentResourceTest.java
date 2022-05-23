@@ -7,12 +7,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.Appointment;
 import org.hl7.fhir.r4.model.Appointment.AppointmentParticipantComponent;
-import org.hl7.fhir.r4.model.Appointment.AppointmentStatus;
 import org.hl7.fhir.r4.model.Appointment.ParticipantRequired;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -26,6 +28,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.time.TimeUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -42,12 +47,12 @@ public class AppointmentResourceTest {
 	}
 
 	@Test
-	public void testDirectLoadAppointmentInContactAssignedArea() {
-		Appointment appointment = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
+	public void directLoadAppointmentInContactAssignedArea() {
+		Appointment appointment = client.read().resource(Appointment.class).withId("D3eeb6d9398e45029093231").execute();
 		assertNotNull(appointment);
-		assertEquals(1484116200000l, appointment.getStart().getTime());
-		assertEquals(1484121600000l, appointment.getEnd().getTime());
-		assertEquals(90, appointment.getMinutesDuration());
+		assertEquals(1482908400000l, appointment.getStart().getTime());
+		assertEquals(1482940800000l, appointment.getEnd().getTime());
+		assertEquals(540, appointment.getMinutesDuration());
 
 		List<AppointmentParticipantComponent> participants = appointment.getParticipant();
 		assertEquals(1, participants.size());
@@ -118,7 +123,6 @@ public class AppointmentResourceTest {
 		}
 	}
 
-	@Ignore // FIX ME
 	@Test
 	public void testSearchByDateParamsAndSlotAndIncludePatientReference() {
 		// http://localhost:8380/fhir/Schedule/5495888f8aae05023409b5cf853bbbce Praxis
@@ -133,16 +137,43 @@ public class AppointmentResourceTest {
 		System.out.println(FhirUtil.serializeToString(results));
 	}
 
-	@Ignore // FIX ME
 	@Test
-	public void updateAppointmentTest() {
+	public void updateVersionedAppointment() {
 		Appointment result = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
-		assertEquals(AppointmentStatus.BOOKED, result.getStatus());
-		result.setStatus(AppointmentStatus.FULFILLED);
+		assertEquals("1483615525111", result.getMeta().getVersionId());
+
+		// backend modify appointment
+		IAppointment appointment = AllTests.getModelService().load("Af322a333db4daf37093177", IAppointment.class)
+				.orElseThrow();
+		appointment.setSchedule("Kiril Checkov");
+		AllTests.getModelService().save(appointment);
+
+		// try to update now old version
+		ResourceVersionConflictException ex = null;
+		try {
+			client.update().resource(result).execute();
+		} catch (ResourceVersionConflictException rvce) {
+			ex = rvce;
+		}
+		assertNotNull(ex);
+		assertEquals(409, ex.getStatusCode());
+
+		result = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177").execute();
+		Date now = new Date();
+		result.setStart(now);
+		result.setEnd(new Date(now.getTime() + 5 * 60 * 1000));
+
 		client.update().resource(result).execute();
-		Appointment resultUpdated = client.read().resource(Appointment.class).withId("Af322a333db4daf37093177")
-				.execute();
-		assertEquals(AppointmentStatus.FULFILLED, resultUpdated.getStatus());
+
+		AllTests.getModelService().refresh(appointment);
+
+		LocalDateTime startTime = appointment.getStartTime();
+		LocalDateTime localDateTime = TimeUtil.toLocalDateTime(now);
+
+		boolean isEqualInSecondPrecision = startTime.truncatedTo(ChronoUnit.MINUTES)
+				.equals(localDateTime.truncatedTo(ChronoUnit.MINUTES));
+		assertTrue(isEqualInSecondPrecision);
+
 	}
 
 }

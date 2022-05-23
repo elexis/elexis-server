@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IOrganization;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import es.fhir.rest.core.resources.util.IContactSearchFilterQueryAdapter;
@@ -31,6 +32,9 @@ public class OrganizationResourceProvider
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	protected IModelService coreModelService;
+	
+	@Reference
+	private ILocalLockService localLockService;
 	
 	public OrganizationResourceProvider(){
 		super(IOrganization.class);
@@ -51,6 +55,7 @@ public class OrganizationResourceProvider
 	@Activate
 	public void activate() {
 		setCoreModelService(coreModelService);
+		setLocalLockService(localLockService);
 	}
 	
 	@Search

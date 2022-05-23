@@ -2,6 +2,7 @@ package es.fhir.rest.core.resources;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,33 +21,42 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.SummaryEnum;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.Deleteable;
 import ch.elexis.core.model.Identifiable;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 
 public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource, ELEXIS extends Identifiable & Deleteable>
 		implements IFhirResourceProvider<FHIR, ELEXIS> {
-	
+
 	private final Class<ELEXIS> CLAZZ;
 	private IModelService coreModelService;
-	
+	private ILocalLockService localLockService;
+
 	protected Logger log;
 	protected ResourceProviderUtil resourceProviderUtil;
-	
-	public AbstractFhirCrudResourceProvider(Class<ELEXIS> clazz){
+
+	public AbstractFhirCrudResourceProvider(Class<ELEXIS> clazz) {
 		this.CLAZZ = clazz;
 		resourceProviderUtil = new ResourceProviderUtil();
 		log = LoggerFactory.getLogger(getClass());
 	}
-	
-	protected void setCoreModelService(IModelService coreModelService){
+
+	protected void setCoreModelService(IModelService coreModelService) {
 		this.coreModelService = coreModelService;
 	}
-	
+
+	protected void setLocalLockService(ILocalLockService localLockService) {
+		this.localLockService = localLockService;
+	}
+
 	@Create
-	public MethodOutcome create(@ResourceParam FHIR fhirObject){
+	public MethodOutcome create(@ResourceParam FHIR fhirObject) {
 		MethodOutcome outcome = new MethodOutcome();
 		Optional<ELEXIS> exists = getTransformer().getLocalObject(fhirObject);
 		if (exists.isPresent()) {
@@ -57,36 +67,64 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 		}
 		return outcome;
 	}
-	
+
 	@Read
-	public FHIR read(@IdParam IdType theId){
+	public FHIR read(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<ELEXIS> elexisObjOptional = coreModelService.load(idPart, CLAZZ);
 			if (elexisObjOptional.isPresent()) {
 				Optional<FHIR> elexisObj = getTransformer().getFhirObject(elexisObjOptional.get());
 				return elexisObj.get();
-				
+
 			}
 		}
 		return null;
 	}
-	
+
 	@Update
-	public MethodOutcome update(@IdParam IdType theId, @ResourceParam FHIR fhirObject){
-		// FIXME request lock or fail
+	public MethodOutcome update(@IdParam IdType theId, @ResourceParam FHIR fhirObject) {
 		MethodOutcome outcome = new MethodOutcome();
-		Optional<ELEXIS> exists = getTransformer().getLocalObject(fhirObject);
-		if (exists.isPresent()) {
-			outcome = resourceProviderUtil.updateResource(theId, getTransformer(), fhirObject, log);
+		Optional<ELEXIS> elexisObject = getTransformer().getLocalObject(fhirObject);
+		if (elexisObject.isPresent()) {
+			checkMatchVersion(elexisObject.get().getLastupdate(), theId);
+
+			LockResponse lockResponse = localLockService.acquireLock(elexisObject.get());
+			if (lockResponse.isOk()) {
+				outcome = resourceProviderUtil.updateResource(theId, getTransformer(), fhirObject, log);
+				localLockService.releaseLock(lockResponse);
+			} else {
+				throw new PreconditionFailedException("Could not acquire update lock");
+			}
+
 		} else {
 			outcome = create(fhirObject);
 		}
 		return outcome;
 	}
-	
+
+	/**
+	 * Match the existing object version (i.e. lastupdate) with the version
+	 * propagated by the incoming update.
+	 * 
+	 * @param lastupdate
+	 * @param theId
+	 */
+	private void checkMatchVersion(Long lastupdate, IdType theId) {
+		// FIXME
+		return;
+
+//		String versionId = theId.getVersionIdPart(); // this will contain the ETag
+//		String lastUpdate = (lastupdate != null) ? Long.toString(lastupdate) : null;
+//		if (Objects.equals(lastUpdate, versionId)) {
+//			return;
+//		}
+//
+//		throw new ResourceVersionConflictException("Expected version " + lastUpdate);
+	}
+
 	@Delete
-	public void delete(@IdParam IdType theId){
+	public void delete(@IdParam IdType theId) {
 		// TODO request lock or fail
 		if (theId != null) {
 			Optional<ELEXIS> resource = coreModelService.load(theId.getIdPart(), CLAZZ);
@@ -96,20 +134,24 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 			coreModelService.delete(resource.get());
 		}
 	}
-	
-	public List<FHIR> handleExecute(IQuery<ELEXIS> query, SummaryEnum summaryEnum, Set<Include> includes){
+
+	public List<FHIR> handleExecute(IQuery<ELEXIS> query, SummaryEnum summaryEnum, Set<Include> includes) {
+
 		// TODO add limit?
-		
+
+		if (summaryEnum == SummaryEnum.COUNT) {
+		}
+
 		List<ELEXIS> objects = query.execute();
 		if (objects.isEmpty()) {
 			return Collections.emptyList();
 		}
 		// TODO WARN - parallelStream does loose the ThreadContext,
 		// thus will not be able to resolve user specific data
-		List<FHIR> _objects =
-			objects.stream().map(object -> getTransformer().getFhirObject(object, summaryEnum, includes))
+		List<FHIR> _objects = objects.stream()
+				.map(object -> getTransformer().getFhirObject(object, summaryEnum, includes))
 				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		return _objects;
 	}
-	
+
 }

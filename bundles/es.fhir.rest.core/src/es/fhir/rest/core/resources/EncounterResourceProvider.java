@@ -27,6 +27,7 @@ import ch.elexis.core.findings.util.DateRangeParamUtil;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 
 @Component(service = IFhirResourceProvider.class)
@@ -35,6 +36,9 @@ public class EncounterResourceProvider
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
+	
+	@Reference
+	private ILocalLockService localLockService;
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -52,6 +56,7 @@ public class EncounterResourceProvider
 	@Activate
 	public void activate(){
 		super.setCoreModelService(coreModelService);
+		super.setLocalLockService(localLockService);
 	}
 	
 	@Override

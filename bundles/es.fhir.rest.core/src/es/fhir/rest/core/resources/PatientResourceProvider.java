@@ -31,6 +31,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -42,6 +43,9 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
+	
+	@Reference
+	private ILocalLockService localLockService;
 	
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -58,6 +62,7 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 	@Activate
 	public void activate(){
 		super.setCoreModelService(coreModelService);
+		super.setLocalLockService(localLockService);
 	}
 	
 	@Override

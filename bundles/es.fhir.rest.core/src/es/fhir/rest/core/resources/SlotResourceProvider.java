@@ -9,6 +9,7 @@ import org.osgi.service.component.annotations.Reference;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 
 @Component(service = IFhirResourceProvider.class)
@@ -22,6 +23,9 @@ public class SlotResourceProvider extends AbstractFhirCrudResourceProvider<Slot,
 	private IModelService coreModelService;
 	
 	@Reference
+	private ILocalLockService localLockService;
+	
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 	
 	@Override
@@ -32,6 +36,7 @@ public class SlotResourceProvider extends AbstractFhirCrudResourceProvider<Slot,
 	@Activate
 	public void activate(){
 		super.setCoreModelService(coreModelService);
+		super.setLocalLockService(localLockService);
 	}
 	
 	@Override

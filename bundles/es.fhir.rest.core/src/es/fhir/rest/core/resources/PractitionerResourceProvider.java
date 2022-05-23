@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IMandator;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IUserService;
@@ -29,6 +30,9 @@ public class PractitionerResourceProvider
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	protected IModelService coreModelService;
+	
+	@Reference
+	private ILocalLockService localLockService;
 	
 	public PractitionerResourceProvider(){
 		super(IMandator.class);
@@ -48,6 +52,7 @@ public class PractitionerResourceProvider
 	@Activate
 	public void activate(){
 		setCoreModelService(coreModelService);
+		setLocalLockService(localLockService);
 	}
 	
 	@SuppressWarnings("unchecked")
