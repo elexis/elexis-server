@@ -38,11 +38,7 @@ public class ElexisEnvironmentKeycloakConfigResolver implements KeycloakConfigRe
 		// server answers with 401 for unauthenticated users instead of
 		// redirecting to login page
 		adapterConfig.setBearerOnly(true);
-		
-				adapterConfig.setDisableTrustManager(true);
-				
-				
-				
+		adapterConfig.setDisableTrustManager(false);
 		adapterConfig.getCredentials().put("secret", secret);
 		keycloakDeployment = KeycloakDeploymentBuilder.build(adapterConfig);
 	}
