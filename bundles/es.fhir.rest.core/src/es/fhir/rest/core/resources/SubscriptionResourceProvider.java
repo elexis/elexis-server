@@ -32,6 +32,7 @@ import ca.uhn.fhir.rest.annotation.Delete;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
+import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
@@ -171,6 +172,11 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 		return null;
 	}
 
+	@Search
+	public List<Subscription> search() {
+		return activeSubscriptions;
+	}
+	
 	private class SubscriptionRunnable implements Runnable {
 
 		@Override
