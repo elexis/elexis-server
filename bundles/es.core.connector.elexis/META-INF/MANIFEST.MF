@@ -16,21 +16,14 @@ Import-Package: io.swagger.annotations;version="1.5.18",
  javax.xml.bind,
  org.apache.commons.codec;version="1.14.0",
  org.apache.commons.lang3;version="3.12.0",
- org.apache.shiro;version="1.7.1",
- org.apache.shiro.authc;version="1.7.1",
- org.apache.shiro.authc.credential;version="1.7.1",
- org.apache.shiro.authz;version="1.7.1",
- org.apache.shiro.realm;version="1.7.1",
- org.apache.shiro.subject;version="1.7.1",
- org.apache.shiro.util;version="1.7.1",
  org.slf4j;version="1.7.2"
 Export-Package: info.elexis.server.core.connector.elexis,
  info.elexis.server.core.connector.elexis.common,
- info.elexis.server.core.connector.elexis.locking,
- info.elexis.server.core.connector.elexis.services
+ info.elexis.server.core.connector.elexis.locking
 Bundle-Activator: info.elexis.server.core.connector.elexis.internal.Activator
 Require-Bundle: info.elexis.server.core.common;bundle-version="3.9.0",
  info.elexis.server.core;bundle-version="3.9.0",
  ch.rgw.utility;bundle-version="3.9.100",
  ch.elexis.core;bundle-version="3.9.0",
- ch.elexis.core.services;bundle-version="3.9.0"
+ ch.elexis.core.services;bundle-version="3.9.0",
+ com.mysql.cj;bundle-version="8.0.22"

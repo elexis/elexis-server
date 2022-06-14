@@ -365,20 +365,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.shiro.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.shiro.web"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.osgi.util"
          download-size="0"
          install-size="0"
@@ -465,13 +451,6 @@
 
    <plugin
          id="org.apache.commons.commons-collections4"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.shiro.web.jaxrs"
          download-size="0"
          install-size="0"
          version="0.0.0"
