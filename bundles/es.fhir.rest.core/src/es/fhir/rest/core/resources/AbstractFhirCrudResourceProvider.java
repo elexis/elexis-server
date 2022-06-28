@@ -111,16 +111,13 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 	 * @param theId
 	 */
 	private void checkMatchVersion(Long lastupdate, IdType theId) {
-		// FIXME
-		return;
+		String versionId = theId.getVersionIdPart(); // this will contain the ETag
+		String lastUpdate = (lastupdate != null) ? Long.toString(lastupdate) : null;
+		if (Objects.equals(lastUpdate, versionId)) {
+			return;
+		}
 
-//		String versionId = theId.getVersionIdPart(); // this will contain the ETag
-//		String lastUpdate = (lastupdate != null) ? Long.toString(lastupdate) : null;
-//		if (Objects.equals(lastUpdate, versionId)) {
-//			return;
-//		}
-//
-//		throw new ResourceVersionConflictException("Expected version " + lastUpdate);
+		throw new ResourceVersionConflictException("Expected version " + lastUpdate);
 	}
 
 	@Delete
