@@ -67,11 +67,8 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: info.elexis.server.core,
  info.elexis.server.core.contrib,
  info.elexis.server.core.rest,
- info.elexis.server.core.security,
- info.elexis.server.core.security.oauth2
-Bundle-ClassPath: .,
- lib/org.apache.oltu.oauth2.common-1.0.2.jar,
- lib/org.apache.oltu.oauth2.resourceserver-filter-1.0.2.jar
+ info.elexis.server.core.security
+Bundle-ClassPath: .
 Require-Bundle: info.elexis.server.core.common;bundle-version="3.9.0",
  ch.elexis.core;bundle-version="3.9.0"
 
