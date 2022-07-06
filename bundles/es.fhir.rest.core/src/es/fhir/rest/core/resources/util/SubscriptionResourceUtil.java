@@ -3,6 +3,7 @@ package es.fhir.rest.core.resources.util;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Subscription;
 import org.hl7.fhir.r4.model.Subscription.SubscriptionChannelComponent;
 import org.slf4j.Logger;
@@ -39,9 +41,18 @@ public class SubscriptionResourceUtil {
 		SubscriptionChannelComponent channel = subscription.getChannel();
 		if (channel.getType() == Subscription.SubscriptionChannelType.RESTHOOK) {
 
-			HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
-					.uri(URI.create(channel.getEndpoint())).setHeader("User-Agent", "ES FHIR Subscription Notifier")
-					.build();
+			Builder requestBuilder = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
+					.uri(URI.create(channel.getEndpoint())).setHeader("User-Agent", "ES FHIR Subscription Notifier");
+
+			List<StringType> headers = channel.getHeader();
+			headers.stream().forEach(header -> {
+				String[] split = header.getValueAsString().split(":");
+				if (split.length == 2) {
+					requestBuilder.setHeader(split[0].trim(), split[1].trim());
+				}
+			});
+
+			HttpRequest request = requestBuilder.build();
 
 			CompletableFuture<HttpResponse<String>> response = getHttpClient().sendAsync(request,
 					HttpResponse.BodyHandlers.ofString());
