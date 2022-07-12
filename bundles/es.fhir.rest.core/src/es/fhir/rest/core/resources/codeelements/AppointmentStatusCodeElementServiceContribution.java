@@ -12,41 +12,47 @@ import ch.elexis.core.model.ICodeElement;
 import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.ICodeElementService.CodeElementTyp;
 import ch.elexis.core.services.ICodeElementServiceContribution;
+import ch.elexis.core.types.AppointmentState;
 
 @Component
 public class AppointmentStatusCodeElementServiceContribution implements ICodeElementServiceContribution {
-	
+
 	// TODO provide mapping to formal FHIR states?
 	// TODO add color information per user?
-	
-	
+
 	@Reference
 	private IAppointmentService appointmentService;
-	
+
 	@Override
-	public String getSystem(){
+	public String getSystem() {
 		return "appointment-status";
 	}
-	
+
 	@Override
-	public CodeElementTyp getTyp(){
+	public CodeElementTyp getTyp() {
 		return CodeElementTyp.CONFIG;
 	}
-	
+
 	@Override
-	public Optional<ICodeElement> loadFromCode(String code, Map<Object, Object> context){
+	public Optional<ICodeElement> loadFromCode(String code, Map<Object, Object> context) {
 		return null;
 	}
-	
+
 	@Override
-	public List<ICodeElement> getElements(Map<Object, Object> context){
-		List<ICodeElement> elements = new ArrayList<ICodeElement>();
-		
+	public List<ICodeElement> getElements(Map<Object, Object> context) {
+		ArrayList<ICodeElement> elements = new ArrayList<ICodeElement>();
+
 		List<String> states = appointmentService.getStates();
-		states.forEach(state -> elements.add(new TransientCodeElement(getSystem(),
-			state.replaceAll(" ", "_").toUpperCase(), state)));
-		
+		String defaultState = appointmentService.getState(AppointmentState.DEFAULT);
+
+		// put default state to front
+		states.remove(defaultState);
+		states.add(0, defaultState);
+
+		states.forEach(state -> elements
+				.add(new TransientCodeElement(getSystem(), state.replaceAll(" ", "_").toUpperCase(), state)));
+
 		return elements;
 	}
-	
+
 }
