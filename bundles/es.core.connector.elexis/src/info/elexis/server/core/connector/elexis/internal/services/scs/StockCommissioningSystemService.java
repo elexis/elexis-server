@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.internal.services.scs;
 
+import static org.osgi.framework.Constants.SERVICE_RANKING;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +38,19 @@ import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 
-@Component(property = "role=serverimpl")
+/**
+ * Elexis-Server sees this implementation and that in
+ * ch.elexis.core.services.StockCommissioningSystemService he should favor this
+ * implementation, thus a service ranking is set. It is not set in
+ * ch.elexis.core.services.StockCommissioningSystemService as according to
+ * https://docs.osgi.org/javadoc/r4v42/org/osgi/framework/Constants.html#SERVICE_RANKING
+ * the default is 0
+ */
+@Component(property = { "role=serverimpl", SERVICE_RANKING + ":Integer=100" })
 public class StockCommissioningSystemService implements IStockCommissioningSystemService {
-	
+
 	private Map<String, ICommissioningSystemDriver> stockCommissioningSystemDriverInstances;
-	
+
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
 	@Reference
@@ -51,67 +61,65 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	private ICodeElementService codeElementService;
 	@Reference
 	private ILockService lockService;
-	
+
 	private Logger log;
-	
+
 	@Activate
-	public void activate(){
+	public void activate() {
 		log = LoggerFactory.getLogger(getClass());
 		stockCommissioningSystemDriverInstances = new HashMap<String, ICommissioningSystemDriver>();
 	}
-	
+
 	@Override
-	public List<UUID> listAllAvailableDrivers(){
+	public List<UUID> listAllAvailableDrivers() {
 		return StockCommissioningSystemDriverFactories.getAllDriverUuids();
 	}
-	
+
 	@Override
-	public String getInfoStringForDriver(UUID driverUuid, boolean extended){
+	public String getInfoStringForDriver(UUID driverUuid, boolean extended) {
 		return StockCommissioningSystemDriverFactories.getInfoStringForDriver(driverUuid, extended);
 	}
-	
+
 	@Override
-	public IStatus initializeStockCommissioningSystem(IStock stock){
+	public IStatus initializeStockCommissioningSystem(IStock stock) {
 		UUID driver;
 		try {
 			String driverUuid = stock.getDriverUuid();
 			if (driverUuid == null) {
 				return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-					"Invalid SCSDriver UUID: " + stock.getDriverUuid());
+						"Invalid SCSDriver UUID: " + stock.getDriverUuid());
 			}
 			driver = UUID.fromString(driverUuid);
 		} catch (IllegalArgumentException iae) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-				"Invalid SCSDriver UUID: " + stock.getDriverUuid());
+					"Invalid SCSDriver UUID: " + stock.getDriverUuid());
 		}
-		
-		ICommissioningSystemDriverFactory icsdf =
-			StockCommissioningSystemDriverFactories.getDriverFactory(driver);
+
+		ICommissioningSystemDriverFactory icsdf = StockCommissioningSystemDriverFactories.getDriverFactory(driver);
 		if (icsdf == null) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-				"SCSDriver factory not found: " + driver.toString());
+					"SCSDriver factory not found: " + driver.toString());
 		}
-		
+
 		ICommissioningSystemDriver icsd = icsdf.createDriverInstance();
 		if (icsd == null) {
 			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-				"SCSDriver instance is null for UUID: " + stock.getDriverUuid());
+					"SCSDriver instance is null for UUID: " + stock.getDriverUuid());
 		}
-		
+
 		String configuration = stock.getDriverConfig();
 		IStatus status = icsd.initializeInstance(configuration, stock);
 		if (status.isOK()) {
 			stockCommissioningSystemDriverInstances.put(stock.getId(), icsd);
 			return Status.OK_STATUS;
 		}
-		
+
 		return status;
 	}
-	
+
 	@Override
-	public IStatus shutdownStockCommissioningSytem(IStock stock){
-		ICommissioningSystemDriver icsd =
-			stockCommissioningSystemDriverInstances.get(stock.getId());
+	public IStatus shutdownStockCommissioningSytem(IStock stock) {
+		ICommissioningSystemDriver icsd = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (icsd == null) {
 			return Status.OK_STATUS;
 		}
@@ -119,14 +127,14 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		if (shutdownStatus.isOK()) {
 			stockCommissioningSystemDriverInstances.remove(stock.getId());
 		} else {
-			log.warn("Problem shutting down commissioning system driver [{}]:"
-				+ shutdownStatus.getMessage(), icsd.getClass().getName());
+			log.warn("Problem shutting down commissioning system driver [{}]:" + shutdownStatus.getMessage(),
+					icsd.getClass().getName());
 		}
 		return shutdownStatus;
 	}
-	
+
 	@Override
-	public IStatus initializeInstancesUsingDriver(UUID driver){
+	public IStatus initializeInstancesUsingDriver(UUID driver) {
 		IQuery<IStock> sq = coreModelService.getQuery(IStock.class);
 		sq.and(ModelPackage.Literals.ISTOCK__DRIVER_UUID, COMPARATOR.EQUALS, driver.toString());
 		List<IStock> stocks = sq.execute();
@@ -138,9 +146,9 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 		return Status.OK_STATUS;
 	}
-	
+
 	@Override
-	public IStatus shutdownInstancesUsingDriver(UUID driver){
+	public IStatus shutdownInstancesUsingDriver(UUID driver) {
 		IQuery<IStock> sq = coreModelService.getQuery(IStock.class);
 		sq.and(ModelPackage.Literals.ISTOCK__DRIVER_UUID, COMPARATOR.EQUALS, driver.toString());
 		List<IStock> stocks = sq.execute();
@@ -152,15 +160,14 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 		return Status.OK_STATUS;
 	}
-	
+
 	@Override
-	public ICommissioningSystemDriver getDriverInstanceForStock(IStock stock){
+	public ICommissioningSystemDriver getDriverInstanceForStock(IStock stock) {
 		return stockCommissioningSystemDriverInstances.get(stock.getId());
 	}
-	
+
 	@Override
-	public IStatus performArticleOutlay(IStockEntry stockEntry, int quantity,
-		Map<String, Object> data){
+	public IStatus performArticleOutlay(IStockEntry stockEntry, int quantity, Map<String, Object> data) {
 		IStock stock = stockEntry.getStock();
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
@@ -171,22 +178,20 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 				if (ics == null) {
 					return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-						"Incorrect stock commissioning service initialization.");
+							"Incorrect stock commissioning service initialization.");
 				}
 			}
 		}
-		
+
 		IArticle article = stockEntry.getArticle();
 		if (article == null) {
-			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-				"Could not resolve article in stockEntry");
+			return new Status(Status.ERROR, BundleConstants.BUNDLE_ID, "Could not resolve article in stockEntry");
 		}
 		return ics.performStockRemoval(article.getGtin(), quantity, data);
 	}
-	
+
 	@Override
-	public IStatus synchronizeInventory(IStock stock, List<String> gtinsToUpdate,
-		Map<String, Object> data){
+	public IStatus synchronizeInventory(IStock stock, List<String> gtinsToUpdate, Map<String, Object> data) {
 		ICommissioningSystemDriver ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 		if (ics == null) {
 			IStatus icsStatus = initializeStockCommissioningSystem(stock);
@@ -196,47 +201,46 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				ics = stockCommissioningSystemDriverInstances.get(stock.getId());
 				if (ics == null) {
 					return new Status(Status.ERROR, BundleConstants.BUNDLE_ID,
-						"Incorrect stock commissioning service initialization, or is not machine stock.");
+							"Incorrect stock commissioning service initialization, or is not machine stock.");
 				}
 			}
 		}
-		
+
 		if (gtinsToUpdate == null) {
 			gtinsToUpdate = Collections.emptyList();
 		}
-		
+
 		IStatus retrieveInventory = ics.retrieveInventory(gtinsToUpdate, data);
 		if (!retrieveInventory.isOK()) {
 			return retrieveInventory;
 		}
-		
+
 		ObjectStatus os = (ObjectStatus) retrieveInventory;
+		@SuppressWarnings("unchecked")
 		List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
-		
-		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] gtinsToUpdateSize [{}]",
-			stock.getId(), transientCommSysStockEntries.size(), gtinsToUpdate.size());
-		
+
+		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] gtinsToUpdateSize [{}]", stock.getId(),
+				transientCommSysStockEntries.size(), gtinsToUpdate.size());
+
 		if (gtinsToUpdate.size() > 0) {
-			return performDifferentialInventorySynchronization(stock, transientCommSysStockEntries,
-				gtinsToUpdate);
+			return performDifferentialInventorySynchronization(stock, transientCommSysStockEntries, gtinsToUpdate);
 		}
 		return performFullInventorySynchronization(stock, transientCommSysStockEntries);
 	}
-	
-	private IStatus performFullInventorySynchronization(IStock stock,
-		List<? extends IStockEntry> inventoryResult){
+
+	private IStatus performFullInventorySynchronization(IStock stock, List<? extends IStockEntry> inventoryResult) {
 		List<IStockEntry> currentStockEntries = stockService.findAllStockEntriesForStock(stock);
-		Set<String> currentStockEntryIds =
-			currentStockEntries.stream().map(cse -> cse.getId()).collect(Collectors.toSet());
+		Set<String> currentStockEntryIds = currentStockEntries.stream().map(cse -> cse.getId())
+				.collect(Collectors.toSet());
 		for (int i = 0; i < inventoryResult.size(); i++) {
 			IStockEntry inventoryResultStockEntry = inventoryResult.get(i);
 			String gtin = inventoryResultStockEntry.getArticle().getGtin();
-			log.trace("{}/{} synchronize [{}] gtin [{}]", i, inventoryResult.size(),
-				inventoryResultStockEntry.getId(), gtin);
-			
+			log.trace("{}/{} synchronize [{}] gtin [{}]", i, inventoryResult.size(), inventoryResultStockEntry.getId(),
+					gtin);
+
 			IStatus status = null;
 			Optional<IStockEntry> seo = currentStockEntries.stream()
-				.filter(s -> (gtin.equalsIgnoreCase(s.getArticle().getGtin()))).findFirst();
+					.filter(s -> (gtin.equalsIgnoreCase(s.getArticle().getGtin()))).findFirst();
 			if (seo.isPresent()) {
 				status = updateStockEntry(seo.get(), inventoryResultStockEntry.getCurrentStock());
 				currentStockEntryIds.remove(seo.get().getId());
@@ -247,7 +251,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				StatusUtil.logStatus(log, status, true);
 			}
 		}
-		
+
 		// remove surplus stock entries
 		for (String stockEntryId : currentStockEntryIds) {
 			Optional<IStockEntry> seo = coreModelService.load(stockEntryId, IStockEntry.class);
@@ -257,28 +261,25 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				log.error("StockEntry [{}] should be available!", stockEntryId);
 			}
 		}
-		
+
 		return Status.OK_STATUS;
 	}
-	
+
 	private IStatus performDifferentialInventorySynchronization(IStock stock,
-		List<? extends IStockEntry> scsInventoryResult, List<String> gtinsToUpdate){
-		
+			List<? extends IStockEntry> scsInventoryResult, List<String> gtinsToUpdate) {
+
 		Map<String, IStockEntry> inventoryGtinMap = new HashMap<String, IStockEntry>();
-		scsInventoryResult.stream()
-			.forEach(ir -> inventoryGtinMap.put(ir.getArticle().getGtin(), ir));
+		scsInventoryResult.stream().forEach(ir -> inventoryGtinMap.put(ir.getArticle().getGtin(), ir));
 		for (String gtin : gtinsToUpdate) {
 			IStatus status = null;
-			
+
 			Optional<IStockEntry> seo = Optional.empty();
 			Optional<IArticle> findArticleByGtin = codeElementService.findArticleByGtin(gtin);
 			if (findArticleByGtin.isPresent()) {
-				String storeToString =
-					storeToStringService.storeToString(findArticleByGtin.get()).get();
-				seo = Optional
-					.ofNullable(stockService.findStockEntryForArticleInStock(stock, storeToString));
+				String storeToString = storeToStringService.storeToString(findArticleByGtin.get()).get();
+				seo = Optional.ofNullable(stockService.findStockEntryForArticleInStock(stock, storeToString));
 			}
-			
+
 			if (inventoryGtinMap.get(gtin) != null) {
 				IStockEntry iStockEntry = inventoryGtinMap.get(gtin);
 				if (seo.isPresent()) {
@@ -300,8 +301,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 		return Status.OK_STATUS;
 	}
-	
-	private IStatus deleteStockEntry(IStockEntry se){
+
+	private IStatus deleteStockEntry(IStockEntry se) {
 		if (isStockEntryBoundForReorder(se)) {
 			updateStockEntry(se, 0);
 		} else {
@@ -317,13 +318,13 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				}
 			}
 		}
-		
+
 		return Status.OK_STATUS;
 	}
-	
-	private IStatus createStockEntry(IStock stock, IStockEntry tse){
+
+	private IStatus createStockEntry(IStock stock, IStockEntry tse) {
 		String gtin = tse.getArticle().getGtin();
-		
+
 		Optional<IArticle> articleByGTIN = codeElementService.findArticleByGtin(gtin);
 		if (articleByGTIN.isPresent()) {
 			IArticle adid = articleByGTIN.get();
@@ -331,7 +332,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			IStockEntry se = stockService.storeArticleInStock(stock, storeToString);
 			se.setCurrentStock(tse.getCurrentStock());
 			coreModelService.save(se);
-			
+
 			log.debug("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
 			LockResponse lr = lockService.acquireLockBlocking(se, 5, null);
 			if (lr.isOk()) {
@@ -341,15 +342,13 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				}
 			}
 		} else {
-			log.warn("Could not resolve article by GTIN [{}], will not consider in stock update.",
-				gtin);
+			log.warn("Could not resolve article by GTIN [{}], will not consider in stock update.", gtin);
 		}
 		return Status.OK_STATUS;
 	}
-	
-	private IStatus updateStockEntry(IStockEntry se, int currentStock){
-		log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(),
-			currentStock);
+
+	private IStatus updateStockEntry(IStockEntry se, int currentStock) {
+		log.debug("Updating StockEntry [{}] {} -> {}", se.getId(), se.getCurrentStock(), currentStock);
 		if (se.getCurrentStock() == currentStock) {
 			return Status.OK_STATUS;
 		}
@@ -366,16 +365,16 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 		return Status.OK_STATUS;
 	}
-	
+
 	/**
-	 * Is this stock entry bound for reordering? This is the case if either a minimum or maximum
-	 * stock amount is defined (i.e. > 0).
+	 * Is this stock entry bound for reordering? This is the case if either a
+	 * minimum or maximum stock amount is defined (i.e. > 0).
 	 * 
 	 * @param se
 	 * @return
 	 */
-	private boolean isStockEntryBoundForReorder(IStockEntry se){
+	private boolean isStockEntryBoundForReorder(IStockEntry se) {
 		return se.getMinimumStock() > 0 || se.getMaximumStock() > 0;
 	}
-	
+
 }
