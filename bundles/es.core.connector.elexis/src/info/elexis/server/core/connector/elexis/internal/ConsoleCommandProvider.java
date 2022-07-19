@@ -33,6 +33,7 @@ import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IVirtualFilesystemService.IVirtualFilesystemHandle;
+import ch.elexis.core.services.holder.ConfigServiceHolder;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
@@ -222,6 +223,15 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 				prflp(TimeUtil.formatSafe(config.getLastupdate()), 25, true);
 			}
 		}
+	}
+	
+	@CmdAdvisor(description = "get a local configuration entry requires key argument)")
+	public String __elc_localconfig_get(String key) {
+		if (key == null) {
+			return missingArgument("key");
+
+		}
+		return ConfigServiceHolder.get().getLocal(key, null);
 	}
 	
 	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)")
