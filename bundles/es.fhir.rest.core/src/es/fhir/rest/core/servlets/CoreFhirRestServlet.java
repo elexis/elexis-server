@@ -94,7 +94,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 		//		https://stackoverflow.com/questions/9117030/jul-to-slf4j-bridge
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
-		java.util.logging.Logger.getLogger("").setLevel(Level.FINEST);
+		java.util.logging.Logger.getLogger("").setLevel(Level.INFO);
 		
 		KeycloakConfigResolver keycloakConfigResolver = null;
 		
