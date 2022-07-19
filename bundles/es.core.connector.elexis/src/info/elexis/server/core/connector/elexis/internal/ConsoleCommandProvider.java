@@ -34,6 +34,7 @@ import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IVirtualFilesystemService.IVirtualFilesystemHandle;
+import ch.elexis.core.services.holder.ConfigServiceHolder;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
@@ -50,28 +51,28 @@ import info.elexis.server.core.connector.elexis.locking.ILockServiceContributor;
 
 @Component(service = CommandProvider.class, immediate = true)
 public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
-	
+
 	@Reference
 	private IContextService contextService;
-	
+
 	@Reference
 	private ILockService lockService;
-	
+
 	private ServiceRegistration<ILockServiceContributor> logLockService;
 	private ServiceRegistration<EventHandler> logEventHandler;
-	
+
 	@Activate
-	public void activate(){
+	public void activate() {
 		register(this.getClass());
 	}
-	
+
 	@CmdAdvisor(description = "elexis database connector")
-	public void _elc(CommandInterpreter ci){
+	public void _elc(CommandInterpreter ci) {
 		executeCommand("elc", ci);
 	}
-	
+
 	@CmdAdvisor(description = "show database connection and status information")
-	public String __elc_status(){
+	public String __elc_status() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
 		sb.append("LS UUID:\t[" + lockService.getSystemUuid() + "]\n");
@@ -79,45 +80,42 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		sb.append("Default-TZ:\t" + TimeZone.getDefault().getID() + "\n");
 		sb.append("Locks:");
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
-			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
-				+ lockInfo.getElementId() + "\t" + lockInfo.getCreationDate() + "\t["
-				+ lockInfo.getSystemUuid() + "]\n");
+			sb.append("\t\t" + lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId()
+					+ "\t" + lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
 		}
 		return sb.toString();
 	}
-	
+
 	@CmdAdvisor(description = "enable elexis event logging, optional topic parameter")
-	public void __elc_eventlog_enable(String topic){
+	public void __elc_eventlog_enable(String topic) {
 		if (logEventHandler == null) {
 			Dictionary<String, Object> properties = new Hashtable<>();
 			Object _topic;
 			if (topic != null) {
 				_topic = topic;
 			} else {
-				_topic = new String[] {
-					ElexisEventTopics.BASE + "*", "remote/" + ElexisEventTopics.BASE + "*"
-				};
+				_topic = new String[] { ElexisEventTopics.BASE + "*", "remote/" + ElexisEventTopics.BASE + "*" };
 			}
 			properties.put(EventConstants.EVENT_TOPIC, _topic);
-			logEventHandler = Activator.getContext().registerService(EventHandler.class,
-				new LogEventHandler(), properties);
+			logEventHandler = Activator.getContext().registerService(EventHandler.class, new LogEventHandler(),
+					properties);
 			ok(logEventHandler.getReference());
 		}
 	}
-	
+
 	@CmdAdvisor(description = "disable elexis event logging")
-	public void __elc_eventlog_disable(){
+	public void __elc_eventlog_disable() {
 		if (logEventHandler != null) {
 			logEventHandler.unregister();
 			logEventHandler = null;
 			ok("unregistered");
 		}
 	}
-	
+
 	@CmdAdvisor(description = "enable/disable SQL logging - true | false")
-	public void __elc_sqllog(String booleanString){
-		ch.qos.logback.classic.Logger _logger =
-			(ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence");
+	public void __elc_sqllog(String booleanString) {
+		ch.qos.logback.classic.Logger _logger = (ch.qos.logback.classic.Logger) LoggerFactory
+				.getLogger("org.eclipse.persistence");
 		if (_logger != null) {
 			boolean _enable = Boolean.valueOf(booleanString);
 			if (_enable) {
@@ -128,18 +126,16 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			ok(_enable);
 		}
 	}
-	
+
 	@CmdAdvisor(description = "send a message to a given user")
-	public void __elc_message(List<String> args){
+	public void __elc_message(List<String> args) {
 		if (args.isEmpty()) {
 			fail("usage: elc message userid message");
 		}
-		
-		Optional<IMessageService> messageService =
-			OsgiServiceUtil.getService(IMessageService.class);
+
+		Optional<IMessageService> messageService = OsgiServiceUtil.getService(IMessageService.class);
 		if (messageService.isPresent()) {
-			TransientMessage message =
-				messageService.get().prepare(contextService.getStationIdentifier(),
+			TransientMessage message = messageService.get().prepare(contextService.getStationIdentifier(),
 					IMessageService.INTERNAL_MESSAGE_URI_SCHEME + ":" + args.get(0));
 			message.setMessageText(args.get(1));
 			ObjectStatus status = messageService.get().send(message);
@@ -147,9 +143,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 		fail("messageService not found");
 	}
-	
+
 	@CmdAdvisor(description = "list all elexis instances connected to this server instance")
-	public void __elc_listInstances(){
+	public void __elc_listInstances() {
 		List<InstanceStatus> status = InstanceService.getInstanceStatus();
 		for (int i = 0; i < status.size(); i++) {
 			InstanceStatus inst = status.get(i);
@@ -163,62 +159,61 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			}
 		}
 	}
-	
+
 	@CmdAdvisor(description = "clear the list of active elexis instances held by this server")
-	public String __elc_listInstances_clear(){
+	public String __elc_listInstances_clear() {
 		InstanceService.clearInstanceStatus();
 		return ok();
 	}
-	
+
 	@CmdAdvisor(description = "list all locks held by this server")
-	public void __elc_locks_list(){
+	public void __elc_locks_list() {
 		for (LockInfo lockInfo : LockService.getAllLockInfo()) {
-			ci.println(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::"
-				+ lockInfo.getElementId() + "\t" + lockInfo.getCreationDate() + "\t["
-				+ lockInfo.getSystemUuid() + "]");
+			ci.println(lockInfo.getUser() + "@" + lockInfo.getElementType() + "::" + lockInfo.getElementId() + "\t"
+					+ lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]");
 		}
 	}
-	
+
 	@CmdAdvisor(description = "enable lock request logging")
-	public void __elc_locks_log_enable() throws InvalidSyntaxException{
+	public void __elc_locks_log_enable() throws InvalidSyntaxException {
 		if (logLockService == null) {
 			logLockService = Activator.getContext().registerService(ILockServiceContributor.class,
-				new LogLockServiceContributor(), null);
+					new LogLockServiceContributor(), null);
 			ok();
 		}
 	}
-	
+
 	@CmdAdvisor(description = "disable lock request logging")
-	public void __elc_locks_log_disable() throws InvalidSyntaxException{
+	public void __elc_locks_log_disable() throws InvalidSyntaxException {
 		if (logLockService != null) {
 			logLockService.unregister();
 			logLockService = null;
 			ok();
 		}
 	}
-	
+
 	@CmdAdvisor(description = "clear all locks held by this server")
-	public void __elc_locks_clearAll(){
+	public void __elc_locks_clearAll() {
 		LockService.clearAllLocks();
 		ok();
 	}
-	
+
 	@CmdAdvisor(description = "clear a single lock held by this server")
-	public String __elc_locks_clearSingle(String elementId){
+	public String __elc_locks_clearSingle(String elementId) {
 		if (elementId != null) {
 			return Boolean.toString(LockService.clearLock(elementId));
 		} else {
 			return missingArgument("elementId");
 		}
 	}
-	
-	@CmdAdvisor(description = "list all configuration entries (optional key argument)")
-	public void __elc_config_list(Iterator<String> args){
+
+	@CmdAdvisor(description = "list all database configuration entries (optional key argument)")
+	public void __elc_config_list(Iterator<String> args) {
 		String nodePrefix = args.next();
 		if (StringUtils.isEmpty(nodePrefix)) {
 			nodePrefix = null;
 		}
-		
+
 		IQuery<IConfig> qre = CoreModelServiceHolder.get().getQuery(IConfig.class);
 		if (nodePrefix != null) {
 			qre.and(ModelPackage.Literals.ICONFIG__KEY, COMPARATOR.LIKE, nodePrefix + "%");
@@ -237,16 +232,25 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			}
 		}
 	}
-	
+
+	@CmdAdvisor(description = "get a local configuration entry requires key argument)")
+	public String __elc_localconfig_get(String key) {
+		if (key == null) {
+			return missingArgument("key");
+
+		}
+		return ConfigServiceHolder.get().getLocal(key, null);
+	}
+
 	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)")
-	public void __elc_config_set(String key, String value){
+	public void __elc_config_set(String key, String value) {
 		if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
 			missingArgument("key value|null");
 			return;
 		}
-		
+
 		boolean remove = "null".equalsIgnoreCase(value);
-		
+
 		IConfig config = CoreModelServiceHolder.get().load(key, IConfig.class).orElse(null);
 		if (config == null) {
 			if (remove) {
@@ -265,9 +269,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		CoreModelServiceHolder.get().save(config);
 		ok(config);
 	}
-	
+
 	@CmdAdvisor(description = "list the contents of a given url directory: vfsUrl [long]")
-	public void __elc_vfs_list(String vfsurl, String _long) throws IOException{
+	public void __elc_vfs_list(String vfsurl, String _long) throws IOException {
 		IVirtualFilesystemHandle of = VirtualFilesystemServiceHolder.get().of(vfsurl);
 		if (of.isDirectory()) {
 			IVirtualFilesystemHandle[] handles = of.listHandles();
@@ -282,5 +286,5 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 			}
 		}
 	}
-	
+
 }
