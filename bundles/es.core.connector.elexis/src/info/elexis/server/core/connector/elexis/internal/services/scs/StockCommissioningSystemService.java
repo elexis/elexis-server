@@ -1,5 +1,7 @@
 package info.elexis.server.core.connector.elexis.internal.services.scs;
 
+import static org.osgi.framework.Constants.SERVICE_RANKING;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,15 @@ import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
 import info.elexis.server.core.connector.elexis.locking.ILockService;
 
-@Component(property = "role=serverimpl")
+/**
+ * Elexis-Server sees this implementation and that in
+ * ch.elexis.core.services.StockCommissioningSystemService he should favor this
+ * implementation, thus a service ranking is set. It is not set in
+ * ch.elexis.core.services.StockCommissioningSystemService as according to
+ * https://docs.osgi.org/javadoc/r4v42/org/osgi/framework/Constants.html#SERVICE_RANKING
+ * the default is 0
+ */
+@Component(property = { "role=serverimpl", SERVICE_RANKING + ":Integer=100" })
 public class StockCommissioningSystemService implements IStockCommissioningSystemService {
 	
 	private Map<String, ICommissioningSystemDriver> stockCommissioningSystemDriverInstances;
@@ -211,6 +221,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		}
 		
 		ObjectStatus os = (ObjectStatus) retrieveInventory;
+		@SuppressWarnings("unchecked")
 		List<IStockEntry> transientCommSysStockEntries = (List<IStockEntry>) os.getObject();
 		
 		log.trace("sychronizeInventory stock [{}] inventoryResultSize [{}] gtinsToUpdateSize [{}]",
