@@ -34,7 +34,7 @@ public class JaxRsServletConfiguration implements ServletConfiguration {
 	
 	private static final String SERVICES_BASE_URL = "/services";
 	private static final String OAUTH_CLIENT_POSTFIX = "jaxrs-api";
-	private final String SKIP_PATTERN = SERVICES_BASE_URL + "/public/.*";
+	private final String SKIP_PATTERN = SERVICES_BASE_URL + "/(elexis|public)/.*";
 	
 	private Logger log = LoggerFactory.getLogger(JaxRsServletConfiguration.class);
 	
