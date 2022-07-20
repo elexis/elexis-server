@@ -20,8 +20,12 @@ public class InstanceService implements IInstanceService {
 
 	@Override
 	public Response updateStatus(InstanceStatus request) {
+		String remoteAddress = hsrRequest.getHeader("X-Real-IP"); // in EE nginx ip masquerades the real ip
+		if (remoteAddress == null) {
+			hsrRequest.getRemoteAddr();
+		}
 		info.elexis.server.core.connector.elexis.internal.services.InstanceService.updateInstanceStatus(request,
-				hsrRequest.getRemoteAddr());
+			remoteAddress);
 		return Response.ok().build();
 	}
 
