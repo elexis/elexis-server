@@ -57,5 +57,5 @@ Export-Package: info.elexis.server.core,
  info.elexis.server.core.servlet.filter
 Bundle-ClassPath: .
 Require-Bundle: info.elexis.server.core.common;bundle-version="3.10.0",
- ch.elexis.core;bundle-version="3.9.0"
+ ch.elexis.core;bundle-version="3.10.0"
 
