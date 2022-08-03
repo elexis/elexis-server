@@ -27,5 +27,5 @@ Require-Bundle: info.elexis.server.core.common;bundle-version="3.9.0",
  info.elexis.server.core;bundle-version="3.9.0",
  ch.rgw.utility;bundle-version="3.9.100",
  ch.elexis.core;bundle-version="3.9.0",
- ch.elexis.core.services;bundle-version="3.9.0",
+ ch.elexis.core.services;bundle-version="3.10.0",
  com.mysql.cj;bundle-version="8.0.22"

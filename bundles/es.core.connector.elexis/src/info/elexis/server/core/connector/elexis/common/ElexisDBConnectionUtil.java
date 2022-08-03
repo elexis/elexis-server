@@ -26,6 +26,7 @@ import ch.elexis.core.status.StatusUtil;
 import ch.elexis.core.utils.CoreUtil;
 import info.elexis.server.core.connector.elexis.internal.Activator;
 
+@Deprecated 
 public class ElexisDBConnectionUtil {
 	
 	private static DBConnection connection;
