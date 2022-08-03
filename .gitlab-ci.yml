@@ -1,7 +1,7 @@
 build:
   stage: build
   tags:
-  - java11
+  - java17
   - maven
   script: 
   - find features -type f -name p2.inf -exec sed -i "s@REPLACE_WITH_GIT_REV@$CI_COMMIT_SHA@g" {} \;
