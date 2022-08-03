@@ -42,7 +42,7 @@
     <dependency>
       <groupId>info.elexis.server</groupId>
       <artifactId>info.elexis.server.core.connector.elexis.feature</artifactId>
-      <version>3.9.0-SNAPSHOT</version>
+      <version>3.10.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
