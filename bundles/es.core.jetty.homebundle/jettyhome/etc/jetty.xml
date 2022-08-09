@@ -12,11 +12,27 @@
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
 
     <!-- =========================================================== -->
-    <!-- Server Thread Pool                                          -->
+    <!-- Configure the Server Thread Pool.                           -->
+    <!-- The server holds a common thread pool which is used by      -->
+    <!-- default as the executor used by all connectors and servlet  -->
+    <!-- dispatches.                                                 -->
+    <!--                                                             -->
+    <!-- Configuring a fixed thread pool is vital to controlling the -->
+    <!-- maximal memory footprint of the server and is a key tuning  -->
+    <!-- parameter for tuning.  In an application that rarely blocks -->
+    <!-- then maximal threads may be close to the number of 5*CPUs.  -->
+    <!-- In an application that frequently blocks, then maximal      -->
+    <!-- threads should be set as high as possible given the memory  -->
+    <!-- available.                                                  -->
+    <!--                                                             -->
+    <!-- Consult the javadoc of o.e.j.util.thread.QueuedThreadPool   -->
+    <!-- for all configuration that may be set here.                 -->
     <!-- =========================================================== -->
     <Get name="ThreadPool">
-      <Set name="minThreads">10</Set>
-      <Set name="maxThreads">200</Set>
+      <Set name="minThreads" type="int"><Property name="jetty.threadPool.minThreads" deprecated="threads.min" default="10"/></Set>
+      <Set name="maxThreads" type="int"><Property name="jetty.threadPool.maxThreads" deprecated="threads.max" default="200"/></Set>
+      <Set name="idleTimeout" type="int"><Property name="jetty.threadPool.idleTimeout" deprecated="threads.timeout" default="60000"/></Set>
+      <Set name="detailedDump">false</Set>
     </Get>
 
 
@@ -110,5 +126,26 @@
       <Arg>java.naming.factory.url.pkgs</Arg>
       <Arg><Property name="java.naming.factory.url.pkgs" default="org.eclipse.jetty.jndi"/></Arg>
     </Call>
+
+	<!--  https://github.com/eclipse/jetty.project/blob/jetty-10.0.x/jetty-server/src/main/config/etc/jetty-requestlog.xml -->	
+	<Set name="RequestLog">
+		<New id="RequestLog"
+			class="org.eclipse.jetty.server.CustomRequestLog">
+			<!-- Writer -->
+			<Arg>
+				<New class="org.eclipse.jetty.server.Slf4jRequestLogWriter"></New>
+			</Arg>
+
+			<!-- Format String -->
+			<Arg>
+				<Property name="jetty.requestlog.formatString">
+					<Default>
+						<Get class="org.eclipse.jetty.server.CustomRequestLog"
+							name="EXTENDED_NCSA_FORMAT" />
+					</Default>
+				</Property>
+			</Arg>
+		</New>
+	</Set>
 
 </Configure>
