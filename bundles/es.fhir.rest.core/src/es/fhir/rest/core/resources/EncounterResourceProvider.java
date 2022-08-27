@@ -71,20 +71,25 @@ public class EncounterResourceProvider
 	}
 	
 	/**
-	 * Search for all encounters by the patient id. Optional the date range of the returned
-	 * encounters can be specified.
+	 * Search for all encounters by the patient or subject id. Optional the date
+	 * range of the returned encounters can be specified.
 	 * 
 	 * @param thePatientId
 	 * @param dates
 	 * @return
 	 */
 	@Search
-	public List<Encounter> searchReqPatientOptDate(
-		@RequiredParam(name = Encounter.SP_PATIENT) IdType thePatientId,
+	public List<Encounter> searchPatientOptDate(
+			@OptionalParam(name = Encounter.SP_PATIENT) IdType thePatientId,
+			@OptionalParam(name = Encounter.SP_SUBJECT) IdType theSubjectId,
 		@OptionalParam(name = Encounter.SP_DATE) DateRangeParam dates, @IncludeParam(allow = {
 			"Encounter.diagnosis"
 		}) Set<Include> theIncludes){
 		
+		if (thePatientId == null && theSubjectId != null) {
+			thePatientId = theSubjectId;
+		}
+
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient =
 				coreModelService.load(thePatientId.getIdPart(), IPatient.class);
