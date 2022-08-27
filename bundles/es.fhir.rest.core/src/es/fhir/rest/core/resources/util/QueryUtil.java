@@ -43,6 +43,8 @@ public class QueryUtil {
 		String value = name.getValue();
 		if (name.isContains()) {
 			value = "%" + value + "%";
+		} else if (!name.isExact()) {
+			value = value + "%";
 		}
 
 		query.startGroup();
