@@ -115,6 +115,10 @@ public class MigratorService implements IMigratorService {
 		List<IEncounter> encounters = query.execute();
 		if (encounters.isEmpty()) {
 			createEncounter(encounter);
+		} else {
+			if (ModelUtil.fixFhirResource(encounters.get(0))) {
+				findingsService.saveFinding(encounters.get(0));
+			}
 		}
 	}
 	
@@ -153,7 +157,7 @@ public class MigratorService implements IMigratorService {
 				"Nicht strukturierte Konsultation"));
 			findingsEncounter.setType(coding);
 		}
-		
+
 		findingsService.saveFinding(findingsEncounter);
 	}
 }
