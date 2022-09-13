@@ -26,27 +26,27 @@ import ch.elexis.core.services.IModelService;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.resources.AllergyIntoleranceTest;
-import info.elexis.server.fhir.rest.core.resources.AppointmentTest;
+import info.elexis.server.fhir.rest.core.resources.AppointmentResourceTest;
 import info.elexis.server.fhir.rest.core.resources.ClaimTest;
 import info.elexis.server.fhir.rest.core.resources.ConditionTest;
 import info.elexis.server.fhir.rest.core.resources.CoverageTest;
+import info.elexis.server.fhir.rest.core.resources.DocumentReferenceTest;
 import info.elexis.server.fhir.rest.core.resources.EncounterTest;
 import info.elexis.server.fhir.rest.core.resources.FamilyMemberHistoryTest;
 import info.elexis.server.fhir.rest.core.resources.MedicationRequestTest;
-import info.elexis.server.fhir.rest.core.resources.MedicationTest;
 import info.elexis.server.fhir.rest.core.resources.ObservationTest;
 import info.elexis.server.fhir.rest.core.resources.OrganizationTest;
 import info.elexis.server.fhir.rest.core.resources.PatientTest;
 import info.elexis.server.fhir.rest.core.resources.PractitionerRoleTest;
-import info.elexis.server.fhir.rest.core.resources.ScheduleTest;
+import info.elexis.server.fhir.rest.core.resources.ScheduleResourceTest;
 import info.elexis.server.fhir.rest.core.resources.ServiceRequestTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
 	AllergyIntoleranceTest.class, PatientTest.class, OrganizationTest.class,
-	AppointmentTest.class, CoverageTest.class, ScheduleTest.class, PractitionerRoleTest.class,
+		AppointmentResourceTest.class, CoverageTest.class, ScheduleResourceTest.class, PractitionerRoleTest.class,
 	ConditionTest.class, ObservationTest.class, FamilyMemberHistoryTest.class, EncounterTest.class,
-	ServiceRequestTest.class, MedicationRequestTest.class, ClaimTest.class
+		ServiceRequestTest.class, MedicationRequestTest.class, ClaimTest.class, DocumentReferenceTest.class
 	// MedicationTest.class
 })
 public class AllTests {
