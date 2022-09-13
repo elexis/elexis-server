@@ -3,6 +3,7 @@
    <service>
       <provide interface="ch.elexis.core.findings.migration.IMigratorService"/>
    </service>
+   <reference cardinality="0..n" field="documentStores" interface="ch.elexis.core.services.IDocumentStore" name="documentStores"/>
    <reference cardinality="1..1" field="encounterService" interface="ch.elexis.core.services.IEncounterService" name="encounterService"/>
    <reference cardinality="1..1" field="findingsService" interface="ch.elexis.core.findings.IFindingsService" name="findingsService"/>
    <implementation class="info.elexis.server.findings.fhir.jpa.service.MigratorService"/>

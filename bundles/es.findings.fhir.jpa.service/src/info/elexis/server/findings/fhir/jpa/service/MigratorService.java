@@ -11,6 +11,7 @@ import org.osgi.service.component.annotations.Reference;
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
+import ch.elexis.core.findings.IDocumentReference;
 import ch.elexis.core.findings.IEncounter;
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
@@ -20,7 +21,9 @@ import ch.elexis.core.findings.util.FindingsServiceHolder;
 import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.findings.util.model.TransientCoding;
 import ch.elexis.core.model.ICoverage;
+import ch.elexis.core.model.IDocument;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IDocumentStore;
 import ch.elexis.core.services.IEncounterService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -36,6 +39,9 @@ public class MigratorService implements IMigratorService {
 	@Reference
 	private IEncounterService encounterService;
 	
+	@Reference
+	private List<IDocumentStore> documentStores;
+
 	@Override
 	public void migratePatientsFindings(String patientId, Class<? extends IFinding> filter,
 		ICoding iCoding){
@@ -45,6 +51,9 @@ public class MigratorService implements IMigratorService {
 			}
 			if (filter.isAssignableFrom(ICondition.class)) {
 				migratePatientCondition(patientId);
+			}
+			if (filter.isAssignableFrom(IDocumentReference.class)) {
+				migratePatientDocuments(patientId);
 			}
 		}
 	}
@@ -90,6 +99,45 @@ public class MigratorService implements IMigratorService {
 		return iFinding.getCategory() == ConditionCategory.PROBLEMLISTITEM;
 	}
 	
+	private void migratePatientDocuments(String patientId) {
+		Optional<IPatient> patient = CoreModelServiceHolder.get().load(patientId, IPatient.class);
+		patient.ifPresent(p -> {
+			documentStores.forEach(ds -> {
+				List<IDocument> documents = ds.getDocuments(patientId, null, null, null);
+				documents.stream().forEach(this::migrateDocument);
+			});
+		});
+	}
+
+	private void migrateDocument(ch.elexis.core.model.IDocument document) {
+		IPatient patient = document.getPatient();
+		IQuery<IDocumentReference> query = FindingsModelServiceHolder.get().getQuery(IDocumentReference.class);
+		query.and("patientid", COMPARATOR.EQUALS, patient.getId());
+		query.and("documentid", COMPARATOR.EQUALS, document.getId());
+		List<IDocumentReference> encounters = query.execute();
+		if (encounters.isEmpty()) {
+			createDocumentReference(document);
+		}
+	}
+
+	private void createDocumentReference(IDocument document) {
+		IDocumentReference findingsDocument = FindingsServiceHolder.getiFindingsService()
+				.create(IDocumentReference.class);
+		updateDocument(findingsDocument, document);
+	}
+
+	private void updateDocument(IDocumentReference findingsDocument, IDocument document) {
+		if (document.getAuthor() != null) {
+			findingsDocument.setAuthorId(document.getAuthor().getId());
+		}
+		if (document.getCreated() != null) {
+			findingsDocument.setDate(findingsDocument.getLocalDateTime(document.getCreated()));
+		}
+		if (document.getCategory() != null) {
+			findingsDocument.setCategory(document.getCategory().getName());
+		}
+	}
+
 	private void migratePatientEncounters(String patientId){
 		Optional<IPatient> patient = CoreModelServiceHolder.get().load(patientId, IPatient.class);
 		patient.ifPresent(p -> {
