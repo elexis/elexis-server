@@ -36,6 +36,9 @@ public class EncounterResourceProvider
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
+
+	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.findings.model)")
+	private IModelService findingsModelService;
 	
 	@Reference
 	private ILocalLockService localLockService;
@@ -55,7 +58,7 @@ public class EncounterResourceProvider
 	
 	@Activate
 	public void activate(){
-		super.setCoreModelService(coreModelService);
+		super.setModelService(findingsModelService);
 		super.setLocalLockService(localLockService);
 	}
 	

@@ -61,7 +61,7 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 	
 	@Activate
 	public void activate(){
-		super.setCoreModelService(coreModelService);
+		super.setModelService(coreModelService);
 		super.setLocalLockService(localLockService);
 	}
 	

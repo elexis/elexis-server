@@ -35,7 +35,7 @@ public class SlotResourceProvider extends AbstractFhirCrudResourceProvider<Slot,
 	
 	@Activate
 	public void activate(){
-		super.setCoreModelService(coreModelService);
+		super.setModelService(coreModelService);
 		super.setLocalLockService(localLockService);
 	}
 	

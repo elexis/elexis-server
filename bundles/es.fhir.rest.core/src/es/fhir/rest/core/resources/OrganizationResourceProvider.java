@@ -54,7 +54,7 @@ public class OrganizationResourceProvider
 	
 	@Activate
 	public void activate() {
-		setCoreModelService(coreModelService);
+		setModelService(coreModelService);
 		setLocalLockService(localLockService);
 	}
 	

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" name="es.fhir.rest.core.resources.EncounterResourceProvider">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" name="es.fhir.rest.core.resources.DocumentReferenceResourceProvider">
    <service>
       <provide interface="es.fhir.rest.core.resources.IFhirResourceProvider"/>
    </service>
@@ -9,5 +9,5 @@
    <reference cardinality="1..1" field="localLockService" interface="ch.elexis.core.services.ILocalLockService" name="localLockService"/>
    <reference cardinality="1..1" field="migratorService" interface="ch.elexis.core.findings.migration.IMigratorService" name="migratorService"/>
    <reference cardinality="1..1" field="transformerRegistry" interface="ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry" name="transformerRegistry"/>
-   <implementation class="es.fhir.rest.core.resources.EncounterResourceProvider"/>
+   <implementation class="es.fhir.rest.core.resources.DocumentReferenceResourceProvider"/>
 </scr:component>

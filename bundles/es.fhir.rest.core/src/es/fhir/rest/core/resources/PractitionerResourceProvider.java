@@ -51,7 +51,7 @@ public class PractitionerResourceProvider
 	
 	@Activate
 	public void activate(){
-		setCoreModelService(coreModelService);
+		setModelService(coreModelService);
 		setLocalLockService(localLockService);
 	}
 	
