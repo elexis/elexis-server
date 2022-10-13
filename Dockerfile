@@ -2,8 +2,11 @@ FROM eclipse-temurin:17-jre-alpine
 MAINTAINER MEDEVIT <office@medevit.at>
 ARG BRANCH=master
 
-RUN apk add --no-cache tzdata bash gcompat
+RUN apk add --no-cache tzdata bash gcompat cups-libs
 ENV TZ=Europe/Zurich
+ENV LANGUAGE en_US:en  
+ENV LANG de_CH.UTF-8  
+ENV LC_ALL en_US.UTF-8
 ENV ELEXIS-BRANCH=${BRANCH}
 RUN addgroup --gid 1001 elexis && adduser -S -u 1001 -G elexis -g "" -h /elexis elexis && \
     mkdir -p /opt/elexis-server && \

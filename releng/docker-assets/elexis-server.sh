@@ -79,7 +79,8 @@ EFFECTIVE_JAVA_PROPERTIES+=" $ES_JAVA_PROPERTIES"
 echo "Effective Java properties: '"$EFFECTIVE_JAVA_PROPERTIES"'"
 
 # Start-up the elexis-server
-/opt/elexis-server/elexis-server -console 7234 --launcher.appendVmargs -vmargs ${EFFECTIVE_JAVA_PROPERTIES} -XX:-OmitStackTraceInFastThrow &
+# https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fmisc%2Fruntime-options.html
+/opt/elexis-server/elexis-server -console 7234 -XX:-OmitStackTraceInFastThrow --launcher.appendVmargs -vmargs ${EFFECTIVE_JAVA_PROPERTIES} &
 PID=$!
 
 echo "Started Elexis-Server launcher with PID [$PID]"
