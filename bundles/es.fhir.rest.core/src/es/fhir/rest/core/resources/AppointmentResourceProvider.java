@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Appointment;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Slot;
 import org.osgi.service.component.annotations.Activate;
@@ -14,7 +15,10 @@ import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.annotation.Count;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.IncludeParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Sort;
@@ -38,6 +42,7 @@ import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.time.DateConverter;
+import es.fhir.rest.core.resources.util.OperationsUtil;
 import es.fhir.rest.core.resources.util.QueryUtil;
 
 @Component(service = IFhirResourceProvider.class)
@@ -51,7 +56,7 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 
 	@Reference
 	private ILocalLockService localLockService;
-	
+
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 
@@ -74,6 +79,15 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 	public IFhirTransformer<Appointment, IAppointment> getTransformer() {
 		return (IFhirTransformer<Appointment, IAppointment>) transformerRegistry.getTransformerFor(Appointment.class,
 				IAppointment.class);
+	}
+
+	@Operation(name = "$printAppointmentCard", idempotent = true)
+	public OperationOutcome opPrintAppointmentCard(@IdParam IdType appointment,
+			@OperationParam(name = "patient") org.hl7.fhir.r4.model.Reference patient,
+			@OperationParam(name = "practitioner") org.hl7.fhir.r4.model.Reference practitioner) {
+
+		return OperationsUtil.handlePrintAppointmentsCard(coreModelService, appointment.getIdPart(),
+				(patient != null) ? patient.getId() : null, (practitioner != null) ? practitioner.getId() : null);
 	}
 
 	@Search
