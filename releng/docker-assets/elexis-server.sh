@@ -15,18 +15,6 @@ shut_down(){
     kill -TERM $JAVAPID
  
     wait $PID 
-        
-	if [ ! -z $DEMO_MODE ]; then
-			echo "Deactivating demo database"
-	
-			cd /elexis/elexis-server/	
-			rm -v elexis-connection.xml
-	
-    			if [ -f "elexis-connection-backup.xml" ]; then
-    				echo "Restoring database connection configuration"
-    				mv -v elexis-connection.backup.xml elexis-connection.xml
-    			fi
-	fi
 }
 
 # dependencies
@@ -39,31 +27,15 @@ mkdir -p /elexis/elexis-server/logs
 if [ ! -z $DEMO_MODE ]; then
 	echo "Activating demo database"
 
-	if [ ! -d "/elexis/demoDB" ]; then
+	if [ ! -d "/elexis/elexis/demoDB" ]; then
 		# fetch the demo database
-		echo "Downloading demo database to /elexis/demoDB"
-		cd /elexis/
+		echo "Downloading demo database to /elexis/elexis/demoDB"
+		mkdir -p /elexis/elexis # writable user dir for user elexis
+		cd /elexis/elexis
 		wget https://download.elexis.info/elexis/demoDB/demoDB_elexis_3.9.0.zip
 		unzip demoDB_elexis_3.9.0.zip
 		rm demoDB_elexis_3.9.0.zip
 	fi
-	
-	cd /elexis/elexis-server/
-	
-	if [ -f "elexis-connection.xml" ]; then
-		echo "Backing up database connection configuration"
-		mv -v elexis-connection.xml elexis-connection-backup.xml
-	fi
-	
-	echo "Writing /elexis/elexis-server/elexis-connection.xml"
-	
-	cat > elexis-connection.xml << EOF
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<dbConnection hostName="localhost" port="" databaseName="" connectionString="jdbc:h2:///elexis/demoDB/db;AUTO_SERVER=TRUE" username="sa" password="">
-    	<rdbmsType>H2</rdbmsType>
-</dbConnection>
-EOF
-	
 fi
 
 # Handle ES properties
