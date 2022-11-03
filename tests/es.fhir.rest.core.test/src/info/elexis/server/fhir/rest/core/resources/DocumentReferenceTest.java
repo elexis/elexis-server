@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -48,6 +49,8 @@ public class DocumentReferenceTest {
 
 	private static IDocumentStore omnivoreDocumentStore;
 
+	private static IDocumentStore letterDocumentStore;
+
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
 		AllTests.getTestDatabaseInitializer().initializeBehandlung();
@@ -57,6 +60,9 @@ public class DocumentReferenceTest {
 
 		omnivoreDocumentStore = OsgiServiceUtil
 				.getService(IDocumentStore.class, "(storeid=ch.elexis.data.store.omnivore)").get();
+
+		letterDocumentStore = OsgiServiceUtil
+				.getService(IDocumentStore.class, "(storeid=ch.elexis.data.store.brief)").get();
 	}
 
 	@Test
@@ -79,6 +85,19 @@ public class DocumentReferenceTest {
 		entries = results.getEntry();
 		assertEquals(existingEntriesSize + 1, entries.size());
 
+		newDocument = letterDocumentStore.createDocument(patient.getId(), "TestSearchDocumentReference", null);
+		newDocument.setMimeType("docx");
+		letterDocumentStore.saveDocument(newDocument, new ByteArrayInputStream("test content".getBytes()));
+		results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.returnBundle(Bundle.class).execute();
+		entries = results.getEntry();
+		Optional<DocumentReference> docx = entries.stream().filter(e -> e.getResource() instanceof DocumentReference)
+				.map(e -> (DocumentReference) e.getResource())
+				.filter(
+				d -> d.getContentFirstRep().getAttachment().getTitle().equals("TestSearchDocumentReference.docx"))
+				.findAny();
+		assertTrue(docx.isPresent());
 	}
 
 	@Test
