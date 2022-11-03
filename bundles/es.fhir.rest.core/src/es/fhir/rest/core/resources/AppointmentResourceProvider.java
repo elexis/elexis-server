@@ -2,6 +2,7 @@ package es.fhir.rest.core.resources;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -36,6 +37,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.model.agenda.Area;
+import ch.elexis.core.model.agenda.AreaType;
 import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
@@ -86,8 +88,23 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 			@OperationParam(name = "patient") org.hl7.fhir.r4.model.Reference patient,
 			@OperationParam(name = "practitioner") org.hl7.fhir.r4.model.Reference practitioner) {
 
+		String practitionerId = (practitioner != null) ? practitioner.getId() : null;
+		if (practitioner == null) {
+			// no practitioner id provided, if the slot the appointment is allocated to is a
+			// user area
+			// we use the appointed contact
+			Optional<IAppointment> _appointment = coreModelService.load(appointment.getIdPart(), IAppointment.class);
+			if (_appointment.isPresent()) {
+				String schedule = _appointment.get().getSchedule();
+				Area area = appointmentService.getAreaByNameOrId(schedule);
+				if (area != null && AreaType.CONTACT == area.getType()) {
+					practitionerId = area.getContactId();
+				}
+			}
+		}
+
 		return OperationsUtil.handlePrintAppointmentsCard(coreModelService, appointment.getIdPart(),
-				(patient != null) ? patient.getId() : null, (practitioner != null) ? practitioner.getId() : null);
+				(patient != null) ? patient.getId() : null, practitionerId);
 	}
 
 	@Search
