@@ -123,14 +123,14 @@ public class MigratorService implements IMigratorService {
 	private void createDocumentReference(IDocument document) {
 		IDocumentReference findingsDocument = FindingsServiceHolder.getiFindingsService()
 				.create(IDocumentReference.class);
+		findingsDocument.setDocument(document);
+		findingsDocument.setPatientId(document.getPatient().getId());
+
 		updateDocument(findingsDocument, document);
 		FindingsServiceHolder.getiFindingsService().saveFinding(findingsDocument);
 	}
 
 	private void updateDocument(IDocumentReference findingsDocument, IDocument document) {
-		if (document.getPatient() != null) {
-			findingsDocument.setPatientId(document.getPatient().getId());
-		}
 		if (document.getAuthor() != null) {
 			findingsDocument.setAuthorId(document.getAuthor().getId());
 		}
