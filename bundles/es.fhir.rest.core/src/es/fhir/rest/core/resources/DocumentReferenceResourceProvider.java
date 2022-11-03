@@ -103,6 +103,7 @@ public class DocumentReferenceResourceProvider
 				List<IDocumentReference> findings = findingsService.getPatientsFindings(patient.get().getId(),
 						IDocumentReference.class);
 				if (findings != null && !findings.isEmpty()) {
+					findings = findings.stream().filter(f -> f.getDocument() != null).collect(Collectors.toList());
 					return findings.stream().map(iFinding -> getTransformer().getFhirObject(iFinding).get())
 							.collect(Collectors.toList());
 				}
