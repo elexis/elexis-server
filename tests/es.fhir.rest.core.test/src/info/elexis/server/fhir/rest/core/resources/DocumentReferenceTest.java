@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Base64;
@@ -33,6 +34,11 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ch.elexis.core.exceptions.ElexisException;
+import ch.elexis.core.model.IDocument;
+import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.IDocumentStore;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -40,12 +46,38 @@ public class DocumentReferenceTest {
 
 	private static IGenericClient client;
 
+	private static IDocumentStore omnivoreDocumentStore;
+
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException {
 		AllTests.getTestDatabaseInitializer().initializeBehandlung();
 
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
+
+		omnivoreDocumentStore = OsgiServiceUtil
+				.getService(IDocumentStore.class, "(storeid=ch.elexis.data.store.omnivore)").get();
+	}
+
+	@Test
+	public void searchDocumentReference() throws ClientProtocolException, IOException, ElexisException {
+		IPatient patient = AllTests.getTestDatabaseInitializer().getPatient();
+		List<IDocument> existingDocuments = omnivoreDocumentStore.getDocuments(patient.getId(), null, null, null);
+		Bundle results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.returnBundle(Bundle.class).execute();
+		List<BundleEntryComponent> entries = results.getEntry();
+		int existingEntriesSize = entries.size();
+		assertEquals(existingDocuments.size(), existingEntriesSize);
+
+		IDocument newDocument = omnivoreDocumentStore.createDocument(patient.getId(), "TestSearchDocumentReference.txt",
+				null);
+		omnivoreDocumentStore.saveDocument(newDocument, new ByteArrayInputStream("test content".getBytes()));
+		results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.returnBundle(Bundle.class).execute();
+		entries = results.getEntry();
+		assertEquals(existingEntriesSize + 1, entries.size());
 
 	}
 
