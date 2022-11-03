@@ -114,8 +114,8 @@ public class MigratorService implements IMigratorService {
 		IQuery<IDocumentReference> query = FindingsModelServiceHolder.get().getQuery(IDocumentReference.class);
 		query.and("patientid", COMPARATOR.EQUALS, patient.getId());
 		query.and("documentid", COMPARATOR.EQUALS, document.getId());
-		List<IDocumentReference> encounters = query.execute();
-		if (encounters.isEmpty()) {
+		List<IDocumentReference> documents = query.execute();
+		if (documents.isEmpty()) {
 			createDocumentReference(document);
 		}
 	}
@@ -124,9 +124,13 @@ public class MigratorService implements IMigratorService {
 		IDocumentReference findingsDocument = FindingsServiceHolder.getiFindingsService()
 				.create(IDocumentReference.class);
 		updateDocument(findingsDocument, document);
+		FindingsServiceHolder.getiFindingsService().saveFinding(findingsDocument);
 	}
 
 	private void updateDocument(IDocumentReference findingsDocument, IDocument document) {
+		if (document.getPatient() != null) {
+			findingsDocument.setPatientId(document.getPatient().getId());
+		}
 		if (document.getAuthor() != null) {
 			findingsDocument.setAuthorId(document.getAuthor().getId());
 		}
