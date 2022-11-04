@@ -177,6 +177,9 @@ public class DocumentReferenceTest {
 		assertNotNull(readAttachment);
 		byte[] actualBytes = readContent(readAttachment);
 		assertArrayEquals("Test Text\n2te Zeile üöä!".getBytes(), actualBytes);
+
+		outcome = client.update().resource(readReference).execute();
+		assertFalse(outcome.getCreated() == null ? false : outcome.getCreated());
 	}
 
 	private byte[] readContent(Attachment attachment) throws IOException {
