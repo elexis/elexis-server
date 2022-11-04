@@ -85,7 +85,8 @@ public class DocumentReferenceTest {
 		entries = results.getEntry();
 		assertEquals(existingEntriesSize + 1, entries.size());
 
-		newDocument = letterDocumentStore.createDocument(patient.getId(), "TestSearchDocumentReference", null);
+		newDocument = letterDocumentStore.createDocument(patient.getId(), "TestSearchDocumentReference 01.02.2022",
+				null);
 		newDocument.setMimeType("docx");
 		letterDocumentStore.saveDocument(newDocument, new ByteArrayInputStream("test content".getBytes()));
 		results = client.search().forResource(DocumentReference.class)
@@ -95,7 +96,8 @@ public class DocumentReferenceTest {
 		Optional<DocumentReference> docx = entries.stream().filter(e -> e.getResource() instanceof DocumentReference)
 				.map(e -> (DocumentReference) e.getResource())
 				.filter(
-				d -> d.getContentFirstRep().getAttachment().getTitle().equals("TestSearchDocumentReference.docx"))
+						d -> d.getContentFirstRep().getAttachment().getTitle()
+								.equals("TestSearchDocumentReference 01.02.2022.docx"))
 				.findAny();
 		assertTrue(docx.isPresent());
 	}

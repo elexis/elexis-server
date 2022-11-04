@@ -98,6 +98,7 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 			}
 
 		} else {
+			log.warn("Could not find local object for [" + fhirObject + "] with id [" + fhirObject.getId() + "]");
 			outcome = create(fhirObject);
 		}
 		return outcome;
