@@ -33,6 +33,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IObservation.ObservationCategory;
 import ch.elexis.core.findings.IdentifierSystem;
+import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
@@ -139,6 +140,37 @@ public class EncounterTest {
 		assertNotNull(readEncounter);
 		assertEquals(outcome.getId().getIdPart(), readEncounter.getIdElement().getIdPart());
 		assertEquals(encounter.getPeriod().getStart(), readEncounter.getPeriod().getStart());
+	}
+
+	@Test
+	public void updateEncounter() {
+		Encounter encounter = new Encounter();
+		EncounterParticipantComponent participant = new EncounterParticipantComponent();
+		participant.setIndividual(new Reference("Practitioner/" + TestDatabaseInitializer.getMandant().getId()));
+		encounter.addParticipant(participant);
+		encounter.setPeriod(new Period().setStart(AllTests.getDate(LocalDate.now().atStartOfDay()))
+				.setEnd(AllTests.getDate(LocalDate.now().atTime(23, 59, 59))));
+		encounter.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Encounter\nTest".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		encounter.setText(narrative);
+
+		MethodOutcome outcome = client.create().resource(encounter).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		encounter = (Encounter) outcome.getResource();
+		assertTrue(ModelUtil.getNarrativeAsString(encounter.getText()).get().endsWith("Test"));
+
+		narrative = new Narrative();
+		divEncodedText = "Encounter\nTest\nUpdate".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		encounter.setText(narrative);
+
+		outcome = client.update().resource(encounter).execute();
+		assertNotNull(outcome);
+		encounter = (Encounter) outcome.getResource();
+		assertTrue(ModelUtil.getNarrativeAsString(encounter.getText()).get().endsWith("Update"));
 	}
 
 	/**
