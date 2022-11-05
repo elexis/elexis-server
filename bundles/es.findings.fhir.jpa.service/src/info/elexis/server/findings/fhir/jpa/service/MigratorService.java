@@ -171,6 +171,7 @@ public class MigratorService implements IMigratorService {
 			if (ModelUtil.fixFhirResource(encounters.get(0))) {
 				findingsService.saveFinding(encounters.get(0));
 			}
+			updateEncounter(encounters.get(0), encounter);
 		}
 	}
 	

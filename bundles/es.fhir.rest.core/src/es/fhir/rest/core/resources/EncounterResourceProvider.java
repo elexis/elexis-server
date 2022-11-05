@@ -108,17 +108,19 @@ public class EncounterResourceProvider
 						List<Encounter> ret = new ArrayList<Encounter>();
 						
 						for (IEncounter iFinding : findings) {
-							Optional<Encounter> fhirEncounter =
-								getTransformer().getFhirObject(iFinding);
-							fhirEncounter.ifPresent(fe -> {
-								if (dates != null) {
-									if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(),
-										dates)) {
-										return;
+							Optional<ch.elexis.core.model.IEncounter> modelEncounter = coreModelService
+									.load(iFinding.getConsultationId(), ch.elexis.core.model.IEncounter.class);
+							if (modelEncounter.isPresent()) {
+								Optional<Encounter> fhirEncounter = getTransformer().getFhirObject(iFinding);
+								fhirEncounter.ifPresent(fe -> {
+									if (dates != null) {
+										if (!DateRangeParamUtil.isPeriodInRange(fe.getPeriod(), dates)) {
+											return;
+										}
 									}
-								}
-								ret.add(fe);
-							});
+									ret.add(fe);
+								});
+							}
 						}
 						return ret;
 					}
