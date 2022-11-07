@@ -37,6 +37,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerException;
+import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.ModelPackage;
@@ -44,6 +45,7 @@ import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.status.StatusUtil;
+import ch.elexis.core.utils.CoreUtil;
 import es.fhir.rest.core.resources.util.SubscriptionResourceUtil;
 
 /**
@@ -63,12 +65,15 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
 
+	@Reference
+	private IFhirTransformerRegistry transformerRegistry;
+
 	@Activate
 	public void activate() {
 		logger = LoggerFactory.getLogger(getClass());
 
 		resourceProviderUtil = new ResourceProviderUtil();
-		subscriptionResourceUtil = new SubscriptionResourceUtil();
+		subscriptionResourceUtil = new SubscriptionResourceUtil(transformerRegistry);
 		activeSubscriptions = Collections.synchronizedList(new ArrayList<>());
 
 		checkEnableSubscriptions(); // TODO persist subscriptions?
@@ -76,7 +81,7 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 	@Deactivate
 	public void deactivate() {
-		if(scheduledExecutorService != null) {
+		if (scheduledExecutorService != null) {
 			scheduledExecutorService.shutdown();
 		}
 	}
@@ -84,7 +89,8 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 	private void checkEnableSubscriptions() {
 		if (!activeSubscriptions.isEmpty() && scheduledExecutorService == null) {
 			scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-			scheduledExecutorService.scheduleWithFixedDelay(new SubscriptionRunnable(), 5, 5, TimeUnit.SECONDS);
+			long delay = CoreUtil.isTestMode() ? 1 : 5;
+			scheduledExecutorService.scheduleWithFixedDelay(new SubscriptionRunnable(), delay, delay, TimeUnit.SECONDS);
 		}
 	}
 
@@ -114,12 +120,6 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 		if (channel.getType() != Subscription.SubscriptionChannelType.RESTHOOK) {
 			// not supported
 			ex = new IFhirTransformerException("WARNING", "channel-type not supported", 0);
-		}
-
-		if (channel.getPayload() != null) {
-			// not supported
-			ex = new IFhirTransformerException("WARNING", "payload not supported", 0);
-
 		}
 
 		String endpoint = channel.getEndpoint();
@@ -176,7 +176,7 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 	public List<Subscription> search() {
 		return activeSubscriptions;
 	}
-	
+
 	private class SubscriptionRunnable implements Runnable {
 
 		@Override
@@ -194,11 +194,11 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 							lastUpdated.getTime());
 					List<IAppointment> queryResult = query.execute();
 					if (queryResult.size() > 0) {
+						// TODO automatic unregister if multiple fails?
 						status = subscriptionResourceUtil.handleNotification(queryResult, subscription);
 					}
 				}
 
-				// TODO automatic unregister if multiple fails?
 				if (status.isOK()) {
 					subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
 					subscription.getMeta().setLastUpdated(new Date());
