@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.SimpleRequestHeaderInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
@@ -128,6 +129,8 @@ public class SubscriptionResourceUtil {
 						header.asStringValue());
 				fhirClient.registerInterceptor(simpleRequestHeaderInterceptor);
 			});
+
+			fhirClient.registerInterceptor(new LoggingInterceptor());
 
 			try {
 				if (appointment.isDeleted()) {
