@@ -35,6 +35,7 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
+import ch.elexis.core.common.CatchingRunnable;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
@@ -90,7 +91,8 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 		if (!activeSubscriptions.isEmpty() && scheduledExecutorService == null) {
 			scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 			long delay = CoreUtil.isTestMode() ? 1 : 5;
-			scheduledExecutorService.scheduleWithFixedDelay(new SubscriptionRunnable(), delay, delay, TimeUnit.SECONDS);
+			CatchingRunnable catchingRunnable = new CatchingRunnable(new SubscriptionRunnable());
+			scheduledExecutorService.scheduleWithFixedDelay(catchingRunnable, delay, delay, TimeUnit.SECONDS);
 		}
 	}
 
