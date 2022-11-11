@@ -9,26 +9,42 @@ import ch.elexis.core.services.IContext;
 import info.elexis.server.core.SystemPropertyConstants;
 
 public class Context implements IContext {
-	
+
+	private Context parent;
+
 	private ConcurrentHashMap<String, Object> context;
-	
-	public Context(){
+
+	public Context() {
 		context = new ConcurrentHashMap<>();
+		this.parent = null;
 	}
-	
+
+	public Context(Context parent) {
+		context = new ConcurrentHashMap<>();
+		this.parent = parent;
+	}
+
+	public void setParent(Object object) {
+		this.parent = null;
+	}
+
+	public Context getParent() {
+		return parent;
+	}
+
 	@Override
-	public String getStationIdentifier(){
+	public String getStationIdentifier() {
 		return SystemPropertyConstants.getStationId();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Optional<T> getTyped(Class<T> clazz){
+	public <T> Optional<T> getTyped(Class<T> clazz) {
 		return Optional.ofNullable((T) context.get(clazz.getName()));
 	}
-	
+
 	@Override
-	public void setTyped(Object object){
+	public void setTyped(Object object) {
 		if (object != null) {
 			if (object instanceof IUser) {
 				// also set active user contact
@@ -47,36 +63,36 @@ public class Context implements IContext {
 			}
 		}
 	}
-	
-	private Optional<Class<?>> getModelInterface(Object object){
+
+	private Optional<Class<?>> getModelInterface(Object object) {
 		Class<?>[] interfaces = object.getClass().getInterfaces();
 		for (Class<?> interfaze : interfaces) {
 			if (interfaze.getName().startsWith("ch.elexis.core.model")
-				&& !interfaze.getName().contains("Identifiable")) {
+					&& !interfaze.getName().contains("Identifiable")) {
 				return Optional.of(interfaze);
 			}
 		}
 		return Optional.empty();
 	}
-	
+
 	@Override
-	public void removeTyped(Class<?> clazz){
+	public void removeTyped(Class<?> clazz) {
 		context.remove(clazz.getName());
 	}
-	
+
 	@Override
-	public Optional<?> getNamed(String name){
+	public Optional<?> getNamed(String name) {
 		return Optional.ofNullable(context.get(name));
-		
+
 	}
-	
+
 	@Override
-	public void setNamed(String name, Object object){
+	public void setNamed(String name, Object object) {
 		if (object == null) {
 			context.remove(name);
 		} else {
 			context.put(name, object);
 		}
 	}
-	
+
 }
