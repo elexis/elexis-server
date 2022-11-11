@@ -1,7 +1,11 @@
 package info.elexis.server.core.eenv;
 
+import org.apache.commons.lang3.StringUtils;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.eenv.IElexisEnvironmentService;
 import ch.elexis.core.services.IConfigService;
 import ch.elexis.core.services.IContextService;
+import ch.elexis.core.services.IMessageTransporter;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -27,25 +32,47 @@ public class ElexisEnvironmentActivator {
 
 	@Reference
 	private IContextService contextService;
-	
+
 	@Reference
 	private IConfigService configService;
 
+	private ServiceRegistration<IMessageTransporter> serviceRegistration;
+
 	@Activate
 	public void activate() {
-		String hostname = elexisEnvironmentService.getHostname();
-		// IS ROCKETCHAT ENABLED?
-		configureRocketchatIntegration(hostname);
-		
+		if (Boolean.valueOf(elexisEnvironmentService.getProperty("ENABLE_ROCKETCHAT"))) {
+			LoggerFactory.getLogger(getClass()).debug("Activating rocketchat support");
+			String rocketchatBaseUrl = elexisEnvironmentService.getRocketchatBaseUrl();
+			String rocketchatIntegrationToken = elexisEnvironmentService
+					.getProperty("EE_RC_ES_INTEGRATION_WEBHOOK_TOKEN");
+
+			String rocketchatIntegrationUrl = rocketchatBaseUrl + "/hooks/" + rocketchatIntegrationToken;
+
+			configureRocketchatMessageTransporter(rocketchatIntegrationUrl);
+			configureRocketchatIntegration(rocketchatBaseUrl, rocketchatIntegrationToken);
+		} else {
+			LoggerFactory.getLogger(getClass()).debug("Rocketchat support not activated");
+		}
 	}
 
-	private void configureRocketchatIntegration(String hostname) {
+	@Deactivate
+	public void deactivate() {
+		if (serviceRegistration != null) {
+			serviceRegistration.unregister();
+		}
+	}
 
-		String rocketchatIntegrationToken = elexisEnvironmentService.getProperty("EE_RC_ES_INTEGRATION_WEBHOOK_TOKEN");
-		String rocketchatIntegrationUrl = "https://" + hostname + "/chat/hooks/" + rocketchatIntegrationToken;
+	private void configureRocketchatMessageTransporter(String rocketchatIntegrationUrl) {
+		if (StringUtils.isNotEmpty(rocketchatIntegrationUrl)) {
+			RocketchatMessageTransporter rocketchatMessageTransporter = new RocketchatMessageTransporter(
+					rocketchatIntegrationUrl);
+			serviceRegistration = FrameworkUtil.getBundle(RocketchatMessageTransporter.class).getBundleContext()
+					.registerService(IMessageTransporter.class, rocketchatMessageTransporter, null);
+		}
+	}
 
-		// pass the integration token for this station to RocketchatMessageTransporter
-		configService.setLocal("rocketchat-station-integration-token", rocketchatIntegrationToken);
+	private void configureRocketchatIntegration(String rocketchatBaseUrl, String rocketchatIntegrationToken) {
+		String rocketchatIntegrationUrl = rocketchatBaseUrl + "/hooks/" + rocketchatIntegrationToken;
 
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		Logger slf4jRootLogger = lc.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);

@@ -6,7 +6,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +24,7 @@ import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
 import ch.elexis.core.console.CmdAdvisor;
+import ch.elexis.core.console.CmdParam;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.model.IConfig;
 import ch.elexis.core.model.ModelPackage;
@@ -39,7 +39,6 @@ import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.time.TimeUtil;
-import ch.elexis.core.utils.OsgiServiceUtil;
 import ch.qos.logback.classic.Level;
 import info.elexis.server.core.connector.elexis.common.ElexisDBConnection;
 import info.elexis.server.core.connector.elexis.internal.services.InstanceService;
@@ -57,6 +56,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	@Reference
 	private ILockService lockService;
+
+	@Reference
+	private IMessageService messageService;
 
 	private ServiceRegistration<ILockServiceContributor> logLockService;
 	private ServiceRegistration<EventHandler> logEventHandler;
@@ -127,21 +129,25 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 
-	@CmdAdvisor(description = "send a message to a given user")
-	public void __elc_message(List<String> args) {
-		if (args.isEmpty()) {
-			fail("usage: elc message userid message");
+	@CmdAdvisor(description = "send an internal message")
+	public void __elc_message(@CmdParam(required = true, description = "contactid of receiver") String contactid,
+			@CmdParam(required = true, description = "message to send") String message) {
+
+		if (StringUtils.isEmpty(contactid)) {
+			missingArgument("contactid");
+			return;
 		}
 
-		Optional<IMessageService> messageService = OsgiServiceUtil.getService(IMessageService.class);
-		if (messageService.isPresent()) {
-			TransientMessage message = messageService.get().prepare(contextService.getStationIdentifier(),
-					IMessageService.INTERNAL_MESSAGE_URI_SCHEME + ":" + args.get(0));
-			message.setMessageText(args.get(1));
-			ObjectStatus status = messageService.get().send(message);
-			ok(status);
+		if (StringUtils.isEmpty(message)) {
+			missingArgument("message");
+			return;
 		}
-		fail("messageService not found");
+
+		TransientMessage _message = messageService.prepare(contextService.getStationIdentifier(),
+				IMessageService.INTERNAL_MESSAGE_URI_SCHEME + ":" + contactid);
+		_message.setMessageText(message);
+		ObjectStatus status = messageService.send(_message);
+		ok(status);
 	}
 
 	@CmdAdvisor(description = "list all elexis instances connected to this server instance")
