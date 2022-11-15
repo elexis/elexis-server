@@ -31,6 +31,8 @@ import ca.uhn.fhir.rest.client.interceptor.SimpleRequestHeaderInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.model.agenda.Area;
+import ch.elexis.core.services.IAppointmentService;
 
 public class SubscriptionResourceUtil {
 
@@ -38,10 +40,13 @@ public class SubscriptionResourceUtil {
 	private HttpClient httpClient;
 	private FhirContext fhirContext;
 	private IFhirTransformerRegistry transformerRegistry;
+	private IAppointmentService appointmentService;
 
-	public SubscriptionResourceUtil(IFhirTransformerRegistry transformerRegistry) {
+	public SubscriptionResourceUtil(IFhirTransformerRegistry transformerRegistry,
+			IAppointmentService appointmentService) {
 		this.logger = LoggerFactory.getLogger(getClass());
 		this.transformerRegistry = transformerRegistry;
+		this.appointmentService = appointmentService;
 	}
 
 	private HttpClient getHttpClient() {
@@ -129,6 +134,14 @@ public class SubscriptionResourceUtil {
 						header.asStringValue());
 				fhirClient.registerInterceptor(simpleRequestHeaderInterceptor);
 			});
+
+			// It is not possible to directly add the schedule id to the Schedule object
+			// we pass it using a header
+			Area areaByNameOrId = appointmentService.getAreaByNameOrId(appointment.getSchedule());
+			if (areaByNameOrId != null) {
+				fhirClient.registerInterceptor(
+						new SimpleRequestHeaderInterceptor("X_FHIR_SCHEDULE_ID", "Schedule/" + areaByNameOrId.getId()));
+			}
 
 			fhirClient.registerInterceptor(new LoggingInterceptor());
 

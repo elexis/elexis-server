@@ -42,6 +42,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -69,12 +70,15 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 
+	@Reference
+	private IAppointmentService appointmentService;
+
 	@Activate
 	public void activate() {
 		logger = LoggerFactory.getLogger(getClass());
 
 		resourceProviderUtil = new ResourceProviderUtil();
-		subscriptionResourceUtil = new SubscriptionResourceUtil(transformerRegistry);
+		subscriptionResourceUtil = new SubscriptionResourceUtil(transformerRegistry, appointmentService);
 		activeSubscriptions = Collections.synchronizedList(new ArrayList<>());
 
 		checkEnableSubscriptions(); // TODO persist subscriptions?

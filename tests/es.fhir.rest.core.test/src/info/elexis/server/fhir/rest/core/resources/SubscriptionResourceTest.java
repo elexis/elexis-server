@@ -22,6 +22,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.services.IAppointmentService;
+import ch.elexis.core.services.holder.ConfigServiceHolder;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
@@ -40,6 +41,8 @@ public class SubscriptionResourceTest {
 		FrameworkUtil.getBundle(SubscriptionResourceTest.class).getBundleContext().registerService(
 				SubscriptionResourceTestEndpointProvider.class.getName(),
 				new SubscriptionResourceTestEndpointProvider(), props);
+
+		ConfigServiceHolder.get().set("agenda/bereiche", "test-area");
 	}
 
 	@Test
