@@ -35,10 +35,12 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
+import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.model.agenda.Area;
 import ch.elexis.core.model.agenda.AreaType;
 import ch.elexis.core.services.IAppointmentService;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -58,6 +60,9 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 
 	@Reference
 	private ILocalLockService localLockService;
+
+	@Reference
+	private IContextService contextService;
 
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -89,10 +94,9 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 			@OperationParam(name = "practitioner") org.hl7.fhir.r4.model.Reference practitioner) {
 
 		String practitionerId = (practitioner != null) ? practitioner.getId() : null;
-		if (practitioner == null) {
-			// no practitioner id provided, if the slot the appointment is allocated to is a
-			// user area
-			// we use the appointed contact
+		if (practitionerId == null) {
+			// no practitioner id provided, if the slot the appointment is allocated to a
+			// user area, we use the appointed contact
 			Optional<IAppointment> _appointment = coreModelService.load(appointment.getIdPart(), IAppointment.class);
 			if (_appointment.isPresent()) {
 				String schedule = _appointment.get().getSchedule();
@@ -101,6 +105,10 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 					practitionerId = area.getContactId();
 				}
 			}
+		}
+
+		if (practitionerId == null) {
+			practitionerId = contextService.getTyped(IMandator.class).map(p -> p.getId()).orElse(null);
 		}
 
 		return OperationsUtil.handlePrintAppointmentsCard(coreModelService, appointment.getIdPart(),

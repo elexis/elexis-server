@@ -34,8 +34,10 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
+import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -52,6 +54,9 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 
 	@Reference
 	private ILocalLockService localLockService;
+
+	@Reference
+	private IContextService contextService;
 
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -81,8 +86,12 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 	public OperationOutcome opPrintAppointmentCard(@IdParam IdType patient,
 			@OperationParam(name = "practitioner") org.hl7.fhir.r4.model.Reference practitioner) {
 
-		return OperationsUtil.handlePrintAppointmentsCard(coreModelService, null, patient.getIdPart(),
-				(practitioner != null) ? practitioner.getReferenceElement().getIdPart() : null);
+		String practitionerId = (practitioner != null) ? practitioner.getReferenceElement().getIdPart() : null;
+		if (practitionerId == null) {
+			practitionerId = contextService.getTyped(IMandator.class).map(p -> p.getId()).orElse(null);
+		}
+
+		return OperationsUtil.handlePrintAppointmentsCard(coreModelService, null, patient.getIdPart(), practitionerId);
 	}
 
 	@Search
