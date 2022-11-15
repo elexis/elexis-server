@@ -9,37 +9,42 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Copied from
+ * 
  * @see https://raw.githubusercontent.com/hapifhir/hapi-fhir/master/hapi-fhir-jpaserver-base/src/main/java/ca/uhn/fhir/jpa/dao/predicate/SearchFilterParser.java
  */
 public class SearchFilterParser {
-	
-	private static final String XML_DATE_PATTERN =
-		"[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\\.[0-9]+)?(Z|([+\\-])((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?)?)?)?";
+
+	private static final String XML_DATE_PATTERN = "[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\\.[0-9]+)?(Z|([+\\-])((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?)?)?)?";
 	private static final Pattern XML_DATE_MATCHER = Pattern.compile(XML_DATE_PATTERN);
-	private static final List<String> CODES_CompareOperation = Arrays.asList("eq", "ne", "co", "sw",
-		"ew", "gt", "lt", "ge", "le", "pr", "po", "ss", "sb", "in", "re");
+	private static final List<String> CODES_CompareOperation = Arrays.asList("eq", "ne", "co", "sw", "ew", "gt", "lt",
+			"ge", "le", "pr", "po", "ss", "sb", "in", "re");
 	private static final List<String> CODES_LogicalOperation = Arrays.asList("and", "or", "not");
-	private String original = null;
+	private final String original;
 	private int cursor;
-	
-	private boolean isDate(String s){
+
+	public SearchFilterParser(String expression) {
+		this.original = expression;
+		this.cursor = 0;
+	}
+
+	private boolean isDate(String s) {
 		Matcher m = XML_DATE_MATCHER.matcher(s);
 		return m.matches();
 	}
-	
-	private FilterLexType peek() throws FilterSyntaxException{
-		
+
+	private FilterLexType peek() throws FilterSyntaxException {
+
 		FilterLexType result;
 		while ((cursor < original.length()) && (original.charAt(cursor) == ' ')) {
 			cursor++;
 		}
-		
+
 		if (cursor >= original.length()) {
 			result = FilterLexType.fsltEnded;
 		} else {
 			if (((original.charAt(cursor) >= 'a') && (original.charAt(cursor) <= 'z'))
-				|| ((original.charAt(cursor) >= 'A') && (original.charAt(cursor) <= 'Z'))
-				|| (original.charAt(cursor) == '_')) {
+					|| ((original.charAt(cursor) >= 'A') && (original.charAt(cursor) <= 'Z'))
+					|| (original.charAt(cursor) == '_')) {
 				result = FilterLexType.fsltName;
 			} else if ((original.charAt(cursor) >= '0') && (original.charAt(cursor) <= '9')) {
 				result = FilterLexType.fsltNumber;
@@ -56,15 +61,14 @@ public class SearchFilterParser {
 			} else if (original.charAt(cursor) == ']') {
 				result = FilterLexType.fsltCloseSq;
 			} else {
-				throw new FilterSyntaxException(
-					String.format("Unknown Character \"%s\" at %d", peekCh(), cursor));
+				throw new FilterSyntaxException(String.format("Unknown Character \"%s\" at %d", peekCh(), cursor));
 			}
 		}
 		return result;
 	}
-	
-	private String peekCh(){
-		
+
+	private String peekCh() {
+
 		String result;
 		if (cursor > original.length()) {
 			result = "[end!]";
@@ -73,114 +77,106 @@ public class SearchFilterParser {
 		}
 		return result;
 	}
-	
-	private String consumeName(){
-		
+
+	private String consumeName() {
+
 		String result;
 		int i = cursor;
 		do {
 			i++;
-		} while ((i <= original.length() - 1)
-			&& (((original.charAt(i) >= 'a') && (original.charAt(i) <= 'z'))
+		} while ((i <= original.length() - 1) && (((original.charAt(i) >= 'a') && (original.charAt(i) <= 'z'))
 				|| ((original.charAt(i) >= 'A') && (original.charAt(i) <= 'Z'))
-				|| ((original.charAt(i) >= '0') && (original.charAt(i) <= '9'))
-				|| (original.charAt(i) == '-') || (original.charAt(i) == '_')
-				|| (original.charAt(i) == ':')));
-		
-		result = original.substring(cursor, i/* - cursor*/);
+				|| ((original.charAt(i) >= '0') && (original.charAt(i) <= '9')) || (original.charAt(i) == '-')
+				|| (original.charAt(i) == '_') || (original.charAt(i) == ':')));
+
+		result = original.substring(cursor, i/* - cursor */);
 		cursor = i;
 		return result;
 	}
-	
-	private String consumeToken(){
-		
+
+	private String consumeToken() {
+
 		String result;
 		int i = cursor;
 		do {
 			i++;
 		} while ((i <= original.length() - 1) && (original.charAt(i) > 32)
-			&& (!StringUtils.isWhitespace(original.substring(i, i + 1)))
-			&& (original.charAt(i) != ')') && (original.charAt(i) != ']'));
-		result = original.substring(cursor, i/* - cursor*/);
+				&& (!StringUtils.isWhitespace(original.substring(i, i + 1))) && (original.charAt(i) != ')')
+				&& (original.charAt(i) != ']'));
+		result = original.substring(cursor, i/* - cursor */);
 		cursor = i;
 		return result;
 	}
-	
-	private String consumeNumberOrDate(){
-		
+
+	private String consumeNumberOrDate() {
+
 		String result;
 		int i = cursor;
 		do {
 			i++;
-		} while ((i <= original.length() - 1)
-			&& (((original.charAt(i) >= '0') && (original.charAt(i) <= '9'))
-				|| (original.charAt(i) == '.') || (original.charAt(i) == '-')
-				|| (original.charAt(i) == ':') || (original.charAt(i) == '+')
-				|| (original.charAt(i) == 'T')));
-		result = original.substring(cursor, i/* - cursor*/);
+		} while ((i <= original.length() - 1) && (((original.charAt(i) >= '0') && (original.charAt(i) <= '9'))
+				|| (original.charAt(i) == '.') || (original.charAt(i) == '-') || (original.charAt(i) == ':')
+				|| (original.charAt(i) == '+') || (original.charAt(i) == 'T')));
+		result = original.substring(cursor, i/* - cursor */);
 		cursor = i;
 		return result;
 	}
-	
-	private String consumeString() throws FilterSyntaxException{
-		
-		//			int l = 0;
+
+	private String consumeString() throws FilterSyntaxException {
+
+		// int l = 0;
 		cursor++;
 		StringBuilder str = new StringBuilder(original.length());
-		//			setLength(result, length(original)); // can't be longer than that
+		// setLength(result, length(original)); // can't be longer than that
 		while ((cursor <= original.length()) && (original.charAt(cursor) != '"')) {
-			//				l++;
+			// l++;
 			if (original.charAt(cursor) != '\\') {
 				str.append(original.charAt(cursor));
-				//					str.setCharAt(l, original.charAt(cursor));
+				// str.setCharAt(l, original.charAt(cursor));
 			} else {
 				cursor++;
 				if (original.charAt(cursor) == '"') {
 					str.append('"');
-					//						str.setCharAt(l, '"');
+					// str.setCharAt(l, '"');
 				} else if (original.charAt(cursor) == 't') {
 					str.append('\t');
-					//						str.setCharAt(l, '\t');
+					// str.setCharAt(l, '\t');
 				} else if (original.charAt(cursor) == 'r') {
 					str.append('\r');
-					//						str.setCharAt(l, '\r');
+					// str.setCharAt(l, '\r');
 				} else if (original.charAt(cursor) == 'n') {
 					str.append('\n');
-					//						str.setCharAt(l, '\n');
+					// str.setCharAt(l, '\n');
 				} else {
-					throw new FilterSyntaxException(
-						String.format("Unknown escape sequence at %d", cursor));
+					throw new FilterSyntaxException(String.format("Unknown escape sequence at %d", cursor));
 				}
 			}
 			cursor++;
 		}
-		//			SetLength(result, l);
+		// SetLength(result, l);
 		if ((cursor > original.length()) || (original.charAt(cursor) != '"')) {
-			throw new FilterSyntaxException(
-				String.format("Problem with string termination at %d", cursor));
+			throw new FilterSyntaxException(String.format("Problem with string termination at %d", cursor));
 		}
-		
+
 		if (str.length() == 0) {
-			throw new FilterSyntaxException(
-				String.format("Problem with string at %d cannot be empty", cursor));
+			throw new FilterSyntaxException(String.format("Problem with string at %d cannot be empty", cursor));
 		}
-		
+
 		cursor++;
 		return str.toString();
 	}
-	
-	private Filter parse() throws FilterSyntaxException{
-		
+
+	public Filter parse() throws FilterSyntaxException {
+
 		Filter result = parseOpen();
 		if (cursor < original.length()) {
-			throw new FilterSyntaxException(
-				String.format("Expression did not terminate at %d", cursor));
+			throw new FilterSyntaxException(String.format("Expression did not terminate at %d", cursor));
 		}
 		return result;
 	}
-	
-	private Filter parseOpen() throws FilterSyntaxException{
-		
+
+	private Filter parseOpen() throws FilterSyntaxException {
+
 		Filter result;
 		String s;
 		FilterParameterGroup grp;
@@ -189,19 +185,17 @@ public class SearchFilterParser {
 			grp = new FilterParameterGroup();
 			grp.setContained(parseOpen());
 			if (peek() != FilterLexType.fsltClose) {
-				throw new FilterSyntaxException(
-					String.format("Expected ')' at %d but found %s", cursor, peekCh()));
+				throw new FilterSyntaxException(String.format("Expected ')' at %d but found %s", cursor, peekCh()));
 			}
 			cursor++;
 			FilterLexType lexType = peek();
 			if (lexType == FilterLexType.fsltName) {
 				result = parseLogical(grp);
 			} else if ((lexType == FilterLexType.fsltEnded) || (lexType == FilterLexType.fsltClose)
-				|| (lexType == FilterLexType.fsltCloseSq)) {
+					|| (lexType == FilterLexType.fsltCloseSq)) {
 				result = grp;
 			} else {
-				throw new FilterSyntaxException(
-					String.format("Unexpected Character %s at %d", peekCh(), cursor));
+				throw new FilterSyntaxException(String.format("Unexpected Character %s at %d", peekCh(), cursor));
 			}
 		} else {
 			s = consumeName();
@@ -213,9 +207,9 @@ public class SearchFilterParser {
 		}
 		return result;
 	}
-	
-	private Filter parseLogical(Filter filter) throws FilterSyntaxException{
-		
+
+	private Filter parseLogical(Filter filter) throws FilterSyntaxException {
+
 		Filter result = null;
 		String s;
 		FilterLogical logical;
@@ -224,10 +218,9 @@ public class SearchFilterParser {
 		} else {
 			s = consumeName();
 			if ((!s.equals("or")) && (!s.equals("and")) && (!s.equals("not"))) {
-				throw new FilterSyntaxException(
-					String.format("Unexpected Name %s at %d", s, cursor));
+				throw new FilterSyntaxException(String.format("Unexpected Name %s at %d", s, cursor));
 			}
-			
+
 			logical = new FilterLogical();
 			logical.setFilter1(filter);
 			if (s.compareToIgnoreCase("or") == 0) {
@@ -237,54 +230,50 @@ public class SearchFilterParser {
 			} else {
 				logical.setOperation(FilterLogicalOperation.and);
 			}
-			
+
 			logical.setFilter2(parseOpen());
 			result = logical;
 		}
 		return result;
 	}
-	
-	private FilterParameterPath parsePath(String name) throws FilterSyntaxException{
-		
+
+	private FilterParameterPath parsePath(String name) throws FilterSyntaxException {
+
 		FilterParameterPath result = new FilterParameterPath();
 		result.setName(name);
 		if (peek() == FilterLexType.fsltOpenSq) {
 			cursor++;
 			result.setFilter(parseOpen());
 			if (peek() != FilterLexType.fsltCloseSq) {
-				throw new FilterSyntaxException(
-					String.format("Expected ']' at %d but found %s", cursor, peekCh()));
+				throw new FilterSyntaxException(String.format("Expected ']' at %d but found %s", cursor, peekCh()));
 			}
 			cursor++;
 		}
-		
+
 		if (peek() == FilterLexType.fsltDot) {
 			cursor++;
 			if (peek() != FilterLexType.fsltName) {
-				throw new FilterSyntaxException(
-					String.format("Unexpected Character %s at %d", peekCh(), cursor));
+				throw new FilterSyntaxException(String.format("Unexpected Character %s at %d", peekCh(), cursor));
 			}
 			result.setNext(parsePath(consumeName()));
 		} else if (result.getFilter() != null) {
-			throw new FilterSyntaxException(
-				String.format("Expected '.' at %d but found %s", cursor, peekCh()));
+			throw new FilterSyntaxException(String.format("Expected '.' at %d but found %s", cursor, peekCh()));
 		}
-		
+
 		return result;
 	}
-	
-	private Filter parseParameter(String name) throws FilterSyntaxException{
-		
+
+	private Filter parseParameter(String name) throws FilterSyntaxException {
+
 		Filter result;
 		String s;
 		FilterParameter filter = new FilterParameter();
-		
+
 		// 1. the path
 		filter.setParamPath(parsePath(name));
-		
+
 		if (peek() != FilterLexType.fsltName) {
-			throw new FilterSyntaxException(
-				String.format("Unexpected Character %s at %d", peekCh(), cursor));
+			throw new FilterSyntaxException(String.format("Unexpected Character %s at %d", peekCh(), cursor));
 		}
 		s = consumeName();
 		int index = CODES_CompareOperation.indexOf(s);
@@ -292,7 +281,7 @@ public class SearchFilterParser {
 			throw new FilterSyntaxException(String.format("Unknown operation %s at %d", s, cursor));
 		}
 		filter.setOperation(CompareOperation.values()[index]);
-		
+
 		FilterLexType lexType = peek();
 		if (lexType == FilterLexType.fsltName) {
 			filter.setValue(consumeToken());
@@ -304,107 +293,102 @@ public class SearchFilterParser {
 			filter.setValue(consumeString());
 			filter.setValueType(FilterValueType.string);
 		} else {
-			throw new FilterSyntaxException(
-				String.format("Unexpected Character %s at %d", peekCh(), cursor));
+			throw new FilterSyntaxException(String.format("Unexpected Character %s at %d", peekCh(), cursor));
 		}
-		
+
 		// check operation / value type results
 		if (filter.getOperation() == CompareOperation.pr) {
 			if ((filter.getValue().compareToIgnoreCase("true") != 0)
-				&& (filter.getValue().compareToIgnoreCase("false") != 0)) {
-				throw new FilterSyntaxException(
-					String.format("Value %s not valid for operation %s at %d", filter.getValue(),
-						CODES_CompareOperation.get(filter.getOperation().ordinal()), cursor));
+					&& (filter.getValue().compareToIgnoreCase("false") != 0)) {
+				throw new FilterSyntaxException(String.format("Value %s not valid for operation %s at %d",
+						filter.getValue(), CODES_CompareOperation.get(filter.getOperation().ordinal()), cursor));
 			}
 		} else if (filter.getOperation() == CompareOperation.po) {
 			if (!isDate(filter.getValue())) {
-				throw new FilterSyntaxException(
-					String.format("Value %s not valid for operation %s at %d", filter.getValue(),
-						CODES_CompareOperation.get(filter.getOperation().ordinal()), cursor));
+				throw new FilterSyntaxException(String.format("Value %s not valid for operation %s at %d",
+						filter.getValue(), CODES_CompareOperation.get(filter.getOperation().ordinal()), cursor));
 			}
 		}
-		
+
 		lexType = peek();
 		if (lexType == FilterLexType.fsltName) {
 			result = parseLogical(filter);
 		} else if ((lexType == FilterLexType.fsltEnded) || (lexType == FilterLexType.fsltClose)
-			|| (lexType == FilterLexType.fsltCloseSq)) {
+				|| (lexType == FilterLexType.fsltCloseSq)) {
 			result = filter;
 		} else {
-			throw new FilterSyntaxException(
-				String.format("Unexpected Character %s at %d", peekCh(), cursor));
+			throw new FilterSyntaxException(String.format("Unexpected Character %s at %d", peekCh(), cursor));
 		}
 		return result;
 	}
-	
+
 	public enum CompareOperation {
-			eq, ne, co, sw, ew, gt, lt, ge, le, pr, po, ss, sb, in, re, ap, sa, eb
+		eq, ne, co, sw, ew, gt, lt, ge, le, pr, po, ss, sb, in, re, ap, sa, eb
 	}
-	
+
 	public enum FilterLogicalOperation {
-			and, or, not
+		and, or, not
 	}
-	
+
 	public enum FilterItemType {
-			parameter, logical, parameterGroup
+		parameter, logical, parameterGroup
 	}
-	
+
 	public enum FilterValueType {
-			token, string, numberOrDate
+		token, string, numberOrDate
 	}
-	
+
 	public enum FilterLexType {
-			fsltEnded, fsltName, fsltString, fsltNumber, fsltDot, fsltOpen, fsltClose, fsltOpenSq,
-			fsltCloseSq
+		fsltEnded, fsltName, fsltString, fsltNumber, fsltDot, fsltOpen, fsltClose, fsltOpenSq, fsltCloseSq
 	}
-	
+
 	abstract public static class Filter {
-		
+
 		private FilterItemType itemType;
-		
-		public FilterItemType getFilterItemType(){
+
+		public FilterItemType getFilterItemType() {
 			return itemType;
 		}
 	}
-	
+
 	public static class FilterParameterPath {
-		
+
 		private String FName;
 		private Filter FFilter;
 		private FilterParameterPath FNext;
-		
-		public String getName(){
-			
+
+		public String getName() {
+
 			return FName;
 		}
-		
-		public void setName(String value){
-			
+
+		public void setName(String value) {
+
 			FName = value;
 		}
-		
-		public Filter getFilter(){
-			
+
+		public Filter getFilter() {
+
 			return FFilter;
 		}
-		
-		public void setFilter(Filter value){
-			
+
+		public void setFilter(Filter value) {
+
 			FFilter = value;
 		}
-		
-		public FilterParameterPath getNext(){
-			
+
+		public FilterParameterPath getNext() {
+
 			return FNext;
 		}
-		
-		public void setNext(FilterParameterPath value){
-			
+
+		public void setNext(FilterParameterPath value) {
+
 			FNext = value;
 		}
-		
+
 		@Override
-		public String toString(){
+		public String toString() {
 			String result;
 			if (getFilter() != null) {
 				result = getName() + "[" + getFilter().toString() + "]";
@@ -417,141 +401,136 @@ public class SearchFilterParser {
 			return result;
 		}
 	}
-	
+
 	public static class FilterParameterGroup extends Filter {
-		
+
 		private Filter FContained;
-		
-		public Filter getContained(){
-			
+
+		public Filter getContained() {
+
 			return FContained;
 		}
-		
-		public void setContained(Filter value){
-			
+
+		public void setContained(Filter value) {
+
 			FContained = value;
 		}
-		
+
 		@Override
-		public String toString(){
-			
+		public String toString() {
+
 			return "(" + FContained.toString() + ")";
 		}
 	}
-	
+
 	public static class FilterParameter extends Filter {
-		
+
 		private FilterParameterPath FParamPath;
 		private CompareOperation FOperation;
 		private String FValue;
 		private FilterValueType FValueType;
-		
-		public FilterParameterPath getParamPath(){
-			
+
+		public FilterParameterPath getParamPath() {
+
 			return FParamPath;
 		}
-		
-		void setParamPath(FilterParameterPath value){
-			
+
+		void setParamPath(FilterParameterPath value) {
+
 			FParamPath = value;
 		}
-		
-		public CompareOperation getOperation(){
-			
+
+		public CompareOperation getOperation() {
+
 			return FOperation;
 		}
-		
-		public void setOperation(CompareOperation value){
-			
+
+		public void setOperation(CompareOperation value) {
+
 			FOperation = value;
 		}
-		
-		public String getValue(){
-			
+
+		public String getValue() {
+
 			return FValue;
 		}
-		
-		public void setValue(String value){
-			
+
+		public void setValue(String value) {
+
 			FValue = value;
 		}
-		
-		public FilterValueType getValueType(){
-			
+
+		public FilterValueType getValueType() {
+
 			return FValueType;
 		}
-		
-		void setValueType(FilterValueType FValueType){
-			
+
+		void setValueType(FilterValueType FValueType) {
+
 			this.FValueType = FValueType;
 		}
-		
+
 		@Override
-		public String toString(){
+		public String toString() {
 			if (FValueType == FilterValueType.string) {
-				return getParamPath().toString() + " "
-					+ CODES_CompareOperation.get(getOperation().ordinal()) + " \"" + getValue()
-					+ "\"";
+				return getParamPath().toString() + " " + CODES_CompareOperation.get(getOperation().ordinal()) + " \""
+						+ getValue() + "\"";
 			} else {
-				return getParamPath().toString() + " "
-					+ CODES_CompareOperation.get(getOperation().ordinal()) + " " + getValue();
+				return getParamPath().toString() + " " + CODES_CompareOperation.get(getOperation().ordinal()) + " "
+						+ getValue();
 			}
 		}
 	}
-	
+
 	public static class FilterLogical extends Filter {
-		
+
 		private Filter FFilter1;
 		private FilterLogicalOperation FOperation;
 		private Filter FFilter2;
-		
-		public Filter getFilter1(){
-			
+
+		public Filter getFilter1() {
+
 			return FFilter1;
 		}
-		
-		void setFilter1(Filter FFilter1){
-			
+
+		void setFilter1(Filter FFilter1) {
+
 			this.FFilter1 = FFilter1;
 		}
-		
-		public FilterLogicalOperation getOperation(){
-			
+
+		public FilterLogicalOperation getOperation() {
+
 			return FOperation;
 		}
-		
-		public void setOperation(FilterLogicalOperation FOperation){
-			
+
+		public void setOperation(FilterLogicalOperation FOperation) {
+
 			this.FOperation = FOperation;
 		}
-		
-		public Filter getFilter2(){
-			
+
+		public Filter getFilter2() {
+
 			return FFilter2;
 		}
-		
-		void setFilter2(Filter FFilter2){
-			
+
+		void setFilter2(Filter FFilter2) {
+
 			this.FFilter2 = FFilter2;
 		}
-		
+
 		@Override
-		public String toString(){
-			return FFilter1.toString() + " " + CODES_LogicalOperation.get(getOperation().ordinal())
-				+ " " + FFilter2.toString();
+		public String toString() {
+			return FFilter1.toString() + " " + CODES_LogicalOperation.get(getOperation().ordinal()) + " "
+					+ FFilter2.toString();
 		}
 	}
-	
+
 	public static class FilterSyntaxException extends Exception {
-		FilterSyntaxException(String theMessage){
+		private static final long serialVersionUID = 8654770940895799049L;
+
+		FilterSyntaxException(String theMessage) {
 			super(theMessage);
 		}
 	}
-	
-	static public Filter parse(String expression) throws FilterSyntaxException{
-		SearchFilterParser parser = new SearchFilterParser();
-		parser.original = expression;
-		parser.cursor = 0;
-		return parser.parse();
-	}
+
 }

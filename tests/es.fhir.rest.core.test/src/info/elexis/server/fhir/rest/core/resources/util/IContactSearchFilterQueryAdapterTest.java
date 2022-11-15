@@ -56,4 +56,20 @@ public class IContactSearchFilterQueryAdapterTest {
 				subString);
 	}
 
+	@Test
+	public void identifierOrAdressOrBirthdateYear() {
+		StringAndListParam theFtFilter = new StringAndListParam();
+		StringParam stringParam = new StringParam(
+				"identifier eq \"www.elexis.info/patnr|1113\" or address co \"1113\" or birthdate eq \"1113\"");
+		theFtFilter.addAnd(stringParam);
+
+		IQuery<IPatient> query = AllTests.getModelService().getQuery(IPatient.class);
+		new IContactSearchFilterQueryAdapter().adapt(query, theFtFilter);
+		String queryString = query.toString();
+		String subString = queryString.substring(queryString.indexOf("WHERE"));
+		assertEquals(
+				"WHERE ((((DELETED <> ?) AND (istPerson = ?)) AND (istPatient = ?)) OR ((patientNr = ?) OR ((LOWER(ort) LIKE ? OR LOWER(strasse) LIKE ?) AND (geburtsdatum = ?))))",
+				subString);
+	}
+
 }
