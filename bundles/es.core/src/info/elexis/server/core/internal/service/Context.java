@@ -3,9 +3,14 @@ package info.elexis.server.core.internal.service;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.LoggerFactory;
+
 import ch.elexis.core.model.IContact;
+import ch.elexis.core.model.IMandator;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.services.IContext;
+import ch.elexis.core.services.IUserService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
 
 public class Context implements IContext {
@@ -40,7 +45,38 @@ public class Context implements IContext {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Optional<T> getTyped(Class<T> clazz) {
-		return Optional.ofNullable((T) context.get(clazz.getName()));
+		T object = (T) context.get(clazz.getName());
+		if (clazz.equals(IMandator.class) && object == null) {
+			object = (T) lazyLoadDefaultMandator();
+		}
+		return Optional.ofNullable(object);
+	}
+
+	/**
+	 * Not every API request requires the current user {@link IMandator}. So if a
+	 * {@link IMandator} is requested, and not set, we determine the default
+	 * {@link IMandator} for the user and set it to the context
+	 * 
+	 * @param <T>
+	 * @return the default {@link IMandator} or <code>null</code> if none found
+	 */
+	private IMandator lazyLoadDefaultMandator() {
+		@SuppressWarnings("unchecked")
+		Optional<IContact> userContact = (Optional<IContact>) getNamed(ACTIVE_USERCONTACT);
+		if (userContact.isPresent()) {
+			Optional<IUserService> userService = OsgiServiceUtil.getService(IUserService.class);
+			if (userService.isPresent()) {
+				Optional<IMandator> defaultMandator = userService.get()
+						.getDefaultExecutiveDoctorWorkingFor(userContact.get());
+				if (defaultMandator.isPresent()) {
+					setTyped(defaultMandator.get());
+					return defaultMandator.get();
+				}
+			} else {
+				LoggerFactory.getLogger(getClass()).error("Could not getService IUserService");
+			}
+		}
+		return null;
 	}
 
 	@Override
