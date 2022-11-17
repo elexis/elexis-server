@@ -140,7 +140,7 @@ public class SubscriptionResourceUtil {
 			Area areaByNameOrId = appointmentService.getAreaByNameOrId(appointment.getSchedule());
 			if (areaByNameOrId != null) {
 				fhirClient.registerInterceptor(
-						new SimpleRequestHeaderInterceptor("X_FHIR_SCHEDULE_ID", "Schedule/" + areaByNameOrId.getId()));
+						new SimpleRequestHeaderInterceptor("x-fhir-schedule-id", "Schedule/" + areaByNameOrId.getId()));
 			}
 
 			fhirClient.registerInterceptor(new LoggingInterceptor());
