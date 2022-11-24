@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -11,19 +11,19 @@
 	<parent>
 		<groupId>info.elexis.server</groupId>
 		<artifactId>info.elexis.server.parent</artifactId>
-		<version>3.10.0-SNAPSHOT</version>
+		<version>3.11.0-SNAPSHOT</version>
 		<relativePath>../releng/es.parent</relativePath>
 	</parent>
 
 	<modules>
 		<module>es.core.jetty.homebundle</module>
 		<module>es.core.common</module>
-              	<module>es.core</module>
-               	<module>es.core.logging</module>
-               	<module>es.core.p2</module>
+		<module>es.core</module>
+		<module>es.core.logging</module>
+		<module>es.core.p2</module>
 		<module>es.core.redmine</module>
-               	<module>es.core.connector.elexis</module>
+		<module>es.core.connector.elexis</module>
 		<module>es.fhir.rest.core</module>
 		<module>es.findings.fhir.jpa.service</module>
-       </modules>
+	</modules>
 </project>

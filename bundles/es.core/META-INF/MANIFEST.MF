@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis Server Core
 Bundle-SymbolicName: info.elexis.server.core;singleton:=true
-Bundle-Version: 3.10.0.qualifier
+Bundle-Version: 3.11.0.qualifier
 Bundle-Activator: info.elexis.server.core.internal.Activator
 Bundle-Vendor: elexis.info
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: ch.qos.logback.classic;version="1.2.3",
  ch.qos.logback.classic.joran;version="1.2.3",
  ch.qos.logback.classic.spi;version="1.2.3",
