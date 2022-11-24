@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="3.10.0" useFeatures="true" includeLaunchers="true">
+<product name="elexis-server" uid="info.elexis.server.runtime.product" id="info.elexis.server.core.ElexisServer" application="info.elexis.server.core.elexis-server" version="3.10.0" useFeatures="true" includeLaunchers="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>
@@ -63,7 +63,7 @@
    </configurations>
 
    <repositories>
-      <repository location="https://download.elexis.info/elexis-server/master/p2/elexis-server" enabled="true" />
+      <repository location="https://download.elexis.info/elexis-server/3.10/p2/elexis-server" enabled="true" />
    </repositories>
 
    <preferencesInfo>
