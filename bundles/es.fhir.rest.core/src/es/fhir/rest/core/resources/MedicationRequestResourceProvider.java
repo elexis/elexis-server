@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -28,7 +29,7 @@ import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 
 @Component
-public class MedicationRequestResourceProvider implements IFhirResourceProvider {
+public class MedicationRequestResourceProvider implements IFhirResourceProvider<MedicationRequest, IPrescription> {
 	
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService modelService;
@@ -41,7 +42,6 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 		return MedicationRequest.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<MedicationRequest, IPrescription> getTransformer(){
 		return (IFhirTransformer<MedicationRequest, IPrescription>) transformerRegistry
@@ -75,8 +75,7 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 					IQuery<IPrescription> query = modelService.getQuery(IPrescription.class);
 					query.and(ModelPackage.Literals.IPRESCRIPTION__PATIENT, COMPARATOR.EQUALS,
 						patient.get());
-					// TODO
-					//					qbe.add(Prescription_.rezeptID, JPAQuery.QUERY.EQUALS, null);
+					query.and("rezeptID", COMPARATOR.EQUALS, null);
 					List<IPrescription> prescriptions = query.execute();
 					if (prescriptions != null && !prescriptions.isEmpty()) {
 						List<MedicationRequest> ret = new ArrayList<MedicationRequest>();
@@ -93,16 +92,35 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider 
 		return null;
 	}
 	
+	@Create
+	public MethodOutcome create(@ResourceParam MedicationRequest fhirObject) {
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<IPrescription> exists = getTransformer().getLocalObject(fhirObject);
+		if (exists.isPresent()) {
+			outcome.setCreated(false);
+			outcome.setId(new IdType(fhirObject.getId()));
+		} else {
+			Optional<IPrescription> created = getTransformer().createLocalObject(fhirObject);
+			if (created.isPresent()) {
+				Optional<MedicationRequest> updated = getTransformer().getFhirObject(created.get());
+				if (updated.isPresent()) {
+					outcome.setCreated(true);
+					outcome.setId(updated.get().getIdElement());
+					outcome.setResource(updated.get());
+				}
+			}
+		}
+		return outcome;
+	}
+
 	@Update
-	public MethodOutcome updateMedicationOrder(@ResourceParam
-	MedicationRequest updateOrder){
+	public MethodOutcome updateMedicationOrder(@ResourceParam MedicationRequest updateOrder) {
 		Optional<IPrescription> localObject = getTransformer().getLocalObject(updateOrder);
 		MethodOutcome outcome = new MethodOutcome();
 		outcome.setCreated(false);
 		if (localObject.isPresent()) {
 			try {
-				Optional<IPrescription> updated =
-					getTransformer().updateLocalObject(updateOrder, localObject.get());
+				Optional<IPrescription> updated = getTransformer().updateLocalObject(updateOrder, localObject.get());
 				updated.ifPresent(prescription -> {
 					outcome.setCreated(true);
 					outcome.setId(new IdType(prescription.getId()));

@@ -7,21 +7,34 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Dosage;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestDispenseRequestComponent;
+import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestIntent;
+import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestPriority;
 import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestStatus;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.Reference;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ch.elexis.core.findings.util.fhir.MedicamentCoding;
+import ch.elexis.core.model.IArticle;
 import ch.elexis.core.model.prescription.EntryType;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
@@ -65,6 +78,52 @@ public class MedicationRequestTest {
 		assertFalse(entries.isEmpty());
 		MedicationRequest foundOrder = (MedicationRequest) entries.get(0).getResource();
 		assertEquals(order.getId(), foundOrder.getId());
+	}
+
+	@Test
+	public void createMedicationRequest() {
+		// test with full id url
+		Bundle results = client.search().forResource(MedicationRequest.class)
+				.where(MedicationRequest.PATIENT.hasId(patient.getId())).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		List<BundleEntryComponent> entries = results.getEntry();
+		int beforeCreate = entries.size();
+
+		MedicationRequest medicationRequest = new MedicationRequest();
+		medicationRequest.setSubject(new Reference(patient));
+		IArticle article = AllTests.getTestDatabaseInitializer().getArticle();
+		CodeableConcept medication = new CodeableConcept();
+		Coding coding = medication.addCoding();
+		coding.setSystem(MedicamentCoding.GTIN.getOid());
+		coding.setCode(article.getGtin());
+		coding.setDisplay(article.getName());
+		medicationRequest.setMedication(medication);
+		MedicationRequestDispenseRequestComponent dispenseRequest = new MedicationRequestDispenseRequestComponent();
+		Period dispensePeriod = new Period();
+		LocalDateTime dateFrom = LocalDateTime.now().minusDays(7);
+		if (dateFrom != null) {
+			Date time = Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant());
+			dispensePeriod.setStart(time);
+		}
+		dispenseRequest.setValidityPeriod(dispensePeriod);
+		medicationRequest.setDispenseRequest(dispenseRequest);
+		Dosage dosage = medicationRequest.addDosageInstruction();
+		dosage.setText("1-0-1-0");
+		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
+		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
+		medicationRequest.setPriority(MedicationRequestPriority.ROUTINE);
+		
+		MethodOutcome outcome = client.create().resource(medicationRequest).execute();
+		assertTrue(outcome.getCreated());
+
+		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId())
+				.execute();
+		assertNotNull(createdOrder);
+		assertEquals(MedicationRequestStatus.ACTIVE, createdOrder.getStatus());
+		assertEquals(medicationRequest.getDispenseRequest().getValidityPeriod().getStart().toString(),
+				createdOrder.getDispenseRequest().getValidityPeriod().getStart().toString());
+		assertEquals(medicationRequest.getDosageInstructionFirstRep().getText(),
+				createdOrder.getDosageInstructionFirstRep().getText());
 	}
 
 	@Test

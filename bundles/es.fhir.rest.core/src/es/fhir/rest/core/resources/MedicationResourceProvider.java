@@ -46,7 +46,6 @@ public class MedicationResourceProvider implements IFhirResourceProvider<Medicat
 		return Medication.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Medication, IArticle> getTransformer(){
 		return (IFhirTransformer<Medication, IArticle>) transformerRegistry
