@@ -19,6 +19,7 @@ import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IPatient;
@@ -102,12 +103,14 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider<
 		} else {
 			Optional<IPrescription> created = getTransformer().createLocalObject(fhirObject);
 			if (created.isPresent()) {
-				Optional<MedicationRequest> updated = getTransformer().getFhirObject(created.get());
-				if (updated.isPresent()) {
+				Optional<MedicationRequest> createdFhir = getTransformer().getFhirObject(created.get());
+				if (createdFhir.isPresent()) {
 					outcome.setCreated(true);
-					outcome.setId(updated.get().getIdElement());
-					outcome.setResource(updated.get());
+					outcome.setId(createdFhir.get().getIdElement());
+					outcome.setResource(createdFhir.get());
 				}
+			} else {
+				throw new InvalidRequestException("Could not create local object");
 			}
 		}
 		return outcome;

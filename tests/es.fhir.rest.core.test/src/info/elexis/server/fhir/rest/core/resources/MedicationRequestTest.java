@@ -19,6 +19,7 @@ import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Dosage;
+import org.hl7.fhir.r4.model.Dosage.DosageDoseAndRateComponent;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestDispenseRequestComponent;
@@ -28,6 +29,10 @@ import org.hl7.fhir.r4.model.MedicationRequest.MedicationRequestStatus;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.SimpleQuantity;
+import org.hl7.fhir.r4.model.Timing;
+import org.hl7.fhir.r4.model.Timing.EventTiming;
+import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -107,6 +112,7 @@ public class MedicationRequestTest {
 		}
 		dispenseRequest.setValidityPeriod(dispensePeriod);
 		medicationRequest.setDispenseRequest(dispenseRequest);
+
 		Dosage dosage = medicationRequest.addDosageInstruction();
 		dosage.setText("1-0-1-0");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
@@ -115,6 +121,7 @@ public class MedicationRequestTest {
 		
 		MethodOutcome outcome = client.create().resource(medicationRequest).execute();
 		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getResource());
 
 		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId())
 				.execute();
@@ -124,8 +131,72 @@ public class MedicationRequestTest {
 				createdOrder.getDispenseRequest().getValidityPeriod().getStart().toString());
 		assertEquals(medicationRequest.getDosageInstructionFirstRep().getText(),
 				createdOrder.getDosageInstructionFirstRep().getText());
+
+		results = client.search().forResource(MedicationRequest.class)
+				.where(MedicationRequest.PATIENT.hasId(patient.getId())).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		entries = results.getEntry();
+		assertTrue(beforeCreate < entries.size());
 	}
 
+	@Test
+	public void createMedicationRequestDosageDoseAndRate() {
+		MedicationRequest medicationRequest = new MedicationRequest();
+		medicationRequest.setSubject(new Reference(patient));
+		IArticle article = AllTests.getTestDatabaseInitializer().getArticle();
+		CodeableConcept medication = new CodeableConcept();
+		Coding coding = medication.addCoding();
+		coding.setSystem(MedicamentCoding.GTIN.getOid());
+		coding.setCode(article.getGtin());
+		coding.setDisplay(article.getName());
+		medicationRequest.setMedication(medication);
+		MedicationRequestDispenseRequestComponent dispenseRequest = new MedicationRequestDispenseRequestComponent();
+		Period dispensePeriod = new Period();
+		LocalDateTime dateFrom = LocalDateTime.now().minusDays(7);
+		if (dateFrom != null) {
+			Date time = Date.from(dateFrom.atZone(ZoneId.systemDefault()).toInstant());
+			dispensePeriod.setStart(time);
+		}
+		dispenseRequest.setValidityPeriod(dispensePeriod);
+		medicationRequest.setDispenseRequest(dispenseRequest);
+
+		Dosage dosage = medicationRequest.addDosageInstruction();
+		Timing timing = new Timing();
+		TimingRepeatComponent repeat = new TimingRepeatComponent();
+		repeat.addWhen(EventTiming.MORN);
+		timing.setRepeat(repeat);
+		dosage.setTiming(timing);
+		DosageDoseAndRateComponent doseAndRate = new DosageDoseAndRateComponent();
+		doseAndRate.setDose(new SimpleQuantity().setValue(1.0));
+		dosage.addDoseAndRate(doseAndRate);
+
+		dosage = medicationRequest.addDosageInstruction();
+		timing = new Timing();
+		repeat = new TimingRepeatComponent();
+		repeat.addWhen(EventTiming.AFT);
+		timing.setRepeat(repeat);
+		dosage.setTiming(timing);
+		doseAndRate = new DosageDoseAndRateComponent();
+		doseAndRate.setDose(new SimpleQuantity().setValue(1.0));
+		dosage.addDoseAndRate(doseAndRate);
+
+		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
+		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
+		medicationRequest.setPriority(MedicationRequestPriority.ROUTINE);
+		
+		MethodOutcome outcome = client.create().resource(medicationRequest).execute();
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getResource());
+
+		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId())
+				.execute();
+		assertNotNull(createdOrder);
+		assertEquals(MedicationRequestStatus.ACTIVE, createdOrder.getStatus());
+		assertEquals(medicationRequest.getDispenseRequest().getValidityPeriod().getStart().toString(),
+				createdOrder.getDispenseRequest().getValidityPeriod().getStart().toString());
+		assertEquals("1-0-1-0", createdOrder.getDosageInstructionFirstRep().getText());
+	}
+	
 	@Test
 	public void updateMedicationRequest() {
 		// load existing order

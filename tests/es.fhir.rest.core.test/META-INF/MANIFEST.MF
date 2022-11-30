@@ -20,6 +20,7 @@ Import-Package: ch.elexis.core.findings.util,
  org.apache.http.entity;version="4.4.15",
  org.apache.http.impl.client;version="4.5.13",
  org.hl7.fhir.dstu3.model,
+ org.hl7.fhir.r4.model;version="5.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/info.elexis.server.fhir.rest.core.resources.SubscriptionResourceTestEndpointProvider.xml
