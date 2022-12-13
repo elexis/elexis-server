@@ -205,7 +205,7 @@ public class MedicationRequestTest {
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
-		Optional<MedicationRequest> activeOrder = getActiveOrderWithDosage(entries);
+		Optional<MedicationRequest> activeOrder = getActiveRequestWithDosage(entries);
 		assertTrue(activeOrder.isPresent());
 		MedicationRequest updateOrder = activeOrder.get();
 		updateOrder.getDosageInstruction().get(0).setText("test");
@@ -223,15 +223,39 @@ public class MedicationRequestTest {
 		assertNotNull(oldOrder);
 		MedicationRequest newOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId()).execute();
 		assertNotNull(newOrder);
-		assertEquals(MedicationRequestStatus.COMPLETED, oldOrder.getStatus());
+		assertEquals(MedicationRequestStatus.STOPPED, oldOrder.getStatus());
 		assertEquals(MedicationRequestStatus.ACTIVE, newOrder.getStatus());
 		assertEquals("test", newOrder.getDosageInstruction().get(0).getText());
 		entryTypes = newOrder.getExtensionsByUrl("www.elexis.info/extensions/prescription/entrytype");
 		assertEquals(EntryType.SYMPTOMATIC_MEDICATION.name(), ((CodeType) entryTypes.get(0).getValue()).getValue());
-
 	}
 
-	private Optional<MedicationRequest> getActiveOrderWithDosage(List<BundleEntryComponent> orders) {
+	@Test
+	public void stopMedicationRequest() {
+		// load existing order and stop
+		Bundle results = client.search().forResource(MedicationRequest.class)
+				.where(MedicationRequest.PATIENT.hasId(patient.getId())).returnBundle(Bundle.class).execute();
+		assertNotNull(results);
+		List<BundleEntryComponent> entries = results.getEntry();
+		assertFalse(entries.isEmpty());
+		Optional<MedicationRequest> activeRequest = getActiveRequestWithDosage(entries);
+		assertTrue(activeRequest.isPresent());
+		MedicationRequest updateRequest = activeRequest.get();
+		updateRequest.setStatus(MedicationRequestStatus.STOPPED);
+		updateRequest.getDispenseRequest().getValidityPeriod().setEnd(new Date());
+
+		// update the medication
+		MethodOutcome outcome = client.update().resource(updateRequest).execute();
+
+		// read and validate change
+		assertEquals(activeRequest.get().getIdElement().getIdPart(), outcome.getId().getIdPart());
+		MedicationRequest updatedRequest = client.read().resource(MedicationRequest.class).withId(outcome.getId())
+				.execute();
+		assertNotNull(updatedRequest);
+		assertEquals(MedicationRequestStatus.STOPPED, updatedRequest.getStatus());
+	}
+
+	private Optional<MedicationRequest> getActiveRequestWithDosage(List<BundleEntryComponent> orders) {
 		for (BundleEntryComponent bundleEntryComponent : orders) {
 			if (bundleEntryComponent.getResource() instanceof MedicationRequest) {
 				MedicationRequest order = (MedicationRequest) bundleEntryComponent.getResource();

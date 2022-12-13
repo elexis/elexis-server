@@ -125,8 +125,12 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider<
 			try {
 				Optional<IPrescription> updated = getTransformer().updateLocalObject(updateOrder, localObject.get());
 				updated.ifPresent(prescription -> {
-					outcome.setCreated(true);
-					outcome.setId(new IdType(prescription.getId()));
+					if (prescription.getId().equals(localObject.get().getId())) {
+						outcome.setId(new IdType(prescription.getId()));
+					} else {
+						outcome.setCreated(true);
+						outcome.setId(new IdType(prescription.getId()));
+					}
 				});
 			} catch (RuntimeException e) {
 				OperationOutcome issueOutcome = new OperationOutcome();
