@@ -71,7 +71,8 @@ public class MedicationRequestTest {
 		assertFalse(entries.isEmpty());
 		MedicationRequest order = (MedicationRequest) entries.get(0).getResource();
 		// read
-		MedicationRequest readOrder = client.read().resource(MedicationRequest.class).withId(order.getId()).execute();
+		MedicationRequest readOrder = client.read().resource(MedicationRequest.class)
+				.withId(order.getIdElement().getIdPart()).execute();
 		assertNotNull(readOrder);
 		assertEquals(order.getId(), readOrder.getId());
 		// test with id part only
@@ -123,8 +124,8 @@ public class MedicationRequestTest {
 		assertTrue(outcome.getCreated());
 		assertNotNull(outcome.getResource());
 
-		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId())
-				.execute();
+		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class)
+				.withId(outcome.getId().getIdPart()).execute();
 		assertNotNull(createdOrder);
 		assertEquals(MedicationRequestStatus.ACTIVE, createdOrder.getStatus());
 		assertEquals(medicationRequest.getDispenseRequest().getValidityPeriod().getStart().toString(),
@@ -188,7 +189,8 @@ public class MedicationRequestTest {
 		assertTrue(outcome.getCreated());
 		assertNotNull(outcome.getResource());
 
-		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId())
+		MedicationRequest createdOrder = client.read().resource(MedicationRequest.class)
+				.withId(outcome.getId().getIdPart())
 				.execute();
 		assertNotNull(createdOrder);
 		assertEquals(MedicationRequestStatus.ACTIVE, createdOrder.getStatus());
@@ -218,8 +220,8 @@ public class MedicationRequestTest {
 		MethodOutcome outcome = client.update().resource(updateOrder).execute();
 
 		// read and validate change
-		MedicationRequest oldOrder = client.read().resource(MedicationRequest.class).withId(activeOrder.get().getId())
-				.execute();
+		MedicationRequest oldOrder = client.read().resource(MedicationRequest.class)
+				.withId(activeOrder.get().getIdElement().getIdPart()).execute();
 		assertNotNull(oldOrder);
 		MedicationRequest newOrder = client.read().resource(MedicationRequest.class).withId(outcome.getId()).execute();
 		assertNotNull(newOrder);
