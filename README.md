@@ -24,7 +24,7 @@ If you want to operate ES standalone with authentication/authorization support, 
 
 ## Build
 
-Requires maven 3.3 and java 11. Build can be started by executing `mvn -f releng/es.parent/pom.xml clean verify -DskipTests` 
+Requires maven 3.8 and java 17. Build can be started by executing `mvn -f releng/es.parent/pom.xml clean verify -DskipTests -Delexis.branch=master`
 
 ## Configuration, startup and testing the elexis server
 
