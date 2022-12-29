@@ -169,7 +169,8 @@ public class IContactSearchFilterQueryAdapter {
 		case Patient.SP_BIRTHDATE:
 			return Collections.singleton(ModelPackage.Literals.IPERSON__DATE_OF_BIRTH);
 		case Patient.SP_ADDRESS:
-			return Set.of(ModelPackage.Literals.ICONTACT__STREET, ModelPackage.Literals.ICONTACT__CITY);
+			return Set.of(ModelPackage.Literals.ICONTACT__STREET, ModelPackage.Literals.ICONTACT__CITY,
+					ModelPackage.Literals.ICONTACT__ZIP);
 		case Patient.SP_IDENTIFIER:
 			return Collections.singleton(ModelPackage.Literals.ICONTACT__CODE);
 		default:
