@@ -173,6 +173,10 @@ public class IContactSearchFilterQueryAdapter {
 					ModelPackage.Literals.ICONTACT__ZIP);
 		case Patient.SP_IDENTIFIER:
 			return Collections.singleton(ModelPackage.Literals.ICONTACT__CODE);
+		case Patient.SP_PHONE:
+		case Patient.SP_TELECOM:
+			return Set.of(ModelPackage.Literals.ICONTACT__PHONE1, ModelPackage.Literals.ICONTACT__PHONE2,
+					ModelPackage.Literals.ICONTACT__MOBILE);
 		default:
 			break;
 		}
