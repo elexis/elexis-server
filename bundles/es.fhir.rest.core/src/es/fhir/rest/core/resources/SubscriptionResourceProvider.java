@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Subscription;
@@ -42,11 +40,9 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerException;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
-import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.services.IAppointmentService;
-import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -76,9 +72,6 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 	@Reference
 	private IAppointmentService appointmentService;
-
-	@Reference
-	private IContextService contextService;
 
 	@Activate
 	public void activate() {
@@ -149,10 +142,6 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 		subscription.setId(UUID.randomUUID().toString());
 		subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
-		String userId = contextService.getActiveUser().map(u -> u.getId()).orElse(null);
-		if (userId != null) {
-			subscription.getMeta().addTag().setSystem("http://elexis.info/entity/user/id").setCode(userId);
-		}
 		// subscription starts now
 		subscription.getMeta().setLastUpdated(new Date());
 
@@ -201,18 +190,6 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 			for (Iterator<Subscription> iterator = activeSubscriptions.iterator(); iterator.hasNext();) {
 				Subscription subscription = iterator.next();
-
-				Optional<Coding> userCode = subscription.getMeta().getTag().stream()
-						.filter(t -> "http://elexis.info/entity/user/id".equals(t.getSystem())).findFirst();
-				if (userCode.isPresent()) {
-					Optional<IUser> user = coreModelService.load(userCode.get().getCode(), IUser.class);
-					if (user.isPresent()) {
-						contextService.setActiveUser(user.get());
-					} else {
-						logger.warn("[{}] Subscription assigned to unloadable user: {} ", subscription.getId(),
-								userCode.get().getCode());
-					}
-				}
 
 				Date lastUpdated = subscription.getMeta().getLastUpdated();
 				IStatus status = Status.OK_STATUS;
