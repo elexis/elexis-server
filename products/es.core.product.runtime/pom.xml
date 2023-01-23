@@ -32,6 +32,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<formats>
+						<linux>zip</linux>
+					</formats>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
