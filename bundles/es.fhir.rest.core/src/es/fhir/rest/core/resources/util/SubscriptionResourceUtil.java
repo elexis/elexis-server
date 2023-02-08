@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
@@ -143,20 +144,44 @@ public class SubscriptionResourceUtil {
 						new SimpleRequestHeaderInterceptor("x-fhir-schedule-id", "Schedule/" + areaByNameOrId.getId()));
 			}
 
-			fhirClient.registerInterceptor(new LoggingInterceptor());
+			LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+
+			loggingInterceptor.setLogRequestBody(true);
+			loggingInterceptor.setLogRequestHeaders(true);
+			fhirClient.registerInterceptor(loggingInterceptor);
 
 			try {
+				MethodOutcome methodOutcome;
 				if (appointment.isDeleted()) {
-					fhirClient.delete().resource(fhirObject.get()).execute();
+					methodOutcome = fhirClient.delete().resource(fhirObject.get()).execute();
 				} else {
-					fhirClient.update().resource(fhirObject.get()).execute();
+					methodOutcome = fhirClient.update().resource(fhirObject.get()).execute();
 				}
+
+				if (checkUnsubscribeRequest(methodOutcome)) {
+					return new Status(Status.CANCEL, "Subscription", 1, "Endpoint requests unsubscription", null);
+				}
+
 				return Status.OK_STATUS;
 			} catch (BaseServerResponseException bsre) {
 				return Status.error(bsre.getLocalizedMessage());
 			}
 		}
 		return Status.error("Could not transform to fhir object");
+	}
+
+	/**
+	 * Check if the subscription endpoint requests to be unsubscribed
+	 * 
+	 * @param methodOutcome
+	 * @return
+	 */
+	private boolean checkUnsubscribeRequest(MethodOutcome methodOutcome) {
+		List<String> unsubscribe = methodOutcome.getResponseHeaders().get("x-req-unsubscribe");
+		if (unsubscribe != null && unsubscribe.size() > 0) {
+			return Boolean.valueOf(unsubscribe.get(0));
+		}
+		return false;
 	}
 
 }
