@@ -209,8 +209,13 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 					subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
 					subscription.getMeta().setLastUpdated(new Date());
 				} else {
-					subscription.setStatus(Subscription.SubscriptionStatus.ERROR);
-					StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
+					if (Status.CANCEL == status.getSeverity()) {
+						StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
+						iterator.remove();
+					} else {
+						subscription.setStatus(Subscription.SubscriptionStatus.ERROR);
+						StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
+					}
 				}
 
 			}
