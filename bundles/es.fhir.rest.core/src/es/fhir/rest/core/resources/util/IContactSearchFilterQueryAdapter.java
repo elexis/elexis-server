@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,12 +117,22 @@ public class IContactSearchFilterQueryAdapter {
 		if (LocalDateTime.class == eStructuralFeature.getEType().getInstanceClass()) {
 			return parseLocalDate(filterParameter.getValue());
 		}
-		if (filterParameter.getParamPath().getName().equals(Patient.SP_IDENTIFIER)) {
-			String value = filterParameter.getValue();
+		String value = filterParameter.getValue();
+		if (Objects.equals(filterParameter.getParamPath().getName(), Patient.SP_IDENTIFIER)) {
 			if (StringUtils.startsWith(value, IdentifierSystem.ELEXIS_PATNR.getSystem())) {
 				return StringUtils.substring(value, IdentifierSystem.ELEXIS_PATNR.getSystem().length() + 1);
 			} else {
 				LoggerFactory.getLogger(getClass()).error("Unsupported identifier [{}]", value);
+			}
+		} else if (Objects.equals(filterParameter.getParamPath().getName(), Patient.SP_PHONE)) {
+			if (StringUtils.startsWith(value, "+4")) {
+				// LI +423
+				if (StringUtils.startsWith(value, "+423")) {
+					return StringUtils.substring(value, 4);
+				}
+				// AT +43, CH +41, DE +49
+				// cut the first 3 chars to remove country prefix
+				return StringUtils.substring(value, 3);
 			}
 		}
 		return filterParameter.getValue();
