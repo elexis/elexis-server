@@ -11,6 +11,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Observation;
 import org.osgi.service.component.annotations.Component;
@@ -20,7 +21,6 @@ import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -95,42 +95,42 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 	}
 	
 	@Search()
-	public List<Observation> findObservation(@RequiredParam(name = Observation.SP_SUBJECT)
-	IdType theSubjectId, @OptionalParam(name = Observation.SP_CATEGORY)
-	CodeType categoryCode, @OptionalParam(name = Observation.SP_CODE)
-	CodeType code, @OptionalParam(name = Observation.SP_DATE)
-	DateRangeParam dates, @OptionalParam(name = Observation.SP_ENCOUNTER)
-	IdType contextId){
+	public List<Observation> findObservation(@OptionalParam(name = Encounter.SP_PATIENT) IdType thePatientId,
+			@OptionalParam(name = Encounter.SP_SUBJECT) IdType theSubjectId,
+			@OptionalParam(name = Observation.SP_CATEGORY) CodeType categoryCode,
+			@OptionalParam(name = Observation.SP_CODE) CodeType code,
+			@OptionalParam(name = Observation.SP_DATE) DateRangeParam dates,
+			@OptionalParam(name = Observation.SP_ENCOUNTER) IdType contextId) {
+		if (theSubjectId == null && thePatientId != null) {
+			theSubjectId = thePatientId;
+		}
+
 		if (theSubjectId != null && !theSubjectId.isEmpty()) {
-			Optional<IPatient> patient =
-				modelService.load(theSubjectId.getIdPart(), IPatient.class);
+			Optional<IPatient> patient = modelService.load(theSubjectId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
 				if (patient.get().isPatient()) {
 					List<Observation> ret = new ArrayList<Observation>();
 					// laboratory
 					if (categoryCode == null || ObservationCategory.LABORATORY.name()
-						.equalsIgnoreCase(CodeTypeUtil.getCode(categoryCode).orElse(""))) {
+							.equalsIgnoreCase(CodeTypeUtil.getCode(categoryCode).orElse(""))) {
 						List<Observation> intermediateRet = new ArrayList<>();
 						IQuery<ILabResult> resultQuery = modelService.getQuery(ILabResult.class);
-						resultQuery.and(ModelPackage.Literals.ILAB_RESULT__PATIENT,
-							COMPARATOR.EQUALS, patient.get());
+						resultQuery.and(ModelPackage.Literals.ILAB_RESULT__PATIENT, COMPARATOR.EQUALS, patient.get());
 						List<ILabResult> result = resultQuery.execute();
-						
-						result.parallelStream().forEach(r -> getLabTransformer().getFhirObject(r)
-							.ifPresent(t -> intermediateRet.add(t)));
+
+						result.parallelStream().forEach(
+								r -> getLabTransformer().getFhirObject(r).ifPresent(t -> intermediateRet.add(t)));
 						ret = sortLaboratory(intermediateRet);
 					}
 					// all other observations
-					List<IObservation> findings = findingsService
-						.getPatientsFindings(theSubjectId.getIdPart(), IObservation.class);
+					List<IObservation> findings = findingsService.getPatientsFindings(theSubjectId.getIdPart(),
+							IObservation.class);
 					if (findings != null && !findings.isEmpty()) {
 						for (IObservation iFinding : findings) {
-							if (categoryCode != null
-								&& !isObservationCategory(iFinding, categoryCode)) {
+							if (categoryCode != null && !isObservationCategory(iFinding, categoryCode)) {
 								continue;
 							}
-							Optional<Observation> fhirObservation =
-								getTransformer().getFhirObject(iFinding);
+							Optional<Observation> fhirObservation = getTransformer().getFhirObject(iFinding);
 							if (fhirObservation.isPresent()) {
 								ret.add(fhirObservation.get());
 							}
