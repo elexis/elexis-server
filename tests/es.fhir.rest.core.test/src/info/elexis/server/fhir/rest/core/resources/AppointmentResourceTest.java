@@ -24,7 +24,6 @@ import org.hl7.fhir.r4.model.Schedule;
 import org.hl7.fhir.r4.model.Slot;
 import org.hl7.fhir.r4.model.Slot.SlotStatus;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -106,14 +105,12 @@ public class AppointmentResourceTest {
 		assertEquals(6, results.getEntry().size());
 	}
 
-	@Ignore // FIX ME
 	@Test
 	public void testSearchByDateParamsAndSlot() {
-		// http://localhost:8380/fhir/Schedule/5495888f8aae05023409b5cf853bbbce Praxis
 		Bundle results = client.search().forResource(Appointment.class)
 				.where(Appointment.DATE.afterOrEquals().day("2016-12-01"))
 				.and(Appointment.DATE.before().day("2016-12-30"))
-				.and(Appointment.ACTOR.hasId("Schedule/68a891b86923dd1740345627dbb92c9f")).returnBundle(Bundle.class)
+				.and(Appointment.SLOT.hasChainedProperty(Slot.SCHEDULE.hasId("68A891B86923DD1740345627DBB92C9F"))).returnBundle(Bundle.class)
 				.execute();
 		assertEquals(2, results.getEntry().size());
 		for (BundleEntryComponent entry : results.getEntry()) {
@@ -125,11 +122,10 @@ public class AppointmentResourceTest {
 
 	@Test
 	public void testSearchByDateParamsAndSlotAndIncludePatientReference() {
-		// http://localhost:8380/fhir/Schedule/5495888f8aae05023409b5cf853bbbce Praxis
 		Bundle results = client.search().forResource(Appointment.class)
 				.where(Appointment.DATE.afterOrEquals().day("2016-12-01"))
 				.and(Appointment.DATE.before().day("2016-12-30"))
-				.and(Appointment.ACTOR.hasId("Schedule/68a891b86923dd1740345627dbb92c9f"))
+				.and(Appointment.SLOT.hasChainedProperty(Slot.SCHEDULE.hasId("68A891B86923DD1740345627DBB92C9F")))
 				.include(Appointment.INCLUDE_PATIENT.asNonRecursive()).returnBundle(Bundle.class).execute();
 		System.out.println(results);
 		assertEquals(4, results.getEntry().size());
