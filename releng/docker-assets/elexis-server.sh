@@ -39,7 +39,7 @@ if [ ! -z $DEMO_MODE ]; then
 fi
 
 # Handle ES properties
-EFFECTIVE_JAVA_PROPERTIES=""
+EFFECTIVE_JAVA_PROPERTIES="--add-opens=java.base/java.util=ALL-UNNAMED"
 
 if [ ! -z $DISABLE_WEB_SECURITY ]; then
 	echo "Starting with disabled web security"
