@@ -114,7 +114,7 @@ public class ContextSettingFilter implements Filter {
 		String elexisContactId = (String) token.getOtherClaims().get("elexisContactId");
 		Optional<IPerson> assignedContact = coreModelService.load(elexisContactId, IPerson.class);
 		if (!assignedContact.isPresent()) {
-			logger.warn("Dynamic user create [{}] failed. Invalid or missing attribute elexisContactId", elexisContactId);
+			logger.warn("Dynamic user create [{}] failed. Invalid or missing attribute elexisContactId [{}]", token.getPreferredUsername(), elexisContactId);
 			return null;
 		}
 		logger.info("Dynamic user create [{}] with assigned contact [{}]", token.getPreferredUsername(),
