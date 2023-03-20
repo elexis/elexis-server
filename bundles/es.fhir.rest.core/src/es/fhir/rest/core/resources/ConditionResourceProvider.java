@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.IdType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -17,7 +18,6 @@ import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -83,9 +83,14 @@ public class ConditionResourceProvider implements IFhirResourceProvider<Conditio
 	}
 
 	@Search
-	public List<Condition> findCondition(@RequiredParam(name = Condition.SP_SUBJECT) IdType thePatientId,
+	public List<Condition> findCondition(@OptionalParam(name = Encounter.SP_PATIENT) IdType thePatientId,
+			@OptionalParam(name = Encounter.SP_SUBJECT) IdType theSubjectId,
 			@OptionalParam(name = Condition.SP_CATEGORY) CodeType categoryCode,
 			@OptionalParam(name = Condition.SP_CODE) TokenParam theCode) {
+		if (thePatientId == null && theSubjectId != null) {
+			thePatientId = theSubjectId;
+		}
+		
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient = coreModelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
