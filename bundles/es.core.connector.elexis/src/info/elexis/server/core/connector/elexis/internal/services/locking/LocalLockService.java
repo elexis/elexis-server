@@ -99,6 +99,9 @@ public class LocalLockService implements ILocalLockService {
 			LockRequest lockRequest = buildLockRequest(
 				lockResponse.getLockInfo().getElementStoreToString(), LockRequest.Type.RELEASE);
 			return acquireOrReleaseLocks(lockRequest);
+		} else if (object instanceof String) {
+			LockRequest lockRequest = buildLockRequest((String) object, LockRequest.Type.RELEASE);
+			return acquireOrReleaseLocks(lockRequest);
 		}
 		throw new IllegalArgumentException("Can not releaseLock on class " + object);
 	}
