@@ -39,7 +39,7 @@ import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 
 @Component(service = IFhirResourceProvider.class)
-public class ConditionResourceProvider implements IFhirResourceProvider<Condition, ICondition> {
+public class ConditionResourceProvider extends AbstractFhirCrudResourceProvider<Condition, ICondition> {
 
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
@@ -53,6 +53,10 @@ public class ConditionResourceProvider implements IFhirResourceProvider<Conditio
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 
+	public ConditionResourceProvider() {
+		super(ICondition.class);
+	}
+	
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Condition.class;
@@ -64,8 +68,9 @@ public class ConditionResourceProvider implements IFhirResourceProvider<Conditio
 				ICondition.class);
 	}
 
+	@Override
 	@Read
-	public Condition getResourceById(@IdParam IdType theId) {
+	public Condition read(@IdParam IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<ICondition> condition = findingsService.findById(idPart, ICondition.class);
@@ -136,8 +141,9 @@ public class ConditionResourceProvider implements IFhirResourceProvider<Conditio
 		return false;
 	}
 
+	@Override
 	@Create
-	public MethodOutcome createCondition(@ResourceParam Condition condition) {
+	public MethodOutcome create(@ResourceParam Condition condition) {
 		MethodOutcome outcome = new MethodOutcome();
 
 		if (condition.getCode().hasCoding(FhirConstants.DE_EAU_SYSTEM, FhirConstants.DE_EAU_SYSTEM_CODE)) {
@@ -174,7 +180,7 @@ public class ConditionResourceProvider implements IFhirResourceProvider<Conditio
 		}
 		return outcome;
 	}
-
+	
 	private boolean isConditionCategory(ICondition iCondition, CodeType categoryCode) {
 		Optional<String> codeCode = CodeTypeUtil.getCode(categoryCode);
 
