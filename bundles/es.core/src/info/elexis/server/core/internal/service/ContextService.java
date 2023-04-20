@@ -1,5 +1,6 @@
 package info.elexis.server.core.internal.service;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,12 +61,12 @@ public class ContextService implements IContextService {
 	}
 
 	@Override
-	public void postEvent(String eventTopic, Object object) {
+	public void postEvent(String eventTopic, Object object, Map<String, Object> additionalProperties) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void sendEvent(String eventTopic, Object object) {
+	public void sendEvent(String eventTopic, Object object, Map<String, Object> additionalProperties) {
 		throw new UnsupportedOperationException();
 	}
 }
