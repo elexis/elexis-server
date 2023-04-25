@@ -143,8 +143,9 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 		subscription.setId(UUID.randomUUID().toString());
 		subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
-		// subscription starts now
-		subscription.getMeta().setLastUpdated(new Date());
+		// subscription starts relative to newest entry
+		long highestLastUpdate = coreModelService.getHighestLastUpdate(IAppointment.class);
+		subscription.getMeta().setLastUpdated(new Date(highestLastUpdate));
 
 		activeSubscriptions.add(subscription);
 		logger.info("[{}] Subscription added", subscription.getId());
@@ -200,6 +201,7 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 					query.and(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, COMPARATOR.GREATER,
 							lastUpdated.getTime());
 					query.orderBy(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, ORDER.ASC);
+					System.out.println(query.toString());
 					List<IAppointment> queryResult = query.execute();
 					if (queryResult.size() > 0) {
 						// TODO automatic unregister if multiple fails?
