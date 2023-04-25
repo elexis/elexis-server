@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -69,6 +70,13 @@ public class SubscriptionResourceUtil {
 		return fhirContext;
 	}
 
+	/**
+	 * 
+	 * @param queryResult  all appointments to notify - in ASCENDING order of
+	 *                     updates!!
+	 * @param subscription
+	 * @return
+	 */
 	public IStatus handleNotification(List<IAppointment> queryResult, Subscription subscription) {
 
 		SubscriptionChannelComponent channel = subscription.getChannel();
@@ -80,9 +88,12 @@ public class SubscriptionResourceUtil {
 					if (!status.isOK()) {
 						return status;
 					}
+					subscription.getMeta().setLastUpdated(new Date(iAppointment.getLastupdate()));
 				}
 				return Status.OK_STATUS;
 			} else {
+				subscription.getMeta()
+						.setLastUpdated(new Date(queryResult.get(queryResult.size() - 1).getLastupdate()));
 				return sendGenericNotification(subscription);
 			}
 

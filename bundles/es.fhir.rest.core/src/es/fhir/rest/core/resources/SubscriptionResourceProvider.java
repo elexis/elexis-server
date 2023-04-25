@@ -46,6 +46,7 @@ import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IQuery.ORDER;
 import ch.elexis.core.status.StatusUtil;
 import ch.elexis.core.utils.CoreUtil;
 import es.fhir.rest.core.resources.util.SubscriptionResourceUtil;
@@ -198,6 +199,7 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 					IQuery<IAppointment> query = coreModelService.getQuery(IAppointment.class, true, true);
 					query.and(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, COMPARATOR.GREATER,
 							lastUpdated.getTime());
+					query.orderBy(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, ORDER.ASC);
 					List<IAppointment> queryResult = query.execute();
 					if (queryResult.size() > 0) {
 						// TODO automatic unregister if multiple fails?
@@ -207,7 +209,6 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 				if (status.isOK()) {
 					subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
-					subscription.getMeta().setLastUpdated(new Date());
 				} else {
 					if (Status.CANCEL == status.getSeverity()) {
 						StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
