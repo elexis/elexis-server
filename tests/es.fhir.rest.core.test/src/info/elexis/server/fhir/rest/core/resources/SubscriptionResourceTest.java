@@ -89,6 +89,11 @@ public class SubscriptionResourceTest {
 
 		assertTrue(SubscriptionResourceTestEndpointProvider.getPostCallCounter() > 0);
 
+		Subscription _updatedSubscription = client.read().resource(Subscription.class)
+				.withId(appointmentSubscription.getId()).execute();
+		assertEquals((Long) appointment.getLastupdate(),
+				(Long) _updatedSubscription.getMeta().getLastUpdated().getTime());
+
 		execute = client.delete().resource(appointmentSubscription).execute();
 	}
 
@@ -127,6 +132,15 @@ public class SubscriptionResourceTest {
 		appointment.setEndTime(LocalDateTime.now().plusMinutes(5));
 		AllTests.getModelService().save(appointment);
 
+		// create an appointment (we check the incoming subscription order lastupdate value)
+		assertNotNull(appointmentService);
+		IAppointment _appointment = AllTests.getModelService().create(IAppointment.class);
+		_appointment.setSchedule("test-area");
+		_appointment.setStartTime(LocalDateTime.now().plusMinutes(10));
+		_appointment.setSubjectOrPatient("test-appointment-2");
+		_appointment.setEndTime(LocalDateTime.now().plusMinutes(15));
+		AllTests.getModelService().save(_appointment);
+
 		// wait for the subscription call to happen
 		for (int i = 0; i < 1000; i++) {
 			int putCallCounter = SubscriptionResourceTestEndpointProvider.getPutCallCounter();
@@ -137,6 +151,11 @@ public class SubscriptionResourceTest {
 		}
 
 		assertTrue(SubscriptionResourceTestEndpointProvider.getPutCallCounter() > 0);
+
+		Subscription _updatedSubscription = client.read().resource(Subscription.class)
+				.withId(appointmentSubscription.getId()).execute();
+		assertEquals((Long) _appointment.getLastupdate(),
+				(Long) _updatedSubscription.getMeta().getLastUpdated().getTime());
 
 		AllTests.getModelService().delete(appointment);
 
