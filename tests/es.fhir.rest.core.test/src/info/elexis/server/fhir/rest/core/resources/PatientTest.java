@@ -123,6 +123,19 @@ public class PatientTest {
 	}
 
 	@Test
+	public void searchPatientFilter() {
+		Bundle results = client.search().forResource(Patient.class)
+				.whereMap(Collections.singletonMap(ca.uhn.fhir.rest.api.Constants.PARAM_FILTER,
+						Collections.singletonList("name co \"No Patient Name\" or address co \"Street 1\"")))
+				.returnBundle(Bundle.class).execute();
+		assertEquals(1, results.getEntry().size());
+		Optional<BundleEntryComponent> found = results.getEntry().stream().filter(
+				e -> e.getResource().getId().contains(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.findFirst();
+		assertTrue(found.isPresent());
+	}
+
+	@Test
 	@Ignore("unclear use case, deactivated")
 	public void searchPatientMultipleNameValue() {
 		Bundle results = client.search().forResource(Patient.class).where(Patient.NAME.matches().value("Test"))

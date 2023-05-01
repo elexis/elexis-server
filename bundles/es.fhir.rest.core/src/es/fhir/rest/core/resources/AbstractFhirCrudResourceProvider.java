@@ -111,7 +111,7 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 	 * @param lastupdate
 	 * @param fhirObject
 	 */
-	private void checkMatchVersion(Long lastupdate, FHIR fhirObject) {
+	protected void checkMatchVersion(Long lastupdate, FHIR fhirObject) {
 		if (fhirObject.getMeta() != null && fhirObject.getMeta().getLastUpdated() != null) {
 			Date metaLastupdated = fhirObject.getMeta().getLastUpdated(); // this will contain the ETag
 			Date lastUpdate = (lastupdate != null) ? new Date(lastupdate) : null;

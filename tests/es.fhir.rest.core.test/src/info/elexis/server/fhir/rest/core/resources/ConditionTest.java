@@ -8,8 +8,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -22,7 +24,6 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.codesystems.ConditionCategory;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -31,7 +32,9 @@ import ca.uhn.fhir.rest.gclient.ICriterion;
 import ca.uhn.fhir.rest.gclient.TokenClientParam;
 import ch.elexis.core.fhir.FhirConstants;
 import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
+import ch.elexis.core.time.TimeUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -134,6 +137,35 @@ public class ConditionTest {
 	}
 
 	@Test
+	public void updateCondition() {
+		Condition condition = new Condition();
+
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		condition.setText(narrative);
+		condition.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
+		condition.addCategory(new CodeableConcept().addCoding(new Coding(ConditionCategory.PROBLEMLISTITEM.getSystem(),
+				ConditionCategory.PROBLEMLISTITEM.toCode(), ConditionCategory.PROBLEMLISTITEM.getDisplay())));
+
+		MethodOutcome outcome = client.create().resource(condition).execute();
+		condition = client.read().resource(Condition.class).withId(outcome.getId()).execute();
+
+		divEncodedText = "Test\nText\nUpdate".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		condition.setText(narrative);
+		condition.getOnsetStringType().setValue("The Start");
+		condition.getAbatementStringType().setValue("The End");
+
+		outcome = client.update().resource(condition).execute();
+		assertNotNull(outcome);
+		Condition updatedCondition = (Condition) outcome.getResource();
+		assertTrue(ModelUtil.getNarrativeAsString(updatedCondition.getText()).get().endsWith("Update"));
+		assertEquals("The Start", updatedCondition.getOnsetStringType().getValue());
+		assertEquals("The End", updatedCondition.getAbatementStringType().getValue());
+	}
+
+	@Test
 	public void findAUFCondition() {
 		Patient readPatient = client.read().resource(Patient.class)
 				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId()).execute();
@@ -172,15 +204,64 @@ public class ConditionTest {
 	}
 
 	@Test
-	@Ignore(value = "unfinished")
+	public void updateAUFCondition() {
+		Condition condition = new Condition();
+		condition.getCode().getCoding().add(new Coding(FhirConstants.DE_EAU_SYSTEM, FhirConstants.DE_EAU_SYSTEM_CODE,
+				FhirConstants.DE_EAU_SYSTEM_CODE));
+		condition.getCode().getCoding().add(new Coding(CodingSystem.ELEXIS_AUF_REASON.getSystem(), "reason", "reason"));
+		condition.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
+		condition.setOnset(new DateTimeType(new Date()));
+		condition.addStage().getType().addCoding().setSystem(CodingSystem.ELEXIS_AUF_DEGREE.getSystem()).setCode("75");
+
+		MethodOutcome outcome = client.create().resource(condition).execute();
+		condition = client.read().resource(Condition.class).withId(outcome.getId()).execute();
+
+		LocalDate onSet = LocalDate.of(2000, 2, 2);
+		condition.getOnsetDateTimeType()
+				.setValue(Date.from(onSet.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+		condition.getAbatementDateTimeType()
+				.setValue(Date.from(onSet.plusDays(7).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+		condition.getStageFirstRep().getType().getCodingFirstRep().setSystem(CodingSystem.ELEXIS_AUF_DEGREE.getSystem())
+				.setCode("50");
+		condition.addNote().setText("Test\nText\nUpdate");
+
+		outcome = client.update().resource(condition).execute();
+		assertNotNull(outcome);
+		Condition updatedCondition = (Condition) outcome.getResource();
+		assertTrue(updatedCondition.getNote().stream().map(n -> n.getText()).collect(Collectors.joining())
+				.endsWith("Update"));
+		
+		assertEquals(onSet, TimeUtil.toLocalDate(updatedCondition.getOnsetDateTimeType().getValue()));
+		Coding codingFirstRep = condition.getStageFirstRep().getType().getCodingFirstRep();
+		assertEquals(CodingSystem.ELEXIS_AUF_DEGREE.getSystem(), codingFirstRep.getSystem());
+		assertEquals("50", codingFirstRep.getCode());
+	}
+
+	@Test
 	public void createAUFCondition() {
 		Condition condition = new Condition();
 		condition.getCode().getCoding().add(new Coding(FhirConstants.DE_EAU_SYSTEM, FhirConstants.DE_EAU_SYSTEM_CODE,
 				FhirConstants.DE_EAU_SYSTEM_CODE));
 		condition.getCode().getCoding()
-				.add(new Coding(CodingSystem.ELEXIS_AUF_REASON.getSystem(), "Schwangerschaft", "Schawngerschaft"));
+				.add(new Coding(CodingSystem.ELEXIS_AUF_REASON.getSystem(), "reason", "reason"));
 		condition.setSubject(new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		condition.setOnset(new DateTimeType(new Date()));
+		condition.addStage().getType().addCoding().setSystem(CodingSystem.ELEXIS_AUF_DEGREE.getSystem()).setCode("99");
+
+		MethodOutcome outcome = client.create().resource(condition).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+
+		Condition readCondition = client.read().resource(Condition.class).withId(outcome.getId()).execute();
+		assertNotNull(readCondition);
+		assertEquals(outcome.getId().getIdPart(), readCondition.getIdElement().getIdPart());
+		assertTrue(readCondition.getCode().hasCoding(FhirConstants.DE_EAU_SYSTEM, FhirConstants.DE_EAU_SYSTEM_CODE));
+		assertTrue(readCondition.getCode().hasCoding(CodingSystem.ELEXIS_AUF_REASON.getSystem(), "reason"));
+
+		Coding codingFirstRep = condition.getStageFirstRep().getType().getCodingFirstRep();
+		assertEquals(CodingSystem.ELEXIS_AUF_DEGREE.getSystem(), codingFirstRep.getSystem());
+		assertEquals("99", codingFirstRep.getCode());
 
 	}
 }

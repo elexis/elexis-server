@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.IdType;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -23,6 +24,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ch.elexis.core.fhir.FhirConstants;
 import ch.elexis.core.findings.ICondition;
 import ch.elexis.core.findings.ICondition.ConditionCategory;
@@ -31,9 +33,11 @@ import ch.elexis.core.findings.migration.IMigratorService;
 import ch.elexis.core.findings.util.CodeTypeUtil;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
+import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.ISickCertificate;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -53,10 +57,19 @@ public class ConditionResourceProvider extends AbstractFhirCrudResourceProvider<
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 
+	@Reference
+	private ILocalLockService localLockService;
+
 	public ConditionResourceProvider() {
 		super(ICondition.class);
 	}
 	
+	@Activate
+	public void activate() {
+		super.setModelService(coreModelService);
+		super.setLocalLockService(localLockService);
+	}
+
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return Condition.class;
@@ -141,6 +154,38 @@ public class ConditionResourceProvider extends AbstractFhirCrudResourceProvider<
 		return false;
 	}
 
+	@Override
+	public MethodOutcome update(IdType theId, Condition fhirObject) {
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<ICondition> elexisCondition = getTransformer().getLocalObject(fhirObject);
+		Optional<ISickCertificate> elexisSickCertificate = getSickCertificateTransformer().getLocalObject(fhirObject);
+		if (elexisCondition.isPresent()) {
+			checkMatchVersion(elexisCondition.get().getLastupdate(), fhirObject);
+
+			LockResponse lockResponse = localLockService.acquireLock(elexisCondition.get());
+			if (lockResponse.isOk()) {
+				outcome = resourceProviderUtil.updateResource(theId, getTransformer(), fhirObject, log);
+				localLockService.releaseLock(lockResponse);
+			} else {
+				throw new PreconditionFailedException("Could not acquire update lock");
+			}
+		} else if (elexisSickCertificate.isPresent()) {
+			checkMatchVersion(elexisSickCertificate.get().getLastupdate(), fhirObject);
+
+			LockResponse lockResponse = localLockService.acquireLock(elexisSickCertificate.get());
+			if (lockResponse.isOk()) {
+				outcome = resourceProviderUtil.updateResource(theId, getSickCertificateTransformer(), fhirObject, log);
+				localLockService.releaseLock(lockResponse);
+			} else {
+				throw new PreconditionFailedException("Could not acquire update lock");
+			}
+		} else {
+			log.warn("Could not find local object for [" + fhirObject + "] with id [" + fhirObject.getId() + "]");
+			outcome = create(fhirObject);
+		}
+		return outcome;
+	}
+	
 	@Override
 	@Create
 	public MethodOutcome create(@ResourceParam Condition condition) {
