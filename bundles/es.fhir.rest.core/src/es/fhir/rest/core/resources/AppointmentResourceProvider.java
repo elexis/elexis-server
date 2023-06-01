@@ -122,7 +122,7 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 			@OptionalParam(name = Appointment.SP_PATIENT) StringParam patientParam,
 			@OptionalParam(name = Appointment.SP_SLOT, chainWhitelist = {
 					Slot.SP_SCHEDULE }) ReferenceOrListParam scheduleParams,
-			@IncludeParam(allow = { "Appointment:actor", "Appointment:slot" }) Set<Include> theIncludes,
+			@IncludeParam(allow = { "Appointment:actor", "Appointment:slot", "Appointment:patient" }) Set<Include> theIncludes,
 			@Sort SortSpec theSort, @Count Integer theCount) {
 
 		// TODO default limit, offset, paging
