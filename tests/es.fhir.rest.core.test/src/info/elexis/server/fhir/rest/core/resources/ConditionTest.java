@@ -66,7 +66,8 @@ public class ConditionTest {
 		Condition condition = (Condition) entries.get(0).getResource();
 
 		// read with by id
-		Condition readCondition = client.read().resource(Condition.class).withId(condition.getId()).execute();
+		Condition readCondition = client.read().resource(Condition.class).withId(condition.getIdElement().getIdPart())
+				.execute();
 		assertNotNull(readCondition);
 		assertEquals(condition.getId(), readCondition.getId());
 

@@ -2,6 +2,7 @@ package es.fhir.rest.core.resources;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,8 @@ import org.hl7.fhir.r4.model.AllergyIntolerance;
 import org.hl7.fhir.r4.model.IdType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -17,13 +20,18 @@ import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import ch.elexis.core.findings.IAllergyIntolerance;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
+import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 
 @Component
@@ -38,6 +46,9 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	@Reference
 	private IFindingsService findingsService;
 	
+	@Reference
+	private ILocalLockService localLockService;
+
 	@Override
 	public Class<? extends IBaseResource> getResourceType(){
 		return AllergyIntolerance.class;
@@ -78,7 +89,7 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 	}
 	
 	@Create
-	public MethodOutcome createAllergyIntolerance(@ResourceParam
+	public MethodOutcome create(@ResourceParam
 	AllergyIntolerance allergyIntolerance){
 		MethodOutcome outcome = new MethodOutcome();
 		
@@ -113,5 +124,42 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 			}
 		}
 		return null;
+	}
+
+	Logger log = LoggerFactory.getLogger(getClass());
+	ResourceProviderUtil resourceProviderUtil = new ResourceProviderUtil();
+
+	@Update
+	public MethodOutcome update(@IdParam IdType theId, @ResourceParam AllergyIntolerance fhirObject) {
+		MethodOutcome outcome = new MethodOutcome();
+		Optional<IAllergyIntolerance> elexisObject = getTransformer().getLocalObject(fhirObject);
+		if (elexisObject.isPresent()) {
+			checkMatchVersion(elexisObject.get().getLastupdate(), fhirObject);
+
+			LockResponse lockResponse = localLockService.acquireLock(elexisObject.get());
+			if (lockResponse.isOk()) {
+				outcome = resourceProviderUtil.updateResource(theId, getTransformer(), fhirObject, log);
+				localLockService.releaseLock(lockResponse);
+			} else {
+				throw new PreconditionFailedException("Could not acquire update lock");
+			}
+
+		} else {
+			log.warn("Could not find local object for [" + fhirObject + "] with id [" + fhirObject.getId() + "]");
+			outcome = create(fhirObject);
+		}
+		return outcome;
+	}
+
+	private void checkMatchVersion(Long lastupdate, AllergyIntolerance fhirObject) {
+		if (fhirObject.getMeta() != null && fhirObject.getMeta().getLastUpdated() != null) {
+			Date metaLastupdated = fhirObject.getMeta().getLastUpdated(); // this will contain the ETag
+			Date lastUpdate = (lastupdate != null) ? new Date(lastupdate) : null;
+			if (metaLastupdated.equals(lastUpdate)) {
+				return;
+			}
+
+			throw new ResourceVersionConflictException("Expected version " + lastUpdate);
+		}
 	}
 }

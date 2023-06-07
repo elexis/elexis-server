@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.AllergyIntolerance;
+import org.hl7.fhir.r4.model.AllergyIntolerance.AllergyIntoleranceCategory;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Narrative;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.IAllergyIntolerance;
+import ch.elexis.core.findings.util.ModelUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -79,4 +81,37 @@ public class AllergyIntoleranceTest {
 			readAllergyIntolerance.getIdElement().getIdPart());
 	}
 	
+	@Test
+	public void updateAllergyIntolerance() {
+		AllergyIntolerance allergyIntolerance = new AllergyIntolerance();
+
+		Narrative narrative = new Narrative();
+		String divEncodedText = "Test\nText".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		allergyIntolerance.setText(narrative);
+
+		MethodOutcome outcome = client.create().resource(allergyIntolerance).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+		AllergyIntolerance readAllergyIntolerance = client.read().resource(AllergyIntolerance.class)
+				.withId(outcome.getId()).execute();
+
+		assertTrue(ModelUtil.getNarrativeAsString(readAllergyIntolerance.getText()).get().endsWith("Text"));
+		assertFalse(readAllergyIntolerance.hasCategory(AllergyIntoleranceCategory.ENVIRONMENT));
+
+		narrative = new Narrative();
+		divEncodedText = "AllergyIntolerance\nTest\nUpdate".replaceAll("(\r\n|\r|\n)", "<br />");
+		narrative.setDivAsString(divEncodedText);
+		readAllergyIntolerance.setText(narrative);
+		readAllergyIntolerance.addCategory(AllergyIntoleranceCategory.ENVIRONMENT);
+
+		outcome = client.update().resource(readAllergyIntolerance).execute();
+		assertNotNull(outcome);
+		assertNotNull(outcome.getId());
+		readAllergyIntolerance = client.read().resource(AllergyIntolerance.class).withId(outcome.getId()).execute();
+		assertTrue(ModelUtil.getNarrativeAsString(readAllergyIntolerance.getText()).get().endsWith("Update"));
+		assertTrue(readAllergyIntolerance.hasCategory(AllergyIntoleranceCategory.ENVIRONMENT));
+	}
+
 }
