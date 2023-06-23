@@ -7,5 +7,6 @@
    <reference cardinality="1..1" field="contextService" interface="ch.elexis.core.services.IContextService" name="contextService"/>
    <reference cardinality="1..1" field="coreModelService" interface="ch.elexis.core.services.IModelService" name="coreModelService" target="(service.model.name=ch.elexis.core.model)"/>
    <reference cardinality="1..1" field="httpService" interface="org.osgi.service.http.HttpService" name="httpService"/>
+   <reference cardinality="1..1" field="plainResourceProvider" interface="es.fhir.rest.core.resources.PlainResourceProvider" name="plainResourceProvider"/>
    <implementation class="es.fhir.rest.core.servlets.CoreFhirRestServlet"/>
 </scr:component>
