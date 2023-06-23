@@ -62,9 +62,6 @@ public class PersonResourceProvider extends AbstractFhirCrudResourceProvider<Per
 		super.setLocalLockService(localLockService);
 	}
 
-	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
-	private IModelService modelService;
-
 	@Override
 	public IFhirTransformer<Person, IPerson> getTransformer() {
 		return (IFhirTransformer<Person, IPerson>) transformerRegistry.getTransformerFor(Person.class, IPerson.class);
