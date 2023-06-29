@@ -11,18 +11,23 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.HumanName.NameUse;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Person;
+import org.hl7.fhir.r4.model.Reference;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import ch.elexis.core.findings.IdentifierSystem;
+import ch.elexis.core.findings.util.ModelUtil;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.builder.IContactBuilder;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
@@ -102,6 +107,33 @@ public class PersonResourceProviderTest {
 
 		CoreModelServiceHolder.get().remove(test1);
 		CoreModelServiceHolder.get().remove(test2);
+	}
+
+	@Test
+	public void promotePersonToPatient() {
+		IPerson test1 = new IContactBuilder.PersonBuilder(CoreModelServiceHolder.get(), "MaloiFirstname",
+				"MaloiLastname", LocalDate.now(), Gender.MALE).buildAndSave();
+
+		boolean catched = false;
+		try {
+			client.read().resource(Patient.class).withId(test1.getId()).execute();
+		} catch (ResourceNotFoundException rse) {
+			catched = true;
+		}
+		assertTrue(catched);
+
+		Person person = client.read().resource(Person.class).withId(test1.getId()).execute();
+		person.addLink().setTarget(new Reference(Patient.class.getSimpleName() + "/" + test1.getId()));
+		MethodOutcome execute = client.update().resource(person).execute();
+		assertEquals("MaloiLastname", ((Person) execute.getResource()).getName().get(0).getFamily());
+
+		Patient patient = client.read().resource(Patient.class).withId(test1.getId()).execute();
+		assertNotNull(patient);
+		String identifierBySystem = ModelUtil.getIdentifierBySystem(patient.getIdentifier(),
+				IdentifierSystem.ELEXIS_PATNR.getSystem());
+		assertTrue(StringUtils.isNumeric(identifierBySystem));
+
+		CoreModelServiceHolder.get().remove(test1);
 	}
 
 }
