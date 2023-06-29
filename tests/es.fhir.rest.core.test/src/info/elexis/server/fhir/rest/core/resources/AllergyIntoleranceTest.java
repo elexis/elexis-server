@@ -109,7 +109,8 @@ public class AllergyIntoleranceTest {
 		outcome = client.update().resource(readAllergyIntolerance).execute();
 		assertNotNull(outcome);
 		assertNotNull(outcome.getId());
-		readAllergyIntolerance = client.read().resource(AllergyIntolerance.class).withId(outcome.getId()).execute();
+		readAllergyIntolerance = client.read().resource(AllergyIntolerance.class).withId(outcome.getId().getIdPart())
+				.execute();
 		assertTrue(ModelUtil.getNarrativeAsString(readAllergyIntolerance.getText()).get().endsWith("Update"));
 		assertTrue(readAllergyIntolerance.hasCategory(AllergyIntoleranceCategory.ENVIRONMENT));
 	}

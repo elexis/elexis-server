@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.OperationOutcome;
@@ -13,6 +14,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
@@ -20,6 +22,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.annotation.Update;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+import ch.elexis.core.findings.util.CodeTypeUtil;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IPatient;
@@ -66,8 +69,8 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider<
 	
 	@Search()
 	public List<MedicationRequest> findMedicationsByPatient(
-		@RequiredParam(name = MedicationRequest.SP_PATIENT)
-		IdType thePatientId){
+			@RequiredParam(name = MedicationRequest.SP_PATIENT) IdType thePatientId,
+			@OptionalParam(name = MedicationRequest.SP_INTENT) CodeType intentCode) {
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient =
 				modelService.load(thePatientId.getIdPart(), IPatient.class);
@@ -76,7 +79,14 @@ public class MedicationRequestResourceProvider implements IFhirResourceProvider<
 					IQuery<IPrescription> query = modelService.getQuery(IPrescription.class);
 					query.and(ModelPackage.Literals.IPRESCRIPTION__PATIENT, COMPARATOR.EQUALS,
 						patient.get());
-					query.and("rezeptID", COMPARATOR.EQUALS, null);
+					if(intentCode != null) {
+						if ("plan".equalsIgnoreCase(CodeTypeUtil.getCode(intentCode).orElse(null))) {
+							query.and("rezeptID", COMPARATOR.EQUALS, null);
+						}
+						if ("order".equalsIgnoreCase(CodeTypeUtil.getCode(intentCode).orElse(null))) {
+							query.and("rezeptID", COMPARATOR.NOT_EQUALS, null);
+						}
+					}
 					List<IPrescription> prescriptions = query.execute();
 					if (prescriptions != null && !prescriptions.isEmpty()) {
 						List<MedicationRequest> ret = new ArrayList<MedicationRequest>();
