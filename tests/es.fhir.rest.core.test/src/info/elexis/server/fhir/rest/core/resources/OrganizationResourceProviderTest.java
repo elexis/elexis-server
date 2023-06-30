@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Address.AddressType;
+import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.ContactPoint;
@@ -22,7 +24,7 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class OrganizationTest {
+public class OrganizationResourceProviderTest {
 
 	private static IGenericClient client;
 
@@ -33,18 +35,18 @@ public class OrganizationTest {
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
-	
+
 	@Test
 	public void crud() {
-		
+
 		// load sample
 
-		// create 
+		// create
 		// read
 		// update
 		// read
 		// delete
-		
+
 	}
 
 	@Test
@@ -70,8 +72,7 @@ public class OrganizationTest {
 	@Test
 	public void getOrganizationProperties() {
 		Organization readOrganization = client.read().resource(Organization.class)
-				.withId(TestDatabaseInitializer.getOrganization().getId())
-				.execute();
+				.withId(TestDatabaseInitializer.getOrganization().getId()).execute();
 		assertNotNull(readOrganization);
 
 		assertEquals("Test Organization", readOrganization.getName());
@@ -84,9 +85,17 @@ public class OrganizationTest {
 		assertEquals("+01444345", telcoms.get(1).getValue());
 		List<Address> addresses = readOrganization.getAddress();
 		assertNotNull(addresses);
-		assertEquals(1, addresses.size());
-		assertEquals("City", addresses.get(0).getCity());
-		assertEquals("123", addresses.get(0).getPostalCode());
-		assertEquals("Street 10", addresses.get(0).getLine().get(0).asStringValue());
+		assertEquals(2, addresses.size());
+		for (Address address : addresses) {
+			if (AddressType.PHYSICAL == address.getType()) {
+				assertEquals(AddressUse.HOME, address.getUse());
+				assertEquals("City", address.getCity());
+				assertEquals("123", address.getPostalCode());
+				assertEquals("Street 10", address.getLine().get(0).asStringValue());
+			}
+			if (AddressType.POSTAL == address.getType()) {
+				assertEquals("Test Organization , Street 10, 123 City\nStreet 10\n123 City\n", address.getText());
+			}
+		}
 	}
 }
