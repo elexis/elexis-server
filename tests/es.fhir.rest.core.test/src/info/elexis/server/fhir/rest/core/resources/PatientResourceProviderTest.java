@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Address.AddressType;
 import org.hl7.fhir.r4.model.Address.AddressUse;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -43,7 +44,7 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class PatientTest {
+public class PatientResourceProviderTest {
 
 	private static IGenericClient client;
 
@@ -101,7 +102,6 @@ public class PatientTest {
 		assertEquals("familyNameUpdated", updated.getName().get(0).getFamily());
 		Date updatedLastUpdate = updated.getMeta().getLastUpdated();
 		assertTrue(updatedLastUpdate.after(originalLastUpdate));
-		// TODO test
 	}
 
 	@Test
@@ -193,12 +193,18 @@ public class PatientTest {
 		assertEquals(ContactPointUse.MOBILE, telcoms.get(1).getUse());
 		assertEquals("+01444123", telcoms.get(1).getValue());
 		List<Address> addresses = readPatient.getAddress();
-		assertNotNull(addresses);
-		assertEquals(1, addresses.size());
-		assertEquals(AddressUse.HOME, addresses.get(0).getUse());
-		assertEquals("City", addresses.get(0).getCity());
-		assertEquals("123", addresses.get(0).getPostalCode());
-		assertEquals("Street 1", addresses.get(0).getLine().get(0).asStringValue());
+		assertEquals(2, addresses.size());
+		for (Address address : addresses) {
+			if (AddressType.PHYSICAL == address.getType()) {
+				assertEquals(AddressUse.HOME, address.getUse());
+				assertEquals("City", address.getCity());
+				assertEquals("123", address.getPostalCode());
+				assertEquals("Street 1", address.getLine().get(0).asStringValue());
+			}
+			if (AddressType.POSTAL == address.getType()) {
+				assertEquals("Patient Test (w), 01.01.1990\nStreet 1\n123 City\n", address.getText());
+			}
+		}
 
 		List<Identifier> identifiers = readPatient.getIdentifier();
 		boolean ahvFound = false;
