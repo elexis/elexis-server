@@ -43,11 +43,8 @@ public class AppointmentStatusCodeElementServiceContribution implements ICodeEle
 		ArrayList<ICodeElement> elements = new ArrayList<ICodeElement>();
 
 		List<String> states = appointmentService.getStates();
-		String defaultState = appointmentService.getState(AppointmentState.DEFAULT);
-
-		// put default state to front
-		states.remove(defaultState);
-		states.add(0, defaultState);
+		// this is not a valid selectable state, hence we do not hand it out
+		states.remove(appointmentService.getState(AppointmentState.EMPTY));
 
 		states.forEach(state -> elements
 				.add(new TransientCodeElement(getSystem(), state.replaceAll(" ", "_").toUpperCase(), state)));
