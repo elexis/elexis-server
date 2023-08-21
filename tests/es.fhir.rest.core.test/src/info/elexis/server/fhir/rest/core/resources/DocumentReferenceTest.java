@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -159,7 +158,7 @@ public class DocumentReferenceTest {
 		DocumentReferenceContentComponent content = new DocumentReferenceContentComponent();
 		Attachment attachment = new Attachment();
 		attachment.setTitle("test attachment.txt");
-		attachment.setData(Base64.getEncoder().encode("Test Text\n2te Zeile üöä!".getBytes()));
+		attachment.setData("Test Text\n2te Zeile üöä!".getBytes());
 		content.setAttachment(attachment);
 		reference.addContent(content);
 
