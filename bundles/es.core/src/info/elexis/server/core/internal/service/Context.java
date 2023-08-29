@@ -61,13 +61,11 @@ public class Context implements IContext {
 	 * @return the default {@link IMandator} or <code>null</code> if none found
 	 */
 	private IMandator lazyLoadDefaultMandator() {
-		@SuppressWarnings("unchecked")
-		Optional<IContact> userContact = (Optional<IContact>) getNamed(ACTIVE_USERCONTACT);
-		if (userContact.isPresent()) {
+		Optional<IUser> user = getTyped(IUser.class);
+		if (user.isPresent()) {
 			Optional<IUserService> userService = OsgiServiceUtil.getService(IUserService.class);
 			if (userService.isPresent()) {
-				Optional<IMandator> defaultMandator = userService.get()
-						.getDefaultExecutiveDoctorWorkingFor(userContact.get());
+				Optional<IMandator> defaultMandator = userService.get().getDefaultExecutiveDoctorWorkingFor(user.get());
 				if (defaultMandator.isPresent()) {
 					setTyped(defaultMandator.get());
 					return defaultMandator.get();
