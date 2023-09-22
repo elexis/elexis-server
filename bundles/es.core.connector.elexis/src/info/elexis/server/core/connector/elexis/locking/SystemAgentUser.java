@@ -11,127 +11,138 @@ import ch.elexis.core.model.IXid;
  * The elexis-server itself, acting if no other user is set.
  */
 public class SystemAgentUser implements IUser {
-	
+
 	public static final String ELEXISSERVER_AGENTUSER = "__elexis-server__";
-	
+
 	@Override
-	public boolean isDeleted(){
+	public boolean isDeleted() {
 		return false;
 	}
-	
+
 	@Override
-	public void setDeleted(boolean value){}
-	
+	public void setDeleted(boolean value) {
+	}
+
 	@Override
-	public String getId(){
+	public String getId() {
 		return ELEXISSERVER_AGENTUSER;
 	}
-	
+
 	@Override
-	public String getLabel(){
+	public String getLabel() {
 		return ELEXISSERVER_AGENTUSER;
 	}
-	
+
 	@Override
-	public boolean addXid(String domain, String id, boolean updateIfExists){
+	public boolean addXid(String domain, String id, boolean updateIfExists) {
 		return false;
 	}
-	
+
 	@Override
-	public IXid getXid(String domain){
+	public IXid getXid(String domain) {
 		return null;
 	}
-	
+
 	@Override
-	public Long getLastupdate(){
+	public Long getLastupdate() {
 		return System.currentTimeMillis();
 	}
-	
+
 	@Override
-	public String getUsername(){
+	public String getUsername() {
 		return ELEXISSERVER_AGENTUSER;
 	}
-	
+
 	@Override
-	public void setUsername(String value){}
-	
+	public void setUsername(String value) {
+	}
+
 	@Override
-	public String getHashedPassword(){
+	public String getHashedPassword() {
 		return "";
 	}
-	
+
 	@Override
-	public void setHashedPassword(String value){
-		
+	public void setHashedPassword(String value) {
+
 	}
-	
+
 	@Override
-	public String getSalt(){
+	public String getSalt() {
 		return "";
 	}
-	
+
 	@Override
-	public void setSalt(String value){}
-	
+	public void setSalt(String value) {
+	}
+
 	@Override
-	public IContact getAssignedContact(){
+	public IContact getAssignedContact() {
 		return null;
 	}
-	
+
 	@Override
-	public void setAssignedContact(IContact value){}
-	
+	public void setAssignedContact(IContact value) {
+	}
+
 	@Override
-	public List<IRole> getRoles(){
+	public List<IRole> getRoles() {
 		return null;
 	}
-	
+
 	@Override
-	public boolean isActive(){
+	public boolean isActive() {
 		return true;
 	}
-	
+
 	@Override
-	public void setActive(boolean value){}
-	
+	public void setActive(boolean value) {
+	}
+
 	@Override
-	public boolean isAllowExternal(){
+	public boolean isAllowExternal() {
 		return false;
 	}
-	
+
 	@Override
-	public void setAllowExternal(boolean value){
-		
+	public void setAllowExternal(boolean value) {
+
 	}
-	
+
 	@Override
-	public boolean isAdministrator(){
+	public boolean isAdministrator() {
 		return true;
 	}
-	
+
 	@Override
-	public void setAdministrator(boolean value){
-		
+	public void setAdministrator(boolean value) {
+
 	}
-	
+
 	@Override
-	public IRole addRole(IRole role){
+	public IRole addRole(IRole role) {
 		return null;
 	}
-	
+
 	@Override
-	public void removeRole(IRole role){
-		
+	public void removeRole(IRole role) {
+
 	}
-	
+
 	@Override
-	public IUser login(String username, char[] password){
+	public IUser login(String username, char[] password) {
 		return null;
 	}
-	
+
 	@Override
-	public boolean isInternal(){
+	public boolean isInternal() {
 		return true;
 	}
-	
+
+	@Override
+	public void setRoles(List<IRole> roles) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
