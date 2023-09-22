@@ -1,8 +1,13 @@
 package info.elexis.server.core.servlet.filter;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,29 +25,38 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IPerson;
+import ch.elexis.core.model.IRole;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.builder.IUserBuilder;
+import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IUserService;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
 
 public class ContextSettingFilter implements Filter {
 
-	private IContextService contextService;
-	private IModelService coreModelService;
-
-	protected Pattern skipPattern;
-
 	private Logger logger;
 
+	private IContextService contextService;
+	private IModelService coreModelService;
+	private IAccessControlService accessControlService;
+
+	private LimitedLinkedHashMap<String, IUser> verificationCache;
+	protected Pattern skipPattern;
+
 	public ContextSettingFilter(IContextService contextService, IModelService coreModelService,
-			String skipPatternDefinition) {
+			IAccessControlService accessControlService, String skipPatternDefinition) {
 		this.contextService = contextService;
 		this.coreModelService = coreModelService;
+		this.accessControlService = accessControlService;
 		logger = LoggerFactory.getLogger(getClass());
+		verificationCache = new LimitedLinkedHashMap<>(100);
 		if (skipPatternDefinition != null) {
 			skipPattern = Pattern.compile(skipPatternDefinition, Pattern.DOTALL);
 		}
+
 	}
 
 	@Override
@@ -64,29 +78,43 @@ public class ContextSettingFilter implements Filter {
 		}
 
 		// assert user and assignedContact are valid
+		// adapt user roles to keycloak assigned roles
 		KeycloakSecurityContext keycloakSecurityContext = (KeycloakSecurityContext) request
 				.getAttribute(KeycloakSecurityContext.class.getName());
 		if (keycloakSecurityContext != null) {
 			AccessToken token = keycloakSecurityContext.getToken();
+			String jti = token.getId();
 
-			IUser user = coreModelService.load(token.getPreferredUsername(), IUser.class).orElse(null);
-			if (user == null) {
-				user = performDynamicUserCreationIfApplicable(token);
+			if (!verificationCache.containsKey(jti)) {
+				accessControlService.doPrivileged(() -> {
+					Optional<IUser> user = coreModelService.load(token.getPreferredUsername(), IUser.class);
+					if (user.isEmpty()) {
+						user = Optional.ofNullable(performDynamicUserCreationIfApplicable(token));
+					}
+					user.ifPresent(u -> verificationCache.put(jti, u));
+				});
+
+				IUser user = verificationCache.get(jti);
 				if (user == null) {
-					logger.warn("User [{}] not loadable in local database. Denying request.",
+					logger.warn("[{}] User not loadable in local database. Denying request.",
 							token.getPreferredUsername());
 					servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
 					return;
 				}
+
+				IContact userContact = user != null ? user.getAssignedContact() : null;
+				if (userContact == null) {
+					logger.warn("[{}] User has no assigned contact. Denying request.", token.getPreferredUsername());
+					servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
+					return;
+				}
+
+				assertRoles(accessControlService, user, token);
+
+				verificationCache.put(jti, user);
 			}
 
-			IContact userContact = (user != null) ? user.getAssignedContact() : null;
-			if (userContact == null) {
-				logger.warn("User [{}] has no assigned contact. Denying request.", token.getPreferredUsername());
-				servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
-				return;
-			}
-
+			IUser user = verificationCache.get(jti);
 			contextService.setActiveUser(user);
 		} else {
 			if (!SystemPropertyConstants.isDisableWebSecurity()) {
@@ -114,13 +142,39 @@ public class ContextSettingFilter implements Filter {
 		String elexisContactId = (String) token.getOtherClaims().get("elexisContactId");
 		Optional<IPerson> assignedContact = coreModelService.load(elexisContactId, IPerson.class);
 		if (!assignedContact.isPresent()) {
-			logger.warn("Dynamic user create [{}] failed. Invalid or missing attribute elexisContactId [{}]", token.getPreferredUsername(), elexisContactId);
+			logger.warn("[{}] Dynamic user create failed. Invalid or missing attribute elexisContactId [{}]",
+					token.getPreferredUsername(), elexisContactId);
 			return null;
 		}
-		logger.info("Dynamic user create [{}] with assigned contact [{}]", token.getPreferredUsername(),
+		logger.info("[{}] Dynamic user create with assigned contact [{}]", token.getPreferredUsername(),
 				elexisContactId);
 		return new IUserBuilder(coreModelService, token.getPreferredUsername(), assignedContact.get()).buildAndSave();
-		// TODO add other roles
+	}
+
+	/**
+	 * If Keycloak grants a user specific roles, we set this as new role total for
+	 * the user
+	 * 
+	 * @param accessControlService
+	 * @param user
+	 * @param token
+	 */
+	private void assertRoles(IAccessControlService accessControlService, IUser user, AccessToken token) {
+		accessControlService.doPrivileged(() -> {
+			Set<String> keycloakGrantedRoles = token.getRealmAccess().getRoles();
+			Set<String> allAvailableRoles = coreModelService.getQuery(IRole.class).execute().stream()
+					.map(r -> r.getId()).collect(Collectors.toSet());
+
+			Set<String> targetUserRoleSet = new HashSet<String>(allAvailableRoles);
+			targetUserRoleSet.retainAll(keycloakGrantedRoles);
+			Set<String> currentUserRoleSet = user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toSet());
+
+			if (!Objects.equals(currentUserRoleSet, targetUserRoleSet)) {
+				IUserService userService = OsgiServiceUtil.getService(IUserService.class).get();
+				Set<String> effectiveUserRoles = userService.setUserRoles(user, targetUserRoleSet);
+				logger.warn("[{}] Updated user role set to {}", user, effectiveUserRoles);
+			}
+		});
 	}
 
 	@Override
@@ -142,6 +196,22 @@ public class ContextSettingFilter implements Filter {
 
 		String requestPath = request.getRequestURI().substring(request.getContextPath().length());
 		return skipPattern.matcher(requestPath).matches();
+	}
+
+	private class LimitedLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
+
+		private static final long serialVersionUID = -4811170640063577667L;
+		private final int maxSize;
+
+		public LimitedLinkedHashMap(int maxSize) {
+			super(16, 0.75f, false);
+			this.maxSize = maxSize;
+		}
+
+		@Override
+		protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
+			return size() > maxSize;
+		}
 	}
 
 }

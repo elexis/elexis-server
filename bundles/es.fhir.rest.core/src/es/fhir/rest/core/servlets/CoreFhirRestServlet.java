@@ -28,6 +28,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ch.elexis.core.eenv.IElexisEnvironmentService;
+import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.utils.OsgiServiceUtil;
@@ -60,6 +61,9 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	@Reference
 	private IContextService contextService;
+
+	@Reference
+	private IAccessControlService accessControlService;
 
 	// resource providers
 	private List<IFhirResourceProvider<?, ?>> providers;
@@ -135,8 +139,8 @@ public class CoreFhirRestServlet extends RestfulServer {
 						filterParams, null);
 
 				extHttpService.registerFilter(FHIR_BASE_URL + "/*",
-						new ContextSettingFilter(contextService, coreModelService, SKIP_PATTERN), new Hashtable<>(),
-						null);
+						new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
+						new Hashtable<>(), null);
 			} else {
 				logger.error("--- UNPROTECTED FHIR API ---");
 			}
