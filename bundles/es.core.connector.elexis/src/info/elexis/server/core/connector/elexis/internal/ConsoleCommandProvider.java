@@ -34,6 +34,7 @@ import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IVirtualFilesystemService.IVirtualFilesystemHandle;
+import ch.elexis.core.services.holder.AccessControlServiceHolder;
 import ch.elexis.core.services.holder.ConfigServiceHolder;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
@@ -76,7 +77,9 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	@CmdAdvisor(description = "show database connection and status information")
 	public String __elc_status() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
+		AccessControlServiceHolder.get().doPrivileged(() -> {
+			sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
+		});
 		sb.append("LS UUID:\t[" + lockService.getSystemUuid() + "]\n");
 		sb.append("StationId:\t" + contextService.getStationIdentifier() + "\n");
 		sb.append("Default-TZ:\t" + TimeZone.getDefault().getID() + "\n");
@@ -215,37 +218,43 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 	@CmdAdvisor(description = "list all database configuration entries (optional key argument)")
 	public void __elc_config_list(Iterator<String> args) {
-		String nodePrefix = args.next();
-		if (StringUtils.isEmpty(nodePrefix)) {
-			nodePrefix = null;
-		}
+		AccessControlServiceHolder.get().doPrivileged(() -> {
 
-		IQuery<IConfig> qre = CoreModelServiceHolder.get().getQuery(IConfig.class);
-		if (nodePrefix != null) {
-			qre.and(ModelPackage.Literals.ICONFIG__KEY, COMPARATOR.LIKE, nodePrefix + "%");
-		}
-		List<IConfig> nodes = qre.execute();
-		if (nodes.size() == 1) {
-			ci.println("Value: " + nodes.get(0).getValue());
-		} else {
-			prflp("Key", 50);
-			prflp("Value", 50);
-			prflp("LastUpdate", 25, true);
-			for (IConfig config : nodes) {
-				prflp(config.getKey(), 50);
-				prflp(config.getValue(), 50);
-				prflp(TimeUtil.formatSafe(config.getLastupdate()), 25, true);
+			String nodePrefix = args.next();
+			if (StringUtils.isEmpty(nodePrefix)) {
+				nodePrefix = null;
 			}
-		}
+
+			IQuery<IConfig> qre = CoreModelServiceHolder.get().getQuery(IConfig.class);
+			if (nodePrefix != null) {
+				qre.and(ModelPackage.Literals.ICONFIG__KEY, COMPARATOR.LIKE, nodePrefix + "%");
+			}
+			List<IConfig> nodes = qre.execute();
+			if (nodes.size() == 1) {
+				ci.println("Value: " + nodes.get(0).getValue());
+			} else {
+				prflp("Key", 50);
+				prflp("Value", 50);
+				prflp("LastUpdate", 25, true);
+				for (IConfig config : nodes) {
+					prflp(config.getKey(), 50);
+					prflp(config.getValue(), 50);
+					prflp(TimeUtil.formatSafe(config.getLastupdate()), 25, true);
+				}
+			}
+		});
 	}
 
 	@CmdAdvisor(description = "get a local configuration entry requires key argument)")
-	public String __elc_localconfig_get(String key) {
+	public void __elc_localconfig_get(String key) {
 		if (key == null) {
-			return missingArgument("key");
-
+			missingArgument("key");
 		}
-		return ConfigServiceHolder.get().getLocal(key, null);
+
+		AccessControlServiceHolder.get().doPrivileged(() -> {
+			String value = ConfigServiceHolder.get().getLocal(key, null);
+			ok(value);
+		});
 	}
 
 	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)")
@@ -257,23 +266,25 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 
 		boolean remove = "null".equalsIgnoreCase(value);
 
-		IConfig config = CoreModelServiceHolder.get().load(key, IConfig.class).orElse(null);
-		if (config == null) {
+		AccessControlServiceHolder.get().doPrivileged(() -> {
+			IConfig config = CoreModelServiceHolder.get().load(key, IConfig.class).orElse(null);
+			if (config == null) {
+				if (remove) {
+					ok("remove");
+					return;
+				}
+				config = CoreModelServiceHolder.get().create(IConfig.class);
+				config.setKey(key);
+			}
 			if (remove) {
+				CoreModelServiceHolder.get().remove(config);
 				ok("remove");
 				return;
 			}
-			config = CoreModelServiceHolder.get().create(IConfig.class);
-			config.setKey(key);
-		}
-		if (remove) {
-			CoreModelServiceHolder.get().remove(config);
-			ok("remove");
-			return;
-		}
-		config.setValue(value);
-		CoreModelServiceHolder.get().save(config);
-		ok(config);
+			config.setValue(value);
+			CoreModelServiceHolder.get().save(config);
+			ok(config);
+		});
 	}
 
 	@CmdAdvisor(description = "list the contents of a given url directory: vfsUrl [long]")
