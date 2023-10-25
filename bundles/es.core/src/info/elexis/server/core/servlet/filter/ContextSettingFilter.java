@@ -172,6 +172,7 @@ public class ContextSettingFilter implements Filter {
 			if (!Objects.equals(currentUserRoleSet, targetUserRoleSet)) {
 				IUserService userService = OsgiServiceUtil.getService(IUserService.class).get();
 				Set<String> effectiveUserRoles = userService.setUserRoles(user, targetUserRoleSet);
+				accessControlService.refresh(user);
 				logger.warn("[{}] Updated user role set to {}", user, effectiveUserRoles);
 			}
 		});
