@@ -42,7 +42,7 @@ public class AppointmentStatusCodeElementServiceContribution implements ICodeEle
 	public List<ICodeElement> getElements(Map<Object, Object> context) {
 		ArrayList<ICodeElement> elements = new ArrayList<ICodeElement>();
 
-		List<String> states = appointmentService.getStates();
+		List<String> states = new ArrayList<>(appointmentService.getStates());
 		// this is not a valid selectable state, hence we do not hand it out
 		states.remove(appointmentService.getState(AppointmentState.EMPTY));
 

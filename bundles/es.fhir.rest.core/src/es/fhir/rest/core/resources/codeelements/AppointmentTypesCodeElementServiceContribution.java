@@ -39,7 +39,7 @@ public class AppointmentTypesCodeElementServiceContribution implements ICodeElem
 	public List<ICodeElement> getElements(Map<Object, Object> context) {
 		List<ICodeElement> elements = new ArrayList<ICodeElement>();
 
-		List<String> types = appointmentService.getTypes();
+		List<String> types = new ArrayList<String>(appointmentService.getTypes());
 		String defaultType = appointmentService.getType(AppointmentType.DEFAULT);
 
 		// put default type to front
