@@ -42,6 +42,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.Identifiable;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IAppointmentService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -73,6 +74,9 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 	@Reference
 	private IAppointmentService appointmentService;
+
+	@Reference
+	private IAccessControlService accessControlService;
 
 	@Activate
 	public void activate() {
@@ -190,38 +194,39 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 		@Override
 		public void run() {
 
-			for (Iterator<Subscription> iterator = activeSubscriptions.iterator(); iterator.hasNext();) {
-				Subscription subscription = iterator.next();
+			accessControlService.doPrivileged(() -> {
+				for (Iterator<Subscription> iterator = activeSubscriptions.iterator(); iterator.hasNext();) {
+					Subscription subscription = iterator.next();
 
-				Date lastUpdated = subscription.getMeta().getLastUpdated();
-				IStatus status = Status.OK_STATUS;
+					Date lastUpdated = subscription.getMeta().getLastUpdated();
+					IStatus status = Status.OK_STATUS;
 
-				if (StringUtils.startsWith(subscription.getCriteria(), "Appointment")) {
-					IQuery<IAppointment> query = coreModelService.getQuery(IAppointment.class, true, true);
-					query.and(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, COMPARATOR.GREATER,
-							lastUpdated.getTime());
-					query.orderBy(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, ORDER.ASC);
-					System.out.println(query.toString());
-					List<IAppointment> queryResult = query.execute();
-					if (queryResult.size() > 0) {
-						// TODO automatic unregister if multiple fails?
-						status = subscriptionResourceUtil.handleNotification(queryResult, subscription);
+					if (StringUtils.startsWith(subscription.getCriteria(), "Appointment")) {
+						IQuery<IAppointment> query = coreModelService.getQuery(IAppointment.class, true, true);
+						query.and(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, COMPARATOR.GREATER,
+								lastUpdated.getTime());
+						query.orderBy(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, ORDER.ASC);
+						List<IAppointment> queryResult = query.execute();
+						if (queryResult.size() > 0) {
+							// TODO automatic unregister if multiple fails?
+							status = subscriptionResourceUtil.handleNotification(queryResult, subscription);
+						}
 					}
-				}
 
-				if (status.isOK()) {
-					subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
-				} else {
-					if (Status.CANCEL == status.getSeverity()) {
-						StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
-						iterator.remove();
+					if (status.isOK()) {
+						subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
 					} else {
-						subscription.setStatus(Subscription.SubscriptionStatus.ERROR);
-						StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
+						if (Status.CANCEL == status.getSeverity()) {
+							StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
+							iterator.remove();
+						} else {
+							subscription.setStatus(Subscription.SubscriptionStatus.ERROR);
+							StatusUtil.logStatus("Subscription [" + subscription.getId() + "]", logger, status);
+						}
 					}
 				}
+			});
 
-			}
 		}
 
 	}
