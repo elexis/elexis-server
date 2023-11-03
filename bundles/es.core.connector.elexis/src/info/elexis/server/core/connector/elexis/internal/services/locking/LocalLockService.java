@@ -1,6 +1,7 @@
 package info.elexis.server.core.connector.elexis.internal.services.locking;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.service.component.annotations.Activate;
@@ -114,8 +115,11 @@ public class LocalLockService implements ILocalLockService {
 
 	@Override
 	public LockResponse releaseLock(String storeToString) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Identifiable> loadFromString = storeToStringService.loadFromString(storeToString);
+		if (loadFromString.isPresent()) {
+			return releaseLock(loadFromString.get());
+		}
+		return LockResponse.ERROR;
 	}
 
 	@Override
