@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.IdType;
@@ -78,7 +77,7 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 
 	@Override
 	public IFhirTransformer<Patient, IPatient> getTransformer() {
-		return (IFhirTransformer<Patient, IPatient>) transformerRegistry.getTransformerFor(Patient.class,
+		return transformerRegistry.getTransformerFor(Patient.class,
 				IPatient.class);
 	}
 
@@ -148,9 +147,9 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 		}
 
 		List<IPatient> patients = query.execute();
-		List<Patient> _patients = patients.parallelStream()
+		List<Patient> _patients = contextService.submitContextInheriting(() -> patients.parallelStream()
 				.map(org -> getTransformer().getFhirObject(org, theSummary, Collections.emptySet()))
-				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+				.filter(Optional::isPresent).map(Optional::get).toList());
 		return _patients;
 	}
 

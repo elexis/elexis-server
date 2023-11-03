@@ -6,7 +6,6 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Person;
@@ -28,6 +27,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -43,6 +43,9 @@ public class PersonResourceProvider extends AbstractFhirCrudResourceProvider<Per
 
 	@Reference
 	private ILocalLockService localLockService;
+
+	@Reference
+	private IContextService contextService;
 
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
@@ -64,7 +67,7 @@ public class PersonResourceProvider extends AbstractFhirCrudResourceProvider<Per
 
 	@Override
 	public IFhirTransformer<Person, IPerson> getTransformer() {
-		return (IFhirTransformer<Person, IPerson>) transformerRegistry.getTransformerFor(Person.class, IPerson.class);
+		return transformerRegistry.getTransformerFor(Person.class, IPerson.class);
 	}
 
 	@Search
@@ -99,9 +102,9 @@ public class PersonResourceProvider extends AbstractFhirCrudResourceProvider<Per
 		}
 
 		List<IPerson> persons = query.execute();
-		List<Person> _persons = persons.parallelStream()
+		List<Person> _persons = contextService.submitContextInheriting(() -> persons.parallelStream()
 				.map(org -> getTransformer().getFhirObject(org, theSummary, Collections.emptySet()))
-				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+				.filter(Optional::isPresent).map(Optional::get).toList());
 		return _persons;
 	}
 

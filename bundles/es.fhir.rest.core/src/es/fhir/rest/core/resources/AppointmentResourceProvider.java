@@ -79,12 +79,13 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 	@Activate
 	public void activate() {
 		super.setModelService(coreModelService);
+		super.setContextService(contextService);
 		super.setLocalLockService(localLockService);
 	}
 
 	@Override
 	public IFhirTransformer<Appointment, IAppointment> getTransformer() {
-		return (IFhirTransformer<Appointment, IAppointment>) transformerRegistry.getTransformerFor(Appointment.class,
+		return transformerRegistry.getTransformerFor(Appointment.class,
 				IAppointment.class);
 	}
 
@@ -185,7 +186,7 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 
 		if (theCount != null) {
 			// TODO only valid with theSort set, somehow combine?
-			query.limit(theCount.intValue());
+			query.limit(theCount);
 		}
 
 		return super.handleExecute(query, null, theIncludes);

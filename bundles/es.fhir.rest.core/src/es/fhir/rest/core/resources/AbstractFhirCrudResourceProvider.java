@@ -27,6 +27,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.Deleteable;
 import ch.elexis.core.model.Identifiable;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -36,6 +37,7 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 
 	private final Class<ELEXIS> CLAZZ;
 	private IModelService modelService;
+	private IContextService contextService;
 	private ILocalLockService localLockService;
 
 	protected Logger log;
@@ -53,6 +55,10 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 
 	protected void setLocalLockService(ILocalLockService localLockService) {
 		this.localLockService = localLockService;
+	}
+
+	protected void setContextService(IContextService contextService) {
+		this.contextService = contextService;
 	}
 
 	@Create
@@ -146,11 +152,16 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 		if (objects.isEmpty()) {
 			return Collections.emptyList();
 		}
-		// TODO WARN - parallelStream does loose the ThreadContext,
-		// thus will not be able to resolve user specific data
-		List<FHIR> _objects = objects.stream()
-				.map(object -> getTransformer().getFhirObject(object, summaryEnum, includes))
-				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+
+		List<FHIR> _objects = null;
+		if (contextService != null) {
+			_objects = contextService.submitContextInheriting(() -> objects.parallelStream()
+					.map(object -> getTransformer().getFhirObject(object, summaryEnum, includes))
+					.filter(Optional::isPresent).map(Optional::get).toList());
+		} else {
+			_objects = objects.stream().map(object -> getTransformer().getFhirObject(object, summaryEnum, includes))
+					.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+		}
 		return _objects;
 	}
 

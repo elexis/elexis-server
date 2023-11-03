@@ -18,6 +18,7 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IContact;
@@ -25,6 +26,7 @@ import ch.elexis.core.model.IOrganization;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.ModelPackage;
+import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
@@ -37,6 +39,9 @@ public class PlainResourceProvider {
 	protected IModelService coreModelService;
 
 	@Reference
+	private IContextService contextService;
+
+	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
 
 	@Search
@@ -46,8 +51,7 @@ public class PlainResourceProvider {
 		Bundle bundle = new Bundle();
 
 		List<StringOrListParam> type_values = theType.getValuesAsQueryTokens();
-		List<String> types = type_values.get(0).getValuesAsQueryTokens().stream().map(e -> e.getValue())
-				.collect(Collectors.toList());
+		List<String> types = type_values.get(0).getValuesAsQueryTokens().stream().map(StringParam::getValue).toList();
 
 		boolean searchPerson = types.contains(Person.class.getSimpleName());
 		boolean searchPatient = types.contains(Patient.class.getSimpleName());
@@ -70,32 +74,34 @@ public class PlainResourceProvider {
 			if (theFtFilter != null) {
 				new IContactSearchFilterQueryAdapter().adapt(query, theFtFilter);
 			}
-			
+
 			List<IContact> contacts = query.execute();
-			List<BundleEntryComponent> entryComponents = contacts.parallelStream().map(this::mapByType)
-					.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
-			entryComponents.forEach(ec -> bundle.addEntry(ec));
+			List<BundleEntryComponent> entryComponents = contextService
+					.submitContextInheriting(() -> contacts.parallelStream().map(this::mapByType)
+							.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
+			entryComponents.forEach(bundle::addEntry);
 		}
 
+		bundle.setTotal(bundle.getEntry().size());
 		return bundle;
 	}
 
 	private Optional<BundleEntryComponent> mapByType(IContact contact) {
 		BundleEntryComponent bundleEntryComponent = new BundleEntryComponent();
 		if (contact.isPatient()) {
-			IFhirTransformer<Patient, IPatient> transformer = (IFhirTransformer<Patient, IPatient>) transformerRegistry
-					.getTransformerFor(Patient.class, IPatient.class);
+			IFhirTransformer<Patient, IPatient> transformer = transformerRegistry.getTransformerFor(Patient.class,
+					IPatient.class);
 			bundleEntryComponent.setResource(transformer.getFhirObject(contact.asIPatient()).get());
 			return Optional.of(bundleEntryComponent);
 		}
 		if (contact.isPerson()) {
-			IFhirTransformer<Person, IPerson> transformer = (IFhirTransformer<Person, IPerson>) transformerRegistry
-					.getTransformerFor(Person.class, IPerson.class);
+			IFhirTransformer<Person, IPerson> transformer = transformerRegistry.getTransformerFor(Person.class,
+					IPerson.class);
 			bundleEntryComponent.setResource(transformer.getFhirObject(contact.asIPerson()).get());
 			return Optional.of(bundleEntryComponent);
 		}
 
-		IFhirTransformer<Organization, IOrganization> transformer = (IFhirTransformer<Organization, IOrganization>) transformerRegistry
+		IFhirTransformer<Organization, IOrganization> transformer = transformerRegistry
 				.getTransformerFor(Organization.class, IOrganization.class);
 		bundleEntryComponent.setResource(transformer.getFhirObject(contact.asIOrganization()).get());
 		return Optional.of(bundleEntryComponent);
