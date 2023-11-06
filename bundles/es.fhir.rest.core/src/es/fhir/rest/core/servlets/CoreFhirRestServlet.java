@@ -92,7 +92,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 	public CoreFhirRestServlet() {
 		super(FhirContext.forR4());
 		setServerName("Elexis-Server FHIR");
-		setServerVersion("3.10");
+		setServerVersion("3.12");
 	}
 
 	@Activate
@@ -109,7 +109,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 		if (!SystemPropertyConstants.isDisableWebSecurity()) {
 			// web security required - only available via EE / Keycloak setup
 			IElexisEnvironmentService elexisEnvironmentService = OsgiServiceUtil
-					.getService(IElexisEnvironmentService.class).orElse(null);
+					.getServiceWait(IElexisEnvironmentService.class, 5000).orElse(null);
 			if (elexisEnvironmentService == null) {
 				logger.error(
 						"Web security enabled, but IElexisEnvironmentService is not available. Aborting FHIR service setup.");
