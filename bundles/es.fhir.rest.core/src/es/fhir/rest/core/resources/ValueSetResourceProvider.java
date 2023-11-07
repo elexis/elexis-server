@@ -11,6 +11,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
@@ -41,7 +42,7 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 
 	@Override
 	public IFhirTransformer<ValueSet, List> getTransformer() {
-		return (IFhirTransformer<ValueSet, List>) transformerRegistry.getTransformerFor(ValueSet.class, List.class);
+		return transformerRegistry.getTransformerFor(ValueSet.class, List.class);
 	}
 
 	@Search
@@ -75,6 +76,9 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 				return valueSet;
 			}
 
+		} else {
+			LoggerFactory.getLogger(getClass()).warn("No contribution present for [{}]",
+					codeElementTypAndcodeSystemName);
 		}
 
 		return null;
