@@ -24,9 +24,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
 import org.hl7.fhir.r4.model.Enumerations.DocumentReferenceStatus;
+import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +38,8 @@ import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.exceptions.ElexisException;
+import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.model.BriefConstants;
 import ch.elexis.core.model.IDocument;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IDocumentStore;
@@ -179,6 +184,85 @@ public class DocumentReferenceTest {
 
 		outcome = client.update().resource(readReference).execute();
 		assertFalse(outcome.getCreated() == null ? false : outcome.getCreated());
+	}
+
+	@Test
+	public void createLetterDocumentReference() throws IOException {
+		DocumentReference reference = new DocumentReference();
+		reference.setStatus(DocumentReferenceStatus.CURRENT);
+		reference.setSubject(
+				(Reference) new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId())
+						.setId(AllTests.getTestDatabaseInitializer().getPatient().getId()));
+		CodeableConcept storeIdConcept = reference.addCategory();
+		storeIdConcept.addCoding(new Coding("http://elexis.info/document/storeid", "ch.elexis.data.store.brief",
+				"ch.elexis.data.store.brief"));
+		CodeableConcept categoryConcept = new CodeableConcept(
+				new Coding(CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.UNKNOWN,
+						BriefConstants.UNKNOWN));
+		reference.addCategory(categoryConcept);
+		
+		DocumentReferenceContentComponent content = new DocumentReferenceContentComponent();
+		Attachment attachment = new Attachment();
+		attachment.setTitle("test attachment.txt");
+		attachment.setData("Test Text\n2te Zeile üöä!".getBytes());
+		content.setAttachment(attachment);
+		reference.addContent(content);
+
+		MethodOutcome outcome = client.create().resource(reference).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+
+		DocumentReference readReference = client.read().resource(DocumentReference.class).withId(outcome.getId())
+				.execute();
+		assertNotNull(readReference);
+		assertEquals(outcome.getId().getIdPart(), readReference.getIdElement().getIdPart());
+		assertEquals(reference.getSubject().getReference(), readReference.getSubject().getReference());
+		Attachment readAttachment = readReference.getContent().get(0).getAttachment();
+		assertNotNull(readAttachment);
+		byte[] actualBytes = readContent(readAttachment);
+		assertArrayEquals("Test Text\n2te Zeile üöä!".getBytes(), actualBytes);
+		
+		Optional<String> storeid = FhirUtil.getCodeFromConceptList("http://elexis.info/document/storeid",
+				readReference.getCategory());
+		assertTrue(storeid.isPresent());
+		assertEquals("ch.elexis.data.store.brief", storeid.get());
+
+		Optional<String> category = FhirUtil.getCodeFromConceptList(CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(),
+				readReference.getCategory());
+		assertTrue(category.isPresent());
+		assertEquals(BriefConstants.UNKNOWN, category.get());
+	}
+
+	@Test
+	public void createFromTemplate() throws ClientProtocolException, IOException, ElexisException {
+		DocumentReference reference = new DocumentReference();
+		reference.setStatus(DocumentReferenceStatus.CURRENT);
+		CodeableConcept storeIdConcept = reference.addCategory();
+		storeIdConcept.addCoding(new Coding("http://elexis.info/document/storeid", "ch.elexis.data.store.brief",
+				null));
+		CodeableConcept categoryConcept = new CodeableConcept(new Coding(
+				CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE, BriefConstants.TEMPLATE));
+		reference.addCategory(categoryConcept);
+
+		DocumentReferenceContentComponent content = new DocumentReferenceContentComponent();
+		Attachment attachment = new Attachment();
+		attachment.setTitle("TestTemplate.txt");
+		attachment.setData("Test Text\n2te Zeile üöä!".getBytes());
+		content.setAttachment(attachment);
+		reference.addContent(content);
+
+		MethodOutcome outcome = client.create().resource(reference).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+
+		CodeableConcept context = new CodeableConcept();
+		context.addCoding(
+				new Coding("patient", AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		context.addCoding(new Coding("addressee", AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		Parameters returnParameters = client.operation().onInstance(outcome.getId()).named("$createdocument")
+				.withParameters(new Parameters().addParameter("context", context)).execute();
 	}
 
 	private byte[] readContent(Attachment attachment) throws IOException {

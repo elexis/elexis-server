@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.IdType;
 import org.osgi.service.component.annotations.Activate;
@@ -22,11 +23,13 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import ch.elexis.core.findings.IDocumentReference;
 import ch.elexis.core.findings.IFindingsService;
@@ -34,6 +37,8 @@ import ch.elexis.core.findings.migration.IMigratorService;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IDocument;
+import ch.elexis.core.model.IDocumentLetter;
+import ch.elexis.core.model.IDocumentTemplate;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IDocumentStore;
 import ch.elexis.core.services.ILocalLockService;
@@ -181,5 +186,26 @@ public class DocumentReferenceResourceProvider
 			});
 		}
 		return outcome.getResource();
+	}
+
+	@Operation(name = "$createdocument", idempotent = false)
+	public MethodOutcome createFromTemplate(@IdParam IIdType theTemplateId,
+			@OperationParam(name = "context") CodeableConcept theContext) {
+		MethodOutcome outcome = new MethodOutcome();
+		outcome.setCreated(false);
+
+		String idPart = theTemplateId.getIdPart();
+		if (idPart != null) {
+			Optional<IDocumentReference> documentReference = findingsService.findById(idPart, IDocumentReference.class);
+			documentReference.ifPresent(ref -> {
+				IDocument document = ref.getDocument();
+				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
+					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
+				} else {
+					throw new PreconditionFailedException("Document is not available or not a document template");
+				}
+			});
+		}
+		return outcome;
 	}
 }
