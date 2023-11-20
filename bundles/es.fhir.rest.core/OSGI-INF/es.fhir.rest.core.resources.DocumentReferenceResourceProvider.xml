@@ -3,12 +3,15 @@
    <service>
       <provide interface="es.fhir.rest.core.resources.IFhirResourceProvider"/>
    </service>
+   <reference cardinality="1..1" field="contextService" interface="ch.elexis.core.services.IContextService" name="contextService"/>
    <reference cardinality="1..1" field="coreModelService" interface="ch.elexis.core.services.IModelService" name="coreModelService" target="(service.model.name=ch.elexis.core.model)"/>
+   <reference cardinality="1..1" field="documentService" interface="ch.elexis.core.services.IDocumentService" name="documentService"/>
    <reference cardinality="0..n" field="documentStores" interface="ch.elexis.core.services.IDocumentStore" name="documentStores"/>
    <reference cardinality="1..1" field="findingsModelService" interface="ch.elexis.core.services.IModelService" name="findingsModelService" target="(service.model.name=ch.elexis.core.findings.model)"/>
    <reference cardinality="1..1" field="findingsService" interface="ch.elexis.core.findings.IFindingsService" name="findingsService"/>
    <reference cardinality="1..1" field="localLockService" interface="ch.elexis.core.services.ILocalLockService" name="localLockService"/>
    <reference cardinality="1..1" field="migratorService" interface="ch.elexis.core.findings.migration.IMigratorService" name="migratorService"/>
+   <reference cardinality="1..1" field="storeToStringService" interface="ch.elexis.core.services.IStoreToStringService" name="storeToStringService"/>
    <reference cardinality="1..1" field="transformerRegistry" interface="ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry" name="transformerRegistry"/>
    <implementation class="es.fhir.rest.core.resources.DocumentReferenceResourceProvider"/>
 </scr:component>

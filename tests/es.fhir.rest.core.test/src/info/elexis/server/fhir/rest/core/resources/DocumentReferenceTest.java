@@ -43,6 +43,7 @@ import ch.elexis.core.model.BriefConstants;
 import ch.elexis.core.model.IDocument;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IDocumentStore;
+import ch.elexis.core.services.holder.StoreToStringServiceHolder;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
@@ -258,9 +259,10 @@ public class DocumentReferenceTest {
 		assertNotNull(outcome.getId());
 
 		CodeableConcept context = new CodeableConcept();
-		context.addCoding(
-				new Coding("patient", AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
-		context.addCoding(new Coding("addressee", AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		context.addCoding(new Coding("typed",
+				StoreToStringServiceHolder.getStoreToString(AllTests.getTestDatabaseInitializer().getPatient()), null));
+		context.addCoding(new Coding("Adressat",
+				StoreToStringServiceHolder.getStoreToString(AllTests.getTestDatabaseInitializer().getPatient()), null));
 		Parameters returnParameters = client.operation().onInstance(outcome.getId()).named("$createdocument")
 				.withParameters(new Parameters().addParameter("context", context)).execute();
 	}

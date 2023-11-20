@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.IdType;
 import org.osgi.service.component.annotations.Activate;
@@ -40,9 +41,14 @@ import ch.elexis.core.model.IDocument;
 import ch.elexis.core.model.IDocumentLetter;
 import ch.elexis.core.model.IDocumentTemplate;
 import ch.elexis.core.model.IPatient;
+import ch.elexis.core.model.Identifiable;
+import ch.elexis.core.services.IContext;
+import ch.elexis.core.services.IContextService;
+import ch.elexis.core.services.IDocumentService;
 import ch.elexis.core.services.IDocumentStore;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IStoreToStringService;
 
 @Component(service = IFhirResourceProvider.class)
 public class DocumentReferenceResourceProvider
@@ -65,6 +71,15 @@ public class DocumentReferenceResourceProvider
 
 	@Reference
 	private IFindingsService findingsService;
+
+	@Reference
+	private IContextService contextService;
+
+	@Reference
+	private IStoreToStringService storeToStringService;
+
+	@Reference
+	private IDocumentService documentService;
 
 	@Reference
 	private List<IDocumentStore> documentStores;
@@ -201,11 +216,27 @@ public class DocumentReferenceResourceProvider
 				IDocument document = ref.getDocument();
 				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
 					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
+					documentService.createDocument(template, toContext(theContext));
 				} else {
 					throw new PreconditionFailedException("Document is not available or not a document template");
 				}
 			});
 		}
 		return outcome;
+	}
+
+	private IContext toContext(CodeableConcept theContext) {
+		IContext ret = contextService.createNamedContext("create_document_context");
+		for (Coding coding : theContext.getCoding()) {
+			Optional<Identifiable> identifiable = storeToStringService.loadFromString(coding.getCode());
+			if (identifiable.isPresent()) {
+				if (coding.getSystem().startsWith("typed")) {
+					ret.setTyped(identifiable.get());
+				} else {
+					ret.setNamed(coding.getSystem(), identifiable.get());
+				}
+			}
+		}
+		return ret;
 	}
 }
