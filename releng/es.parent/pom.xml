@@ -7,32 +7,27 @@
 	<version>3.11.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Elexis-Server</name>
-
+        <description>Elexis-Server for headless operation</description>
+        <licenses>
+                <license>
+                        <name>Eclipse Public License</name>
+                        <url>http://www.eclipse.org/legal/epl-v10.html</url>
+                </license>
+        </licenses>
 	<organization>
 		<name>elexis.info</name>
 		<url>http://www.elexis.info</url>
 	</organization>
-
 	<scm>
 		<connection>scm:git:https://github.com/elexis/elexis-server.git</connection>
 		<developerConnection>scm:git:https://github.com/elexis/elexis-server.git</developerConnection>
 		<url>https://github.com/elexis/elexis-server</url>
 	</scm>
 
-	<licenses>
-		<license>
-			<name>Eclipse Public License</name>
-			<url>http://www.eclipse.org/legal/epl-v10.html</url>
-		</license>
-	</licenses>
-
 	<issueManagement>
 		<url>https://github.com/elexis/elexis-server/issues</url>
 		<system>Github</system>
 	</issueManagement>
-
-	<description>Elexis-Server for headless operation</description>
-
 	<properties>
 		<elexis.target>2022-09-java17</elexis.target>
 
@@ -40,32 +35,29 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 	</properties>
-
+        <repositories>
+                <repository>
+                        <id>elexis.3.target</id>
+                        <url>https://download.elexis.info/elexis/target/${elexis.target}/</url>
+                        <layout>p2</layout>
+                </repository>
+                <repository>
+                        <id>elexis.3.core</id>
+                        <url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-core</url>
+                        <layout>p2</layout>
+                </repository>
+                <repository>
+                        <id>elexis.3.base</id>
+                        <url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-base</url>
+                        <layout>p2</layout>
+                </repository>
+        </repositories>
 	<modules>
 		<module>../../bundles</module>
 		<module>../../features</module>
 		<module>../../products</module>
 		<module>../../tests</module>
 	</modules>
-
-	<repositories>
-		<repository>
-			<id>elexis.3.target</id>
-			<url>https://download.elexis.info/elexis/target/${elexis.target}/</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>elexis.3.core</id>
-			<url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-core</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>elexis.3.base</id>
-			<url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-base</url>
-			<layout>p2</layout>
-		</repository>
-	</repositories>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -97,11 +89,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<site>
-			<id>www.elexis.info</id>
-			<url>http://www.elexis.info</url>
-		</site>
-	</distributionManagement>
 </project>
