@@ -151,11 +151,6 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
-              <artifactId>info.elexis.target.swagger.all</artifactId>
-              <version>0.0.0</version>
-            </dependency>
-            <dependency>
-              <type>eclipse-plugin</type>
               <artifactId>org.apache.felix.gogo.command</artifactId>
               <version>0.0.0</version>
             </dependency>
