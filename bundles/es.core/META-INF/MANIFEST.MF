@@ -58,5 +58,5 @@ Export-Package: info.elexis.server.core,
 Bundle-ClassPath: .
 Require-Bundle: info.elexis.server.core.common;bundle-version="3.12.0",
  ch.elexis.core;bundle-version="3.12.0",
- info.elexis.jaxrs.service;bundle-version="1.0.0"
+ info.elexis.jaxrs.service;bundle-version="3.12.0"
 

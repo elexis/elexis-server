@@ -16,6 +16,7 @@
 	</parent>
 
 	<modules>
+		<module>info.elexis.jaxrs.service</module>
 		<module>es.core.common</module>
 		<module>es.core</module>
 		<module>es.core.logging</module>
