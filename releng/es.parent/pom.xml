@@ -4,7 +4,7 @@
 
 	<groupId>info.elexis.server</groupId>
 	<artifactId>info.elexis.server.parent</artifactId>
-	<version>3.11.0-SNAPSHOT</version>
+	<version>3.12.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Elexis-Server</name>
         <description>Elexis-Server for headless operation</description>
@@ -29,9 +29,9 @@
 		<system>Github</system>
 	</issueManagement>
 	<properties>
-		<elexis.target>2022-09-java17</elexis.target>
+		<elexis.target>2023-09-java17</elexis.target>
 
-		<tycho.version>3.0.1</tycho.version>
+		<tycho.version>3.0.5</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 	</properties>

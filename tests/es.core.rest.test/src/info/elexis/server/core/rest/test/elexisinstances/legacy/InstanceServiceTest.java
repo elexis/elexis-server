@@ -1,16 +1,18 @@
 package info.elexis.server.core.rest.test.elexisinstances.legacy;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
+import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
-
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.server.IInstanceService;
 import info.elexis.server.core.rest.test.AllTests;
-import info.elexis.server.core.rest.test.elexisinstances.ElexisServerClientConfig;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class InstanceServiceTest {
@@ -19,8 +21,9 @@ public class InstanceServiceTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		instanceService = ConsumerFactory.createConsumer(AllTests.REST_URL, new ElexisServerClientConfig(),
-				IInstanceService.class);
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(AllTests.REST_URL);
+		instanceService = WebResourceFactory.newResource(IInstanceService.class, target);
 	}
 
 	@Test

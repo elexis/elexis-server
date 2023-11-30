@@ -1,17 +1,19 @@
 package info.elexis.server.core.rest.test.elexisinstances.legacy;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
+import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
-
 import ch.elexis.core.common.ElexisEvent;
 import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.server.IEventService;
 import info.elexis.server.core.rest.test.AllTests;
-import info.elexis.server.core.rest.test.elexisinstances.ElexisServerClientConfig;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EventServiceTest {
@@ -20,8 +22,10 @@ public class EventServiceTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		eventService = ConsumerFactory.createConsumer(AllTests.REST_URL, new ElexisServerClientConfig(),
-				IEventService.class);
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(AllTests.REST_URL);
+
+		eventService = WebResourceFactory.newResource(IEventService.class, target);
 	}
 
 	@Test

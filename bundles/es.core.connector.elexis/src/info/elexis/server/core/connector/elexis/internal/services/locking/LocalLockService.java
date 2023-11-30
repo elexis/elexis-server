@@ -132,8 +132,8 @@ public class LocalLockService implements ILocalLockService {
 
 	@Override
 	public boolean isLocked(Object object) {
-		if (object instanceof Identifiable) {
-			LockRequest request = buildLockRequest((Identifiable) object, LockRequest.Type.INFO);
+		if (object instanceof Identifiable obj) {
+			LockRequest request = buildLockRequest(obj, LockRequest.Type.INFO);
 			return lockService.isLocked(request.getLockInfo());
 		}
 		throw new IllegalArgumentException("Can not isLocked on class " + object);
@@ -161,8 +161,7 @@ public class LocalLockService implements ILocalLockService {
 
 	@Override
 	public LockResponse acquireLockBlocking(Object po, int timeout, IProgressMonitor monitor) {
-		if (po instanceof Identifiable) {
-			Identifiable lobj = (Identifiable) po;
+		if (po instanceof Identifiable lobj) {
 			String sts = storeToStringService.storeToString(lobj).orElse(null);
 			LockInfo ls = new LockInfo(sts, SystemAgentUser.ELEXISSERVER_AGENTUSER,
 					SystemPropertyConstants.getStationId());

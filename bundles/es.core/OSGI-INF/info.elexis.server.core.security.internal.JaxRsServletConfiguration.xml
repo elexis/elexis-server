@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="info.elexis.server.core.security.internal.JaxRsServletConfiguration">
-   <service>
-      <provide interface="com.eclipsesource.jaxrs.publisher.ServletConfiguration"/>
-   </service>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" immediate="true" name="info.elexis.server.core.security.internal.JaxRsServletConfiguration">
    <reference cardinality="1..1" field="accessControlService" interface="ch.elexis.core.services.IAccessControlService" name="accessControlService"/>
    <reference cardinality="1..1" field="contextService" interface="ch.elexis.core.services.IContextService" name="contextService"/>
    <reference cardinality="1..1" field="coreModelService" interface="ch.elexis.core.services.IModelService" name="coreModelService" target="(service.model.name=ch.elexis.core.model)"/>
+   <reference cardinality="1..1" field="httpService" interface="org.osgi.service.http.HttpService" name="httpService"/>
    <implementation class="info.elexis.server.core.security.internal.JaxRsServletConfiguration"/>
 </scr:component>

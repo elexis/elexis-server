@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.findings.feature"
       label="Findings"
-      version="1.0.0.qualifier"
+      version="3.12.0.qualifier"
       provider-name="medevit.at">
 
    <description url="http://www.example.com/description">
@@ -34,12 +34,5 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="org.osgi.framework.system.packages.extra"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
 
 </feature>

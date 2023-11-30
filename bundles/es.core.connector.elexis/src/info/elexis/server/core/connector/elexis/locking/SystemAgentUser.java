@@ -141,8 +141,6 @@ public class SystemAgentUser implements IUser {
 
 	@Override
 	public void setRoles(List<IRole> roles) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -10,9 +10,10 @@ import ch.elexis.core.lock.types.LockRequest;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
 import ch.elexis.core.server.ILockService;
+import info.elexis.jaxrs.service.JaxrsResource;
 
 @Component
-public class RestLockService implements ILockService {
+public class RestLockService implements ILockService, JaxrsResource {
 	
 	@Reference
 	private info.elexis.server.core.connector.elexis.locking.ILockService theLockService;

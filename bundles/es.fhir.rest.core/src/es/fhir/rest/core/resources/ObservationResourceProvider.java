@@ -58,16 +58,14 @@ public class ObservationResourceProvider implements IFhirResourceProvider {
 		return Observation.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Observation, IObservation> getTransformer(){
-		return (IFhirTransformer<Observation, IObservation>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(Observation.class, IObservation.class);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public IFhirTransformer<Observation, ILabResult> getLabTransformer(){
-		return (IFhirTransformer<Observation, ILabResult>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(Observation.class, ILabResult.class);
 	}
 	

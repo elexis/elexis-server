@@ -1,6 +1,5 @@
 package info.elexis.server.core.security.internal;
 
-import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.servlet.ServletException;
@@ -8,15 +7,13 @@ import javax.servlet.ServletException;
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.eclipsesource.jaxrs.publisher.ServletConfiguration;
 
 import ch.elexis.core.eenv.IElexisEnvironmentService;
 import ch.elexis.core.services.IAccessControlService;
@@ -31,8 +28,8 @@ import info.elexis.server.core.servlet.filter.ElexisEnvironmentKeycloakConfigRes
  * Register the {@link ShiroFilter} with OSGI Jax RS in order to enforce our
  * security requirements
  */
-@Component(service = ServletConfiguration.class)
-public class JaxRsServletConfiguration implements ServletConfiguration {
+@Component(service = {}, immediate = true)
+public class JaxRsServletConfiguration {
 
 	private static final String SERVICES_BASE_URL = "/services";
 	private static final String OAUTH_CLIENT_POSTFIX = "jaxrs-api";
@@ -49,9 +46,11 @@ public class JaxRsServletConfiguration implements ServletConfiguration {
 	@Reference
 	private IAccessControlService accessControlService;
 
-	@Override
-	public HttpContext getHttpContext(HttpService httpService, String rootPath) {
-		Thread.currentThread().setContextClassLoader(JaxRsServletConfiguration.class.getClassLoader());
+	@Reference
+	private HttpService httpService;
+
+	@Activate
+	public void activate() {
 		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
 
 		KeycloakConfigResolver keycloakConfigResolver = null;
@@ -82,18 +81,14 @@ public class JaxRsServletConfiguration implements ServletConfiguration {
 				extHttpService.registerFilter(SERVICES_BASE_URL + "/*",
 						new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
 						new Hashtable<>(), null);
+
+				log.info("-- Registered Security Filters ---");
 			} else {
 				log.error("--- UNPROTECTED JAXRS API ---");
 			}
 		} catch (ServletException | NamespaceException e) {
 			log.error("Error registering Keycloak filter", e);
 		}
-		return null;
-	}
-
-	@Override
-	public Dictionary<String, String> getInitParams(HttpService httpService, String rootPath) {
-		return null;
 	}
 
 }

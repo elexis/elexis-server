@@ -43,10 +43,9 @@ public class FamilyMemberHistoryResourceProvider implements IFhirResourceProvide
 		return FamilyMemberHistory.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<FamilyMemberHistory, IFamilyMemberHistory> getTransformer(){
-		return (IFhirTransformer<FamilyMemberHistory, IFamilyMemberHistory>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(FamilyMemberHistory.class, IFamilyMemberHistory.class);
 	}
 	
