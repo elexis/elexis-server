@@ -14,37 +14,33 @@ import org.slf4j.LoggerFactory;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineSecurityException;
 
+import info.elexis.jaxrs.service.JaxrsResource;
 import info.elexis.server.core.redmine.internal.RedmineUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
-@Api(tags = {
-	"redmine"
-})
 @Path("redmine")
-@Component(service = RedmineResource.class, immediate = true)
-public class RedmineResource {
-	
+@Component
+public class RedmineResource implements JaxrsResource {
+
 	@POST
 	@Path("sendlogfile")
-	@ApiOperation(nickname = "sendLogFile", value = "send log file to redmine")
+	@Operation(summary = "send log file to redmine")
 	public Response sendLogFileToRedmine(
-		@ApiParam(required = false, value = "sendlog configuration") SendLogConfiguration sendConfiguration){
-		
+			@Parameter(required = false, description = "sendlog configuration") SendLogConfiguration sendConfiguration) {
+
 		String appenderName = null;
 		Integer issueId = null;
 		Long sizeLimit = null;
-		
+
 		if (sendConfiguration != null) {
 			appenderName = sendConfiguration.getAppender();
 			issueId = sendConfiguration.getIssue();
 			sizeLimit = sendConfiguration.getMaxsize();
 		}
-		
+
 		try {
-			String issueUrl =
-				RedmineUtil.INSTANCE.sendLogToRedmine(appenderName, issueId, sizeLimit);
+			String issueUrl = RedmineUtil.INSTANCE.sendLogToRedmine(appenderName, issueId, sizeLimit);
 			return Response.ok(issueUrl, MediaType.TEXT_PLAIN_TYPE).build();
 		} catch (RedmineException | IOException e) {
 			LoggerFactory.getLogger(getClass()).warn("Error sending log", e);
@@ -53,7 +49,7 @@ public class RedmineResource {
 			}
 			return Response.serverError().build();
 		}
-		
+
 	}
-	
+
 }

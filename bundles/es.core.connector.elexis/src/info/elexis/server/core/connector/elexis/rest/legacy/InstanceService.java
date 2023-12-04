@@ -11,9 +11,10 @@ import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.server.IInstanceService;
+import info.elexis.jaxrs.service.JaxrsResource;
 
-@Component(service = InstanceService.class, immediate = true)
-public class InstanceService implements IInstanceService {
+@Component
+public class InstanceService implements IInstanceService, JaxrsResource {
 
 	@Context
 	HttpServletRequest hsrRequest;

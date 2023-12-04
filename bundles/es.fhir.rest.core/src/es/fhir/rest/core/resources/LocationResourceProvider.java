@@ -24,10 +24,9 @@ public class LocationResourceProvider implements IFhirResourceProvider {
 		return Location.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<Location, String> getTransformer(){
-		return (IFhirTransformer<Location, String>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(Location.class, String.class);
 	}
 	

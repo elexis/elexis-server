@@ -2,13 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: info.elexis.server.fhir.rest.core.test;singleton:=true
-Bundle-Version: 3.10.0.qualifier
-Fragment-Host: info.elexis.server.fhir.rest.core;bundle-version="3.11.0"
+Bundle-Version: 3.12.0.qualifier
+Fragment-Host: info.elexis.server.fhir.rest.core;bundle-version="3.12.0.qualifier"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit,
  ch.elexis.core.findings,
  ch.elexis.core.test;bundle-version="1.0.0",
  ch.elexis.core.services
+Service-Component: OSGI-INF/info.elexis.server.fhir.rest.core.resources.SubscriptionResourceTestEndpointProvider.xml
 Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.commands,
  ch.elexis.core.findings.util.model,
@@ -23,4 +24,3 @@ Import-Package: ch.elexis.core.findings.util,
  org.hl7.fhir.r4.model;version="5.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/info.elexis.server.fhir.rest.core.resources.SubscriptionResourceTestEndpointProvider.xml

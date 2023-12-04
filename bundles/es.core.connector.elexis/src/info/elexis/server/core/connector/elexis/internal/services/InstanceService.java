@@ -16,8 +16,7 @@ import ch.elexis.core.common.InstanceStatus.STATE;
 
 public class InstanceService {
 
-	private static Map<String, InstanceStatus> instanceStatusMap = Collections
-			.synchronizedMap(new HashMap<String, InstanceStatus>());
+	private static Map<String, InstanceStatus> instanceStatusMap = Collections.synchronizedMap(new HashMap<>());
 
 	public static IStatus updateInstanceStatus(InstanceStatus inst, String remoteAddress) {
 		InstanceStatus shis = instanceStatusMap.get(inst.getUuid());
@@ -39,8 +38,8 @@ public class InstanceService {
 	}
 
 	public static List<InstanceStatus> getInstanceStatus() {
-		ArrayList<InstanceStatus> arrayList = new ArrayList<InstanceStatus>(instanceStatusMap.values());
-		Collections.sort(arrayList, new Comparator<InstanceStatus>() {
+		ArrayList<InstanceStatus> arrayList = new ArrayList<>(instanceStatusMap.values());
+		arrayList.sort(new Comparator<InstanceStatus>() {
 			@Override
 			public int compare(InstanceStatus o1, InstanceStatus o2) {
 				return o1.getLastUpdate().compareTo(o2.getLastUpdate());

@@ -40,10 +40,9 @@ public class PractitionerRoleResourceProvider implements IFhirResourceProvider {
 		return PractitionerRole.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<PractitionerRole, IUser> getTransformer(){
-		return (IFhirTransformer<PractitionerRole, IUser>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(PractitionerRole.class, IUser.class);
 	}
 	

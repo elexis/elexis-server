@@ -8,14 +8,6 @@
 
 	<include file="${user.home}/elexis-server/logback-addition.xml" />
 
-	<appender name="rocketchatAppender"
-		class="ch.elexis.core.logback.rocketchat.RocketchatAppender">
-		<!-- deny all events with a level below WARN, that is INFO, TRACE and DEBUG -->
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>WARN</level>
-		</filter>
-	</appender>
-
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -108,8 +100,6 @@
 		<appender-ref ref="ROLLING" />
 		<appender-ref ref="ROLLING_WARN" />
 		<appender-ref ref="ROLLING_ERROR" />
-		<!-- will be replaced with async appender in ElexisEnvironmentActivator -->
-		<appender-ref ref="rocketchatAppender" />
 	</root>
 
 </configuration>

@@ -45,10 +45,9 @@ public class ServiceRequestResourceProvider implements IFhirResourceProvider {
 		return ServiceRequest.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<ServiceRequest, IProcedureRequest> getTransformer(){
-		return (IFhirTransformer<ServiceRequest, IProcedureRequest>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(ServiceRequest.class, IProcedureRequest.class);
 	}
 	

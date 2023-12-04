@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Elexis
 Bundle-SymbolicName: info.elexis.server.core.connector.elexis
-Bundle-Version: 3.11.0.qualifier
+Bundle-Version: 3.12.0.qualifier
 Bundle-Vendor: elexis.info
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Multi-Release: true
@@ -10,7 +10,6 @@ Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: ch.qos.logback.classic;version="1.2.3";resolution:=optional,
  ch.qos.logback.core.spi;version="1.2.3";resolution:=optional,
- io.swagger.annotations;version="1.5.18",
  javax.servlet;version="3.1.0",
  javax.servlet.http;version="2.4.0",
  javax.ws.rs;version="1.1.1",
@@ -23,9 +22,10 @@ Export-Package: info.elexis.server.core.connector.elexis,
  info.elexis.server.core.connector.elexis.common,
  info.elexis.server.core.connector.elexis.locking
 Bundle-Activator: info.elexis.server.core.connector.elexis.internal.Activator
-Require-Bundle: info.elexis.server.core.common;bundle-version="3.11.0",
- info.elexis.server.core;bundle-version="3.11.0",
- ch.rgw.utility;bundle-version="3.11.0",
- ch.elexis.core;bundle-version="3.11.0",
- ch.elexis.core.services;bundle-version="3.11.0",
- com.mysql.cj;bundle-version="8.0.22"
+Require-Bundle: info.elexis.server.core.common;bundle-version="3.12.0",
+ info.elexis.server.core;bundle-version="3.12.0",
+ ch.rgw.utility;bundle-version="3.12.0",
+ ch.elexis.core;bundle-version="3.12.0",
+ ch.elexis.core.services;bundle-version="3.12.0",
+ com.mysql.cj;bundle-version="8.0.22",
+ info.elexis.jaxrs.service;bundle-version="3.12.0"

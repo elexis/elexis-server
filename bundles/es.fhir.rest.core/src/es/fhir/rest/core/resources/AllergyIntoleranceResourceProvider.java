@@ -54,10 +54,9 @@ public class AllergyIntoleranceResourceProvider implements IFhirResourceProvider
 		return AllergyIntolerance.class;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IFhirTransformer<AllergyIntolerance, IAllergyIntolerance> getTransformer(){
-		return (IFhirTransformer<AllergyIntolerance, IAllergyIntolerance>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(AllergyIntolerance.class, IAllergyIntolerance.class);
 	}
 	

@@ -7,21 +7,19 @@ import javax.ws.rs.core.MediaType;
 
 import org.osgi.service.component.annotations.Component;
 
+import info.elexis.jaxrs.service.JaxrsResource;
 import info.elexis.server.core.Application;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
-@Api(tags = {
-	"system"
-})
+
 @Path("public")
-@Component(service = PublicResource.class, immediate = true)
-public class PublicResource {
+@Component
+public class PublicResource implements JaxrsResource {
 	
 	@GET
 	@Path("uptime")
 	@Produces(MediaType.TEXT_PLAIN)
-	@ApiOperation(nickname = "uptime", value = "show how long system has been running")
+	@Operation(summary = "show how long system has been running")
 	public String getUptime(){
 		return Application.uptime();
 	}

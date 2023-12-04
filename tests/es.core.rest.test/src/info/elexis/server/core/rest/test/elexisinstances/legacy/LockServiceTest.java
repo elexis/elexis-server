@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
+import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockRequest;
@@ -18,7 +21,6 @@ import ch.elexis.core.lock.types.LockRequest.Type;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.server.ILockService;
 import info.elexis.server.core.rest.test.AllTests;
-import info.elexis.server.core.rest.test.elexisinstances.ElexisServerClientConfig;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LockServiceTest {
@@ -27,12 +29,12 @@ public class LockServiceTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		lockService = ConsumerFactory.createConsumer(AllTests.REST_URL, new ElexisServerClientConfig(),
-				ILockService.class);
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(AllTests.REST_URL);
+		lockService = WebResourceFactory.newResource(ILockService.class, target);
 	}
 
 	private LockInfo lockInfo = new LockInfo("objStoreToString::1", "objUser", "testUuid");
-	
 
 	@Test
 	public void _01_testAcquireLock() {

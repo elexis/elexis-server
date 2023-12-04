@@ -11,9 +11,10 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.common.ElexisEvent;
 import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.server.IEventService;
+import info.elexis.jaxrs.service.JaxrsResource;
 
 @Component
-public class EventService implements IEventService {
+public class EventService implements IEventService, JaxrsResource {
 
 	@Reference
 	private EventAdmin eventAdmin;

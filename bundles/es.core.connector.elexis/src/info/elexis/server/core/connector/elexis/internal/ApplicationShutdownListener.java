@@ -8,7 +8,7 @@ import info.elexis.server.core.contrib.IApplicationShutdownListener;
 
 public class ApplicationShutdownListener implements IApplicationShutdownListener {
 
-	private static Logger log = LoggerFactory.getLogger(Activator.class);
+	private Logger log = LoggerFactory.getLogger(ApplicationShutdownListener.class);
 
 	@Override
 	public String performShutdown(boolean forced) {
@@ -16,7 +16,7 @@ public class ApplicationShutdownListener implements IApplicationShutdownListener
 		int locks = LockService.getAllLockInfo().size();
 		if (locks > 0) {
 			if (forced) {
-				log.warn("Clearing " + locks + " lock(s).");
+				log.warn("Clearing {} lock(s).", locks);
 				LockService.clearAllLocks();
 			} else {
 				return locks + " lock(s) held.";
