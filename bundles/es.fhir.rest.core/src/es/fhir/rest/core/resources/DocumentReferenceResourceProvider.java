@@ -204,37 +204,66 @@ public class DocumentReferenceResourceProvider
 	}
 
 	@Operation(name = "$createdocument", idempotent = false)
-	public MethodOutcome createFromTemplate(@IdParam IIdType theTemplateId,
+	public DocumentReference createFromTemplate(@IdParam IIdType theTemplateId,
 			@OperationParam(name = "context") CodeableConcept theContext) {
-		MethodOutcome outcome = new MethodOutcome();
-		outcome.setCreated(false);
-
+		DocumentReference createdResource = null;
 		String idPart = theTemplateId.getIdPart();
 		if (idPart != null) {
-			Optional<IDocumentReference> documentReference = findingsService.findById(idPart, IDocumentReference.class);
-			documentReference.ifPresent(ref -> {
-				IDocument document = ref.getDocument();
+			Optional<IDocumentReference> templateReference = findingsService.findById(idPart, IDocumentReference.class);
+			if (templateReference.isPresent()) {
+				IDocument document = templateReference.get().getDocument();
 				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
 					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
-					documentService.createDocument(template, toContext(theContext));
+					IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
+					IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
+					createdDocumentReference.setDocument(createdDocument);
+					if (createdDocument.getPatient() != null) {
+						createdDocumentReference.setPatientId(createdDocument.getPatient().getId());
+					}
+					findingsService.saveFinding(createdDocumentReference);
+					createdResource = getTransformer().getFhirObject(createdDocumentReference)
+							.orElse(null);
 				} else {
 					throw new PreconditionFailedException("Document is not available or not a document template");
 				}
-			});
+			}
 		}
-		return outcome;
+		return createdResource;
 	}
 
 	private IContext toContext(CodeableConcept theContext) {
 		IContext ret = contextService.createNamedContext("create_document_context");
 		for (Coding coding : theContext.getCoding()) {
-			Optional<Identifiable> identifiable = storeToStringService.loadFromString(coding.getCode());
-			if (identifiable.isPresent()) {
-				if (coding.getSystem().startsWith("typed")) {
-					ret.setTyped(identifiable.get());
+			if(StringUtils.isNotBlank(coding.getCode()))  {
+				if (coding.getCode().indexOf("/") > -1) {
+					String[] parts = coding.getCode().split("/");
+					if (parts.length == 2) {
+						Optional<? extends Identifiable> localObject = transformerRegistry
+								.getLocalObjectForReference(coding.getCode());
+						if (localObject.isPresent()) {
+							if (coding.getSystem().startsWith("typed")) {
+								ret.setTyped(localObject.get());
+							} else {
+								ret.setNamed(coding.getSystem(), localObject.get());
+							}
+						} else {
+							LoggerFactory.getLogger(getClass())
+									.warn("No local object for FHIR Reference [" + coding.getCode() + "]");
+						}
+					} else {
+						LoggerFactory.getLogger(getClass())
+								.warn("Unknown FHIR Reference format [" + coding.getCode() + "]");
+					}
 				} else {
-					ret.setNamed(coding.getSystem(), identifiable.get());
-				}
+					Optional<Identifiable> identifiable = storeToStringService.loadFromString(coding.getCode());
+					if (identifiable.isPresent()) {
+						if (coding.getSystem().startsWith("typed")) {
+							ret.setTyped(identifiable.get());
+						} else {
+							ret.setNamed(coding.getSystem(), identifiable.get());
+						}
+					}
+				}				
 			}
 		}
 		return ret;

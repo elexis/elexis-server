@@ -43,7 +43,6 @@ import ch.elexis.core.model.BriefConstants;
 import ch.elexis.core.model.IDocument;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IDocumentStore;
-import ch.elexis.core.services.holder.StoreToStringServiceHolder;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
@@ -249,8 +248,7 @@ public class DocumentReferenceTest {
 
 		DocumentReferenceContentComponent content = new DocumentReferenceContentComponent();
 		Attachment attachment = new Attachment();
-		attachment.setTitle("TestTemplate.txt");
-		attachment.setData("Test Text\n2te Zeile üöä!".getBytes());
+		attachment.setTitle("TestPlaceholders.docx");
 		content.setAttachment(attachment);
 		reference.addContent(content);
 
@@ -258,14 +256,34 @@ public class DocumentReferenceTest {
 		assertNotNull(outcome);
 		assertTrue(outcome.getCreated());
 		assertNotNull(outcome.getId());
-
+		reference = (DocumentReference) outcome.getResource();
+		reference = uploadContent(reference,
+				IOUtils.toByteArray(getClass().getResourceAsStream("/rsc/TestPlaceholders.docx")));
+		
 		CodeableConcept context = new CodeableConcept();
 		context.addCoding(new Coding("typed",
-				StoreToStringServiceHolder.getStoreToString(AllTests.getTestDatabaseInitializer().getPatient()), null));
+				"Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
 		context.addCoding(new Coding("Adressat",
-				StoreToStringServiceHolder.getStoreToString(AllTests.getTestDatabaseInitializer().getPatient()), null));
-		Parameters returnParameters = client.operation().onInstance(outcome.getId()).named("$createdocument")
+				"Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		Parameters returnParameters = client.operation().onInstance(reference.getId()).named("$createdocument")
 				.withParameters(new Parameters().addParameter("context", context)).execute();
+		assertNotNull(returnParameters);
+		assertTrue(returnParameters.getParameterFirstRep().getResource() instanceof DocumentReference);
+	}
+
+	private DocumentReference uploadContent(DocumentReference documentReference, byte[] content)
+			throws ClientProtocolException, IOException {
+		// upload content
+		CloseableHttpClient ourHttpClient = HttpClients.createDefault();
+		HttpPost post = new HttpPost(
+				client.getServerBase() + "/" + documentReference.getId() + "/$binary-access-write");
+		post.setEntity(new ByteArrayEntity(content, ContentType.APPLICATION_OCTET_STREAM));
+		try (CloseableHttpResponse resp = ourHttpClient.execute(post)) {
+			assertEquals(200, resp.getStatusLine().getStatusCode());
+
+			String response = IOUtils.toString(resp.getEntity().getContent(), Constants.CHARSET_UTF8);
+			return client.getFhirContext().newJsonParser().parseResource(DocumentReference.class, response);
+		}
 	}
 
 	private byte[] readContent(Attachment attachment) throws IOException {
