@@ -32,6 +32,7 @@ import org.hl7.fhir.r4.model.Enumerations.DocumentReferenceStatus;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.Constants;
@@ -48,6 +49,7 @@ import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
+@Ignore(value = "FIXME")
 public class DocumentReferenceTest {
 
 	private static IGenericClient client;

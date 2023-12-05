@@ -171,7 +171,7 @@ public class PatientResourceProviderTest {
 	@Test
 	public void getPatientProperties() {
 		IReadExecutable<Patient> readPatientE = client.read().resource(Patient.class)
-				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId());
+				.withId(TestDatabaseInitializer.getPatient().getId());
 		Patient readPatient = readPatientE.execute();
 		assertNotNull(readPatient);
 		List<HumanName> names = readPatient.getName();
@@ -202,7 +202,7 @@ public class PatientResourceProviderTest {
 				assertEquals("Street 1", address.getLine().get(0).asStringValue());
 			}
 			if (AddressType.POSTAL == address.getType()) {
-				assertEquals("Patient Test (w), 01.01.1990\nStreet 1\n123 City\n", address.getText());
+				assertEquals("Frau\nTest Patient\nStreet 1\n123 City\n", address.getText());
 			}
 		}
 

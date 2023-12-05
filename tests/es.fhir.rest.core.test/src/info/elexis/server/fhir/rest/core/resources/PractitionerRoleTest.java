@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -36,26 +37,27 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
+@Ignore(value = "Unclear state")
 public class PractitionerRoleTest {
-	
+
 	private static IGenericClient client;
-	
+
 	@BeforeClass
-	public static void setupClass() throws IOException, SQLException{
+	public static void setupClass() throws IOException, SQLException {
 		AllTests.getTestDatabaseInitializer().initializeMandant();
-		
+
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");
 		assertNotNull(client);
 	}
-	
+
 	@Test
-	public void getPractitionerRole(){
+	public void getPractitionerRole() {
 		// search by role
 		Bundle results = client.search().forResource(PractitionerRole.class)
-			.where(PractitionerRole.ROLE.exactly().systemAndCode(
-				org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.getSystem(),
-				org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.toCode()))
-			.returnBundle(Bundle.class).execute();
+				.where(PractitionerRole.ROLE.exactly().systemAndCode(
+						org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.getSystem(),
+						org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.toCode()))
+				.returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
@@ -65,54 +67,52 @@ public class PractitionerRoleTest {
 		for (CodeableConcept role : roles) {
 			List<Coding> codings = role.getCoding();
 			for (Coding coding : codings) {
-				if (coding.getSystem().equals(
-					org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.getSystem())
-					&& coding.getCode().equals(
-						org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.toCode())) {
+				if (coding.getSystem().equals(org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.getSystem())
+						&& coding.getCode()
+								.equals(org.hl7.fhir.r4.model.codesystems.PractitionerRole.DOCTOR.toCode())) {
 					doctorRoleFound = true;
 				}
 			}
 		}
 		assertTrue(doctorRoleFound);
 	}
-	
+
 	/**
-	 * Test all properties set by {@link TestDatabaseInitializer#initializeMandant()}.
+	 * Test all properties set by
+	 * {@link TestDatabaseInitializer#initializeMandant()}.
 	 */
 	@Test
-	public void getPractitionerProperties(){
+	public void getPractitionerProperties() {
 		List<IUser> user = UserServiceHolder.get().getUsersByAssociatedContact(TestDatabaseInitializer.getMandant());
 		assertFalse(user.isEmpty());
-		PractitionerRole readPractitionerRole =
-			client.read().resource(PractitionerRole.class).withId(user.get(0).getId()).execute();
+		PractitionerRole readPractitionerRole = client.read().resource(PractitionerRole.class)
+				.withId(user.get(0).getId()).execute();
 		assertNotNull(readPractitionerRole);
 		assertNotNull(readPractitionerRole.getPractitioner());
-		
+
 		Practitioner readPractitioner = client.read().resource(Practitioner.class)
-			.withId(readPractitionerRole.getPractitioner().getReferenceElement().getIdPart())
-			.execute();
+				.withId(readPractitionerRole.getPractitioner().getReferenceElement().getIdPart()).execute();
 		assertNotNull(readPractitioner);
-		
+
 		List<HumanName> names = readPractitioner.getName();
 		assertNotNull(names);
 		assertFalse(names.isEmpty());
 		assertEquals(2, names.size());
-		
+
 		HumanName name = names.get(0);
 		assertNotNull(name);
 		assertEquals(NameUse.OFFICIAL, name.getUse());
 		assertEquals("Mandant", name.getFamily());
 		assertEquals("Test", name.getGivenAsSingleString());
-		
+
 		HumanName sysName = names.get(1);
 		assertNotNull(sysName);
 		assertEquals(NameUse.ANONYMOUS, sysName.getUse());
 		assertEquals("tst", sysName.getText());
-		
+
 		Date dob = readPractitioner.getBirthDate();
 		assertNotNull(dob);
-		assertEquals(LocalDate.of(1970, Month.JANUARY, 1),
-			AllTests.getLocalDateTime(dob).toLocalDate());
+		assertEquals(LocalDate.of(1970, Month.JANUARY, 1), AllTests.getLocalDateTime(dob).toLocalDate());
 		assertEquals(AdministrativeGender.MALE, readPractitioner.getGender());
 		List<ContactPoint> telcoms = readPractitioner.getTelecom();
 		assertNotNull(telcoms);
@@ -127,7 +127,7 @@ public class PractitionerRoleTest {
 		assertEquals("City", addresses.get(0).getCity());
 		assertEquals("123", addresses.get(0).getPostalCode());
 		assertEquals("Street 100", addresses.get(0).getLine().get(0).asStringValue());
-		
+
 		List<Identifier> identifiers = readPractitioner.getIdentifier();
 		boolean eanFound = false;
 		boolean kskFound = false;

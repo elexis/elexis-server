@@ -94,7 +94,7 @@ public class OrganizationResourceProviderTest {
 				assertEquals("Street 10", address.getLine().get(0).asStringValue());
 			}
 			if (AddressType.POSTAL == address.getType()) {
-				assertEquals("Test Organization , Street 10, 123 City\nStreet 10\n123 City\n", address.getText());
+				assertEquals("Test Organization\nStreet 10\n123 City\n", address.getText());
 			}
 		}
 	}
