@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>info.elexis.server</groupId>
@@ -7,13 +8,13 @@
 	<version>3.12.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Elexis-Server</name>
-        <description>Elexis-Server for headless operation</description>
-        <licenses>
-                <license>
-                        <name>Eclipse Public License</name>
-                        <url>http://www.eclipse.org/legal/epl-v10.html</url>
-                </license>
-        </licenses>
+	<description>Elexis-Server for headless operation</description>
+	<licenses>
+		<license>
+			<name>Eclipse Public License</name>
+			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+		</license>
+	</licenses>
 	<organization>
 		<name>elexis.info</name>
 		<url>http://www.elexis.info</url>
@@ -28,30 +29,33 @@
 		<url>https://github.com/elexis/elexis-server/issues</url>
 		<system>Github</system>
 	</issueManagement>
+
 	<properties>
 		<elexis.target>2023-09-java17</elexis.target>
-
 		<tycho.version>3.0.5</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
+		<tycho.p2.transport.min-cache-minutes>0</tycho.p2.transport.min-cache-minutes>
 	</properties>
-        <repositories>
-                <repository>
-                        <id>elexis.3.target</id>
-                        <url>https://download.elexis.info/elexis/target/${elexis.target}/</url>
-                        <layout>p2</layout>
-                </repository>
-                <repository>
-                        <id>elexis.3.core</id>
-                        <url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-core</url>
-                        <layout>p2</layout>
-                </repository>
-                <repository>
-                        <id>elexis.3.base</id>
-                        <url>https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-base</url>
-                        <layout>p2</layout>
-                </repository>
-        </repositories>
+
+	<repositories>
+		<repository>
+			<id>elexis.3.target</id>
+			<url>https://download.elexis.info/elexis/target/${elexis.target}/</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>elexis.3.core</id>
+			<url>
+				https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-core</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>elexis.3.base</id>
+			<url>
+				https://download.elexis.info/elexis/${elexis.branch}/p2/elexis-3-base</url>
+			<layout>p2</layout>
+		</repository>
+	</repositories>
 	<modules>
 		<module>../../bundles</module>
 		<module>../../features</module>
@@ -67,7 +71,7 @@
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
-				<groupId>${tycho-groupid}</groupId>
+				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
