@@ -15,6 +15,7 @@
     <relativePath>../releng/es.parent</relativePath>
   </parent>
   <modules>
+    <module>info.elexis.jaxrs.service.test</module>
     <module>es.core.connector.elexis.test</module>
     <!--
     <module>es.fhir.rest.core.test</module>

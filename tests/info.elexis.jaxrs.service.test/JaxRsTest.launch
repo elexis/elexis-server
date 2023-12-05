@@ -406,8 +406,6 @@
         <setEntry value="ch.novcom.elexis.mednet.plugin"/>
         <setEntry value="ch.pharmed.phmprescriber"/>
         <setEntry value="ch.pharmed.phmprescriber_test"/>
-        <setEntry value="ch.priaid"/>
-        <setEntry value="ch.priaid.test"/>
         <setEntry value="ch.rgw.utility.tests"/>
         <setEntry value="ch.unibe.iam.scg.archie"/>
         <setEntry value="ch.unibe.iam.scg.archie.samples"/>
@@ -423,7 +421,6 @@
         <setEntry value="info.elexis.server.core.common"/>
         <setEntry value="info.elexis.server.core.connector.elexis"/>
         <setEntry value="info.elexis.server.core.connector.elexis.test"/>
-        <setEntry value="info.elexis.server.core.jetty.homebundle"/>
         <setEntry value="info.elexis.server.core.p2"/>
         <setEntry value="info.elexis.server.core.redmine"/>
         <setEntry value="info.elexis.server.fhir.rest.core"/>

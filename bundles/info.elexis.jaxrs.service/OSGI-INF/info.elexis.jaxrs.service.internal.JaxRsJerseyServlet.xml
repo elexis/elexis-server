@@ -3,7 +3,7 @@
    <service>
       <provide interface="info.elexis.jaxrs.service.internal.JaxRsJerseyServlet"/>
    </service>
-   <reference bind="bind" cardinality="0..1" interface="info.elexis.jaxrs.service.JaxrsResource" policy="dynamic" policy-option="greedy" unbind="unbind"/>
+   <reference bind="bind" cardinality="0..1" interface="info.elexis.jaxrs.service.JaxrsResource" policy="static" policy-option="greedy" unbind="unbind"/>
    <reference cardinality="1..1" field="httpService" interface="org.osgi.service.http.HttpService" name="httpService"/>
    <implementation class="info.elexis.jaxrs.service.internal.JaxRsJerseyServlet"/>
 </scr:component>

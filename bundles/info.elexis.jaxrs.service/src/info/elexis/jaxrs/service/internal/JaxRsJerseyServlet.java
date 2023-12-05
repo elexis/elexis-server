@@ -57,7 +57,7 @@ public class JaxRsJerseyServlet extends ServletContainer {
 		reload(resourceConfig);
 	}
 
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
+	@Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY)
 	public synchronized void bind(JaxrsResource jaxRsServlet) {
 		jaxrsServletSet.add(jaxRsServlet);
 	}
