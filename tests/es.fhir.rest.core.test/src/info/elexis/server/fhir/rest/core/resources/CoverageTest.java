@@ -10,13 +10,16 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Coverage;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
@@ -29,6 +32,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.model.ICoverage;
+import ch.elexis.core.model.ch.BillingLaw;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
@@ -112,7 +116,14 @@ public class CoverageTest {
 		assertEquals(LocalDate.of(2016, Month.SEPTEMBER, 1),
 				AllTests.getLocalDateTime(period.getStart()).toLocalDate());
 		assertTrue(period.getEnd() == null);
-		assertEquals("1234-5678", readCoverage.getDependent());
+		if (TestDatabaseInitializer.getFall().getBillingSystem().getLaw() == BillingLaw.KVG) {
+			Optional<Identifier> found = readCoverage.getIdentifier().stream()
+					.filter(i -> StringUtils.isNotBlank(i.getValue()) && "1234-5678".equals(i.getValue())).findFirst();
+			assertTrue(found.isPresent());
+		} else if (TestDatabaseInitializer.getFall().getBillingSystem().getLaw() == BillingLaw.UVG
+				|| TestDatabaseInitializer.getFall().getBillingSystem().getLaw() == BillingLaw.IV) {
+			assertEquals("1234-5678", readCoverage.getDependent());
+		}
 
 		Narrative narrative = readCoverage.getText();
 		assertNotNull(narrative);
