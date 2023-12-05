@@ -75,6 +75,11 @@
           <dependencies>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>ch.elexis.core.text.docx</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.eclipse.equinox.http.registry</artifactId>
               <version>0.0.0</version>
             </dependency>
