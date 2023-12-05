@@ -34,7 +34,6 @@
 		<elexis.target>2023-09-java17</elexis.target>
 		<tycho.version>3.0.5</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<tycho.p2.transport.min-cache-minutes>0</tycho.p2.transport.min-cache-minutes>
 	</properties>
 
 	<repositories>
