@@ -32,7 +32,6 @@ import org.hl7.fhir.r4.model.Enumerations.DocumentReferenceStatus;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.uhn.fhir.rest.api.Constants;
@@ -49,7 +48,6 @@ import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-@Ignore(value = "FIXME")
 public class DocumentReferenceTest {
 
 	private static IGenericClient client;
@@ -76,12 +74,13 @@ public class DocumentReferenceTest {
 	public void searchDocumentReference() throws ClientProtocolException, IOException, ElexisException {
 		IPatient patient = AllTests.getTestDatabaseInitializer().getPatient();
 		List<IDocument> existingDocuments = omnivoreDocumentStore.getDocuments(patient.getId(), null, null, null);
+		List<IDocument> existingLetters = letterDocumentStore.getDocuments(patient.getId(), null, null, null);
 		Bundle results = client.search().forResource(DocumentReference.class)
 				.where(DocumentReference.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
 				.returnBundle(Bundle.class).execute();
 		List<BundleEntryComponent> entries = results.getEntry();
 		int existingEntriesSize = entries.size();
-		assertEquals(existingDocuments.size(), existingEntriesSize);
+		assertEquals(existingDocuments.size() + existingLetters.size(), existingEntriesSize);
 
 		IDocument newDocument = omnivoreDocumentStore.createDocument(patient.getId(), "TestSearchDocumentReference.txt",
 				null);
