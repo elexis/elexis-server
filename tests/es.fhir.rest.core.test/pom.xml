@@ -71,13 +71,8 @@
           <useUIHarness>false</useUIHarness>
           <testClass>info.elexis.server.fhir.rest.core.test.AllTests</testClass>
           <showEclipseLog>true</showEclipseLog>
-          <argLine>-Dorg.osgi.service.http.port=8380 -DREFRESH_BUNDLES=false -DacceptMissingLockServiceContributor=true -Des.test=true -Ddisable.web.security=true -Delexis.test.mode=true</argLine>
+          <argLine>-Dorg.osgi.service.http.port=8380  -DREFRESH_BUNDLES=false  -DacceptMissingLockServiceContributor=true -Des.test=true -Ddisable.web.security=true -Delexis.test.mode=true</argLine>
           <dependencies>
-            <dependency>
-              <type>eclipse-plugin</type>
-              <artifactId>ch.elexis.core.text.docx</artifactId>
-              <version>0.0.0</version>
-            </dependency>
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.eclipse.equinox.http.registry</artifactId>
@@ -651,11 +646,6 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>jakarta.validation.jakarta.validation-api</artifactId>
-              <version>0.0.0</version>
-            </dependency>
-            <dependency>
-              <type>eclipse-plugin</type>
-              <artifactId>ch.elexis.core.logback.rocketchat</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>

@@ -14,9 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 
 import ch.elexis.core.findings.IFinding;
 import ch.elexis.core.findings.IFindingsService;
@@ -84,13 +81,8 @@ public class AllTests {
 	}
 
 	public static IFindingsService getFindingsService() {
-		if (iFindingsService != null) {
-			return iFindingsService;
-		}
-		BundleContext bundleContext = FrameworkUtil.getBundle(AllTests.class).getBundleContext();
-		ServiceReference<IFindingsService> serviceReference = bundleContext.getServiceReference(IFindingsService.class);
-		if (serviceReference != null) {
-			iFindingsService = bundleContext.getService(serviceReference);
+		if (iFindingsService == null) {
+			iFindingsService = OsgiServiceUtil.getServiceWait(IFindingsService.class, 5000).orElseThrow();
 		}
 		return iFindingsService;
 	}
