@@ -55,6 +55,7 @@ public class JaxRsJerseyServlet extends ServletContainer {
 		ResourceConfig resourceConfig = ResourceConfig.forApplicationClass(Application.class);
 		jaxrsServletSet.forEach(resourceConfig::register);
 		reload(resourceConfig);
+		LoggerFactory.getLogger(getClass()).debug("Registered {}", jaxrsServletSet);
 	}
 
 	@Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY)
