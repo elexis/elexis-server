@@ -227,6 +227,7 @@ public class DocumentReferenceTest {
 		sysTemplate.setCategory(new TransientCategory(BriefConstants.TEMPLATE));
 		sysTemplate.setTemplateTyp(BriefConstants.SYS_TEMPLATE);
 		sysTemplate.setTitle("OtherTestTemplatesSearch.docx");
+		sysTemplate.setContent(getClass().getResourceAsStream("/rsc/TestPlaceholders.docx"));
 		CoreModelServiceHolder.get().save(sysTemplate);
 
 		results = client.search().forResource(DocumentReference.class)
@@ -338,6 +339,28 @@ public class DocumentReferenceTest {
 		context.addCoding(new Coding("Adressat",
 				"Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
 		Parameters returnParameters = client.operation().onInstance(reference.getId()).named("$createdocument")
+				.withParameters(new Parameters().addParameter("context", context)).execute();
+		assertNotNull(returnParameters);
+		assertTrue(returnParameters.getParameterFirstRep().getResource() instanceof DocumentReference);
+
+		IDocumentTemplate sysTemplate = CoreModelServiceHolder.get().create(IDocumentTemplate.class);
+		sysTemplate.setCategory(new TransientCategory(BriefConstants.TEMPLATE));
+		sysTemplate.setTitle("OtherTestTemplatesSearch.docx");
+		sysTemplate.setContent(getClass().getResourceAsStream("/rsc/TestPlaceholders.docx"));
+		CoreModelServiceHolder.get().save(sysTemplate);
+
+		Bundle results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.CATEGORY.exactly()
+						.systemAndCode(CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE))
+				.returnBundle(Bundle.class).execute();
+		List<BundleEntryComponent> entries = results.getEntry();
+		Optional<DocumentReference> otherTemplate = entries.stream()
+				.filter(e -> e.getResource() instanceof DocumentReference).map(e -> (DocumentReference) e.getResource())
+				.filter(d -> d.getContentFirstRep().getAttachment().getTitle().equals("OtherTestTemplatesSearch.docx"))
+				.findAny();
+		assertTrue(otherTemplate.isPresent());
+
+		returnParameters = client.operation().onInstance(otherTemplate.get().getId()).named("$createdocument")
 				.withParameters(new Parameters().addParameter("context", context)).execute();
 		assertNotNull(returnParameters);
 		assertTrue(returnParameters.getParameterFirstRep().getResource() instanceof DocumentReference);

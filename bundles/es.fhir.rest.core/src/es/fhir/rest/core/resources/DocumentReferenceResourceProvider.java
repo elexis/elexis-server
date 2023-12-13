@@ -22,6 +22,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -85,7 +86,7 @@ public class DocumentReferenceResourceProvider
 	@Reference
 	private IDocumentService documentService;
 
-	@Reference
+	@Reference(policyOption = ReferencePolicyOption.GREEDY)
 	private List<IDocumentStore> documentStores;
 
 	public DocumentReferenceResourceProvider() {
@@ -235,23 +236,32 @@ public class DocumentReferenceResourceProvider
 		DocumentReference createdResource = null;
 		String idPart = theTemplateId.getIdPart();
 		if (idPart != null) {
+			// try to load by document reference or direct by document store
+			IDocument document = null;
 			Optional<IDocumentReference> templateReference = findingsService.findById(idPart, IDocumentReference.class);
 			if (templateReference.isPresent()) {
-				IDocument document = templateReference.get().getDocument();
-				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
-					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
-					IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
-					IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
-					createdDocumentReference.setDocument(createdDocument);
-					if (createdDocument.getPatient() != null) {
-						createdDocumentReference.setPatientId(createdDocument.getPatient().getId());
+				document = templateReference.get().getDocument();
+			} else {
+				for (IDocumentStore iDocumentStore : documentStores) {
+					document = iDocumentStore.loadDocument(idPart).orElse(null);
+					if (document != null) {
+						break;
 					}
-					findingsService.saveFinding(createdDocumentReference);
-					createdResource = getTransformer().getFhirObject(createdDocumentReference)
-							.orElse(null);
-				} else {
-					throw new PreconditionFailedException("Document is not available or not a document template");
 				}
+			}
+
+			if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
+				IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
+				IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
+				IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
+				createdDocumentReference.setDocument(createdDocument);
+				if (createdDocument.getPatient() != null) {
+					createdDocumentReference.setPatientId(createdDocument.getPatient().getId());
+				}
+				findingsService.saveFinding(createdDocumentReference);
+				createdResource = getTransformer().getFhirObject(createdDocumentReference).orElse(null);
+			} else {
+				throw new PreconditionFailedException("Document is not available or not a document template");
 			}
 		}
 		return createdResource;
