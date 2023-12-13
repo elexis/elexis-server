@@ -2,6 +2,7 @@ package es.fhir.rest.core.resources;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
@@ -35,8 +37,10 @@ import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import ch.elexis.core.findings.IDocumentReference;
 import ch.elexis.core.findings.IFindingsService;
 import ch.elexis.core.findings.migration.IMigratorService;
+import ch.elexis.core.findings.util.CodeTypeUtil;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
+import ch.elexis.core.model.BriefConstants;
 import ch.elexis.core.model.IDocument;
 import ch.elexis.core.model.IDocumentLetter;
 import ch.elexis.core.model.IDocumentTemplate;
@@ -100,20 +104,27 @@ public class DocumentReferenceResourceProvider
 				.getTransformerFor(DocumentReference.class, IDocumentReference.class);
 	}
 
+	private IFhirTransformer<DocumentReference, IDocument> getDocumentTransformer() {
+		return (IFhirTransformer<DocumentReference, IDocument>) transformerRegistry
+				.getTransformerFor(DocumentReference.class, IDocument.class);
+	}
+
 	@Override
 	public Class<? extends IBaseResource> getResourceType() {
 		return DocumentReference.class;
 	}
 
 	@Search
-	public List<DocumentReference> searchPatient(
+	public List<DocumentReference> search(
 			@OptionalParam(name = DocumentReference.SP_PATIENT) IdType thePatientId,
-			@OptionalParam(name = DocumentReference.SP_SUBJECT) IdType theSubjectId) {
+			@OptionalParam(name = DocumentReference.SP_SUBJECT) IdType theSubjectId,
+			@OptionalParam(name = DocumentReference.SP_CATEGORY) CodeType categoryCode) {
 
 		if (thePatientId == null && theSubjectId != null) {
 			thePatientId = theSubjectId;
 		}
 
+		List<DocumentReference> ret = new ArrayList<>();
 		if (thePatientId != null && !thePatientId.isEmpty()) {
 			Optional<IPatient> patient = coreModelService.load(thePatientId.getIdPart(), IPatient.class);
 			if (patient.isPresent()) {
@@ -124,13 +135,28 @@ public class DocumentReferenceResourceProvider
 						IDocumentReference.class);
 				if (findings != null && !findings.isEmpty()) {
 					findings = findings.stream().filter(f -> f.getDocument() != null).collect(Collectors.toList());
-					return findings.stream().map(iFinding -> getTransformer().getFhirObject(iFinding).get())
-							.collect(Collectors.toList());
+					ret.addAll(findings.stream().map(iFinding -> getTransformer().getFhirObject(iFinding).get())
+							.collect(Collectors.toList()));
 				}
 			}
 		}
-
-		return null;
+		if (categoryCode != null) {
+			// add templates if no patient and category present
+			if ((thePatientId == null || thePatientId.isEmpty())
+					&& BriefConstants.TEMPLATE.equalsIgnoreCase(CodeTypeUtil.getCode(categoryCode).orElse(""))) {
+				List<DocumentReference> allTemplates = documentStores.stream()
+						.flatMap(ds -> ds.getDocumentTemplates(true).stream())
+						.map(dt -> getDocumentTransformer().getFhirObject(dt).get()).collect(Collectors.toList());
+				ret.addAll(allTemplates);
+			}
+			// filter category
+			ret = ret.stream()
+					.filter(dr -> CodeTypeUtil.isCodeInConceptList(dr.getCategory(),
+							CodeTypeUtil.getSystem(categoryCode).orElse(null),
+							CodeTypeUtil.getCode(categoryCode).orElse(null)))
+					.collect(Collectors.toList());
+		}
+		return ret;
 	}
 
 	/**

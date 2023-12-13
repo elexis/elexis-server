@@ -39,11 +39,15 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.exceptions.ElexisException;
 import ch.elexis.core.findings.codes.CodingSystem;
+import ch.elexis.core.findings.util.CodeTypeUtil;
 import ch.elexis.core.model.BriefConstants;
 import ch.elexis.core.model.IDocument;
+import ch.elexis.core.model.IDocumentTemplate;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.services.IDocumentStore;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.utils.OsgiServiceUtil;
+import ch.elexis.omnivore.model.TransientCategory;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -188,6 +192,72 @@ public class DocumentReferenceTest {
 	}
 
 	@Test
+	public void searchTemplateDocumentReference() throws IOException {
+		DocumentReference reference = new DocumentReference();
+		reference.setStatus(DocumentReferenceStatus.CURRENT);
+		CodeableConcept storeIdConcept = reference.addCategory();
+		storeIdConcept.addCoding(
+				new Coding(CodingSystem.ELEXIS_DOCUMENT_STOREID.getSystem(), "ch.elexis.data.store.brief", null));
+		CodeableConcept categoryConcept = new CodeableConcept(new Coding(
+				CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE, BriefConstants.TEMPLATE));
+		reference.addCategory(categoryConcept);
+
+		DocumentReferenceContentComponent content = new DocumentReferenceContentComponent();
+		Attachment attachment = new Attachment();
+		attachment.setTitle("TestTemplatesSearch.docx");
+		content.setAttachment(attachment);
+		reference.addContent(content);
+
+		MethodOutcome outcome = client.create().resource(reference).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+		reference = (DocumentReference) outcome.getResource();
+		reference = uploadContent(reference,
+				IOUtils.toByteArray(getClass().getResourceAsStream("/rsc/TestPlaceholders.docx")));
+
+		Bundle results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.CATEGORY.exactly()
+						.systemAndCode(CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE))
+				.returnBundle(Bundle.class).execute();
+		List<BundleEntryComponent> entries = results.getEntry();
+		assertEquals(1, entries.size());
+
+		IDocumentTemplate sysTemplate = CoreModelServiceHolder.get().create(IDocumentTemplate.class);
+		sysTemplate.setCategory(new TransientCategory(BriefConstants.TEMPLATE));
+		sysTemplate.setTemplateTyp(BriefConstants.SYS_TEMPLATE);
+		sysTemplate.setTitle("OtherTestTemplatesSearch.docx");
+		CoreModelServiceHolder.get().save(sysTemplate);
+
+		results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.CATEGORY.exactly()
+						.systemAndCode(CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE))
+				.returnBundle(Bundle.class).execute();
+		entries = results.getEntry();
+		assertEquals(2, entries.size());
+
+		Optional<DocumentReference> otherTemplate = entries.stream()
+				.filter(e -> e.getResource() instanceof DocumentReference)
+				.map(e -> (DocumentReference) e.getResource()).filter(d -> d.getContentFirstRep().getAttachment()
+						.getTitle().equals("OtherTestTemplatesSearch.docx"))
+				.findAny();
+		assertTrue(otherTemplate.isPresent());
+		assertTrue(CodeTypeUtil.isCodeInConceptList(otherTemplate.get().getCategory(),
+				CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE));
+		assertTrue(CodeTypeUtil.isCodeInConceptList(otherTemplate.get().getCategory(),
+				CodingSystem.ELEXIS_DOCUMENT_TEMPLATE_TYP.getSystem(), BriefConstants.SYS_TEMPLATE));
+
+		removeTemplates();
+	}
+
+	private void removeTemplates() {
+		List<IDocumentTemplate> templates = letterDocumentStore.getDocumentTemplates(true);
+		for (IDocumentTemplate iDocumentTemplate : templates) {
+			letterDocumentStore.removeDocument(iDocumentTemplate);
+		}
+	}
+
+	@Test
 	public void createLetterDocumentReference() throws IOException {
 		DocumentReference reference = new DocumentReference();
 		reference.setStatus(DocumentReferenceStatus.CURRENT);
@@ -195,7 +265,8 @@ public class DocumentReferenceTest {
 				(Reference) new Reference("Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId())
 						.setId(AllTests.getTestDatabaseInitializer().getPatient().getId()));
 		CodeableConcept storeIdConcept = reference.addCategory();
-		storeIdConcept.addCoding(new Coding("http://elexis.info/document/storeid", "ch.elexis.data.store.brief",
+		storeIdConcept.addCoding(new Coding(CodingSystem.ELEXIS_DOCUMENT_STOREID.getSystem(),
+				"ch.elexis.data.store.brief",
 				"ch.elexis.data.store.brief"));
 		CodeableConcept categoryConcept = new CodeableConcept(
 				new Coding(CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.UNKNOWN,
@@ -224,7 +295,7 @@ public class DocumentReferenceTest {
 		byte[] actualBytes = readContent(readAttachment);
 		assertArrayEquals("Test Text\n2te Zeile üöä!".getBytes(), actualBytes);
 		
-		Optional<String> storeid = FhirUtil.getCodeFromConceptList("http://elexis.info/document/storeid",
+		Optional<String> storeid = FhirUtil.getCodeFromConceptList(CodingSystem.ELEXIS_DOCUMENT_STOREID.getSystem(),
 				readReference.getCategory());
 		assertTrue(storeid.isPresent());
 		assertEquals("ch.elexis.data.store.brief", storeid.get());
@@ -240,7 +311,8 @@ public class DocumentReferenceTest {
 		DocumentReference reference = new DocumentReference();
 		reference.setStatus(DocumentReferenceStatus.CURRENT);
 		CodeableConcept storeIdConcept = reference.addCategory();
-		storeIdConcept.addCoding(new Coding("http://elexis.info/document/storeid", "ch.elexis.data.store.brief",
+		storeIdConcept.addCoding(
+				new Coding(CodingSystem.ELEXIS_DOCUMENT_STOREID.getSystem(), "ch.elexis.data.store.brief",
 				null));
 		CodeableConcept categoryConcept = new CodeableConcept(new Coding(
 				CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE, BriefConstants.TEMPLATE));
@@ -269,6 +341,8 @@ public class DocumentReferenceTest {
 				.withParameters(new Parameters().addParameter("context", context)).execute();
 		assertNotNull(returnParameters);
 		assertTrue(returnParameters.getParameterFirstRep().getResource() instanceof DocumentReference);
+
+		removeTemplates();
 	}
 
 	private DocumentReference uploadContent(DocumentReference documentReference, byte[] content)
