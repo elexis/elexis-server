@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IContact;
-import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IRole;
 import ch.elexis.core.model.IUser;
 import ch.elexis.core.model.builder.IUserBuilder;
@@ -128,25 +127,26 @@ public class ContextSettingFilter implements Filter {
 	}
 
 	/**
-	 * Dynamically creates a user if applicable.
+	 * Dynamically creates user if applicable
 	 * 
 	 * @param token
 	 * @return
 	 */
 	private IUser performDynamicUserCreationIfApplicable(AccessToken token) {
-		boolean isElexisUser = token.getRealmAccess().getRoles().contains("elexis_user");
+		boolean isElexisUser = token.getRealmAccess().getRoles().contains("bot")
+				|| token.getRealmAccess().getRoles().contains("user");
 		if (!isElexisUser) {
 			return null;
 		}
 		// if an elexisContactId is set, and it is valid - dynamically create user
 		String elexisContactId = (String) token.getOtherClaims().get("elexisContactId");
-		Optional<IPerson> assignedContact = coreModelService.load(elexisContactId, IPerson.class);
+		Optional<IContact> assignedContact = coreModelService.load(elexisContactId, IContact.class);
 		if (!assignedContact.isPresent()) {
 			logger.warn("[{}] Dynamic user create failed. Invalid or missing attribute elexisContactId [{}]",
 					token.getPreferredUsername(), elexisContactId);
 			return null;
 		}
-		logger.info("[{}] Dynamic user create with assigned contact [{}]", token.getPreferredUsername(),
+		logger.info("[{}] Dynamic user/bot create with assigned contact [{}]", token.getPreferredUsername(),
 				elexisContactId);
 		return new IUserBuilder(coreModelService, token.getPreferredUsername(), assignedContact.get()).buildAndSave();
 	}
@@ -173,7 +173,7 @@ public class ContextSettingFilter implements Filter {
 				IUserService userService = OsgiServiceUtil.getService(IUserService.class).get();
 				Set<String> effectiveUserRoles = userService.setUserRoles(user, targetUserRoleSet);
 				accessControlService.refresh(user);
-				logger.warn("[{}] Updated user role set to {}", user, effectiveUserRoles);
+				logger.warn("[{}] Updated user/bot role set to {}", user, effectiveUserRoles);
 			}
 		});
 	}
