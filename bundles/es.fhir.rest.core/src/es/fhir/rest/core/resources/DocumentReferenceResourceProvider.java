@@ -3,7 +3,9 @@ package es.fhir.rest.core.resources;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,11 +21,18 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Person;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -34,6 +43,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import ch.elexis.core.findings.IDocumentReference;
 import ch.elexis.core.findings.IFindingsService;
@@ -54,6 +64,7 @@ import ch.elexis.core.services.IDocumentStore;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IStoreToStringService;
+import ch.elexis.core.services.ITextReplacementService;
 
 @Component(service = IFhirResourceProvider.class)
 public class DocumentReferenceResourceProvider
@@ -88,6 +99,9 @@ public class DocumentReferenceResourceProvider
 
 	@Reference(policyOption = ReferencePolicyOption.GREEDY)
 	private List<IDocumentStore> documentStores;
+
+	@Reference
+	private Gson gson;
 
 	public DocumentReferenceResourceProvider() {
 		super(IDocumentReference.class);
@@ -167,30 +181,27 @@ public class DocumentReferenceResourceProvider
 	public void binaryAccessRead(@IdParam IIdType theResourceId, ServletRequestDetails theRequestDetails,
 			HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 		String idPart = theResourceId.getIdPart();
-		if (idPart != null) {
-			Optional<IDocumentReference> documentReference = findingsService.findById(idPart, IDocumentReference.class);
-			documentReference.ifPresent(ref -> {
-				IDocument document = ref.getDocument();
-				if (document != null) {
-					try {
-						String contentType = document.getMimeType();
-						contentType = StringUtils.defaultIfBlank(contentType, "application/octet-stream");
+		IDocument document = loadLocalDocument(idPart);
+		if (document != null) {
+			try {
+				String contentType = document.getMimeType();
+				contentType = StringUtils.defaultIfBlank(contentType, "application/octet-stream");
 
-						theServletResponse.setStatus(200);
-						theServletResponse.setContentType(contentType);
-						theServletResponse.setContentLength((int) document.getContentLength());
+				theServletResponse.setStatus(200);
+				theServletResponse.setContentType(contentType);
+				theServletResponse.setContentLength((int) document.getContentLength());
 
-						RestfulServer server = theRequestDetails.getServer();
-						server.addHeadersToResponse(theServletResponse);
+				RestfulServer server = theRequestDetails.getServer();
+				server.addHeadersToResponse(theServletResponse);
 
-						IOUtils.copy(document.getContent(), theServletResponse.getOutputStream());
-						theServletResponse.getOutputStream().close();
-					} catch (Exception e) {
-						LoggerFactory.getLogger(DocumentReferenceResourceProvider.class)
-								.error("Error reading document content", e);
-					}
-				}
-			});
+				IOUtils.copy(document.getContent(), theServletResponse.getOutputStream());
+				theServletResponse.getOutputStream().close();
+			} catch (Exception e) {
+				LoggerFactory.getLogger(DocumentReferenceResourceProvider.class).error("Error reading document content",
+						e);
+			}
+		} else {
+			throw new ResourceNotFoundException(theResourceId);
 		}
 	}
 
@@ -204,30 +215,90 @@ public class DocumentReferenceResourceProvider
 		MethodOutcome outcome = new MethodOutcome();
 		String idPart = theResourceId.getIdPart();
 		if (idPart != null) {
-			Optional<IDocumentReference> documentReference = findingsService.findById(idPart, IDocumentReference.class);
-			documentReference.ifPresent(ref -> {
-				IDocument document = ref.getDocument();
-				if (document != null) {
-					try {
-						IDocumentStore store = documentStores.stream()
-								.filter(s -> s.getId().equals(document.getStoreId())).findFirst().get();
+			IDocument document = loadLocalDocument(idPart);
+			Optional<IDocumentReference> ref = findingsService.findById(idPart, IDocumentReference.class);
+			if (document != null) {
+				try {
+					IDocumentStore store = documentStores.stream().filter(s -> s.getId().equals(document.getStoreId()))
+							.findFirst().get();
 
-						String requestContentType = theServletRequest.getContentType();
-						if (StringUtils.isBlank(requestContentType)) {
-							throw new InvalidRequestException("No content-target supplied");
-						}
-						store.saveDocument(document, new ByteArrayInputStream(theRequestDetails.loadRequestContents()));
-
-						DocumentReference resource = getTransformer().getFhirObject(ref).orElse(null);
-						outcome.setResource(resource).setId(resource.getIdElement());
-					} catch (Exception e) {
-						LoggerFactory.getLogger(getClass())
-								.error("Error setting binary content of document [" + document + "]", e);
+					String requestContentType = theServletRequest.getContentType();
+					if (StringUtils.isBlank(requestContentType)) {
+						throw new InvalidRequestException("No content-target supplied");
 					}
+					store.saveDocument(document, new ByteArrayInputStream(theRequestDetails.loadRequestContents()));
+
+					if (ref.isPresent()) {
+						DocumentReference resource = getTransformer().getFhirObject(ref.get()).orElse(null);
+						outcome.setResource(resource).setId(resource.getIdElement());
+					} else {
+						DocumentReference resource = getDocumentTransformer().getFhirObject(document).orElse(null);
+						outcome.setResource(resource).setId(resource.getIdElement());
+					}
+				} catch (Exception e) {
+					LoggerFactory.getLogger(getClass())
+							.error("Error setting binary content of document [" + document + "]", e);
 				}
-			});
+			}
 		}
 		return outcome.getResource();
+	}
+
+	@Operation(name = "$validatetemplate", idempotent = false)
+	public Parameters validateTemplate(@IdParam IIdType theTemplateId,
+			@OperationParam(name = "context") CodeableConcept theContext) {
+		Parameters ret = null;
+		String idPart = theTemplateId.getIdPart();
+		if (idPart != null) {
+			IDocument document = loadLocalDocument(idPart);
+
+			if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
+				IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
+				Map<String, Boolean> validationResult = documentService.validateTemplate(template,
+						toContext(theContext));
+				ret = toFhirValidationResult(validationResult);
+			} else {
+				throw new PreconditionFailedException("Document is not available or not a document template");
+			}
+		}
+		return ret;
+	}
+
+	private Parameters toFhirValidationResult(Map<String, Boolean> validationResult) {
+		Parameters ret = new Parameters();
+		HashSet<String> typeNotResolvedSet = new HashSet<String>();
+		// add all not resolve
+		for (String placeholder : validationResult.keySet()) {
+			String placeholderType = ITextReplacementService.getPlaceholderType(placeholder);
+			if (!validationResult.get(placeholder)) {
+				typeNotResolvedSet.add(placeholderType);
+			}
+		}
+		// remove if resolved once resolved
+		for (String placeholder : validationResult.keySet()) {
+			String placeholderType = ITextReplacementService.getPlaceholderType(placeholder);
+			if (validationResult.get(placeholder)) {
+				typeNotResolvedSet.remove(placeholderType);
+			}
+		}
+		typeNotResolvedSet.forEach(v -> {
+			ret.addParameter(v, getFhirTypes(v));
+		});
+		return ret;
+	}
+
+	private String getFhirTypes(String placeholderType) {
+		switch (placeholderType) {
+		case "Patient":
+			return Patient.class.getSimpleName();
+		case "Mandant":
+			return Practitioner.class.getSimpleName();
+		case "Adressat":
+			return Patient.class.getSimpleName() + "," + Organization.class.getSimpleName() + ","
+					+ Person.class.getSimpleName() + "," + Practitioner.class.getSimpleName();
+		}
+		
+		return "unknown";
 	}
 
 	@Operation(name = "$createdocument", idempotent = false)
@@ -236,19 +307,7 @@ public class DocumentReferenceResourceProvider
 		DocumentReference createdResource = null;
 		String idPart = theTemplateId.getIdPart();
 		if (idPart != null) {
-			// try to load by document reference or direct by document store
-			IDocument document = null;
-			Optional<IDocumentReference> templateReference = findingsService.findById(idPart, IDocumentReference.class);
-			if (templateReference.isPresent()) {
-				document = templateReference.get().getDocument();
-			} else {
-				for (IDocumentStore iDocumentStore : documentStores) {
-					document = iDocumentStore.loadDocument(idPart).orElse(null);
-					if (document != null) {
-						break;
-					}
-				}
-			}
+			IDocument document = loadLocalDocument(idPart);
 
 			if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
 				IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
@@ -267,39 +326,63 @@ public class DocumentReferenceResourceProvider
 		return createdResource;
 	}
 
+	/**
+	 * Try to load by document reference or direct by document store.
+	 * 
+	 * @param idPart
+	 * @return
+	 */
+	private IDocument loadLocalDocument(String idPart) {
+		IDocument ret = null;
+		Optional<IDocumentReference> templateReference = findingsService.findById(idPart, IDocumentReference.class);
+		if (templateReference.isPresent()) {
+			ret = templateReference.get().getDocument();
+		} else {
+			for (IDocumentStore iDocumentStore : documentStores) {
+				ret = iDocumentStore.loadDocument(idPart).orElse(null);
+				if (ret != null) {
+					break;
+				}
+			}
+		}
+		return ret;
+	}
+
 	private IContext toContext(CodeableConcept theContext) {
 		IContext ret = contextService.createNamedContext("create_document_context");
-		for (Coding coding : theContext.getCoding()) {
-			if(StringUtils.isNotBlank(coding.getCode()))  {
-				if (coding.getCode().indexOf("/") > -1) {
-					String[] parts = coding.getCode().split("/");
-					if (parts.length == 2) {
-						Optional<? extends Identifiable> localObject = transformerRegistry
-								.getLocalObjectForReference(coding.getCode());
-						if (localObject.isPresent()) {
-							if (coding.getSystem().startsWith("typed")) {
-								ret.setTyped(localObject.get());
+		if (theContext != null) {
+			for (Coding coding : theContext.getCoding()) {
+				if (StringUtils.isNotBlank(coding.getCode())) {
+					if (coding.getCode().indexOf("/") > -1) {
+						String[] parts = coding.getCode().split("/");
+						if (parts.length == 2) {
+							Optional<? extends Identifiable> localObject = transformerRegistry
+									.getLocalObjectForReference(coding.getCode());
+							if (localObject.isPresent()) {
+								if (coding.getSystem().startsWith("typed")) {
+									ret.setTyped(localObject.get());
+								} else {
+									ret.setNamed(coding.getSystem(), localObject.get());
+								}
 							} else {
-								ret.setNamed(coding.getSystem(), localObject.get());
+								LoggerFactory.getLogger(getClass())
+										.warn("No local object for FHIR Reference [" + coding.getCode() + "]");
 							}
 						} else {
 							LoggerFactory.getLogger(getClass())
-									.warn("No local object for FHIR Reference [" + coding.getCode() + "]");
+									.warn("Unknown FHIR Reference format [" + coding.getCode() + "]");
 						}
 					} else {
-						LoggerFactory.getLogger(getClass())
-								.warn("Unknown FHIR Reference format [" + coding.getCode() + "]");
-					}
-				} else {
-					Optional<Identifiable> identifiable = storeToStringService.loadFromString(coding.getCode());
-					if (identifiable.isPresent()) {
-						if (coding.getSystem().startsWith("typed")) {
-							ret.setTyped(identifiable.get());
-						} else {
-							ret.setNamed(coding.getSystem(), identifiable.get());
+						Optional<Identifiable> identifiable = storeToStringService.loadFromString(coding.getCode());
+						if (identifiable.isPresent()) {
+							if (coding.getSystem().startsWith("typed")) {
+								ret.setTyped(identifiable.get());
+							} else {
+								ret.setNamed(coding.getSystem(), identifiable.get());
+							}
 						}
 					}
-				}				
+				}
 			}
 		}
 		return ret;

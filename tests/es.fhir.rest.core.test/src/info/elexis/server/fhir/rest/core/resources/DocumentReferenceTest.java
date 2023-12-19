@@ -308,6 +308,47 @@ public class DocumentReferenceTest {
 	}
 
 	@Test
+	public void validateTemplate() throws ClientProtocolException, IOException, ElexisException {
+		DocumentReference reference = new DocumentReference();
+		reference.setStatus(DocumentReferenceStatus.CURRENT);
+		CodeableConcept storeIdConcept = reference.addCategory();
+		storeIdConcept.addCoding(
+				new Coding(CodingSystem.ELEXIS_DOCUMENT_STOREID.getSystem(), "ch.elexis.data.store.brief", null));
+		CodeableConcept categoryConcept = new CodeableConcept(new Coding(
+				CodingSystem.ELEXIS_DOCUMENT_CATEGORY.getSystem(), BriefConstants.TEMPLATE, BriefConstants.TEMPLATE));
+		reference.addCategory(categoryConcept);
+
+		DocumentReferenceContentComponent content = new DocumentReferenceContentComponent();
+		Attachment attachment = new Attachment();
+		attachment.setTitle("TestPlaceholders.docx");
+		content.setAttachment(attachment);
+		reference.addContent(content);
+
+		MethodOutcome outcome = client.create().resource(reference).execute();
+		assertNotNull(outcome);
+		assertTrue(outcome.getCreated());
+		assertNotNull(outcome.getId());
+		reference = (DocumentReference) outcome.getResource();
+		reference = uploadContent(reference,
+				IOUtils.toByteArray(getClass().getResourceAsStream("/rsc/TestPlaceholders.docx")));
+
+		CodeableConcept context = new CodeableConcept();
+		Parameters returnParameters = client.operation().onInstance(reference.getId()).named("$validatetemplate")
+				.withParameters(new Parameters().addParameter("context", context)).execute();
+		assertNotNull(returnParameters);
+		assertTrue(returnParameters.getParameters("Patient") != null
+				&& returnParameters.getParameters("Patient").size() == 1);
+
+		context.addCoding(
+				new Coding("Patient", "Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		returnParameters = client.operation().onInstance(reference.getId()).named("$validatetemplate")
+				.withParameters(new Parameters().addParameter("context", context)).execute();
+		assertNotNull(returnParameters);
+		assertTrue(returnParameters.getParameters("Patient") == null
+				|| returnParameters.getParameters("Patient").isEmpty());
+	}
+
+	@Test
 	public void createFromTemplate() throws ClientProtocolException, IOException, ElexisException {
 		DocumentReference reference = new DocumentReference();
 		reference.setStatus(DocumentReferenceStatus.CURRENT);
@@ -334,10 +375,10 @@ public class DocumentReferenceTest {
 				IOUtils.toByteArray(getClass().getResourceAsStream("/rsc/TestPlaceholders.docx")));
 		
 		CodeableConcept context = new CodeableConcept();
-		context.addCoding(new Coding("typed",
-				"Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
-		context.addCoding(new Coding("Adressat",
-				"Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		context.addCoding(
+				new Coding("Patient", "Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
+		context.addCoding(
+				new Coding("Adressat", "Patient/" + AllTests.getTestDatabaseInitializer().getPatient().getId(), null));
 		Parameters returnParameters = client.operation().onInstance(reference.getId()).named("$createdocument")
 				.withParameters(new Parameters().addParameter("context", context)).execute();
 		assertNotNull(returnParameters);
