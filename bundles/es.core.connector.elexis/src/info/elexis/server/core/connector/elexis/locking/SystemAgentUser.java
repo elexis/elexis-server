@@ -133,5 +133,11 @@ public class SystemAgentUser implements IUser {
 	public boolean isInternal(){
 		return true;
 	}
+
+	@Override
+	public void setRoles(List<IRole> roles) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
