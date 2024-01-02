@@ -137,13 +137,13 @@ public class CoreFhirRestServlet extends RestfulServer {
 				// https://www.baeldung.com/spring-boot-keycloak
 				extHttpService.registerFilter(FHIR_BASE_URL + "/*", new KeycloakOIDCFilter(keycloakConfigResolver),
 						filterParams, null);
-
-				extHttpService.registerFilter(FHIR_BASE_URL + "/*",
-						new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
-						new Hashtable<>(), null);
 			} else {
 				logger.error("--- UNPROTECTED FHIR API ---");
 			}
+
+			extHttpService.registerFilter(FHIR_BASE_URL + "/*",
+					new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
+					new Hashtable<>(), null);
 
 			httpService.registerServlet(FHIR_BASE_URL + "/*", this, null, null);
 

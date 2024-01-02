@@ -1,6 +1,7 @@
 package info.elexis.server.core.servlet.filter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -24,13 +25,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IContact;
+import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IRole;
 import ch.elexis.core.model.IUser;
+import ch.elexis.core.model.RoleConstants;
+import ch.elexis.core.model.builder.IContactBuilder;
 import ch.elexis.core.model.builder.IUserBuilder;
 import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IUserService;
+import ch.elexis.core.types.Gender;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
 
@@ -44,6 +49,8 @@ public class ContextSettingFilter implements Filter {
 
 	private LimitedLinkedHashMap<String, IUser> verificationCache;
 	protected Pattern skipPattern;
+
+	private IUser disabledWebSecurityContextUser;
 
 	public ContextSettingFilter(IContextService contextService, IModelService coreModelService,
 			IAccessControlService accessControlService, String skipPatternDefinition) {
@@ -116,7 +123,9 @@ public class ContextSettingFilter implements Filter {
 			IUser user = verificationCache.get(jti);
 			contextService.setActiveUser(user);
 		} else {
-			if (!SystemPropertyConstants.isDisableWebSecurity()) {
+			if (SystemPropertyConstants.isDisableWebSecurity()) {
+				activateDisabledWebSecurityUserContext();
+			} else {
 				throw new IllegalStateException("Web security enabled. No KeycloakContext found.");
 			}
 		}
@@ -124,6 +133,29 @@ public class ContextSettingFilter implements Filter {
 		// TODO set selected mandator via request header
 
 		chain.doFilter(request, response);
+	}
+
+	/**
+	 * Creates (if required) and sets a special user to the context, that holds the
+	 * maximum required rights, in order to "mimic" disabled web security.
+	 */
+	private synchronized void activateDisabledWebSecurityUserContext() {
+		if (disabledWebSecurityContextUser == null) {
+			accessControlService.doPrivileged(() -> {
+				disabledWebSecurityContextUser = coreModelService.load("disabled-web-sec-user", IUser.class)
+						.orElse(null);
+				if (disabledWebSecurityContextUser == null) {
+					IPerson webSecContact = new IContactBuilder.PersonBuilder(coreModelService, "disabled-web-sec-user",
+							"delete-me", LocalDate.now(), Gender.MALE).buildAndSave();
+					disabledWebSecurityContextUser = new IUserBuilder(coreModelService, "disabled-web-sec-user",
+							webSecContact).build();
+					coreModelService.load(RoleConstants.ACCESSCONTROLE_ROLE_MEDICAL_USER, IRole.class)
+							.ifPresent(disabledWebSecurityContextUser::addRole);
+					coreModelService.save(disabledWebSecurityContextUser);
+				}
+			});
+		}
+		contextService.setActiveUser(disabledWebSecurityContextUser);
 	}
 
 	/**
