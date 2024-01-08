@@ -40,9 +40,9 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		executeCommand("stock", ci);
 	}
 	
-	@CmdAdvisor(description = "list the defined stocks")
+	@CmdAdvisor(description = "list the defined stocks (excluding patient-stocks)")
 	public String __stock_list(){
-		List<IStock> stocks = stockService.getAllStocks(true);
+		List<IStock> stocks = stockService.getAllStocks(true, false);
 		for (IStock stock : stocks) {
 			ci.println(stock.getLabel());
 			if (stock.isCommissioningSystem()) {
