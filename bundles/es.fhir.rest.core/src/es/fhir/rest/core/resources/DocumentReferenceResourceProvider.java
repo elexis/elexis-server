@@ -307,20 +307,24 @@ public class DocumentReferenceResourceProvider
 		DocumentReference createdResource = null;
 		String idPart = theTemplateId.getIdPart();
 		if (idPart != null) {
-			IDocument document = loadLocalDocument(idPart);
+			if (contextContains(theContext, IPatient.class)) {
+				IDocument document = loadLocalDocument(idPart);
 
-			if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
-				IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
-				IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
-				IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
-				createdDocumentReference.setDocument(createdDocument);
-				if (createdDocument.getPatient() != null) {
-					createdDocumentReference.setPatientId(createdDocument.getPatient().getId());
+				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
+					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
+					IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
+					IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
+					createdDocumentReference.setDocument(createdDocument);
+					if (createdDocument.getPatient() != null) {
+						createdDocumentReference.setPatientId(createdDocument.getPatient().getId());
+					}
+					findingsService.saveFinding(createdDocumentReference);
+					createdResource = getTransformer().getFhirObject(createdDocumentReference).orElse(null);
+				} else {
+					throw new PreconditionFailedException("Document is not available or not a document template");
 				}
-				findingsService.saveFinding(createdDocumentReference);
-				createdResource = getTransformer().getFhirObject(createdDocumentReference).orElse(null);
 			} else {
-				throw new PreconditionFailedException("Document is not available or not a document template");
+				throw new PreconditionFailedException("Can not create document without patient in context");
 			}
 		}
 		return createdResource;
@@ -386,5 +390,33 @@ public class DocumentReferenceResourceProvider
 			}
 		}
 		return ret;
+	}
+
+	private boolean contextContains(CodeableConcept theContext, Class<?> clazz) {
+		for (Coding coding : theContext.getCoding()) {
+			if (StringUtils.isNotBlank(coding.getCode())) {
+				if (coding.getCode().indexOf("/") > -1) {
+					String[] parts = coding.getCode().split("/");
+					if (parts.length == 2) {
+						Optional<? extends Identifiable> localObject = transformerRegistry
+								.getLocalObjectForReference(coding.getCode());
+						if (localObject.isPresent() && clazz.isAssignableFrom(localObject.get().getClass())) {
+							return true;
+						}
+					} else {
+						LoggerFactory.getLogger(getClass())
+								.warn("Unknown FHIR Reference format [" + coding.getCode() + "]");
+					}
+				} else {
+					Optional<Identifiable> identifiable = storeToStringService.loadFromString(coding.getCode());
+					if (identifiable.isPresent()) {
+						if (identifiable.isPresent() && clazz.isAssignableFrom(identifiable.get().getClass())) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
