@@ -117,6 +117,9 @@ public class MigratorService implements IMigratorService {
 		List<IDocumentReference> documents = query.execute();
 		if (documents.isEmpty()) {
 			createDocumentReference(document);
+		} else if (document.getLastupdate() > documents.get(0).getLastupdate()) {
+			updateDocument(documents.get(0), document);
+
 		}
 	}
 
@@ -140,6 +143,7 @@ public class MigratorService implements IMigratorService {
 		if (document.getCategory() != null) {
 			findingsDocument.setCategory(document.getCategory().getName());
 		}
+		FindingsServiceHolder.getiFindingsService().saveFinding(findingsDocument);
 	}
 
 	private void migratePatientEncounters(String patientId){
