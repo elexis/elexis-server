@@ -367,6 +367,9 @@ public class DocumentReferenceResourceProvider
 									ret.setTyped(localObject.get());
 								} else {
 									ret.setNamed(coding.getSystem(), localObject.get());
+									if (localObject.get() instanceof IPatient) {
+										ret.setTyped(localObject.get());
+									}
 								}
 							} else {
 								LoggerFactory.getLogger(getClass())
