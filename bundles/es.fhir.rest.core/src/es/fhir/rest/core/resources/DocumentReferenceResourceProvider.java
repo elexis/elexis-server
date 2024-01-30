@@ -115,13 +115,11 @@ public class DocumentReferenceResourceProvider
 
 	@Override
 	public IFhirTransformer<DocumentReference, IDocumentReference> getTransformer() {
-		return (IFhirTransformer<DocumentReference, IDocumentReference>) transformerRegistry
-				.getTransformerFor(DocumentReference.class, IDocumentReference.class);
+		return transformerRegistry.getTransformerFor(DocumentReference.class, IDocumentReference.class);
 	}
 
 	private IFhirTransformer<DocumentReference, IDocument> getDocumentTransformer() {
-		return (IFhirTransformer<DocumentReference, IDocument>) transformerRegistry
-				.getTransformerFor(DocumentReference.class, IDocument.class);
+		return transformerRegistry.getTransformerFor(DocumentReference.class, IDocument.class);
 	}
 
 	@Override
@@ -130,8 +128,7 @@ public class DocumentReferenceResourceProvider
 	}
 
 	@Search
-	public List<DocumentReference> search(
-			@OptionalParam(name = DocumentReference.SP_PATIENT) IdType thePatientId,
+	public List<DocumentReference> search(@OptionalParam(name = DocumentReference.SP_PATIENT) IdType thePatientId,
 			@OptionalParam(name = DocumentReference.SP_SUBJECT) IdType theSubjectId,
 			@OptionalParam(name = DocumentReference.SP_CATEGORY) CodeType categoryCode) {
 
@@ -297,7 +294,7 @@ public class DocumentReferenceResourceProvider
 			return Patient.class.getSimpleName() + "," + Organization.class.getSimpleName() + ","
 					+ Person.class.getSimpleName() + "," + Practitioner.class.getSimpleName();
 		}
-		
+
 		return "unknown";
 	}
 
@@ -313,12 +310,11 @@ public class DocumentReferenceResourceProvider
 				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
 					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
 					IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
+
 					IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
 					createdDocumentReference.setDocument(createdDocument);
-					if (createdDocument.getPatient() != null) {
-						createdDocumentReference.setPatientId(createdDocument.getPatient().getId());
-					}
 					findingsService.saveFinding(createdDocumentReference);
+
 					createdResource = getTransformer().getFhirObject(createdDocumentReference).orElse(null);
 				} else {
 					throw new PreconditionFailedException("Document is not available or not a document template");

@@ -118,8 +118,8 @@ public class MigratorService implements IMigratorService {
 		if (documents.isEmpty()) {
 			createDocumentReference(document);
 		} else if (document.getLastupdate() > documents.get(0).getLastupdate()) {
-			updateDocument(documents.get(0), document);
-
+			documents.get(0).setDocument(document);
+			FindingsServiceHolder.getiFindingsService().saveFinding(documents.get(0));
 		}
 	}
 
@@ -127,24 +127,9 @@ public class MigratorService implements IMigratorService {
 		IDocumentReference findingsDocument = FindingsServiceHolder.getiFindingsService()
 				.create(IDocumentReference.class);
 		findingsDocument.setDocument(document);
-		findingsDocument.setPatientId(document.getPatient().getId());
-
-		updateDocument(findingsDocument, document);
 		FindingsServiceHolder.getiFindingsService().saveFinding(findingsDocument);
 	}
 
-	private void updateDocument(IDocumentReference findingsDocument, IDocument document) {
-		if (document.getAuthor() != null) {
-			findingsDocument.setAuthorId(document.getAuthor().getId());
-		}
-		if (document.getCreated() != null) {
-			findingsDocument.setDate(findingsDocument.getLocalDateTime(document.getCreated()));
-		}
-		if (document.getCategory() != null) {
-			findingsDocument.setCategory(document.getCategory().getName());
-		}
-		FindingsServiceHolder.getiFindingsService().saveFinding(findingsDocument);
-	}
 
 	private void migratePatientEncounters(String patientId){
 		Optional<IPatient> patient = CoreModelServiceHolder.get().load(patientId, IPatient.class);
