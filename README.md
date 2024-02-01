@@ -1,21 +1,21 @@
-# Elexis-Server [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html) [![build status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/build.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/commits/master)
-Elexis for server operation
+# Elexis-Server 
+[![pipeline status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/pipeline.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/-/commits/master)
+[![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html)
 
-The Elexis server (ES) implements a part of the SMART specification. Please consult [SMART: Tech Stack for HealthApps](http://docs.smarthealthit.org/) and  [HL7-FHIR wiki](http://wiki.hl7.org/index.php?title=FHIR) for further details.
+Elexis for server operation
 
 ## BREAKING CHANGES
 
 
 ### ES 3.10
-
 * Removal of Shiro
 * Security layer is now realized via Keycloak Filter
-### ES 3.9
 
+### ES 3.9
 * Change of version handling. It is now merged with elexis-3-core
 * DB Connection configuration via Environment Variables
-### ES 1.8
 
+### ES 1.8
 * ES will not provide HTTPS services
 * OpenID is not integrated in ES anymore
 * Only product builds for linux x86_64 are made
