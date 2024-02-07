@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -405,6 +406,29 @@ public class DocumentReferenceTest {
 				.withParameters(new Parameters().addParameter("context", context)).execute();
 		assertNotNull(returnParameters);
 		assertTrue(returnParameters.getParameterFirstRep().getResource() instanceof DocumentReference);
+
+		// test delete created document
+		results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.returnBundle(Bundle.class).execute();
+		entries = results.getEntry();
+		List<DocumentReference> found = entries.stream().filter(e -> e.getResource() instanceof DocumentReference)
+				.map(e -> (DocumentReference) e.getResource())
+				.filter(d -> d.getContentFirstRep().getAttachment().getTitle().equals("OtherTestTemplatesSearch.docx"))
+				.collect(Collectors.toList());
+		assertFalse(found.isEmpty());
+		for (DocumentReference documentReference : found) {
+			client.delete().resource(documentReference).execute();
+		}
+		results = client.search().forResource(DocumentReference.class)
+				.where(DocumentReference.PATIENT.hasId(AllTests.getTestDatabaseInitializer().getPatient().getId()))
+				.returnBundle(Bundle.class).execute();
+		entries = results.getEntry();
+		found = entries.stream().filter(e -> e.getResource() instanceof DocumentReference)
+				.map(e -> (DocumentReference) e.getResource())
+				.filter(d -> d.getContentFirstRep().getAttachment().getTitle().equals("OtherTestTemplatesSearch.docx"))
+				.collect(Collectors.toList());
+		assertTrue(found.isEmpty());
 
 		removeTemplates();
 	}

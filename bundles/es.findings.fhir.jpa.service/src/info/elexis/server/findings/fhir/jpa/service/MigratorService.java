@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import ch.elexis.core.findings.ICoding;
 import ch.elexis.core.findings.ICondition;
@@ -39,7 +40,7 @@ public class MigratorService implements IMigratorService {
 	@Reference
 	private IEncounterService encounterService;
 	
-	@Reference
+	@Reference(policyOption = ReferencePolicyOption.GREEDY)
 	private List<IDocumentStore> documentStores;
 
 	@Override

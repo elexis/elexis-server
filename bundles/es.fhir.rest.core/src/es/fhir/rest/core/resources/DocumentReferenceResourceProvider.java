@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import ca.uhn.fhir.rest.annotation.Delete;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -169,6 +170,18 @@ public class DocumentReferenceResourceProvider
 					.collect(Collectors.toList());
 		}
 		return ret;
+	}
+
+	@Delete
+	@Override
+	public void delete(@IdParam IdType theId) {
+		IDocument document = loadLocalDocument(theId.getIdPart());
+		if (document != null) {
+			IDocumentStore store = documentStores.stream().filter(s -> s.getId().equals(document.getStoreId()))
+					.findFirst().get();
+			store.removeDocument(document);
+		}
+		super.delete(theId);
 	}
 
 	/**
