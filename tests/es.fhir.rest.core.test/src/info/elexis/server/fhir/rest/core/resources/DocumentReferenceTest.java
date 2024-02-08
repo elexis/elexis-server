@@ -9,6 +9,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -170,6 +173,7 @@ public class DocumentReferenceTest {
 		Attachment attachment = new Attachment();
 		attachment.setTitle("test attachment.txt");
 		attachment.setData("Test Text\n2te Zeile üöä!".getBytes());
+		attachment.setCreation(Date.from(LocalDate.of(2000, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		content.setAttachment(attachment);
 		reference.addContent(content);
 
@@ -187,6 +191,10 @@ public class DocumentReferenceTest {
 		assertNotNull(readAttachment);
 		byte[] actualBytes = readContent(readAttachment);
 		assertArrayEquals("Test Text\n2te Zeile üöä!".getBytes(), actualBytes);
+
+		assertTrue(readAttachment.hasCreation());
+		assertEquals(Date.from(LocalDate.of(2000, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				readAttachment.getCreation());
 
 		outcome = client.update().resource(readReference).execute();
 		assertFalse(outcome.getCreated() == null ? false : outcome.getCreated());
