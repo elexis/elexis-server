@@ -31,6 +31,8 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ch.elexis.core.constants.XidConstants;
+import ch.elexis.core.fhir.FhirChConstants;
 import ch.elexis.core.findings.IdentifierSystem;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
@@ -42,6 +44,7 @@ import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.IXidService;
 import es.fhir.rest.core.resources.util.IContactSearchFilterQueryAdapter;
 import es.fhir.rest.core.resources.util.OperationsUtil;
 import es.fhir.rest.core.resources.util.QueryUtil;
@@ -60,6 +63,9 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 
 	@Reference
 	private IFhirTransformerRegistry transformerRegistry;
+
+	@Reference
+	private IXidService xidService;
 
 	public PatientResourceProvider() {
 		super(IPatient.class);
@@ -106,15 +112,27 @@ public class PatientResourceProvider extends AbstractFhirCrudResourceProvider<Pa
 		boolean includeDeleted = !((isActive != null) ? Boolean.valueOf(isActive.getValue()) : true);
 		IQuery<IPatient> query = coreModelService.getQuery(IPatient.class, includeDeleted);
 
+		if (identifier != null) {
+			Optional<IPatient> patResult = Optional.empty();
+			if (Objects.equals(IdentifierSystem.ELEXIS_PATNR.getSystem(), identifier.getSystem())) {
+				query.and(ModelPackage.Literals.ICONTACT__CODE, COMPARATOR.EQUALS, identifier.getValue());
+				patResult = query.executeSingleResult();
+			}
+			if (Objects.equals(FhirChConstants.OID_AHV13_SYSTEM, identifier.getSystem())) {
+				patResult = xidService.findObject(XidConstants.CH_AHV, identifier.getValue(), IPatient.class);
+			}
+
+			if (patResult.isPresent()) {
+				return Collections.singletonList(getTransformer().getFhirObject(patResult.get()).get());
+			}
+			return Collections.emptyList();
+		}
+
 		if (theId != null) {
 			List<StringOrListParam> id_values = theId.getValuesAsQueryTokens();
 			for (StringOrListParam id_value : id_values) {
 				query.or("id", COMPARATOR.EQUALS, id_value.getValuesAsQueryTokens().get(0).getValue());
 			}
-		}
-
-		if (identifier != null && Objects.equals(IdentifierSystem.ELEXIS_PATNR.getSystem(), identifier.getSystem())) {
-			query.and(ModelPackage.Literals.ICONTACT__CODE, COMPARATOR.EQUALS, identifier.getValue());
 		}
 
 		if (theName != null) {
