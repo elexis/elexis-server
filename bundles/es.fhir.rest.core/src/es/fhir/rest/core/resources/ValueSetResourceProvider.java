@@ -7,25 +7,35 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ch.elexis.core.fhir.CodeSystem;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
+import ch.elexis.core.model.ICategory;
 import ch.elexis.core.model.ICodeElement;
 import ch.elexis.core.services.ICodeElementService;
 import ch.elexis.core.services.ICodeElementService.CodeElementTyp;
 import ch.elexis.core.services.ICodeElementServiceContribution;
+import ch.elexis.core.services.IDocumentStore;
+import ch.elexis.core.utils.OsgiServiceUtil;
 
+@SuppressWarnings("rawtypes")
 @Component
 public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet, List> {
 
@@ -62,7 +72,7 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 				codes[1]);
 
 		if (contribution.isPresent()) {
-			Map<Object, Object> argumentsMap = new HashMap<Object, Object>(2);
+			Map<Object, Object> argumentsMap = new HashMap<>(2);
 			if (codes.length > 2) {
 				argumentsMap.put("path", String.join("/", Arrays.copyOfRange(codes, 2, codes.length)));
 			}
@@ -82,6 +92,61 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 		}
 
 		return null;
+	}
+
+	/**
+	 * Create/Update/Delete a code in an existing ValueSet<br>
+	 * Partial support: Only ValueSet for Omnivore Document Store category CRUD
+	 * operations supported
+	 * 
+	 * @param urlParam
+	 * @param operation "create", "update" or "delete"
+	 * @param code      the code name to apply the operation to
+	 * @param opParam   for "update" the new code name, for "delete" (optionally)
+	 *                  the target code to move documents to
+	 * @return
+	 */
+	@Operation(name = "$updateCodeInValueSet", idempotent = true)
+	public OperationOutcome opUpdateCodeInValueSet(@OperationParam(name = ValueSet.SP_URL) UriParam urlParam,
+			@OperationParam(name = "_op") StringParam operation, @OperationParam(name = "_code") StringParam code,
+			@OperationParam(name = "_opParam") StringParam opParam) {
+
+		if (urlParam == null || operation == null || code == null) {
+			throw new InvalidRequestException("missing parameter");
+		}
+
+		IStatus status = Status.OK_STATUS;
+		if ("http://elexis.info/codeelement/config/document-categories".equals(urlParam.getValue())) {
+			IDocumentStore documentStore = OsgiServiceUtil
+					.getService(IDocumentStore.class, "(storeid=ch.elexis.data.store.omnivore)").orElse(null);
+			if (documentStore != null) {
+				try {
+					if ("create".equals(operation.getValue())) {
+						documentStore.createCategory(code.getValue());
+					} else {
+						Optional<ICategory> foundCategory = documentStore.getCategoryByName(code.getValue());
+						if (foundCategory.isPresent()) {
+							if ("update".equals(operation.getValue())) {
+								if (opParam == null || StringUtils.isBlank(opParam.getValue())) {
+									throw new InvalidRequestException("missing or invalid _opUpdateParam parameter");
+								}
+								documentStore.renameCategory(foundCategory.get(), opParam.getValue());
+							} else if ("delete".equals(operation.getValue())) {
+								documentStore.removeCategory(foundCategory.get(), null);
+							}
+						}
+					}
+				} finally {
+					OsgiServiceUtil.ungetService(documentStore);
+				}
+			} else {
+				LoggerFactory.getLogger(getClass()).warn("Could not getService() omnivore IDocumentStore");
+				status = Status.error("internal service error");
+			}
+		} else {
+			throw new InvalidRequestException("not-supported");
+		}
+		return ResourceProviderUtil.statusToOperationOutcome(status);
 	}
 
 }
