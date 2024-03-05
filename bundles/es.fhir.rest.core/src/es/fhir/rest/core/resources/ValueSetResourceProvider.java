@@ -33,6 +33,7 @@ import ch.elexis.core.services.ICodeElementService;
 import ch.elexis.core.services.ICodeElementService.CodeElementTyp;
 import ch.elexis.core.services.ICodeElementServiceContribution;
 import ch.elexis.core.services.IDocumentStore;
+import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.utils.OsgiServiceUtil;
 
 @SuppressWarnings("rawtypes")
@@ -139,6 +140,7 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 				} finally {
 					OsgiServiceUtil.ungetService(documentStore);
 				}
+				status = ObjectStatus.OK_STATUS(search(urlParam, null));
 			} else {
 				LoggerFactory.getLogger(getClass()).warn("Could not getService() omnivore IDocumentStore");
 				status = Status.error("internal service error");
@@ -146,7 +148,14 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 		} else {
 			throw new InvalidRequestException("not-supported");
 		}
-		return ResourceProviderUtil.statusToOperationOutcome(status);
+		OperationOutcome operationOutcome = ResourceProviderUtil.statusToOperationOutcome(status);
+		if (status instanceof ObjectStatus objectStatus) {
+			Object object = objectStatus.getObject();
+			if (object instanceof ValueSet valueSet) {
+				operationOutcome.addContained(valueSet);
+			}
+		}
+		return operationOutcome;
 	}
 
 }
