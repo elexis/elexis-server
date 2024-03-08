@@ -102,7 +102,8 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 	 * 
 	 * @param urlParam
 	 * @param operation "create", "update" or "delete"
-	 * @param code      the code name to apply the operation to
+	 * @param code      the code name to apply the operation to, if operation
+	 *                  "create" this is <code>null</code>
 	 * @param opParam   for "update" the new code name, for "delete" (optionally)
 	 *                  the target code to move documents to
 	 * @return
@@ -112,7 +113,7 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 			@OperationParam(name = "_op") StringParam operation, @OperationParam(name = "_code") StringParam code,
 			@OperationParam(name = "_opParam") StringParam opParam) {
 
-		if (urlParam == null || operation == null || code == null) {
+		if (urlParam == null || operation == null) {
 			throw new InvalidRequestException("missing parameter");
 		}
 
@@ -123,7 +124,10 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 			if (documentStore != null) {
 				try {
 					if ("create".equals(operation.getValue())) {
-						documentStore.createCategory(code.getValue());
+						if (opParam == null) {
+							throw new InvalidRequestException("missing parameter _opParam");
+						}
+						documentStore.createCategory(opParam.getValue());
 					} else {
 						Optional<ICategory> foundCategory = documentStore.getCategoryByName(code.getValue());
 						if (foundCategory.isPresent()) {
@@ -133,7 +137,10 @@ public class ValueSetResourceProvider implements IFhirResourceProvider<ValueSet,
 								}
 								documentStore.renameCategory(foundCategory.get(), opParam.getValue());
 							} else if ("delete".equals(operation.getValue())) {
-								documentStore.removeCategory(foundCategory.get(), null);
+								Optional<ICategory> targetCategory = opParam != null
+										? documentStore.getCategoryByName(opParam.getValue())
+										: Optional.empty();
+								documentStore.removeCategory(foundCategory.get(), targetCategory.orElse(null));
 							}
 						}
 					}
