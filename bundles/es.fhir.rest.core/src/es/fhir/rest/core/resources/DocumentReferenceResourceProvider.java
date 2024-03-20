@@ -66,6 +66,7 @@ import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IStoreToStringService;
 import ch.elexis.core.services.ITextReplacementService;
+import ch.elexis.core.status.ObjectStatus;
 
 @Component(service = IFhirResourceProvider.class)
 public class DocumentReferenceResourceProvider
@@ -322,10 +323,13 @@ public class DocumentReferenceResourceProvider
 
 				if (document instanceof IDocumentLetter && ((IDocumentLetter) document).isTemplate()) {
 					IDocumentTemplate template = coreModelService.load(document.getId(), IDocumentTemplate.class).get();
-					IDocument createdDocument = documentService.createDocument(template, toContext(theContext));
-
+					ObjectStatus<IDocument> createdDocument = documentService.createDocument(template,
+							toContext(theContext));
+					if (!createdDocument.isOK()) {
+						throw new PreconditionFailedException(createdDocument.getMessage());
+					}
 					IDocumentReference createdDocumentReference = findingsService.create(IDocumentReference.class);
-					createdDocumentReference.setDocument(createdDocument);
+					createdDocumentReference.setDocument(createdDocument.get());
 					findingsService.saveFinding(createdDocumentReference);
 
 					createdResource = getTransformer().getFhirObject(createdDocumentReference).orElse(null);
