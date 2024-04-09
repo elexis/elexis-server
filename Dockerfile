@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jre-alpine
 MAINTAINER MEDEVIT <office@medevit.at>
-ARG BRANCH=master
+ARG BRANCH=3.12
 
 RUN apk add --no-cache tzdata bash gcompat cups-client
 ENV TZ=Europe/Zurich
