@@ -35,6 +35,7 @@ import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IUserService;
+import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
@@ -47,7 +48,7 @@ public class ContextSettingFilter implements Filter {
 	private IModelService coreModelService;
 	private IAccessControlService accessControlService;
 
-	private LimitedLinkedHashMap<String, IUser> verificationCache;
+	private LimitedLinkedHashMap<String, CacheEntry> verificationCache;
 	protected Pattern skipPattern;
 
 	private IUser disabledWebSecurityContextUser;
@@ -65,6 +66,10 @@ public class ContextSettingFilter implements Filter {
 
 	}
 
+	private record CacheEntry(IUser user, ch.elexis.core.eenv.AccessToken accessToken) {
+		// represent verificationCache entry
+	};
+
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -77,6 +82,7 @@ public class ContextSettingFilter implements Filter {
 		contextService.setActiveMandator(null);
 		contextService.setActiveUser(null);
 		contextService.setActivePatient(null);
+		contextService.removeTyped(ch.elexis.core.eenv.AccessToken.class);
 
 		if (shouldSkip(servletRequest)) {
 			chain.doFilter(request, response);
@@ -92,36 +98,41 @@ public class ContextSettingFilter implements Filter {
 			String jti = token.getId();
 
 			if (!verificationCache.containsKey(jti)) {
+				ch.elexis.core.eenv.AccessToken keycloakAccessToken = new ch.elexis.core.eenv.AccessToken(
+						keycloakSecurityContext.getTokenString(), TimeUtil.toDate(token.getExp()),
+						token.getPreferredUsername(), null, null);
+
 				accessControlService.doPrivileged(() -> {
 					Optional<IUser> user = coreModelService.load(token.getPreferredUsername(), IUser.class);
 					if (user.isEmpty()) {
 						user = Optional.ofNullable(performDynamicUserCreationIfApplicable(token));
 					}
-					user.ifPresent(u -> verificationCache.put(jti, u));
+
+					user.ifPresent(u -> verificationCache.put(jti, new CacheEntry(u, keycloakAccessToken)));
 				});
 
-				IUser user = verificationCache.get(jti);
-				if (user == null) {
+				CacheEntry cacheEntry = verificationCache.get(jti);
+				if (cacheEntry == null || cacheEntry.user == null) {
 					logger.warn("[{}] User not loadable in local database. Denying request.",
 							token.getPreferredUsername());
 					servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
 					return;
 				}
 
-				IContact userContact = user != null ? user.getAssignedContact() : null;
+				IContact userContact = cacheEntry.user.getAssignedContact();
 				if (userContact == null) {
 					logger.warn("[{}] User has no assigned contact. Denying request.", token.getPreferredUsername());
 					servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
 					return;
 				}
 
-				assertRoles(accessControlService, user, token);
-
-				verificationCache.put(jti, user);
+				assertRoles(accessControlService, cacheEntry.user, token);
 			}
 
-			IUser user = verificationCache.get(jti);
-			contextService.setActiveUser(user);
+			CacheEntry cacheEntry = verificationCache.get(jti);
+			contextService.setActiveUser(cacheEntry.user);
+			contextService.setTyped(cacheEntry.accessToken);
+
 		} else {
 			if (SystemPropertyConstants.isDisableWebSecurity()) {
 				activateDisabledWebSecurityUserContext();
