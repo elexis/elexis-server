@@ -27,7 +27,7 @@ build_container:
     tags:
     - docker-host
     script:
-    - docker pull eclipse-temurin:17-jre-alpine
+    - docker pull eclipse-temurin:21-jre-alpine
     - docker build --no-cache --build-arg BRANCH=$CI_COMMIT_REF_NAME -t medevit/elexis-server:$CI_COMMIT_REF_NAME .
     - docker push medevit/elexis-server:$CI_COMMIT_REF_NAME
     - docker rmi medevit/elexis-server:$CI_COMMIT_REF_NAME
