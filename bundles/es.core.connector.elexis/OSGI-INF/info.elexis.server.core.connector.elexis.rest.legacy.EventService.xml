@@ -4,6 +4,7 @@
       <provide interface="ch.elexis.core.server.IEventService"/>
       <provide interface="info.elexis.jaxrs.service.JaxrsResource"/>
    </service>
+   <reference cardinality="1..1" field="accessControlService" interface="ch.elexis.core.services.IAccessControlService" name="accessControlService"/>
    <reference cardinality="1..1" field="eventAdmin" interface="org.osgi.service.event.EventAdmin" name="eventAdmin"/>
    <implementation class="info.elexis.server.core.connector.elexis.rest.legacy.EventService"/>
 </scr:component>
