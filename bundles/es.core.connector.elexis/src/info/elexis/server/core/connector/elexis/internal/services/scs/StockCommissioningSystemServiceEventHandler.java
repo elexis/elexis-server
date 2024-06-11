@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.IStock;
 import ch.elexis.core.model.IStockEntry;
+import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.status.StatusUtil;
@@ -39,6 +40,9 @@ public class StockCommissioningSystemServiceEventHandler implements EventHandler
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	private IModelService coreModelService;
 	
+	@Reference
+	private IAccessControlService accessControlService;
+
 	private Logger log;
 	
 	@Activate
@@ -51,6 +55,10 @@ public class StockCommissioningSystemServiceEventHandler implements EventHandler
 	 */
 	@Override
 	public void handleEvent(Event event){
+		accessControlService.doPrivileged(() -> doHandleEvent(event));
+	}
+
+	private void doHandleEvent(Event event) {
 		String topic = event.getTopic();
 		if (topic.endsWith(STOCK_COMMISSIONING_OUTLAY)) {
 			// perform an outlay
