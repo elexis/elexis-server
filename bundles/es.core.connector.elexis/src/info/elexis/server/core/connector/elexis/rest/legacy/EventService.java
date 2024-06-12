@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.common.ElexisEvent;
 import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.server.IEventService;
-import ch.elexis.core.services.IAccessControlService;
 import info.elexis.jaxrs.service.JaxrsResource;
 
 @Component
@@ -19,9 +18,6 @@ public class EventService implements IEventService, JaxrsResource {
 
 	@Reference
 	private EventAdmin eventAdmin;
-
-	@Reference
-	private IAccessControlService accessControlService;
 
 	@Override
 	public Response postEvent(ElexisEvent elexisEvent) {
@@ -34,7 +30,7 @@ public class EventService implements IEventService, JaxrsResource {
 		}
 		Event event = new Event("remote/" + topic, elexisEvent.getProperties());
 		if (eventAdmin != null) {
-			accessControlService.doPrivileged(() -> eventAdmin.sendEvent(event));
+			eventAdmin.postEvent(event);
 		} else {
 			LoggerFactory.getLogger(getClass()).warn("Received post event, but EventAdmin is null");
 			return Response.serverError().build();
