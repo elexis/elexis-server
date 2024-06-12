@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.stock.ICommissioningSystemDriverFactory;
 import ch.elexis.core.services.IStockCommissioningSystemService;
+import ch.elexis.core.services.holder.AccessControlServiceHolder;
 import ch.elexis.core.status.StatusUtil;
 
 @Component(service = {})
@@ -41,15 +42,17 @@ public class StockCommissioningSystemDriverFactories {
 	public void activate(){
 		log.trace("Initializing stock commissioning systems.");
 		
-		List<UUID> allDriverUuids = getAllDriverUuids();
-		for (UUID uuid : allDriverUuids) {
-			log.info("Initializing stock commissioning systems for driver id [{}]",
-				StockCommissioningSystemDriverFactories.getInfoStringForDriver(uuid, true));
-			IStatus status = stockCommissioningSystemService.initializeInstancesUsingDriver(uuid);
-			if (!status.isOK()) {
-				StatusUtil.logStatus(log, status, true);
+		AccessControlServiceHolder.get().doPrivileged(() -> {
+			List<UUID> allDriverUuids = getAllDriverUuids();
+			for (UUID uuid : allDriverUuids) {
+				log.info("Initializing stock commissioning systems for driver id [{}]",
+						StockCommissioningSystemDriverFactories.getInfoStringForDriver(uuid, true));
+				IStatus status = stockCommissioningSystemService.initializeInstancesUsingDriver(uuid);
+				if (!status.isOK()) {
+					StatusUtil.logStatus(log, status, true);
+				}
 			}
-		}
+		});
 	}
 	
 	public void unbind(ICommissioningSystemDriverFactory driverFactory){
