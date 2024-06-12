@@ -40,7 +40,7 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		executeCommand("stock", ci);
 	}
 	
-	@CmdAdvisor(description = "list the defined stocks (excluding patient-stocks)")
+	@CmdAdvisor(description = "list the defined stocks (excluding patient-stocks)", executePrivileged = true)
 	public String __stock_list(){
 		List<IStock> stocks = stockService.getAllStocks(true, false);
 		for (IStock stock : stocks) {
@@ -61,7 +61,7 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		return ok();
 	}
 	
-	@CmdAdvisor(description = "list all stock entries for a given stockId")
+	@CmdAdvisor(description = "list all stock entries for a given stockId", executePrivileged = true)
 	public void __stock_entries_list(String stockId){
 		Optional<IStock> stock = CoreModelServiceHolder.get().load(stockId, IStock.class);
 		if (!stock.isPresent()) {
@@ -74,7 +74,7 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		}
 	}
 	
-	@CmdAdvisor(description = "Start a stock commissioning system")
+	@CmdAdvisor(description = "Start a stock commissioning system", executePrivileged = true)
 	public String __stock_scs_start(String stockId){
 		Optional<IStock> findById = CoreModelServiceHolder.get().load(stockId, IStock.class);
 		if (!findById.isPresent()) {
@@ -85,7 +85,7 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		return StatusUtil.printStatus(status);
 	}
 	
-	@CmdAdvisor(description = "Stop a stock commissioning system")
+	@CmdAdvisor(description = "Stop a stock commissioning system", executePrivileged = true)
 	public String __stock_scs_stop(String stockId){
 		Optional<IStock> findById = CoreModelServiceHolder.get().load(stockId, IStock.class);
 		if (!findById.isPresent()) {
@@ -96,7 +96,7 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		return StatusUtil.printStatus(status);
 	}
 	
-	@CmdAdvisor(description = "Outlay a single element of a given stockEntryId")
+	@CmdAdvisor(description = "Outlay a single element of a given stockEntryId", executePrivileged = true)
 	public String __stock_scs_outlay(String stockEntryId){
 		Optional<IStockEntry> findById =
 			CoreModelServiceHolder.get().load(stockEntryId, IStockEntry.class);
@@ -109,7 +109,7 @@ public class StockConsoleCommandProvider extends AbstractConsoleCommandProvider 
 		return StatusUtil.printStatus(performArticleOutlay);
 	}
 	
-	@CmdAdvisor(description = "Synchronize the stock state of the commissioning system to Elexis")
+	@CmdAdvisor(description = "Synchronize the stock state of the commissioning system to Elexis", executePrivileged = true)
 	public String __stock_scs_sync(String stockId){
 		Optional<IStock> findById = CoreModelServiceHolder.get().load(stockId, IStock.class);
 		if (!findById.isPresent()) {
