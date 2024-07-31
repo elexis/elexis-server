@@ -183,6 +183,8 @@ public class CoreFhirRestServlet extends RestfulServer {
 		 */
 		registerInterceptor(new ResponseHighlighterInterceptor());
 
+
+
 		/*
 		 * Tells the server to return pretty-printed responses by default
 		 */

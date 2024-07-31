@@ -12,8 +12,8 @@ Require-Bundle: org.junit,
  ch.elexis.core.text.docx;bundle-version="3.12.0",
  ch.elexis.core.findings.fhir.model;bundle-version="3.12.0",
  info.elexis.server.findings.fhir.jpa.service;bundle-version="3.12.0",
- ch.elexis.omnivore.model;bundle-version="3.12.0"
-Service-Component: OSGI-INF/info.elexis.server.fhir.rest.core.resources.SubscriptionResourceTestEndpointProvider.xml
+ ch.elexis.omnivore.model;bundle-version="3.12.0",
+ org.eclipse.jetty.client;bundle-version="10.0.18"
 Import-Package: ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.commands,
  ch.elexis.core.findings.util.model,
@@ -28,3 +28,4 @@ Import-Package: ch.elexis.core.findings.util,
  org.hl7.fhir.r4.model;version="5.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/info.elexis.server.fhir.rest.core.resources.SubscriptionResourceTestEndpointProvider.xml

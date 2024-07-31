@@ -18,7 +18,7 @@ public class ServerCapabilityStatementProvider
 
 	private KeycloakDeployment keycloakDeployment;
 
-	public ServerCapabilityStatementProvider(RestfulServer theServer, KeycloakDeployment keycloakDeployment){
+	public ServerCapabilityStatementProvider(RestfulServer theServer, KeycloakDeployment keycloakDeployment) {
 		super(theServer);
 		this.keycloakDeployment = keycloakDeployment;
 	}
@@ -30,9 +30,17 @@ public class ServerCapabilityStatementProvider
 			(CapabilityStatement) super.getServerConformance(theRequest, requestDetails);
 		serverConformance.getRest().get(0)
 			.setSecurity(getSmartOnFhirCapabilityStatementRestSecurityComponent(theRequest));
+		serverConformance.getRest().get(0).getExtension().add(getWebsocketCapabilityExtension());
 		return serverConformance;
 	}
 	
+	private Extension getWebsocketCapabilityExtension() {
+		Extension websocketCapability = new Extension();
+		websocketCapability.setUrl("http://hl7.org/fhir/StructureDefinition/capabilitystatement-websocket");
+		websocketCapability.setValue(new UriType("/fhir/websocketR4")); // forwarded via nginx in EE setup
+		return websocketCapability;
+	}
+
 	private CapabilityStatementRestSecurityComponent getSmartOnFhirCapabilityStatementRestSecurityComponent(
 		HttpServletRequest theRequest){
 		CapabilityStatementRestSecurityComponent csrsc =
@@ -54,20 +62,6 @@ public class ServerCapabilityStatementProvider
 		oauthTokenExtension.setUrl("token");
 		oauthTokenExtension.setValue(new UriType(keycloakDeployment.getTokenUrl()));
 		oauthExtension.getExtension().add(oauthTokenExtension);
-		
-//		Extension oauthAuthorizeExtension = new Extension();
-//		oauthAuthorizeExtension.setUrl("authorize");
-//		oauthAuthorizeExtension.setValue(new UriType(keycloakDeployment.getAuthUrl()));
-//		oauthExtension.getExtension().add(oauthAuthorizeExtension);
-//		
-//		oauthRegisterExtension.setUrl("register");
-//		oauthRegisterExtension.setValue(new UriType(baseUrl + "/openid/register"));
-//		oauthExtension.getExtension().add(oauthRegisterExtension);
-//		
-//		Extension oauthManageExtension = new Extension();
-//		oauthManageExtension.setUrl("manage");
-//		oauthManageExtension.setValue(new UriType(baseUrl + "/openid/manage"));
-//		oauthExtension.getExtension().add(oauthManageExtension);
 		
 		csrsc.getService().add(smartOnFhirConcept);
 		csrsc.getExtension().add(oauthExtension);

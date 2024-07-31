@@ -60,7 +60,7 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 
 	private Logger logger;
 
-	private List<Subscription> activeSubscriptions;
+	private static List<Subscription> activeSubscriptions;
 
 	private ResourceProviderUtil resourceProviderUtil;
 	private SubscriptionResourceUtil subscriptionResourceUtil;
@@ -128,16 +128,19 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 		}
 
 		SubscriptionChannelComponent channel = subscription.getChannel();
-		if (channel.getType() != Subscription.SubscriptionChannelType.RESTHOOK) {
+		if (channel.getType() != Subscription.SubscriptionChannelType.RESTHOOK
+				&& channel.getType() != Subscription.SubscriptionChannelType.WEBSOCKET) {
 			// not supported
 			ex = new IFhirTransformerException("WARNING", "channel-type not supported", 0);
 		}
 
-		String endpoint = channel.getEndpoint();
-		try {
-			new URL(endpoint);
-		} catch (MalformedURLException e) {
-			ex = new IFhirTransformerException("WARNING", "invalid url for endpoint: " + e.getMessage(), 0);
+		if (channel.getType() == Subscription.SubscriptionChannelType.RESTHOOK) {
+			String endpoint = channel.getEndpoint();
+			try {
+				new URL(endpoint);
+			} catch (MalformedURLException e) {
+				ex = new IFhirTransformerException("WARNING", "invalid url for endpoint: " + e.getMessage(), 0);
+			}
 		}
 
 		if (ex != null) {
@@ -187,6 +190,10 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 	@Search
 	public List<Subscription> search() {
 		return activeSubscriptions;
+	}
+
+	public static boolean isValidSubscriptionId(String subscriptionId) {
+		return activeSubscriptions.stream().filter(s -> s.getId().equals(subscriptionId)).findFirst().isPresent();
 	}
 
 	private class SubscriptionRunnable implements Runnable {

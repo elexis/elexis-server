@@ -5,11 +5,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Subscription;
 import org.hl7.fhir.r4.model.Subscription.SubscriptionChannelComponent;
@@ -18,6 +27,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -28,7 +39,6 @@ import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-@Ignore(value = "FIXME")
 public class SubscriptionResourceTest {
 
 	private static IGenericClient client;
@@ -48,7 +58,8 @@ public class SubscriptionResourceTest {
 	}
 
 	@Test
-	public void createReceiveDeleteGenericAppointmentSubscription() throws InterruptedException {
+	@Ignore
+	public void resthook_createReceiveDeleteGenericAppointmentSubscription() throws InterruptedException {
 
 		// init subscription object
 		Subscription appointmentSubscription = new Subscription();
@@ -93,14 +104,20 @@ public class SubscriptionResourceTest {
 
 		Subscription _updatedSubscription = client.read().resource(Subscription.class)
 				.withId(appointmentSubscription.getId()).execute();
-		assertEquals(appointment.getLastupdate(),
-				(Long) _updatedSubscription.getMeta().getLastUpdated().getTime());
+		assertEquals(appointment.getLastupdate(), (Long) _updatedSubscription.getMeta().getLastUpdated().getTime());
 
 		execute = client.delete().resource(appointmentSubscription).execute();
 	}
 
+//	private int activeSubscriptionCount() {
+//	return client.search().forResource(Subscription.class).where(Subscription.STATUS.exactly().code("active"))
+//			.cacheControl(new CacheControlDirective().setNoCache(true)).returnBundle(Bundle.class).execute()
+//			.getEntry().size();
+//}
+
 	@Test
-	public void createReceiveDeletePayloadUpdateAppointmentSubscription() throws InterruptedException {
+	@Ignore
+	public void resthook_createReceiveDeletePayloadUpdateAppointmentSubscription() throws InterruptedException {
 		// init subscription object
 		Subscription appointmentSubscription = new Subscription();
 		appointmentSubscription.setReason("Unit-Test");
@@ -134,7 +151,8 @@ public class SubscriptionResourceTest {
 		appointment.setEndTime(LocalDateTime.now().plusMinutes(5));
 		AllTests.getModelService().save(appointment);
 
-		// create an appointment (we check the incoming subscription order lastupdate value)
+		// create an appointment (we check the incoming subscription order lastupdate
+		// value)
 		assertNotNull(appointmentService);
 		IAppointment _appointment = AllTests.getModelService().create(IAppointment.class);
 		_appointment.setSchedule("test-area");
@@ -156,8 +174,7 @@ public class SubscriptionResourceTest {
 
 		Subscription _updatedSubscription = client.read().resource(Subscription.class)
 				.withId(appointmentSubscription.getId()).execute();
-		assertEquals(_appointment.getLastupdate(),
-				(Long) _updatedSubscription.getMeta().getLastUpdated().getTime());
+		assertEquals(_appointment.getLastupdate(), (Long) _updatedSubscription.getMeta().getLastUpdated().getTime());
 
 		AllTests.getModelService().delete(appointment);
 
@@ -173,6 +190,51 @@ public class SubscriptionResourceTest {
 		assertTrue(SubscriptionResourceTestEndpointProvider.getDeleteCallCounter() > 0);
 
 		execute = client.delete().resource(appointmentSubscription).execute();
+	}
+
+	@Test
+	public void websocket_createReceiveDeleteGenericAppointmentSubscription() throws Exception {
+
+		// init subscription object
+		Subscription appointmentSubscription = new Subscription();
+		appointmentSubscription.setReason("Unit-Test-Websocket");
+		appointmentSubscription.setCriteria("Appointment");
+		SubscriptionChannelComponent scc = new SubscriptionChannelComponent();
+		scc.setType(SubscriptionChannelType.WEBSOCKET);
+		appointmentSubscription.setChannel(scc);
+
+		// register subscription
+		MethodOutcome execute = client.create().resource(appointmentSubscription).execute();
+		assertTrue(execute.getCreated());
+
+		WebSocketClient websocketClient = new WebSocketClient();
+		websocketClient.start();
+
+		URI uri = URI.create("ws://localhost:8381/websocketR4");
+
+		SubscriptionWebsocketListener subscriptionWebsocketListener = new SubscriptionWebsocketListener();
+		CompletableFuture<Session> fut = websocketClient.connect(subscriptionWebsocketListener, uri);
+		Session session = fut.get(5, TimeUnit.SECONDS);
+		session.getRemote().sendString("bind " + execute.getId().getIdPart());
+
+		String msg = subscriptionWebsocketListener.messageQueue.poll(5, TimeUnit.SECONDS);
+		assertEquals("bound " + execute.getId().getIdPart(), msg);
+
+		session.close(StatusCode.NORMAL, "exit");
+		websocketClient.stop();
+	}
+
+	public static class SubscriptionWebsocketListener implements WebSocketListener {
+
+		private static final Logger LOG = LoggerFactory.getLogger(SubscriptionWebsocketListener.class);
+		private final LinkedBlockingDeque<String> messageQueue = new LinkedBlockingDeque<>();
+		private final CountDownLatch closeLatch = new CountDownLatch(1);
+
+		@Override
+		public void onWebSocketText(String message) {
+			LOG.info("Text Message [{}]", message);
+			messageQueue.offer(message);
+		}
 	}
 
 }

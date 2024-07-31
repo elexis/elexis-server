@@ -35,6 +35,7 @@ import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IAppointment;
 import ch.elexis.core.model.agenda.Area;
 import ch.elexis.core.services.IAppointmentService;
+import es.fhir.rest.core.websocket.r4.SubscriptionWebSocketConnections;
 
 public class SubscriptionResourceUtil {
 
@@ -80,30 +81,37 @@ public class SubscriptionResourceUtil {
 	public IStatus handleNotification(List<IAppointment> queryResult, Subscription subscription) {
 
 		SubscriptionChannelComponent channel = subscription.getChannel();
-		if (channel.getType() == Subscription.SubscriptionChannelType.RESTHOOK) {
-			if (StringUtils.equals("application/fhir+json", channel.getPayload())) {
-				// requests notification per id
-				for (IAppointment iAppointment : queryResult) {
-					IStatus status = sendPayloadUpdateNotification(subscription, iAppointment);
-					if (!status.isOK()) {
-						return status;
-					}
-					subscription.getMeta().setLastUpdated(new Date(iAppointment.getLastupdate()));
+		if (StringUtils.equals("application/fhir+json", channel.getPayload())) {
+			// requests notification per id
+			for (IAppointment iAppointment : queryResult) {
+				IStatus status = sendPayloadUpdateNotification(subscription, iAppointment);
+				if (!status.isOK()) {
+					return status;
 				}
-				return Status.OK_STATUS;
-			} else {
-				subscription.getMeta()
-						.setLastUpdated(new Date(queryResult.get(queryResult.size() - 1).getLastupdate()));
-				return sendGenericNotification(subscription);
+				subscription.getMeta().setLastUpdated(new Date(iAppointment.getLastupdate()));
 			}
-
+			return Status.OK_STATUS;
 		} else {
-			return Status.error("unsupported channel type");
+			subscription.getMeta().setLastUpdated(new Date(queryResult.get(queryResult.size() - 1).getLastupdate()));
+			return sendGenericNotification(subscription);
 		}
-
 	}
 
 	private IStatus sendGenericNotification(Subscription subscription) {
+		SubscriptionChannelComponent channel = subscription.getChannel();
+		if (channel.getType() == Subscription.SubscriptionChannelType.RESTHOOK) {
+			return sendGenericNotificationRestHook(subscription);
+		} else if (channel.getType() == Subscription.SubscriptionChannelType.WEBSOCKET) {
+			return sendGenericNotificationWebSocket(subscription);
+		}
+		return Status.error("Unsupported channel type " + channel.getType());
+	}
+
+	private IStatus sendGenericNotificationWebSocket(Subscription subscription) {
+		return SubscriptionWebSocketConnections.sendPing(subscription.getId());
+	}
+
+	private IStatus sendGenericNotificationRestHook(Subscription subscription) {
 		SubscriptionChannelComponent channel = subscription.getChannel();
 		Builder requestBuilder = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(""))
 				.uri(URI.create(channel.getEndpoint())).setHeader("User-Agent", "ES FHIR Subscription Notifier");

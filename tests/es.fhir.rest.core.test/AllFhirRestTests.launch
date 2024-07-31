@@ -128,6 +128,8 @@
         <setEntry value="org.eclipse.gemini.jpa@3:true"/>
         <setEntry value="org.eclipse.jdt.junit.runtime@default:default"/>
         <setEntry value="org.eclipse.jdt.junit4.runtime@default:default"/>
+        <setEntry value="org.eclipse.jetty.alpn.client@default:default"/>
+        <setEntry value="org.eclipse.jetty.client@default:default"/>
         <setEntry value="org.eclipse.jetty.http*10.0.18@default:default"/>
         <setEntry value="org.eclipse.jetty.io*10.0.18@default:default"/>
         <setEntry value="org.eclipse.jetty.osgi.alpn.fragment@default:false"/>
@@ -208,7 +210,6 @@
         <setEntry value="ch.elexis.core.findings.fhir.model@default:default"/>
         <setEntry value="ch.elexis.core.findings.util@default:default"/>
         <setEntry value="ch.elexis.core.findings@default:default"/>
-        <setEntry value="ch.elexis.core.hapi.fhir@default:default"/>
         <setEntry value="ch.elexis.core.jcifs@default:default"/>
         <setEntry value="ch.elexis.core.jpa.datasource@3:true"/>
         <setEntry value="ch.elexis.core.jpa.entities@default:default"/>

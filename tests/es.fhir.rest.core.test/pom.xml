@@ -540,6 +540,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.jetty.alpn.client</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.jvnet.mimepull</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -691,6 +696,11 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.apache.poi.ooxml.schemas</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.jetty.client</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
