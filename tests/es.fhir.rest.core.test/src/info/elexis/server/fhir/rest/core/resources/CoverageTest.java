@@ -3,11 +3,13 @@ package info.elexis.server.fhir.rest.core.resources;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +36,7 @@ import ch.elexis.core.findings.codes.CodingSystem;
 import ch.elexis.core.model.ICoverage;
 import ch.elexis.core.model.ch.BillingLaw;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
+import ch.elexis.core.time.TimeUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -54,52 +57,101 @@ public class CoverageTest {
 
 	@Test
 	public void getCoverage() {
-		Patient readPatient = client.read().resource(Patient.class).withId(AllTests.getTestDatabaseInitializer().getPatient().getId())
-				.execute();
+		Patient readPatient = client.read().resource(Patient.class)
+				.withId(AllTests.getTestDatabaseInitializer().getPatient().getId()).execute();
 		// search by BENEFICIARY
 		Bundle results = client.search().forResource(Coverage.class)
-				.where(Coverage.BENEFICIARY.hasId(readPatient.getId()))
-				.returnBundle(Bundle.class).execute();
+				.where(Coverage.BENEFICIARY.hasId(readPatient.getId())).returnBundle(Bundle.class).execute();
 		assertNotNull(results);
 		List<BundleEntryComponent> entries = results.getEntry();
 		assertFalse(entries.isEmpty());
 		Coverage coverage = (Coverage) entries.get(0).getResource();
 		// read with by id
-		Coverage readCoverage = client.read().resource(Coverage.class).withId(coverage.getId())
-				.execute();
+		Coverage readCoverage = client.read().resource(Coverage.class).withId(coverage.getId()).execute();
 		assertNotNull(readCoverage);
 		assertEquals(coverage.getId(), readCoverage.getId());
 	}
 
 	@Test
-	public void createCoverage() {
+	public void createUpdateDeleteCoverage() {
+
+		String testPatientId = AllTests.getTestDatabaseInitializer().getPatient().getId();
+
 		Coverage coverage = new Coverage();
 		// minimal coverage information
-		coverage.setBeneficiary(new Reference(new IdDt("Patient", AllTests.getTestDatabaseInitializer().getPatient().getId())));
+		coverage.setBeneficiary(new Reference(new IdDt("Patient", testPatientId)));
 		coverage.setType(
 				new CodeableConcept().addCoding(new Coding(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "KVG", "")));
-		
-		MethodOutcome outcome = client.create().resource(coverage).execute();
-		assertNotNull(outcome);
-		assertTrue(outcome.getCreated());
-		assertNotNull(outcome.getId());
+		LocalDateTime startDate = LocalDate.of(2024, 8, 5).atStartOfDay();
+		coverage.setPeriod(new Period().setStart(TimeUtil.toDate(startDate)));
 
-		Coverage readCoverage = client.read().resource(Coverage.class).withId(outcome.getId()).execute();
+		MethodOutcome createOutcome = client.create().resource(coverage).execute();
+		assertNotNull(createOutcome);
+		assertTrue(createOutcome.getCreated());
+		assertNotNull(createOutcome.getId());
+
+		Coverage readCoverage = client.read().resource(Coverage.class).withId(createOutcome.getId()).execute();
 		assertNotNull(readCoverage);
-		assertEquals(outcome.getId().getIdPart(), readCoverage.getIdElement().getIdPart());
-		assertNotNull(readCoverage.getPeriod().getStart());
+
+		// test initial attributes
+		assertEquals("Patient/" + testPatientId, readCoverage.getBeneficiary().getReference());
+		assertEquals(createOutcome.getId().getIdPart(), readCoverage.getIdElement().getIdPart());
+		assertEquals("KVG", FhirUtil.getCodeFromCodingList(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(),
+				readCoverage.getType().getCoding()).orElse(null));
+		assertEquals("Krankheit", FhirUtil.getCodeFromCodingList(CodingSystem.ELEXIS_COVERAGE_REASON.getSystem(),
+				readCoverage.getType().getCoding()).orElse(null));
+		assertEquals("Patient/" + testPatientId, readCoverage.getPolicyHolder().getReference());
+		assertNull(readCoverage.getPayorFirstRep().getReference());
+		assertEquals(TimeUtil.toDate(startDate).getTime(), readCoverage.getPeriod().getStart().getTime());
+		assertNull(readCoverage.getPeriod().getEnd());
+		assertEquals(
+				"<div xmlns=\"http://www.w3.org/1999/xhtml\">KVG: Krankheit - online created(05.08.2024-offen)</div>",
+				readCoverage.getText().getDivAsString());
+
+		// update
+		readCoverage.setType(
+				new CodeableConcept().addCoding(new Coding(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(), "UVG", ""))
+						.addCoding(new Coding(CodingSystem.ELEXIS_COVERAGE_REASON.getSystem(), "KingOfMyCastle", "")));
+		LocalDate newStartDate = LocalDate.of(2024, 6, 14);
+		LocalDate newEndDate = LocalDate.of(2024, 6, 20);
+		readCoverage
+				.setPeriod(new Period().setStart(TimeUtil.toDate(newStartDate)).setEnd(TimeUtil.toDate(newEndDate)));
+		readCoverage.setPayor(null); // #TODO Kostenträger
+		// TODO Versicherungsnummer
+		// TODO Unfallnummer
+		// TODO Unfalldatum
+//		Narrative narrative = new Narrative();
+//		narrative.setDivAsString("Thats the new narrative");
+//		readCoverage.setText(narrative);
+		MethodOutcome updateOutcome = client.update().resource(readCoverage).execute();
+		assertNotNull(updateOutcome);
+
+		readCoverage = client.read().resource(Coverage.class).withId(createOutcome.getId()).execute();
+
+		assertEquals("UVG", FhirUtil.getCodeFromCodingList(CodingSystem.ELEXIS_COVERAGE_TYPE.getSystem(),
+				readCoverage.getType().getCoding()).orElse(null));
+		assertEquals("KingOfMyCastle", FhirUtil.getCodeFromCodingList(CodingSystem.ELEXIS_COVERAGE_REASON.getSystem(),
+				readCoverage.getType().getCoding()).orElse(null));
+//		assertEquals(
+//				"<div xmlns=\"http://www.w3.org/1999/xhtml\">UVG: KingOfMyCastle - Thats the new narrative(05.08.2024-offen)</div>",
+//				readCoverage.getText().getDivAsString());
+		assertEquals(TimeUtil.toDate(newStartDate.atStartOfDay()).getTime(),
+				readCoverage.getPeriod().getStart().getTime());
+		assertEquals(TimeUtil.toDate(newEndDate.atStartOfDay()).getTime(), readCoverage.getPeriod().getEnd().getTime());
+
+		MethodOutcome deleteOutcome = client.delete().resourceById(readCoverage.getIdElement()).execute();
+		assertNotNull(deleteOutcome);
 	}
 
 	/**
-	 * Test all properties set by
-	 * {@link TestDatabaseInitializer#initializeFall()}.
+	 * Test all properties set by {@link TestDatabaseInitializer#initializeFall()}.
 	 * 
 	 * @throws FHIRException
 	 */
 	@Test
 	public void getOrganizationProperties() throws FHIRException {
-		Coverage readCoverage = client.read().resource(Coverage.class)
-				.withId(TestDatabaseInitializer.getFall().getId()).execute();
+		Coverage readCoverage = client.read().resource(Coverage.class).withId(TestDatabaseInitializer.getFall().getId())
+				.execute();
 		assertNotNull(readCoverage);
 
 		Reference beneficiary = readCoverage.getBeneficiary();
@@ -109,8 +161,7 @@ public class CoverageTest {
 		List<Reference> payors = readCoverage.getPayor();
 		assertNotNull(payors);
 		assertFalse(payors.isEmpty());
-		assertEquals("Organization/" + TestDatabaseInitializer.getOrganization().getId(),
-				payors.get(0).getReference());
+		assertEquals("Organization/" + TestDatabaseInitializer.getOrganization().getId(), payors.get(0).getReference());
 		Period period = readCoverage.getPeriod();
 		assertNotNull(period);
 		assertEquals(LocalDate.of(2016, Month.SEPTEMBER, 1),

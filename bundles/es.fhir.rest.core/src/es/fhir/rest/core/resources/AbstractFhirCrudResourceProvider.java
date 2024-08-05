@@ -104,8 +104,8 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 			}
 
 		} else {
-			log.warn("Could not find local object for [" + fhirObject + "] with id [" + fhirObject.getId() + "]");
-			outcome = create(fhirObject);
+			log.info("(update) local object with id [" + fhirObject.getId() + "] not found");
+			throw new PreconditionFailedException("Could not find local object");
 		}
 		return outcome;
 	}
