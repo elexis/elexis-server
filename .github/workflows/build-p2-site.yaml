@@ -14,15 +14,15 @@ jobs:
   build:
     runs-on: [self-hosted, Linux, x64, Docker]
     steps:
-    - uses: actions/checkout@v4
-    - name: pull docker image docker-build:${{ env.TARGET }}
-      run: docker pull ghcr.io/elexis/docker-build:${{ env.TARGET }}
-    - name: build using docker image docker-build:${{ env.TARGET }}
-      run:  docker run --rm --init -v "$(pwd)":/usr/src/mymaven -v "$(eval echo ~$USER)/m2-${{ env.BRANCH_NAME }}":/root/.m2 -w /usr/src/mymaven ghcr.io/elexis/docker-build:${{ env.TARGET }} mvn -f releng/es.parent/pom.xml clean verify -Delexis.branch=${{ env.BRANCH_NAME }}
-    - name: upload artifacts
-      run: |
-        eval $(ssh-agent -s)
-        ssh-add <(echo "${{ env.DEPLOY_SECRET }}" | base64 -d)
-	rsync -aiv --delete --mkpath -e ssh products/es.updatesite/target/repository/ deploy@download.medelexis.ch:download.elexis.info/elexis-server/${{ env.BRANCH_NAME }}/p2/elexis-server/
-	rsync -aiv --no-recursive -e ssh products/es.core.product.runtime/target/products/* deploy@download.medelexis.ch:download.elexis.info/elexis-server/${{ env.BRANCH_NAME }}/products/
-        eval $(ssh-agent -k)
+      - uses: actions/checkout@v4
+      - name: pull docker image docker-build:${{ env.TARGET }}
+        run: docker pull ghcr.io/elexis/docker-build:${{ env.TARGET }}
+      - name: build using docker image docker-build:${{ env.TARGET }}
+        run: docker run --rm --init -v "$(pwd)":/usr/src/mymaven -v "$(eval echo ~$USER)/m2-${{ env.BRANCH_NAME }}":/root/.m2 -w /usr/src/mymaven ghcr.io/elexis/docker-build:${{ env.TARGET }} mvn -f releng/es.parent/pom.xml clean verify -Delexis.branch=${{ env.BRANCH_NAME }}
+      - name: upload artifacts
+        run: |
+          eval $(ssh-agent -s)
+          ssh-add <(echo "${{ env.DEPLOY_SECRET }}" | base64 -d)
+          rsync -aiv --delete --mkpath -e ssh products/es.updatesite/target/repository/ deploy@download.medelexis.ch:download.elexis.info/elexis-server/${{ env.BRANCH_NAME }}/p2/elexis-server/
+          rsync -aiv --no-recursive -e ssh products/es.core.product.runtime/target/products/* deploy@download.medelexis.ch:download.elexis.info/elexis-server/${{ env.BRANCH_NAME }}/products/
+          eval $(ssh-agent -k)
