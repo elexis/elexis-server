@@ -117,6 +117,7 @@ public class CoverageTest {
 		readCoverage
 				.setPeriod(new Period().setStart(TimeUtil.toDate(newStartDate)).setEnd(TimeUtil.toDate(newEndDate)));
 		readCoverage.setPayor(null); // #TODO Kostenträger
+		readCoverage.setPolicyHolder(new Reference("Patient/zd8d46d1b8d44330501105"));
 		// TODO Versicherungsnummer
 		// TODO Unfallnummer
 		// TODO Unfalldatum
@@ -132,6 +133,7 @@ public class CoverageTest {
 				readCoverage.getType().getCoding()).orElse(null));
 		assertEquals("KingOfMyCastle", FhirUtil.getCodeFromCodingList(CodingSystem.ELEXIS_COVERAGE_REASON.getSystem(),
 				readCoverage.getType().getCoding()).orElse(null));
+		assertEquals("Patient/zd8d46d1b8d44330501105", readCoverage.getPolicyHolder().getReference());
 //		assertEquals(
 //				"<div xmlns=\"http://www.w3.org/1999/xhtml\">UVG: KingOfMyCastle - Thats the new narrative(05.08.2024-offen)</div>",
 //				readCoverage.getText().getDivAsString());
