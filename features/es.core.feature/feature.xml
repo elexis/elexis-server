@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.core.feature"
       label="Elexis Server Core Feature"
-      version="3.11.0.qualifier"
+      version="3.13.0.qualifier"
       provider-name="elexis.info">
 
    <description url="http://www.example.com/description">
@@ -23,36 +23,22 @@
 
    <plugin
          id="info.elexis.server.core"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="info.elexis.server.core.logging"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+         version="0.0.0"/>
 
    <plugin
          id="info.elexis.server.core.common"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="ch.elexis.core.logback.rocketchat"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="info.elexis.server.core.redmine"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

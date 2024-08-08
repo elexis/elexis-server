@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Jetty Configuration Home Bundle
-Bundle-SymbolicName: info.elexis.server.core.jetty.homebundle
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: elexis.info
-Eclipse-BundleShape: dir
-Require-Bundle: org.eclipse.jetty.osgi.boot;bundle-version="10.0.6"
