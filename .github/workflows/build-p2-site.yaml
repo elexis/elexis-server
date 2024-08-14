@@ -7,8 +7,6 @@ env:
 
 on:
   push:
-     branches:
-        - 3.13
   workflow_dispatch:
 
 jobs:
@@ -39,6 +37,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=push
+            type=ref,event=workflow_dispatch
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
