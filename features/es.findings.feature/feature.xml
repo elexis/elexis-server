@@ -2,7 +2,7 @@
 <feature
       id="info.elexis.server.findings.feature"
       label="Findings"
-      version="3.12.0.qualifier"
+      version="3.13.0.qualifier"
       provider-name="medevit.at">
 
    <description url="http://www.example.com/description">
@@ -23,16 +23,10 @@
 
    <plugin
          id="info.elexis.server.findings.fhir.jpa.service"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="ch.elexis.core.findings.fhir.model"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
