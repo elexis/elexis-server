@@ -25,6 +25,7 @@ jobs:
         run: docker pull ghcr.io/elexis/docker-build:${{ env.TARGET }}
       - name: build using docker image docker-build:${{ env.TARGET }}
         run: docker run --rm --init -v "$(pwd)":/usr/src/mymaven -v "$(eval echo ~$USER)/m2-${{ env.BRANCH_NAME }}":/root/.m2 -w /usr/src/mymaven ghcr.io/elexis/docker-build:${{ env.TARGET }} mvn -f releng/es.parent/pom.xml clean verify -Delexis.branch=${{ env.BRANCH_NAME }}
+       
       - name: upload artifacts
         run: |
           eval $(ssh-agent -s)
