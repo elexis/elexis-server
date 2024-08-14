@@ -27,3 +27,30 @@ jobs:
           rsync -aiv --delete --mkpath -e ssh products/es.updatesite/target/repository/ deploy@download.medelexis.ch:download.elexis.info/elexis-server/${{ env.BRANCH_NAME }}/p2/elexis-server/
           rsync -aiv --no-recursive -e ssh products/es.core.product.runtime/target/products/* deploy@download.medelexis.ch:download.elexis.info/elexis-server/${{ env.BRANCH_NAME }}/products/
           eval $(ssh-agent -k)
+          
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          pull: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
