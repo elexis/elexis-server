@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-jre-alpine
-MAINTAINER MEDEVIT <office@medevit.at>
+LABEL org.opencontainers.image.authors="MEDEVIT <office@medevit.at>"
 ARG BRANCH=master
 
 RUN apk add --no-cache tzdata bash gcompat cups-client
@@ -23,6 +23,5 @@ WORKDIR /elexis
 EXPOSE 8380
 EXPOSE 7234
 
-VOLUME /elexis
 
 CMD ["/elexis-server.sh"]
