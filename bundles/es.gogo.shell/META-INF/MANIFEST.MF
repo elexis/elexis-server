@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Gogo Shell Customization
+Bundle-SymbolicName: es.gogo.shell
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: elexis.info
+Fragment-Host: org.apache.felix.gogo.shell
+Automatic-Module-Name: info.elexis.server.gogo.shell

@@ -273,4 +273,8 @@
          id="ch.elexis.core.text.docx"
          version="0.0.0"/>
 
+   <plugin
+         id="es.gogo.shell"
+         version="0.0.0"/>
+
 </feature>

@@ -23,6 +23,7 @@
 		<module>es.core.p2</module>
 		<module>es.core.redmine</module>
 		<module>es.core.connector.elexis</module>
+		<module>es.gogo.shell</module>
 		<module>es.fhir.rest.core</module>
 		<module>es.findings.fhir.jpa.service</module>
 	</modules>
