@@ -34,7 +34,6 @@ import ch.elexis.core.services.IMessageService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IVirtualFilesystemService.IVirtualFilesystemHandle;
-import ch.elexis.core.services.holder.AccessControlServiceHolder;
 import ch.elexis.core.services.holder.ConfigServiceHolder;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.services.holder.VirtualFilesystemServiceHolder;
@@ -74,7 +73,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		executeCommand("elc", ci);
 	}
 
-	@CmdAdvisor(description = "show database connection and status information", executePrivileged = true)
+	@CmdAdvisor(description = "show database connection and status information")
 	public String __elc_status() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DB:\t\t" + ElexisDBConnection.getDatabaseInformationString() + "\n");
@@ -87,6 +86,11 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 					+ "\t" + lockInfo.getCreationDate() + "\t[" + lockInfo.getSystemUuid() + "]\n");
 		}
 		return sb.toString();
+	}
+
+	@CmdAdvisor(description = "Toggle privileged EXEC mode")
+	public void __elc_enable() {
+		enablePrivilegedExecMode(!AbstractConsoleCommandProvider.isPrivilegedMode());
 	}
 
 	@CmdAdvisor(description = "enable elexis event logging, optional topic parameter")
@@ -214,7 +218,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 
-	@CmdAdvisor(description = "list all database configuration entries (optional key argument)", executePrivileged = true)
+	@CmdAdvisor(description = "list all database configuration entries (optional key argument)")
 	public void __elc_config_list(Iterator<String> args) {
 		String nodePrefix = args.next();
 		if (StringUtils.isEmpty(nodePrefix)) {
@@ -240,7 +244,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		}
 	}
 
-	@CmdAdvisor(description = "get a local configuration entry requires key argument)", executePrivileged = true)
+	@CmdAdvisor(description = "get a local configuration entry requires key argument)")
 	public void __elc_localconfig_get(String key) {
 		if (key == null) {
 			missingArgument("key");
@@ -250,7 +254,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 		ok(value);
 	}
 
-	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)", executePrivileged = true)
+	@CmdAdvisor(description = "set (add or overwrite) a global configuration entry: key value|(null:remove)")
 	public void __elc_config_set(String key, String value) {
 		if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
 			missingArgument("key value|null");
