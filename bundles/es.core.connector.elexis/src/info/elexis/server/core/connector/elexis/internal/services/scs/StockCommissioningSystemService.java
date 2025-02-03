@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.IArticle;
+import ch.elexis.core.model.IPatient;
 import ch.elexis.core.model.IStock;
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.model.ModelPackage;
@@ -33,6 +35,8 @@ import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.services.IStockService;
 import ch.elexis.core.services.IStoreToStringService;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
+import ch.elexis.core.services.holder.StockServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
@@ -223,8 +227,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				transientCommSysStockEntries.size(), gtinsToUpdate.size());
 
 		if (gtinsToUpdate.size() > 0) {
-			return performDifferentialInventorySynchronization(stock, transientCommSysStockEntries, gtinsToUpdate);
-		}
+			return performDifferentialInventorySynchronization(stock, stock.getStockEntries(), gtinsToUpdate);
+			}
 		return performFullInventorySynchronization(stock, transientCommSysStockEntries);
 	}
 
@@ -245,7 +249,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 				status = updateStockEntry(seo.get(), inventoryResultStockEntry.getCurrentStock());
 				currentStockEntryIds.remove(seo.get().getId());
 			} else {
-				status = createStockEntry(stock, inventoryResultStockEntry);
+				status = createStockEntry(stock, inventoryResultStockEntry, null);
 			}
 			if (status != null && !status.isOK()) {
 				StatusUtil.logStatus(log, status, true);
@@ -270,7 +274,24 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 
 		Map<String, IStockEntry> inventoryGtinMap = new HashMap<String, IStockEntry>();
 		scsInventoryResult.stream().forEach(ir -> inventoryGtinMap.put(ir.getArticle().getGtin(), ir));
-		for (String gtin : gtinsToUpdate) {
+
+		Map<String, String> mapPatientToGtin = new HashMap<String, String>();
+		for (String entry : gtinsToUpdate) {
+			String[] parts = entry.split(":", 2);
+			if (parts.length == 2) {
+				mapPatientToGtin.put(parts[0], parts[1]);
+			} else {
+				mapPatientToGtin.put(null, entry);
+			}
+		}
+		
+		for (Entry<String, String> entry : mapPatientToGtin.entrySet()) {
+			IStock patientStock = null;
+			if (entry.getKey() != null) {
+				IPatient patient = CoreModelServiceHolder.get().load(entry.getKey(), IPatient.class).get();
+				patientStock = StockServiceHolder.get().getPatientStock(patient).get();
+			}
+			String gtin = entry.getValue();
 			IStatus status = null;
 
 			Optional<IStockEntry> seo = Optional.empty();
@@ -287,7 +308,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 					status = updateStockEntry(seo.get(), iStockEntry.getCurrentStock());
 				} else {
 					// if in inventory result but stockEntry does not exist ->
-					status = createStockEntry(stock, iStockEntry);
+					status = createStockEntry(stock, iStockEntry, patientStock);
 				}
 			} else {
 				// if not in inventory result but stockEntry exists -> remove
@@ -322,15 +343,16 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		return Status.OK_STATUS;
 	}
 
-	private IStatus createStockEntry(IStock stock, IStockEntry tse) {
+	public IStatus createStockEntry(IStock stock, IStockEntry tse, IStock patientStock) {
 		String gtin = tse.getArticle().getGtin();
-
+		
 		Optional<IArticle> articleByGTIN = codeElementService.findArticleByGtin(gtin);
 		if (articleByGTIN.isPresent()) {
 			IArticle adid = articleByGTIN.get();
 			String storeToString = storeToStringService.storeToString(adid).orElse(null);
 			IStockEntry se = stockService.storeArticleInStock(stock, storeToString);
 			se.setCurrentStock(tse.getCurrentStock());
+			se.setRwaStockLink(patientStock);
 			coreModelService.save(se);
 
 			log.debug("Adding StockEntry [{}] {}", se.getId(), tse.getCurrentStock());
@@ -376,5 +398,5 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	private boolean isStockEntryBoundForReorder(IStockEntry se) {
 		return se.getMinimumStock() > 0 || se.getMaximumStock() > 0;
 	}
-
+	
 }
