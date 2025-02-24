@@ -105,9 +105,4 @@
          id="org.eclipse.core.net"
          version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.core.net.linux"
-         os="linux"
-         version="0.0.0"/>
-
 </feature>
