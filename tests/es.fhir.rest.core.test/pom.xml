@@ -56,14 +56,7 @@
           <useUIHarness>false</useUIHarness>
           <testClass>info.elexis.server.fhir.rest.core.test.AllTests</testClass>
           <showEclipseLog>true</showEclipseLog>
-          <argLine>-Dorg.osgi.service.http.port=8380 
--Djetty.http.port=8380
--Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot
--Dorg.eclipse.jetty.LEVEL=DEBUG
--DacceptMissingLockServiceContributor=true
--Des.test=true
--Ddisable.web.security=true
--Delexis.test.mode=true</argLine>
+          <argLine>-Dorg.osgi.service.http.port=8380 -Djetty.http.port=8380 -Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot -Dorg.eclipse.jetty.LEVEL=DEBUG -DacceptMissingLockServiceContributor=true -Des.test=true -Ddisable.web.security=true -Delexis.test.mode=true</argLine>
           <dependencies>
             <dependency>
               <type>eclipse-plugin</type>
