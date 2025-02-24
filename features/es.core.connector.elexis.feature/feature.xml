@@ -22,10 +22,6 @@
    </requires>
 
    <plugin
-         id="org.eclipse.persistence.antlr"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.persistence.asm"
          version="0.0.0"/>
 
@@ -35,10 +31,6 @@
 
    <plugin
          id="org.eclipse.persistence.jpa"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.gemini.jpa"
          version="0.0.0"/>
 
    <plugin
@@ -134,19 +126,11 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.apache.poi.ooxml.schemas"
-         version="0.0.0"/>
-
-   <plugin
          id="com.healthmarketscience.jackcess"
          version="0.0.0"/>
 
    <plugin
          id="org.apache.xmlbeans"
-         version="0.0.0"/>
-
-   <plugin
-         id="jakarta.persistence"
          version="0.0.0"/>
 
    <plugin
@@ -175,10 +159,6 @@
 
    <plugin
          id="ch.elexis.base.solr"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.solr"
          version="0.0.0"/>
 
    <plugin
@@ -234,14 +214,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.jdom2"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jaxen"
-         version="0.0.0"/>
-
-   <plugin
          id="org.osgi.service.jdbc"
          version="0.0.0"/>
 
@@ -258,10 +230,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.apache.geronimo.specs.geronimo-jta_1.1_spec"
-         version="0.0.0"/>
-
-   <plugin
          id="org.apache.commons.math3"
          version="0.0.0"/>
 
@@ -275,6 +243,14 @@
 
    <plugin
          id="es.gogo.shell"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.persistence-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jdom.2"
          version="0.0.0"/>
 
 </feature>

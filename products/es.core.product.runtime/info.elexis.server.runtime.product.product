@@ -23,6 +23,7 @@
 
    <windowImages/>
 
+
    <launcher name="elexis-server">
       <win useIco="false">
          <bmp/>
@@ -46,18 +47,11 @@
    </features>
 
    <configurations>
-      <plugin id="ch.elexis.core.jpa.datasource" autoStart="true" startLevel="2" />
-      <plugin id="ch.elexis.core.jpa.entities" autoStart="true" startLevel="3" />
+      <plugin id="ch.elexis.core.jpa.datasource" autoStart="true" startLevel="3" />
+      <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="2" />
+      <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="1" />
       <plugin id="org.apache.felix.scr" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
-      <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.p2.transport.ecf" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.jetty.osgi.httpservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="1" />
    </configurations>
 
    <repositories>
