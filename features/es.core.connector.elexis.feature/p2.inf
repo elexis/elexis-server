@@ -3,58 +3,22 @@
  properties.1.name = git-repo-url
  properties.1.value = REPLACE_WITH_GIT_REPO_URL
  
-# Set start level for gemini.jpa
-requires.1.namespace = org.eclipse.equinox.p2.iu
-requires.1.name = gemini.jpa.bundle.fragment
-requires.1.range = 1.0.0
-
-units.1.id = gemini.jpa.bundle.fragment
-units.1.version = 1.0.0
-units.1.singleton = true
-units.1.provides.0.namespace = org.eclipse.equinox.p2.iu
-units.1.provides.0.name = gemini.jpa.bundle.fragment
-units.1.provides.0.version = 1.0.0
-units.1.instructions.configure = setStartLevel(startLevel:2);markStarted(started: true);
-units.1.hostRequirements.0.namespace = org.eclipse.equinox.p2.iu
-units.1.hostRequirements.0.name = org.eclipse.gemini.jpa
-units.1.hostRequirements.0.version = 0.0.0
-units.1.instructions.install = installBundle(bundle:${artifact})
-units.1.instructions.uninstall = uninstallBundle(bundle:${artifact})
-
 # These settings do not seem to work if directly put into bundle p2.inf
 # see https://bugs.eclipse.org/bugs/show_bug.cgi?id=253244
 # Set start level for info.elexis.server.core.connector.elexis.datasource
-requires.2.namespace = org.eclipse.equinox.p2.iu
-requires.2.name = ch.elexis.core.jpa.datasource.bundle.fragment
-requires.2.range = 1.0.0
+requires.1.namespace = org.eclipse.equinox.p2.iu
+requires.1.name = ch.elexis.core.jpa.datasource.bundle.fragment
+requires.1.range = 1.0.0
 
-units.2.id = ch.elexis.core.jpa.datasource.bundle.fragment
-units.2.version = 1.0.0
-units.2.singleton = true
-units.2.provides.0.namespace = org.eclipse.equinox.p2.iu
-units.2.provides.0.name = ch.elexis.core.jpa.datasource.bundle.fragment
-units.2.provides.0.version = 1.0.0
-units.2.instructions.configure = setStartLevel(startLevel:2);markStarted(started: true);
-units.2.hostRequirements.0.namespace = org.eclipse.equinox.p2.iu
-units.2.hostRequirements.0.name = ch.elexis.core.jpa.datasource
-units.2.hostRequirements.0.version = 0.0.0
-units.2.instructions.install = installBundle(bundle:${artifact})
-units.2.instructions.uninstall = uninstallBundle(bundle:${artifact})
-
-# Set start level for info.elexis.server.core.connector.elexis.jpa
-requires.3.namespace = org.eclipse.equinox.p2.iu
-requires.3.name = ch.elexis.core.jpa.entities.bundle.fragment
-requires.3.range = 1.0.0
-
-units.3.id = ch.elexis.core.jpa.entities.bundle.fragment
-units.3.version = 1.0.0
-units.3.singleton = true
-units.3.provides.0.namespace = org.eclipse.equinox.p2.iu
-units.3.provides.0.name =ch.elexis.core.jpa.entities.bundle.fragment
-units.3.provides.0.version = 1.0.0
-units.3.instructions.configure = setStartLevel(startLevel:3);markStarted(started: true);
-units.3.hostRequirements.0.namespace = org.eclipse.equinox.p2.iu
-units.3.hostRequirements.0.name = ch.elexis.core.jpa.entities
-units.3.hostRequirements.0.version = 0.0.0
-units.3.instructions.install = installBundle(bundle:${artifact})
-units.3.instructions.uninstall = uninstallBundle(bundle:${artifact})
+units.1.id = ch.elexis.core.jpa.datasource.bundle.fragment
+units.1.version = 1.0.0
+units.1.singleton = true
+units.1.provides.0.namespace = org.eclipse.equinox.p2.iu
+units.1.provides.0.name = ch.elexis.core.jpa.datasource.bundle.fragment
+units.1.provides.0.version = 1.0.0
+units.1.instructions.configure = setStartLevel(startLevel:2);markStarted(started: true);
+units.1.hostRequirements.0.namespace = org.eclipse.equinox.p2.iu
+units.1.hostRequirements.0.name = ch.elexis.core.jpa.datasource
+units.1.hostRequirements.0.version = 0.0.0
+units.1.instructions.install = installBundle(bundle:${artifact})
+units.1.instructions.uninstall = uninstallBundle(bundle:${artifact})
