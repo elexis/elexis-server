@@ -26,16 +26,6 @@
               </requirement>
               <requirement>
                 <type>eclipse-plugin</type>
-                <id>es.gogo.shell</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>eclipse-plugin</type>
-                <id>org.apache.felix.gogo.shell.contribution</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-              <requirement>
-                <type>eclipse-plugin</type>
                 <id>info.elexis.jaxrs.service.test</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
@@ -200,6 +190,11 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.plus</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>ch.qos.logback.classic</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
@@ -379,6 +374,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>com.google.gson</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.glassfish.jersey.core.jersey-server</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -492,21 +492,11 @@
               <artifactId>org.objectweb.asm</artifactId>
               <version>0.0.0</version>
             </dependency>
-            <dependency>
-              <type>eclipse-plugin</type>
-              <artifactId>com.google.gson</artifactId>
-              <version>0.0.0</version>
-            </dependency>
           </dependencies>
           <bundleStartLevel>
             <bundle>
               <id>info.elexis.jaxrs.service</id>
               <level>4</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
-              <id>ch.qos.logback.classic</id>
-              <level>1</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
@@ -517,6 +507,11 @@
             <bundle>
               <id>org.apache.felix.scr</id>
               <level>1</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>ch.qos.logback.classic</id>
+              <level>2</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
