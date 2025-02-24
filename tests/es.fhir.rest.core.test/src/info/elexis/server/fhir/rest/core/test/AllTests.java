@@ -33,16 +33,21 @@ public class AllTests {
 
 	public static final String GENERIC_CLIENT_URL = "http://localhost:8380/fhir";
 
-	private static IModelService modelService = OsgiServiceUtil
-			.getService(IModelService.class, "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
-	private static IElexisEntityManager entityManager = OsgiServiceUtil.getService(IElexisEntityManager.class).get();
-	private static IConfigService configService = OsgiServiceUtil.getService(IConfigService.class).get();
+	private static IModelService modelService;
+	private static IElexisEntityManager entityManager;
+	private static IConfigService configService;
 
-	private static TestDatabaseInitializer testDatabaseInitializer = new TestDatabaseInitializer(modelService,
-			entityManager);
+	private static TestDatabaseInitializer testDatabaseInitializer;
 
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException {
+		modelService = OsgiServiceUtil
+				.getService(IModelService.class, "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
+		entityManager = OsgiServiceUtil.getService(IElexisEntityManager.class).get();
+		configService = OsgiServiceUtil.getService(IConfigService.class).get();
+
+		testDatabaseInitializer = new TestDatabaseInitializer(modelService, entityManager);
+
 		testDatabaseInitializer.setConfigService(configService);
 		testDatabaseInitializer.initializeDb();
 		testDatabaseInitializer.initializeMandant();
