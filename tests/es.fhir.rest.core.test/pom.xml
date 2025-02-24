@@ -117,11 +117,6 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
-              <artifactId>ch.qos.logback.core</artifactId>
-              <version>0.0.0</version>
-            </dependency>
-            <dependency>
-              <type>eclipse-plugin</type>
               <artifactId>com.h2database</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -177,17 +172,17 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>jakarta.websocket-api</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.glassfish.hk2.external.aopalliance-repackaged</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.apache.commons.commons-pool2</artifactId>
-              <version>0.0.0</version>
-            </dependency>
-            <dependency>
-              <type>eclipse-plugin</type>
-              <artifactId>jakarta.websocket-api</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
@@ -567,6 +562,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.persistence.extension</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.websocket.api</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -772,6 +772,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>ch.qos.logback.core</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.osgi.util.function</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -933,18 +938,8 @@
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
-              <id>ch.qos.logback.core</id>
-              <level>2</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
               <id>org.apache.felix.scr</id>
               <level>1</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
-              <id>jakarta.websocket-api</id>
-              <level>2</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
