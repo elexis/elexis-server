@@ -1,7 +1,7 @@
 package es.fhir.rest.core.resources;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -137,7 +137,7 @@ public class SubscriptionResourceProvider implements IFhirResourceProvider<Subsc
 		if (channel.getType() == Subscription.SubscriptionChannelType.RESTHOOK) {
 			String endpoint = channel.getEndpoint();
 			try {
-				new URL(endpoint);
+				URI.create(endpoint).toURL();
 			} catch (MalformedURLException e) {
 				ex = new IFhirTransformerException("WARNING", "invalid url for endpoint: " + e.getMessage(), 0);
 			}

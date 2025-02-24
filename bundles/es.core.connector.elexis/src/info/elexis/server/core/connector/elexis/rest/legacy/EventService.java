@@ -1,7 +1,5 @@
 package info.elexis.server.core.connector.elexis.rest.legacy;
 
-import javax.ws.rs.core.Response;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
@@ -12,6 +10,7 @@ import ch.elexis.core.common.ElexisEvent;
 import ch.elexis.core.common.ElexisEventTopics;
 import ch.elexis.core.server.IEventService;
 import info.elexis.jaxrs.service.JaxrsResource;
+import jakarta.ws.rs.core.Response;
 
 @Component
 public class EventService implements IEventService, JaxrsResource {

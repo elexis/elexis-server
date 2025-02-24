@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
@@ -38,8 +36,10 @@ import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import info.elexis.server.core.SystemPropertyConstants;
 import info.elexis.server.core.servlet.filter.ContextSettingFilter;
 import info.elexis.server.core.servlet.filter.ElexisEnvironmentKeycloakConfigResolver;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 
-@Component(service = CoreFhirRestServlet.class, immediate = true)
+//@Component(service = CoreFhirRestServlet.class, immediate = true)
 public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final String FHIR_BASE_URL = "/fhir";
@@ -50,8 +50,6 @@ public class CoreFhirRestServlet extends RestfulServer {
 
 	private static final long serialVersionUID = -4760702567124041329L;
 
-	@Reference
-	private HttpService httpService;
 
 	@Reference
 	private PlainResourceProvider plainResourceProvider;
@@ -92,7 +90,7 @@ public class CoreFhirRestServlet extends RestfulServer {
 	public CoreFhirRestServlet() {
 		super(FhirContext.forR4());
 		setServerName("Elexis-Server FHIR");
-		setServerVersion("3.12");
+		setServerVersion("3.13");
 	}
 
 	@Activate
@@ -126,8 +124,8 @@ public class CoreFhirRestServlet extends RestfulServer {
 		registerProvider(plainResourceProvider);
 
 		Thread.currentThread().setContextClassLoader(CoreFhirRestServlet.class.getClassLoader());
-		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
-		try {
+//		ExtendedHttpService extHttpService = (ExtendedHttpService) httpService;
+//		try {
 			if (keycloakConfigResolver != null) {
 				Hashtable<String, String> filterParams = new Hashtable<>();
 				// see
@@ -135,27 +133,27 @@ public class CoreFhirRestServlet extends RestfulServer {
 				filterParams.put(KeycloakOIDCFilter.SKIP_PATTERN_PARAM, SKIP_PATTERN);
 				// TODO role fhir-api-access required?
 				// https://www.baeldung.com/spring-boot-keycloak
-				extHttpService.registerFilter(FHIR_BASE_URL + "/*", new KeycloakOIDCFilter(keycloakConfigResolver),
-						filterParams, null);
+//				extHttpService.registerFilter(FHIR_BASE_URL + "/*", new KeycloakOIDCFilter(keycloakConfigResolver),
+//						filterParams, null);
 			} else {
 				logger.error("--- UNPROTECTED FHIR API ---");
 			}
 
-			extHttpService.registerFilter(FHIR_BASE_URL + "/*",
-					new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
-					new Hashtable<>(), null);
+//			extHttpService.registerFilter(FHIR_BASE_URL + "/*",
+//					new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
+//					new Hashtable<>(), null);
 
-			httpService.registerServlet(FHIR_BASE_URL + "/*", this, null, null);
+//			httpService.registerServlet(FHIR_BASE_URL + "/*", this, new Hashtable<>(), null);
 
-		} catch (ServletException | NamespaceException e) {
-			logger.error("Could not register FHIR servlet.", e);
-		}
+//		} catch (ServletException | NamespaceException e) {
+//			logger.error("Could not register FHIR servlet.", e);
+//		}
 	}
 
 	@Deactivate
 	public void deactivate() {
 		logger.debug("Deactivating CoreFhirRestServlet");
-		httpService.unregister(FHIR_BASE_URL + "/*");
+//		httpService.unregister(FHIR_BASE_URL + "/*");
 	}
 
 	/**
@@ -182,8 +180,6 @@ public class CoreFhirRestServlet extends RestfulServer {
 		 * browser window. It is optional, but can be nice for testing.
 		 */
 		registerInterceptor(new ResponseHighlighterInterceptor());
-
-
 
 		/*
 		 * Tells the server to return pretty-printed responses by default

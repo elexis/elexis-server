@@ -1,7 +1,5 @@
 package es.fhir.rest.core.resources;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -12,6 +10,7 @@ import org.keycloak.adapters.KeycloakDeployment;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ServerCapabilityStatementProvider
 		extends ca.uhn.fhir.rest.server.provider.ServerCapabilityStatementProvider {

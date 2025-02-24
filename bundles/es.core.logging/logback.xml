@@ -27,7 +27,7 @@
 			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.log.zip
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
-				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy">
 				<maxFileSize>25MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
@@ -85,6 +85,7 @@
 	</appender>
 
 	<logger name="jcifs" level="INFO" />
+	<logger name="org.eclipse.jetty.ee10" level="DEBUG" />
 	<logger name="org.eclipse" level="INFO" />
 	<logger name="org.apache" level="INFO" />
 	<logger name="se.ugli.bigqueue" level="INFO" />

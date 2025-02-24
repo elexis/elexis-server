@@ -31,8 +31,8 @@
 	</issueManagement>
 
 	<properties>
-		<elexis.target>2023-09-java21</elexis.target>
-		<tycho.version>4.0.8</tycho.version>
+		<elexis.target>2025-03-java21</elexis.target>
+		<tycho.version>4.0.11</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 

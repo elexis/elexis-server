@@ -10,15 +10,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
@@ -39,6 +30,14 @@ import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class ContextSettingFilter implements Filter {
 
@@ -229,9 +228,6 @@ public class ContextSettingFilter implements Filter {
 	public void init(FilterConfig arg0) throws ServletException {
 	}
 
-	/**
-	 * @see org.keycloak.adapters.servlet.KeycloakOIDCFilter#shouldSkip
-	 */
 	private boolean shouldSkip(HttpServletRequest request) {
 
 		if (skipPattern == null) {

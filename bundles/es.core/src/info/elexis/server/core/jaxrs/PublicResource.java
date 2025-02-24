@@ -1,15 +1,14 @@
 package info.elexis.server.core.jaxrs;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.osgi.service.component.annotations.Component;
 
 import info.elexis.jaxrs.service.JaxrsResource;
 import info.elexis.server.core.Application;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 
 @Path("public")

@@ -41,15 +41,15 @@ public class ElexisEnvironmentActivator {
 	@Activate
 	public void activate() {
 		if (Boolean.valueOf(elexisEnvironmentService.getProperty("ENABLE_ROCKETCHAT"))) {
-			LoggerFactory.getLogger(getClass()).debug("Activating rocketchat support");
-			String rocketchatBaseUrl = elexisEnvironmentService.getRocketchatBaseUrl();
-			String rocketchatIntegrationToken = elexisEnvironmentService
-					.getProperty("EE_RC_ES_INTEGRATION_WEBHOOK_TOKEN");
-
-			String rocketchatIntegrationUrl = rocketchatBaseUrl + "/hooks/" + rocketchatIntegrationToken;
-
-			configureRocketchatMessageTransporter(rocketchatIntegrationUrl);
-			configureRocketchatIntegration(rocketchatBaseUrl, rocketchatIntegrationToken);
+//			LoggerFactory.getLogger(getClass()).debug("Activating rocketchat support");
+//			String rocketchatBaseUrl = elexisEnvironmentService.getRocketchatBaseUrl();
+//			String rocketchatIntegrationToken = elexisEnvironmentService
+//					.getProperty("EE_RC_ES_INTEGRATION_WEBHOOK_TOKEN");
+//
+//			String rocketchatIntegrationUrl = rocketchatBaseUrl + "/hooks/" + rocketchatIntegrationToken;
+//
+//			configureRocketchatMessageTransporter(rocketchatIntegrationUrl);
+//			configureRocketchatIntegration(rocketchatBaseUrl, rocketchatIntegrationToken);
 		} else {
 			LoggerFactory.getLogger(getClass()).debug("Rocketchat support not activated");
 		}

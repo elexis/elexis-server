@@ -2,8 +2,6 @@ package info.elexis.server.core.security.internal;
 
 import java.util.Hashtable;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
@@ -23,6 +21,7 @@ import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
 import info.elexis.server.core.servlet.filter.ContextSettingFilter;
 import info.elexis.server.core.servlet.filter.ElexisEnvironmentKeycloakConfigResolver;
+import jakarta.servlet.ServletException;
 
 /**
  * Register the {@link ShiroFilter} with OSGI Jax RS in order to enforce our
@@ -69,26 +68,26 @@ public class JaxRsServletConfiguration {
 					OAUTH_CLIENT_POSTFIX);
 		}
 
-		try {
-			if (keycloakConfigResolver != null) {
-				Hashtable<String, String> filterParams = new Hashtable<>();
-				// see
-				// https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter
-				filterParams.put(KeycloakOIDCFilter.SKIP_PATTERN_PARAM, SKIP_PATTERN);
-				extHttpService.registerFilter(SERVICES_BASE_URL + "/*", new KeycloakOIDCFilter(keycloakConfigResolver),
-						filterParams, null);
+//		try {
+//			if (keycloakConfigResolver != null) {
+//				Hashtable<String, String> filterParams = new Hashtable<>();
+//				// see
+//				// https://www.keycloak.org/docs/latest/securing_apps/#_servlet_filter_adapter
+//				filterParams.put(KeycloakOIDCFilter.SKIP_PATTERN_PARAM, SKIP_PATTERN);
+//				extHttpService.registerFilter(SERVICES_BASE_URL + "/*", new KeycloakOIDCFilter(keycloakConfigResolver),
+//						filterParams, null);
+//
+//				extHttpService.registerFilter(SERVICES_BASE_URL + "/*",
+//						new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
+//						new Hashtable<>(), null);
 
-				extHttpService.registerFilter(SERVICES_BASE_URL + "/*",
-						new ContextSettingFilter(contextService, coreModelService, accessControlService, SKIP_PATTERN),
-						new Hashtable<>(), null);
-
-				log.info("-- Registered Security Filters ---");
-			} else {
-				log.error("--- UNPROTECTED JAXRS API ---");
-			}
-		} catch (ServletException | NamespaceException e) {
-			log.error("Error registering Keycloak filter", e);
-		}
+//				log.info("-- Registered Security Filters ---");
+//			} else {
+//				log.error("--- UNPROTECTED JAXRS API ---");
+//			}
+//		} catch (ServletException | NamespaceException e) {
+//			log.error("Error registering Keycloak filter", e);
+//		}
 	}
 
 }

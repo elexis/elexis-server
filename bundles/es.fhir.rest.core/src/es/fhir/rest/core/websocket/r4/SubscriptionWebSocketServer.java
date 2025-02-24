@@ -1,13 +1,14 @@
 package es.fhir.rest.core.websocket.r4;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.LoggerFactory;
+
+import jakarta.websocket.server.ServerEndpointConfig;
 
 @Component(service = {}, immediate = true)
 public class SubscriptionWebSocketServer {
@@ -22,6 +23,8 @@ public class SubscriptionWebSocketServer {
 		try {
 			server.start();
 		} catch (Exception e) {
+			System.out.println("FUCK");
+			e.printStackTrace();
 			LoggerFactory.getLogger(getClass()).error("Error starting Jetty for WebSocket", e);
 		}
 	}
@@ -32,17 +35,18 @@ public class SubscriptionWebSocketServer {
 	}
 
 	public static Server newServer(int port) {
+		// see https://jetty.org/docs/jetty/12/programming-guide/server/websocket.html
 		Server server = new Server(port);
 
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/");
-		server.setHandler(context);
+		ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		handler.setContextPath("/");
+		server.setHandler(handler);
 
 		// TODO AccessFilter?
-
-		JettyWebSocketServletContainerInitializer.configure(context, null);
-		ServletHolder wsHolder = new ServletHolder("websocketR4", new SubscriptionWebSocketServlet());
-		context.addServlet(wsHolder, "/websocketR4");
+		JakartaWebSocketServletContainerInitializer.configure(handler, (servletContext, container) -> {
+			container.setDefaultMaxTextMessageBufferSize(128 * 1024);
+			container.addEndpoint(ServerEndpointConfig.Builder.create(SubscriptionWebSocket.class, ALIAS).build());
+		});
 
 		return server;
 	}
