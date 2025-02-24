@@ -51,11 +51,7 @@
           <useUIHarness>false</useUIHarness>
           <testClass></testClass>
           <showEclipseLog>true</showEclipseLog>
-          <argLine>-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea
--Dorg.osgi.service.http.port=8380
--Djetty.http.port=8380
--Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot
--Dorg.eclipse.jetty.LEVEL=DEBUG</argLine>
+          <argLine>-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea -Dorg.osgi.service.http.port=8380 -Djetty.http.port=8380 -Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot -Dorg.eclipse.jetty.LEVEL=DEBUG</argLine>
           <dependencies>
             <dependency>
               <type>eclipse-plugin</type>
