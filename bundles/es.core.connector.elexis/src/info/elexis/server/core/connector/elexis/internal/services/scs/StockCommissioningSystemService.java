@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.model.IArticle;
+import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.IStock;
 import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.model.ModelPackage;
@@ -28,11 +29,13 @@ import ch.elexis.core.model.stock.ICommissioningSystemDriver;
 import ch.elexis.core.model.stock.ICommissioningSystemDriverFactory;
 import ch.elexis.core.services.ICodeElementService;
 import ch.elexis.core.services.IModelService;
+import ch.elexis.core.services.IOrderService;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
 import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.services.IStockService;
 import ch.elexis.core.services.IStoreToStringService;
+import ch.elexis.core.services.holder.StoreToStringServiceHolder;
 import ch.elexis.core.status.ObjectStatus;
 import ch.elexis.core.status.StatusUtil;
 import info.elexis.server.core.connector.elexis.internal.BundleConstants;
@@ -61,6 +64,8 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	private ICodeElementService codeElementService;
 	@Reference
 	private ILockService lockService;
+	@Reference
+	private IOrderService orderService;
 
 	private Logger log;
 
@@ -330,6 +335,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 			IArticle adid = articleByGTIN.get();
 			String storeToString = storeToStringService.storeToString(adid).orElse(null);
 			IStockEntry se = stockService.storeArticleInStock(stock, storeToString);
+			setPatientOrderReservation(se);
 			se.setCurrentStock(tse.getCurrentStock());
 			coreModelService.save(se);
 
@@ -355,6 +361,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 		LockResponse lr = lockService.acquireLockBlocking(se, 10, null);
 		if (lr.isOk()) {
 			se.setCurrentStock(currentStock);
+			setPatientOrderReservation(se);
 			coreModelService.save(se);
 			LockResponse lrs = lockService.releaseLock(lr.getLockInfo());
 			if (!lrs.isOk()) {
@@ -375,6 +382,27 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	 */
 	private boolean isStockEntryBoundForReorder(IStockEntry se) {
 		return se.getMinimumStock() > 0 || se.getMaximumStock() > 0;
+	}
+
+	/**
+	 * In the RWA stock, min value represents the amount reserved for patients.
+	 * These items can only be used for dispensing patient medication orders.
+	 * 
+	 * @param stockEntry
+	 */
+	private void setPatientOrderReservation(IStockEntry stockEntry) {
+		stockEntry.setMinimumStock(0);
+		List<IStockEntry> entries = stockService
+				.findAllStockEntriesForArticle(StoreToStringServiceHolder.getStoreToString(stockEntry.getArticle()));
+		for (IStockEntry entry : entries) {
+			IPerson owner = entry.getStock().getOwner();
+			if (owner != null && owner.isPatient()) {
+				if (orderService.findOpenOrderEntryForStockEntry(entry) != null) {
+					stockEntry.setMinimumStock(stockEntry.getMinimumStock() + entry.getMaximumStock());
+				}
+			}
+		}
+
 	}
 
 }
