@@ -51,7 +51,7 @@
           <useUIHarness>false</useUIHarness>
           <testClass></testClass>
           <showEclipseLog>true</showEclipseLog>
-          <argLine>-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea -Dorg.osgi.service.http.port=8380 -Djetty.http.port=8380 -Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot -Dorg.eclipse.jetty.LEVEL=DEBUG</argLine>
+          <argLine>-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea -Dorg.osgi.service.http.port=8380 -Djetty.http.port=8380 -Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot -Dorg.eclipse.jetty.LEVEL=DEBUG -Ddisable.web.security=true</argLine>
           <dependencies>
             <dependency>
               <type>eclipse-plugin</type>
@@ -71,6 +71,11 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.session</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.apache.httpcomponents.httpcore</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
@@ -170,6 +175,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>jcl.over.slf4j</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.glassfish.jersey.containers.jersey-container-servlet-core</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -186,11 +196,6 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.plus</artifactId>
-              <version>0.0.0</version>
-            </dependency>
-            <dependency>
-              <type>eclipse-plugin</type>
-              <artifactId>ch.qos.logback.classic</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
@@ -365,6 +370,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>org.apache.httpcomponents.httpclient</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.ee10.servlet</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -386,6 +396,11 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.util</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>log4j.over.slf4j</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
@@ -475,6 +490,11 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
+              <artifactId>ch.qos.logback.classic</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
               <artifactId>org.eclipse.jetty.http</artifactId>
               <version>0.0.0</version>
             </dependency>
@@ -486,6 +506,11 @@
             <dependency>
               <type>eclipse-plugin</type>
               <artifactId>org.objectweb.asm</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>io.curity.oauth-filter</artifactId>
               <version>0.0.0</version>
             </dependency>
           </dependencies>
@@ -503,11 +528,6 @@
             <bundle>
               <id>org.apache.felix.scr</id>
               <level>1</level>
-              <autoStart>true</autoStart>
-            </bundle>
-            <bundle>
-              <id>ch.qos.logback.classic</id>
-              <level>2</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
@@ -553,6 +573,11 @@
             <bundle>
               <id>org.eclipse.jetty.ee10.annotations</id>
               <level>3</level>
+              <autoStart>true</autoStart>
+            </bundle>
+            <bundle>
+              <id>ch.qos.logback.classic</id>
+              <level>1</level>
               <autoStart>true</autoStart>
             </bundle>
           </bundleStartLevel>

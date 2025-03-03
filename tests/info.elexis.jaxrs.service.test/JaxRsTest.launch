@@ -499,7 +499,7 @@
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="info.elexis.jaxrs.service.test"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea&#10;-Dorg.osgi.service.http.port=8380&#10;-Djetty.http.port=8380&#10;-Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot&#10;-Dorg.eclipse.jetty.LEVEL=DEBUG"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea&#10;-Dorg.osgi.service.http.port=8380&#10;-Djetty.http.port=8380&#10;-Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot&#10;-Dorg.eclipse.jetty.LEVEL=DEBUG&#10;-Ddisable.web.security=true"/>
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="ch.elexis.core.application.product"/>
     <booleanAttribute key="run_in_ui_thread" value="false"/>
