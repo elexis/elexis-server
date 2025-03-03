@@ -430,4 +430,16 @@
          id="org.eclipse.angus.jakarta.mail"
          version="0.0.0"/>
 
+   <plugin
+         id="org.eclipse.jetty.ee10.annotations"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee10.osgi.boot"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee10.servlets"
+         version="0.0.0"/>
+
 </feature>
