@@ -9,9 +9,6 @@ import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-
-import io.curity.oauth.AuthenticatedUser;
 import io.curity.oauth.OAuthJwtFilter;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -63,19 +60,6 @@ public class JaxRsJerseyServletCombinedFilter implements Filter {
 			}
 			oAuthJwtFilter.doFilter(servletRequest, response, chain);
 //			contextSettingFilter.doFilter(servletRequest, response, chain);
-
-			AuthenticatedUser authenticatedUser = (AuthenticatedUser) servletRequest.getAttribute("principal");
-			String jti = authenticatedUser.getClaim("jti").getAsString();
-			Long exp = authenticatedUser.getClaim("exp").getAsLong();
-			String preferredUsername = authenticatedUser.getClaim("preferred_username").getAsString();
-			JsonArray roles = authenticatedUser.getClaim("realm_access").getAsJsonObject().get("roles")
-					.getAsJsonArray();
-			System.out.println(jti);
-			System.out.println(exp);
-			System.out.println(preferredUsername);
-			System.out.println(roles);
-			System.out.println(
-					"Hello " + authenticatedUser.getClaim("preferred_username").getAsString() + " welcome home");
 		}
 
 		chain.doFilter(request, response);
