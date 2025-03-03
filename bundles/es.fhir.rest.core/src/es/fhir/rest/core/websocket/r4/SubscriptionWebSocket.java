@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jetty.websocket.api.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

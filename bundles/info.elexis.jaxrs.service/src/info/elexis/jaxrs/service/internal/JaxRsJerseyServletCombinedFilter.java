@@ -1,4 +1,4 @@
-package es.fhir.rest.core.servlets;
+package info.elexis.jaxrs.service.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,12 +9,9 @@ import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.services.IAccessControlService;
-import ch.elexis.core.services.IContextService;
-import ch.elexis.core.services.IModelService;
-import ch.elexis.core.utils.OsgiServiceUtil;
-import info.elexis.server.core.SystemPropertyConstants;
-import info.elexis.server.core.servlet.filter.ContextSettingFilter;
+import com.google.gson.JsonArray;
+
+import io.curity.oauth.AuthenticatedUser;
 import io.curity.oauth.OAuthJwtFilter;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -27,63 +24,66 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.HttpServletRequest;
 
-@WebFilter(urlPatterns = { "/fhir/*" }, initParams = { @WebInitParam(name = "skipPattern", value = "/fhir/metadata") })
-public class FhirServletCombinedFilter implements Filter {
-
-	private ContextSettingFilter contextSettingFilter;
-	private FilterConfig filterConfig;
+@WebFilter(urlPatterns = { "/services/*" }, initParams = {
+		@WebInitParam(name = "skipPattern", value = "/services/(elexis|public)/.*") })
+public class JaxRsJerseyServletCombinedFilter implements Filter {
 
 	private Pattern skipPattern;
+	private FilterConfig filterConfig;
+
 	private OAuthJwtFilter oAuthJwtFilter;
 
-	@Override
+	private static final boolean IS_DISABLE_WEBSEC = Boolean.valueOf(System.getProperty("disable.web.security"));
+
 	public void init(FilterConfig filterConfig) throws ServletException {
 		this.filterConfig = filterConfig;
 
-		if (SystemPropertyConstants.isDisableWebSecurity()) {
-			LoggerFactory.getLogger(getClass()).error("!!! UNPROTECTED FHIR API !!!");
+		if (IS_DISABLE_WEBSEC) {
+			LoggerFactory.getLogger(getClass()).error("!!! UNPROTECTED SERVICES API !!!");
 		} else {
 			String skipPatternDefinition = filterConfig.getInitParameter("skipPattern");
 			if (skipPatternDefinition != null) {
 				skipPattern = Pattern.compile(skipPatternDefinition, Pattern.DOTALL);
 			}
-			initializeOAuthFilter();
+			initializeFilters();
 			LoggerFactory.getLogger(getClass()).debug("Filter initialized");
 		}
 
-	}
-
-	private void initializeOAuthFilter() throws ServletException {
-		oAuthJwtFilter = new OAuthJwtFilter();
-		oAuthJwtFilter.init(new EnvironmentVariablesExtendedFilterConfig(filterConfig));
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
-		if (!SystemPropertyConstants.isDisableWebSecurity()) {
+		if (!IS_DISABLE_WEBSEC) {
 			HttpServletRequest servletRequest = (HttpServletRequest) request;
 			if (shouldSkip(servletRequest)) {
 				chain.doFilter(request, response);
 				return;
 			}
 			oAuthJwtFilter.doFilter(servletRequest, response, chain);
+//			contextSettingFilter.doFilter(servletRequest, response, chain);
 
-			if (contextSettingFilter == null) {
-				IModelService coreModelService = OsgiServiceUtil.getService(IModelService.class,
-						"(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)").get();
-				IContextService contextService = OsgiServiceUtil.getService(IContextService.class).get();
-				IAccessControlService accessControlService = OsgiServiceUtil.getService(IAccessControlService.class)
-						.get();
-				contextSettingFilter = new ContextSettingFilter(contextService, coreModelService, accessControlService,
-						null);
-			}
-
-			contextSettingFilter.doFilter(servletRequest, response, chain);
+			AuthenticatedUser authenticatedUser = (AuthenticatedUser) servletRequest.getAttribute("principal");
+			String jti = authenticatedUser.getClaim("jti").getAsString();
+			Long exp = authenticatedUser.getClaim("exp").getAsLong();
+			String preferredUsername = authenticatedUser.getClaim("preferred_username").getAsString();
+			JsonArray roles = authenticatedUser.getClaim("realm_access").getAsJsonObject().get("roles")
+					.getAsJsonArray();
+			System.out.println(jti);
+			System.out.println(exp);
+			System.out.println(preferredUsername);
+			System.out.println(roles);
+			System.out.println(
+					"Hello " + authenticatedUser.getClaim("preferred_username").getAsString() + " welcome home");
 		}
 
 		chain.doFilter(request, response);
+	}
+
+	private void initializeFilters() throws ServletException {
+		oAuthJwtFilter = new OAuthJwtFilter();
+		oAuthJwtFilter.init(new EnvironmentVariablesExtendedFilterConfig(filterConfig));
 	}
 
 	/**

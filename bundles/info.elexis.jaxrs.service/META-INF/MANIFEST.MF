@@ -10,10 +10,15 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Jetty-Environment: ee10
 Web-ContextPath: /
-Import-Package: jakarta.servlet;version="[6.0.0,7.0.0)",
+Import-Package: com.google.gson;version="[2.11.0,3.0.0)",
+ io.curity.oauth;version="[5.0.0,6.0.0)",
+ jakarta.servlet;version="[6.0.0,7.0.0)",
  jakarta.servlet.annotation;version="[6.1.0,7.0.0)",
+ jakarta.servlet.http;version="[6.1.0,7.0.0)",
  jakarta.ws.rs;version="[3.1.0,4.0.0)",
  jakarta.ws.rs.core;version="[3.1.0,4.0.0)",
+ org.apache.http.client;version="[4.5.0,5.0.0)",
  org.glassfish.jersey;version="[3.1.0,4.0.0)",
  org.glassfish.jersey.server;version="[3.1.0,4.0.0)",
- org.glassfish.jersey.servlet;version="[3.1.0,4.0.0)"
+ org.glassfish.jersey.servlet;version="[3.1.0,4.0.0)",
+ org.slf4j;version="[1.7.0,2.0.0)"

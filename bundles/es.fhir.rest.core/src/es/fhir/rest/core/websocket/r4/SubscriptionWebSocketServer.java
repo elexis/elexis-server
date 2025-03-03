@@ -23,7 +23,6 @@ public class SubscriptionWebSocketServer {
 		try {
 			server.start();
 		} catch (Exception e) {
-			System.out.println("FUCK");
 			e.printStackTrace();
 			LoggerFactory.getLogger(getClass()).error("Error starting Jetty for WebSocket", e);
 		}

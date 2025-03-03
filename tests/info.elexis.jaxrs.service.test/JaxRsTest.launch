@@ -289,6 +289,7 @@
         <setEntry value="ch.elexis.core.ui.mediorder"/>
         <setEntry value="ch.elexis.core.ui.p2"/>
         <setEntry value="ch.elexis.core.ui.perspective"/>
+        <setEntry value="ch.elexis.core.ui.reminder"/>
         <setEntry value="ch.elexis.core.ui.stock"/>
         <setEntry value="ch.elexis.core.ui.tasks"/>
         <setEntry value="ch.elexis.core.ui.tests"/>
@@ -327,6 +328,9 @@
         <setEntry value="ch.elexis.importer.aeskulap.core"/>
         <setEntry value="ch.elexis.importer.aeskulap.core.test"/>
         <setEntry value="ch.elexis.importer.aeskulap.ui"/>
+        <setEntry value="ch.elexis.importer.triamed.core"/>
+        <setEntry value="ch.elexis.importer.triamed.core.test"/>
+        <setEntry value="ch.elexis.importer.triamed.ui"/>
         <setEntry value="ch.elexis.importer.vitodata.core"/>
         <setEntry value="ch.elexis.importer.vitodata.core.test"/>
         <setEntry value="ch.elexis.importer.vitodata.ui"/>
@@ -395,7 +399,11 @@
         <setEntry value="ch.medelexis.galexis"/>
         <setEntry value="ch.medelexis.gcal.sync"/>
         <setEntry value="ch.medelexis.konsliste"/>
+        <setEntry value="ch.medelexis.laborverordnungen"/>
         <setEntry value="ch.medelexis.medication.ui"/>
+        <setEntry value="ch.medelexis.mednet.webapi.id"/>
+        <setEntry value="ch.medelexis.messaging.ibasis"/>
+        <setEntry value="ch.medelexis.messaging.ibasis.ui"/>
         <setEntry value="ch.medelexis.messaging.twilio"/>
         <setEntry value="ch.medelexis.messaging.twilio.ui"/>
         <setEntry value="ch.medelexis.omnivore.ocr.task"/>
@@ -457,6 +465,7 @@
         <setEntry value="org.iatrix.bestellung.pharmapool"/>
         <setEntry value="org.iatrix.bestellung.pharmapool_test"/>
         <setEntry value="org.iatrix.bestellung.rose"/>
+        <setEntry value="org.iatrix.bestellung.rose.id"/>
         <setEntry value="org.iatrix.bestellung.rose_test"/>
         <setEntry value="org.iatrix.help.wiki"/>
         <setEntry value="org.iatrix.messwerte"/>
@@ -471,6 +480,13 @@
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
         <listEntry value="4"/>
     </listAttribute>
+    <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+        <mapEntry key="OAUTH_FILTER_audience" value="account"/>
+        <mapEntry key="OAUTH_FILTER_issuer" value="https://ee-master.myelexis.ch/keycloak/auth/realms/ElexisEnvironment"/>
+        <mapEntry key="OAUTH_FILTER_jsonWebKeysPath" value="/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/certs"/>
+        <mapEntry key="OAUTH_FILTER_oauthHost" value="ee-master.myelexis.ch"/>
+        <mapEntry key="OAUTH_FILTER_oauthPort" value="443"/>
+    </mapAttribute>
     <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=info.elexis.jaxrs.service.test"/>
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="true"/>
     <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
@@ -488,10 +504,11 @@
     <stringAttribute key="product" value="ch.elexis.core.application.product"/>
     <booleanAttribute key="run_in_ui_thread" value="false"/>
     <setAttribute key="selected_target_bundles">
-        <setEntry value="ch.qos.logback.classic@2:true"/>
+        <setEntry value="ch.qos.logback.classic@1:true"/>
         <setEntry value="ch.qos.logback.core@default:default"/>
         <setEntry value="com.google.gson*2.12.1@default:default"/>
         <setEntry value="com.sun.xml.bind.jaxb-osgi@default:default"/>
+        <setEntry value="io.curity.oauth-filter@default:default"/>
         <setEntry value="jakarta.activation-api@default:default"/>
         <setEntry value="jakarta.annotation-api@default:default"/>
         <setEntry value="jakarta.el-api@default:default"/>
@@ -505,12 +522,16 @@
         <setEntry value="jakarta.ws.rs-api*3.1.99@default:default"/>
         <setEntry value="jakarta.xml.bind-api@default:default"/>
         <setEntry value="javassist@default:default"/>
+        <setEntry value="jcl.over.slf4j@default:default"/>
         <setEntry value="jul.to.slf4j@default:default"/>
+        <setEntry value="log4j.over.slf4j@default:default"/>
         <setEntry value="org.apache.aries.spifly.dynamic.bundle@1:true"/>
         <setEntry value="org.apache.felix.gogo.command@default:default"/>
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
+        <setEntry value="org.apache.httpcomponents.httpclient@default:default"/>
+        <setEntry value="org.apache.httpcomponents.httpcore@default:default"/>
         <setEntry value="org.apache.logging.log4j.api@default:default"/>
         <setEntry value="org.eclipse.core.contenttype@default:default"/>
         <setEntry value="org.eclipse.core.jobs@default:default"/>

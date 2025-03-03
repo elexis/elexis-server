@@ -81,3 +81,16 @@ in order to enable a bundle to contribute, `META-INF/MANIFEST.MF` must contain t
 ```
 
 for more log output look for `logback.xml` and set `<logger name="org.eclipse.jetty.ee10" level="DEBUG" />`
+
+#### OAuth Filter configuration
+
+The init params, as described in https://github.com/curityio/oauth-filter-for-java?tab=readme-ov-file#init-params-for-the-oauthjwtfilter have
+to be set as environment variables.
+
+```
+OAUTH_FILTER_audience=account
+OAUTH_FILTER_issuer=https://ee-master.myelexis.ch/keycloak/auth/realms/ElexisEnvironment
+OAUTH_FILTER_jsonWebKeysPath=/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/certs
+OAUTH_FILTER_oauthHost=ee-master.myelexis.ch
+OAUTH_FILTER_oauthPort=443
+```

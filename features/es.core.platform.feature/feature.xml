@@ -422,4 +422,12 @@
          id="org.apache.aries.spifly.dynamic.bundle"
          version="0.0.0"/>
 
+   <plugin
+         id="angus-activation"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.angus.jakarta.mail"
+         version="0.0.0"/>
+
 </feature>
