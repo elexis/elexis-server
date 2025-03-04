@@ -17,6 +17,8 @@ public class SystemPropertyConstants {
 	 */
 	public static final String STATION_ID_DEFAULT = "ELEXIS-SERVER";
 	
+	public static final String FILTER_NAME = System.getenv("foo");
+
 	/**
 	 * Disable the security filters for all resources. Allows <b>unprotected access</b> to
 	 * resources.
@@ -30,7 +32,7 @@ public class SystemPropertyConstants {
 	private static final boolean isDisableWebSecurity =
 		Boolean.valueOf(System.getProperty(DISABLE_WEB_SECURITY)) ? setValueAndLog(true) : false;
 	
-	public static boolean isDisableWebSecurity(){
+	public static final boolean isDisableWebSecurity() {
 		return isDisableWebSecurity;
 	}
 	

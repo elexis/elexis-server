@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: info.elexis.server.fhir.rest.core.test
 Bundle-Version: 3.13.0.qualifier
-Fragment-Host: info.elexis.server.fhir.rest.core;bundle-version="3.12.0"
+Fragment-Host: info.elexis.server.fhir.rest.core;bundle-version="3.13.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.junit,
  ch.elexis.core.findings;bundle-version="3.12.0",
@@ -14,16 +14,21 @@ Require-Bundle: org.junit,
  info.elexis.server.findings.fhir.jpa.service;bundle-version="3.12.0",
  ch.elexis.omnivore.model;bundle-version="3.12.0",
  org.eclipse.jetty.client;bundle-version="10.0.18"
-Import-Package: ch.elexis.core.findings.util,
+Import-Package: ca.uhn.fhir.rest.client.api;version="[7.2.0,8.0.0)",
+ ca.uhn.fhir.rest.client.interceptor;version="[7.2.0,8.0.0)",
+ ca.uhn.fhir.rest.gclient;version="[7.2.0,8.0.0)",
+ ch.elexis.core.findings.util,
  ch.elexis.core.findings.util.commands,
  ch.elexis.core.findings.util.model,
- javax.ws.rs;version="2.1.6",
- javax.ws.rs.core;version="2.1.6",
+ jakarta.ws.rs;version="[3.1.0,4.0.0)",
+ jakarta.ws.rs.core;version="[3.1.0,4.0.0)",
  org.apache.http;version="4.4.15",
  org.apache.http.client;version="4.5.13",
  org.apache.http.client.methods;version="4.5.13",
  org.apache.http.entity;version="4.4.15",
  org.apache.http.impl.client;version="4.5.13",
+ org.eclipse.jetty.util.component;version="[12.0.0,13.0.0)",
+ org.eclipse.jetty.websocket.client;version="[12.0.0,13.0.0)",
  org.hl7.fhir.dstu3.model,
  org.hl7.fhir.r4.model;version="5.4.0",
  org.osgi.framework;version="1.8.0"

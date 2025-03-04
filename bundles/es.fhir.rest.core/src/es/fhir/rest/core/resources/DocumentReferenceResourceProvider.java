@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -67,6 +64,8 @@ import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IStoreToStringService;
 import ch.elexis.core.services.ITextReplacementService;
 import ch.elexis.core.status.ObjectStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component(service = IFhirResourceProvider.class)
 public class DocumentReferenceResourceProvider

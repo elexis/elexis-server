@@ -6,4 +6,4 @@ Bundle-Version: 3.13.0.qualifier
 Bundle-Vendor: elexis.info
 Fragment-Host: ch.qos.logback.classic;bundle-version="1.0.7"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Import-Package: javax.activation
+Import-Package: jakarta.activation;version="[2.1.0,3.0.0)"

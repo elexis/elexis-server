@@ -2,16 +2,15 @@ package info.elexis.server.core.connector.elexis.rest.legacy;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
-
 import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.InstanceStatus;
 import ch.elexis.core.server.IInstanceService;
 import info.elexis.jaxrs.service.JaxrsResource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.Response;
 
 @Component
 public class InstanceService implements IInstanceService, JaxrsResource {

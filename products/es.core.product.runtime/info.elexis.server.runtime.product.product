@@ -12,6 +12,8 @@
       <vmArgs>-Dorg.eclipse.ecf.provider.filetransfer.excludeContributors=org.eclipse.ecf.provider.filetransfer.httpclient4
 -Dorg.osgi.service.http.port=8380
 -Djava.awt.headless=true
+-Djetty.http.port=8380
+-Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot
 -Duser.language=de
 -Duser.region=CH
 -Xms128m
@@ -46,18 +48,19 @@
    </features>
 
    <configurations>
-      <plugin id="ch.elexis.core.jpa.datasource" autoStart="true" startLevel="2" />
-      <plugin id="ch.elexis.core.jpa.entities" autoStart="true" startLevel="3" />
+      <plugin id="angus-activation" autoStart="true" startLevel="1" />
+      <plugin id="ch.elexis.core.jpa.datasource" autoStart="true" startLevel="3" />
+      <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="1" />
+      <plugin id="info.elexis.server.fhir.rest.core" autoStart="true" startLevel="3" />
+      <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="1" />
       <plugin id="org.apache.felix.scr" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.frameworkadmin" autoStart="false" startLevel="5" />
-      <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.p2.transport.ecf" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.jetty.osgi.httpservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.jetty.ee10.annotations" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.jetty.ee10.osgi.boot" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.jetty.ee10.websocket.jakarta.server" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.jetty.osgi" autoStart="true" startLevel="2" />
+      <plugin id="org.glassfish.jersey.core.jersey-client" autoStart="true" startLevel="2" />
+      <plugin id="org.glassfish.jersey.core.jersey-common" autoStart="true" startLevel="2" />
    </configurations>
 
    <repositories>

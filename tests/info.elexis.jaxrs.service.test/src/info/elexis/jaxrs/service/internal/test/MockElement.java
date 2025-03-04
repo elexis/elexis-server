@@ -2,7 +2,7 @@ package info.elexis.jaxrs.service.internal.test;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class MockElement {

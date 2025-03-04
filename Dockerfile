@@ -4,9 +4,9 @@ ARG BRANCH=master
 
 RUN apk add --no-cache tzdata bash gcompat cups-client
 ENV TZ=Europe/Zurich
-ENV LANGUAGE en_US:en  
-ENV LANG de_CH.UTF-8  
-ENV LC_ALL de_CH.UTF-8
+ENV LANGUAGE=en_US:en  
+ENV LANG=de_CH.UTF-8  
+ENV LC_ALL=de_CH.UTF-8
 ENV ELEXIS-BRANCH=${BRANCH}
 RUN addgroup --gid 1001 elexis && adduser -S -u 1001 -G elexis -g "" -h /elexis elexis && \
     mkdir -p /opt/elexis-server && \

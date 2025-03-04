@@ -3,10 +3,14 @@ package info.elexis.jaxrs.service.internal.test;
 import org.osgi.service.component.annotations.Component;
 
 import info.elexis.jaxrs.service.JaxrsResource;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
+@Path("/test")
 @Component
 public class MockResourceImpl implements MockResource, JaxrsResource {
 
+	@GET
 	@Override
 	public String getContent() {
 		return "get";

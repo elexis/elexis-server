@@ -10,19 +10,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
 
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.IPerson;
@@ -39,6 +30,16 @@ import ch.elexis.core.time.TimeUtil;
 import ch.elexis.core.types.Gender;
 import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.SystemPropertyConstants;
+import io.curity.oauth.AuthenticatedUser;
+import io.curity.oauth.OAuthFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class ContextSettingFilter implements Filter {
 
@@ -91,21 +92,27 @@ public class ContextSettingFilter implements Filter {
 
 		// assert user and assignedContact are valid
 		// adapt user roles to keycloak assigned roles
-		KeycloakSecurityContext keycloakSecurityContext = (KeycloakSecurityContext) request
-				.getAttribute(KeycloakSecurityContext.class.getName());
-		if (keycloakSecurityContext != null) {
-			AccessToken token = keycloakSecurityContext.getToken();
-			String jti = token.getId();
+		AuthenticatedUser authenticatedUser = (AuthenticatedUser) servletRequest
+				.getAttribute(OAuthFilter.PRINCIPAL_ATTRIBUTE_NAME);
+		if (authenticatedUser != null) {
+			String jti = authenticatedUser.getClaim("jti").getAsString();
+			Long exp = authenticatedUser.getClaim("exp").getAsLong();
+			String preferredUsername = authenticatedUser.getClaim("preferred_username").getAsString();
+			String elexisContactId = authenticatedUser.getClaim("elexisContactId").getAsString();
+			JsonArray roles = authenticatedUser.getClaim("realm_access").getAsJsonObject().get("roles")
+					.getAsJsonArray();
+			HashSet<String> rolesSet = new HashSet<>(roles.size());
+			roles.forEach(e -> rolesSet.add(e.getAsString()));
 
 			if (!verificationCache.containsKey(jti)) {
-				ch.elexis.core.eenv.AccessToken keycloakAccessToken = new ch.elexis.core.eenv.AccessToken(
-						keycloakSecurityContext.getTokenString(), TimeUtil.toDate(token.getExp()),
-						token.getPreferredUsername(), null, null);
+				ch.elexis.core.eenv.AccessToken keycloakAccessToken = new ch.elexis.core.eenv.AccessToken(null,
+						TimeUtil.toDate(exp), preferredUsername, null, null);
 
 				accessControlService.doPrivileged(() -> {
-					Optional<IUser> user = coreModelService.load(token.getPreferredUsername(), IUser.class);
+					Optional<IUser> user = coreModelService.load(preferredUsername, IUser.class);
 					if (user.isEmpty()) {
-						user = Optional.ofNullable(performDynamicUserCreationIfApplicable(token));
+						user = Optional.ofNullable(
+								performDynamicUserCreationIfApplicable(preferredUsername, rolesSet, elexisContactId));
 					}
 
 					user.ifPresent(u -> verificationCache.put(jti, new CacheEntry(u, keycloakAccessToken)));
@@ -113,20 +120,19 @@ public class ContextSettingFilter implements Filter {
 
 				CacheEntry cacheEntry = verificationCache.get(jti);
 				if (cacheEntry == null || cacheEntry.user == null) {
-					logger.warn("[{}] User not loadable in local database. Denying request.",
-							token.getPreferredUsername());
+					logger.warn("[{}] User not loadable in local database. Denying request.", preferredUsername);
 					servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
 					return;
 				}
 
 				IContact userContact = cacheEntry.user.getAssignedContact();
 				if (userContact == null) {
-					logger.warn("[{}] User has no assigned contact. Denying request.", token.getPreferredUsername());
+					logger.warn("[{}] User has no assigned contact. Denying request.", preferredUsername);
 					servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "");
 					return;
 				}
 
-				assertRoles(accessControlService, cacheEntry.user, token);
+				assertRoles(accessControlService, cacheEntry.user, rolesSet);
 			}
 
 			CacheEntry cacheEntry = verificationCache.get(jti);
@@ -171,27 +177,22 @@ public class ContextSettingFilter implements Filter {
 
 	/**
 	 * Dynamically creates user if applicable
-	 * 
-	 * @param token
-	 * @return
 	 */
-	private IUser performDynamicUserCreationIfApplicable(AccessToken token) {
-		boolean isElexisUser = token.getRealmAccess().getRoles().contains("bot")
-				|| token.getRealmAccess().getRoles().contains("user");
+	private IUser performDynamicUserCreationIfApplicable(String preferredUsername, Set<String> roles,
+			String elexisContactId) {
+		boolean isElexisUser = roles.contains("bot") || roles.contains("user");
 		if (!isElexisUser) {
 			return null;
 		}
 		// if an elexisContactId is set, and it is valid - dynamically create user
-		String elexisContactId = (String) token.getOtherClaims().get("elexisContactId");
 		Optional<IContact> assignedContact = coreModelService.load(elexisContactId, IContact.class);
 		if (!assignedContact.isPresent()) {
 			logger.warn("[{}] Dynamic user create failed. Invalid or missing attribute elexisContactId [{}]",
-					token.getPreferredUsername(), elexisContactId);
+					preferredUsername, elexisContactId);
 			return null;
 		}
-		logger.info("[{}] Dynamic user/bot create with assigned contact [{}]", token.getPreferredUsername(),
-				elexisContactId);
-		return new IUserBuilder(coreModelService, token.getPreferredUsername(), assignedContact.get()).buildAndSave();
+		logger.info("[{}] Dynamic user/bot create with assigned contact [{}]", preferredUsername, elexisContactId);
+		return new IUserBuilder(coreModelService, preferredUsername, assignedContact.get()).buildAndSave();
 	}
 
 	/**
@@ -202,14 +203,13 @@ public class ContextSettingFilter implements Filter {
 	 * @param user
 	 * @param token
 	 */
-	private void assertRoles(IAccessControlService accessControlService, IUser user, AccessToken token) {
+	private void assertRoles(IAccessControlService accessControlService, IUser user, Set<String> roles) {
 		accessControlService.doPrivileged(() -> {
-			Set<String> keycloakGrantedRoles = token.getRealmAccess().getRoles();
 			Set<String> allAvailableRoles = coreModelService.getQuery(IRole.class).execute().stream()
 					.map(r -> r.getId()).collect(Collectors.toSet());
 
 			Set<String> targetUserRoleSet = new HashSet<String>(allAvailableRoles);
-			targetUserRoleSet.retainAll(keycloakGrantedRoles);
+			targetUserRoleSet.retainAll(roles);
 			Set<String> currentUserRoleSet = user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toSet());
 
 			if (!Objects.equals(currentUserRoleSet, targetUserRoleSet)) {
@@ -229,9 +229,6 @@ public class ContextSettingFilter implements Filter {
 	public void init(FilterConfig arg0) throws ServletException {
 	}
 
-	/**
-	 * @see org.keycloak.adapters.servlet.KeycloakOIDCFilter#shouldSkip
-	 */
 	private boolean shouldSkip(HttpServletRequest request) {
 
 		if (skipPattern == null) {

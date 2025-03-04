@@ -67,7 +67,7 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	}
 
 	@CmdAdvisor(description = "reload the logging configuration (e.g. after modification of logback-addition.xml)")
-	public void __system_reloadLogConfig() {
+	public void __system_reloadLogConfig() throws JoranException {
 		ConsoleCommandProvider.reloadLogger();
 		ok();
 	}
@@ -83,24 +83,28 @@ public class ConsoleCommandProvider extends AbstractConsoleCommandProvider {
 	/**
 	 * Reconfigures the system logger by reloading all log configuration files
 	 * 
+	 * @throws JoranException
+	 * 
 	 * @see <a href=
 	 *      "http://stackoverflow.com/questions/9320133/how-do-i-programmatically
 	 *      -tell-logback-to-reload-configuration">stackoverflow</a>
 	 */
-	public static void reloadLogger() {
+	public static void reloadLogger() throws JoranException {
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		loggerContext.reset();
 
 		ContextInitializer ci = new ContextInitializer(loggerContext);
-		URL url = ci.findURLOfDefaultConfigurationFile(true);
-
-		try {
-			JoranConfigurator configurator = new JoranConfigurator();
-			configurator.setContext(loggerContext);
-			loggerContext.reset();
-			configurator.doConfigure(url);
-		} catch (JoranException je) {
-			// StatusPrinter will handle this
-		}
+		ci.autoConfig();
+//		URL url = ci.findURLOfDefaultConfigurationFile(true);
+//
+//		try {
+//			JoranConfigurator configurator = new JoranConfigurator();
+//			configurator.setContext(loggerContext);
+//			loggerContext.reset();
+//			configurator.doConfigure(url);
+//		} catch (JoranException je) {
+//			// StatusPrinter will handle this
+//		}
 		StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 	}
 

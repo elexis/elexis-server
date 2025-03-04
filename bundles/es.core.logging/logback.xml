@@ -27,8 +27,8 @@
 			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.log.zip
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
-				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>25MB</maxFileSize>
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFileNamingAndTriggeringPolicy">
+				<maxFileSize>100MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<encoder>
@@ -36,59 +36,11 @@
 		</encoder>
 	</appender>
 
-	<appender name="ROLLING_WARN"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${user.home}/elexis-server/logs/elexis-server.WARN.log</file>
-		<rollingPolicy
-			class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.WARN.log.zip
-			</fileNamePattern>
-			<minIndex>1</minIndex>
-			<maxIndex>5</maxIndex>
-		</rollingPolicy>
-		<triggeringPolicy
-			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>50MB</maxFileSize>
-		</triggeringPolicy>
-		<encoder>
-			<pattern>[%t] %d %-5level %logger{36} - %msg%n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-			<level>WARN</level>
-			<onMatch>ACCEPT</onMatch>
-			<onMismatch>DENY</onMismatch>
-		</filter>
-	</appender>
-
-	<appender name="ROLLING_ERROR"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${user.home}/elexis-server/logs/elexis-server.ERROR.log</file>
-		<rollingPolicy
-			class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>${user.home}/elexis-server/logs/elexis-server-%d{yyyy-MM-dd}.%i.ERROR.log.zip
-			</fileNamePattern>
-			<minIndex>1</minIndex>
-			<maxIndex>5</maxIndex>
-		</rollingPolicy>
-		<triggeringPolicy
-			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>50MB</maxFileSize>
-		</triggeringPolicy>
-		<encoder>
-			<pattern>[%t] %d %-5level %logger{36} - %msg%n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-			<level>ERROR</level>
-			<onMatch>ACCEPT</onMatch>
-			<onMismatch>DENY</onMismatch>
-		</filter>
-	</appender>
-
 	<logger name="jcifs" level="INFO" />
+	<logger name="org.eclipse.jetty.ee10" level="DEBUG" />
 	<logger name="org.eclipse" level="INFO" />
 	<logger name="org.apache" level="INFO" />
 	<logger name="se.ugli.bigqueue" level="INFO" />
-	<logger name="org.keycloak.saml" level="DEBUG" />
 	<logger name="ca.uhn.fhir" level="INFO" />
 	<logger
 		name="org.apache.shiro.session.mgt.DefaultSessionManager" level="INFO" />
@@ -98,8 +50,6 @@
 	<root level="${root.level:-DEBUG}">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="ROLLING" />
-		<appender-ref ref="ROLLING_WARN" />
-		<appender-ref ref="ROLLING_ERROR" />
 	</root>
 
 </configuration>

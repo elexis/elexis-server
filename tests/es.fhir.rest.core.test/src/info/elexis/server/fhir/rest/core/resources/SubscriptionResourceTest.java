@@ -15,9 +15,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Subscription;
@@ -215,16 +215,16 @@ public class SubscriptionResourceTest {
 		SubscriptionWebsocketListener subscriptionWebsocketListener = new SubscriptionWebsocketListener();
 		CompletableFuture<Session> fut = websocketClient.connect(subscriptionWebsocketListener, uri);
 		Session session = fut.get(5, TimeUnit.SECONDS);
-		session.getRemote().sendString("bind " + execute.getId().getIdPart());
+		session.sendText("bind " + execute.getId().getIdPart(), null);
 
 		String msg = subscriptionWebsocketListener.messageQueue.poll(5, TimeUnit.SECONDS);
 		assertEquals("bound " + execute.getId().getIdPart(), msg);
 
-		session.close(StatusCode.NORMAL, "exit");
+		session.close(StatusCode.NORMAL, "exit", Callback.NOOP);
 		websocketClient.stop();
 	}
 
-	public static class SubscriptionWebsocketListener implements WebSocketListener {
+	public static class SubscriptionWebsocketListener implements Session.Listener {
 
 		private static final Logger LOG = LoggerFactory.getLogger(SubscriptionWebsocketListener.class);
 		private final LinkedBlockingDeque<String> messageQueue = new LinkedBlockingDeque<>();

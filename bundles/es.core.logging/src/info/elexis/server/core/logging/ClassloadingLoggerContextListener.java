@@ -1,12 +1,11 @@
 package info.elexis.server.core.logging;
 
-import javax.activation.CommandMap;
-import javax.activation.MailcapCommandMap;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextListener;
+import jakarta.activation.CommandMap;
+import jakarta.activation.MailcapCommandMap;
 
 public class ClassloadingLoggerContextListener implements  LoggerContextListener {
 
@@ -35,12 +34,14 @@ public class ClassloadingLoggerContextListener implements  LoggerContextListener
 	@Override
 	public void onLevelChange(Logger logger, Level level) {
 		if(!initialized) {
-			MailcapCommandMap mc = (MailcapCommandMap)CommandMap.getDefaultCommandMap();
+			MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
 			mc.addMailcap("text/html;; x-java-content-handler=org.apache.geronimo.mail.handlers.HtmlHandler");
 			mc.addMailcap("text/xml;; x-java-content-handler=org.apache.geronimo.mail.handlers.XMLHandler");
 			mc.addMailcap("text/plain;; x-java-content-handler=org.apache.geronimo.mail.handlers.TextHandler");
-			mc.addMailcap("multipart/*;; x-java-content-handler=org.apache.geronimo.mail.handlers.MultipartHandler; x-java-fallback-entry=true");
-			mc.addMailcap("multipart/mixed;; x-java-content-handler=org.apache.geronimo.mail.handlers.MultipartHandler; x-java-fallback-entry=true");
+			mc.addMailcap(
+					"multipart/*;; x-java-content-handler=org.apache.geronimo.mail.handlers.MultipartHandler; x-java-fallback-entry=true");
+			mc.addMailcap(
+					"multipart/mixed;; x-java-content-handler=org.apache.geronimo.mail.handlers.MultipartHandler; x-java-fallback-entry=true");
 			mc.addMailcap("message/rfc822;; x-java-content-handler=org.apache.geronimo.mail.handlers.MessageHandler");
 			CommandMap.setDefaultCommandMap(mc);
 			initialized = true;

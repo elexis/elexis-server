@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.model.stock.ICommissioningSystemDriverFactory;
+import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IStockCommissioningSystemService;
 import ch.elexis.core.services.holder.AccessControlServiceHolder;
 import ch.elexis.core.status.StatusUtil;
@@ -26,6 +27,9 @@ public class StockCommissioningSystemDriverFactories {
 
 	@Reference(target = "(role=serverimpl)")
 	private IStockCommissioningSystemService stockCommissioningSystemService;
+
+	@Reference
+	private IAccessControlService accessControlService;
 
 	private Logger log = LoggerFactory.getLogger(StockCommissioningSystemDriverFactories.class);
 
@@ -41,7 +45,7 @@ public class StockCommissioningSystemDriverFactories {
 	public void activate() {
 		log.trace("Initializing stock commissioning systems.");
 
-		AccessControlServiceHolder.get().doPrivileged(() -> {
+		accessControlService.doPrivileged(() -> {
 			List<UUID> allDriverUuids = getAllDriverUuids();
 			for (UUID uuid : allDriverUuids) {
 				log.info("Initializing stock commissioning systems for driver id [{}]",

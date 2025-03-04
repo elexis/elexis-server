@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" immediate="true" name="es.fhir.rest.core.servlets.FhirServletResourceCollector">
+   <reference bind="bindFhirProvider" cardinality="1..n" interface="es.fhir.rest.core.resources.IFhirResourceProvider" name="FhirProvider" policy="dynamic" policy-option="greedy" unbind="unbindFhirProvider"/>
+   <reference bind="bindPlainResourceProvider" interface="es.fhir.rest.core.resources.PlainResourceProvider" name="PlainResourceProvider"/>
+   <implementation class="es.fhir.rest.core.servlets.FhirServletResourceCollector"/>
+</scr:component>

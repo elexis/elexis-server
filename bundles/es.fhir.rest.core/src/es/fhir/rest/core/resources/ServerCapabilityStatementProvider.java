@@ -1,26 +1,22 @@
 package es.fhir.rest.core.resources;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestSecurityComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.UriType;
-import org.keycloak.adapters.KeycloakDeployment;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ServerCapabilityStatementProvider
 		extends ca.uhn.fhir.rest.server.provider.ServerCapabilityStatementProvider {
 
-	private KeycloakDeployment keycloakDeployment;
 
-	public ServerCapabilityStatementProvider(RestfulServer theServer, KeycloakDeployment keycloakDeployment) {
+	public ServerCapabilityStatementProvider(RestfulServer theServer) {
 		super(theServer);
-		this.keycloakDeployment = keycloakDeployment;
 	}
 
 	@Override
@@ -60,7 +56,8 @@ public class ServerCapabilityStatementProvider
 		
 		Extension oauthTokenExtension = new Extension();
 		oauthTokenExtension.setUrl("token");
-		oauthTokenExtension.setValue(new UriType(keycloakDeployment.getTokenUrl()));
+		oauthTokenExtension
+				.setValue(new UriType("/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/token"));
 		oauthExtension.getExtension().add(oauthTokenExtension);
 		
 		csrsc.getService().add(smartOnFhirConcept);
