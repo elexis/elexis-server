@@ -10,6 +10,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import jakarta.servlet.annotation.WebServlet;
 
 @WebServlet(urlPatterns = { "/fhir/*" })
@@ -33,6 +34,8 @@ public class FhirServlet extends RestfulServer {
 		});
 
 		registerProvider(FhirServletResourceCollector.getPlainResourceProvider());
+
+		setServerConformanceProvider(new ServerCapabilityStatementProvider(this));
 
 		/*
 		 * This server interceptor causes the server to return nicely formatter and

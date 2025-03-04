@@ -56,7 +56,8 @@ public class ServerCapabilityStatementProvider
 		
 		Extension oauthTokenExtension = new Extension();
 		oauthTokenExtension.setUrl("token");
-		oauthTokenExtension.setValue(new UriType("/fhir/token"));
+		oauthTokenExtension
+				.setValue(new UriType("/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/token"));
 		oauthExtension.getExtension().add(oauthTokenExtension);
 		
 		csrsc.getService().add(smartOnFhirConcept);
