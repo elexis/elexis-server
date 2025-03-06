@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Testcert for oauth filter
+Bundle-SymbolicName: io.curity.oauth.filter.testcert
+Bundle-Version: 5.0.0.qualifier
+Export-Package: io.curity.oauth
+Fragment-Host: org.eclipse.jetty.ee10.osgi.boot;bundle-version="12.0.16"
+Import-Package: io.curity.oauth;version="5.0.0"
+Automatic-Module-Name: io.curity.oauth.filter.testcert
+Bundle-RequiredExecutionEnvironment: JavaSE-11

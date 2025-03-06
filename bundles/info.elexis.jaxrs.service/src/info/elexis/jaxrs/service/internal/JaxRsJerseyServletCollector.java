@@ -10,7 +10,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 
-import info.elexis.jaxrs.service.JaxrsResource;
+import ch.elexis.core.jaxrs.JaxrsResource;
 
 @Component(service = {}, immediate = true)
 public class JaxRsJerseyServletCollector {

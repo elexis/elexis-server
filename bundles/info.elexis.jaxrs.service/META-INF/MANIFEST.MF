@@ -3,13 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Jersey JaxRs Service
 Bundle-SymbolicName: info.elexis.jaxrs.service
 Bundle-Version: 3.13.0.qualifier
-Export-Package: info.elexis.jaxrs.service
 Service-Component: OSGI-INF/*.xml
 Automatic-Module-Name: info.elexis.jaxrs.service
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Jetty-Environment: ee10
-Web-ContextPath: /
+Require-Bundle: ch.elexis.core;bundle-version="3.13.0"
+Web-ContextPath: /services
 Import-Package: com.google.gson;version="[2.11.0,3.0.0)",
  io.curity.oauth;version="[5.0.0,6.0.0)",
  jakarta.servlet;version="[6.0.0,7.0.0)",

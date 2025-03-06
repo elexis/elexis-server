@@ -1,14 +1,22 @@
 package info.elexis.jaxrs.service.internal.test;
 
-import org.osgi.service.component.annotations.Component;
+import java.util.List;
 
-import info.elexis.jaxrs.service.JaxrsResource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import ch.elexis.core.jaxrs.JaxrsResource;
+import ch.elexis.core.model.IRole;
+import ch.elexis.core.services.IContextService;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 @Path("/test")
 @Component
 public class MockResourceImpl implements MockResource, JaxrsResource {
+
+	@Reference
+	private IContextService contextService;
 
 	@GET
 	@Override
@@ -46,6 +54,17 @@ public class MockResourceImpl implements MockResource, JaxrsResource {
 		mockElement.setKey("key");
 		mockElement.setValue("value");
 		return mockElement;
+	}
+
+	@Override
+	public String getUser() {
+		return contextService.getActiveUser().map(u -> u.getId()).orElse("no user");
+	}
+
+	@Override
+	public String getRoles() {
+		List<IRole> roles = contextService.getActiveUser().get().getRoles();
+		return roles.stream().map(IRole::getId).reduce((a, b) -> a + ", " + b).orElse("no roles");
 	}
 
 }

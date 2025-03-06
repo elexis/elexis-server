@@ -10,6 +10,8 @@ Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Import-Package: ch.qos.logback.classic;version="1.2.3";resolution:=optional,
  ch.qos.logback.core.spi;version="1.2.3";resolution:=optional,
+ com.google.gson;version="[2.11.0,3.0.0)",
+ io.swagger.v3.oas.annotations;version="[2.2.0,3.0.0)",
  jakarta.servlet;version="3.1.0",
  jakarta.servlet.http;version="2.4.0",
  jakarta.ws.rs;version="1.1.1",

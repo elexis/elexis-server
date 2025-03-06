@@ -48,8 +48,7 @@ Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
 Export-Package: info.elexis.server.core,
  info.elexis.server.core.contrib,
- info.elexis.server.core.rest,
- info.elexis.server.core.servlet.filter
+ info.elexis.server.core.rest
 Bundle-ClassPath: .
 Require-Bundle: info.elexis.server.core.common;bundle-version="3.13.0",
  ch.elexis.core;bundle-version="3.13.0",

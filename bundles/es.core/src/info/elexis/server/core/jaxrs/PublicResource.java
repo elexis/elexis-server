@@ -2,7 +2,7 @@ package info.elexis.server.core.jaxrs;
 
 import org.osgi.service.component.annotations.Component;
 
-import info.elexis.jaxrs.service.JaxrsResource;
+import ch.elexis.core.jaxrs.JaxrsResource;
 import info.elexis.server.core.Application;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.GET;

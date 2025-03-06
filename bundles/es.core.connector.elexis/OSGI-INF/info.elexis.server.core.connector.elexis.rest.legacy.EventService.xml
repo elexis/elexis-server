@@ -2,7 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="info.elexis.server.core.connector.elexis.rest.legacy.EventService">
    <service>
       <provide interface="ch.elexis.core.server.IEventService"/>
-      <provide interface="info.elexis.jaxrs.service.JaxrsResource"/>
+      <provide interface="ch.elexis.core.jaxrs.JaxrsResource"/>
    </service>
    <reference cardinality="1..1" field="eventAdmin" interface="org.osgi.service.event.EventAdmin" name="eventAdmin"/>
    <implementation class="info.elexis.server.core.connector.elexis.rest.legacy.EventService"/>

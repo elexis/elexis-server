@@ -9,7 +9,7 @@ Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/*.xml
 Jetty-Environment: ee10
-Web-ContextPath: /
+Web-ContextPath: /fhir
 Require-Bundle: ch.rgw.utility;bundle-version="3.13.0",
  ch.elexis.core;bundle-version="3.13.0",
  ch.elexis.core.model;bundle-version="3.13.0",

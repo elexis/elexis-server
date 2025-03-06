@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.osgi.service.component.annotations.Component;
 
+import ch.elexis.core.jaxrs.JaxrsResource;
 import ch.elexis.core.utils.CoreUtil;
-import info.elexis.jaxrs.service.JaxrsResource;
 import info.elexis.server.core.Application;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

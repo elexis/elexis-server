@@ -5,12 +5,10 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import jakarta.servlet.annotation.WebServlet;
 
-@WebServlet(urlPatterns = { "/services/*" })
+@WebServlet(urlPatterns = { "/*" })
 public class JaxRsJerseyServlet extends ServletContainer {
 
 	private static final long serialVersionUID = -131084922708281927L;
-
-	public static final String ALIAS = "/services";
 
 	public JaxRsJerseyServlet() {
 		super(new MyResourceConfig());
@@ -18,8 +16,8 @@ public class JaxRsJerseyServlet extends ServletContainer {
 
 	// #TODO move
 	// info.elexis.server.core.security.internal.JaxRsServletConfiguration
-	// #TODO filter with Keycloak
 	// #TODO provide endpoint to list all routes
+	// #TODO swagger annotations endpoint
 
 	private static class MyResourceConfig extends ResourceConfig {
 		public MyResourceConfig() {

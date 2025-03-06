@@ -2,7 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="info.elexis.server.core.connector.elexis.rest.legacy.InstanceService">
    <service>
       <provide interface="ch.elexis.core.server.IInstanceService"/>
-      <provide interface="info.elexis.jaxrs.service.JaxrsResource"/>
+      <provide interface="ch.elexis.core.jaxrs.JaxrsResource"/>
    </service>
    <implementation class="info.elexis.server.core.connector.elexis.rest.legacy.InstanceService"/>
 </scr:component>

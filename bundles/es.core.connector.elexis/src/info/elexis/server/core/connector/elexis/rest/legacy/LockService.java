@@ -1,19 +1,19 @@
-package info.elexis.server.core.connector.elexis.internal.services.locking;
+package info.elexis.server.core.connector.elexis.rest.legacy;
 
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import ch.elexis.core.jaxrs.JaxrsResource;
 import ch.elexis.core.lock.types.LockInfo;
 import ch.elexis.core.lock.types.LockRequest;
 import ch.elexis.core.lock.types.LockResponse;
 import ch.elexis.core.lock.types.LockResponse.Status;
 import ch.elexis.core.server.ILockService;
-import info.elexis.jaxrs.service.JaxrsResource;
 
 @Component
-public class RestLockService implements ILockService, JaxrsResource {
+public class LockService implements ILockService, JaxrsResource {
 	
 	@Reference
 	private info.elexis.server.core.connector.elexis.locking.ILockService theLockService;

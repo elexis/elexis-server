@@ -1,6 +1,5 @@
 package info.elexis.server.core.internal;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.console.AbstractConsoleCommandProvider;
 import ch.elexis.core.console.CmdAdvisor;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;

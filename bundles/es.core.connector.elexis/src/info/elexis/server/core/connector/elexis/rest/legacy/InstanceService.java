@@ -5,8 +5,8 @@ import java.util.List;
 import org.osgi.service.component.annotations.Component;
 
 import ch.elexis.core.common.InstanceStatus;
+import ch.elexis.core.jaxrs.JaxrsResource;
 import ch.elexis.core.server.IInstanceService;
-import info.elexis.jaxrs.service.JaxrsResource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericEntity;

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineSecurityException;
 
-import info.elexis.jaxrs.service.JaxrsResource;
+import ch.elexis.core.jaxrs.JaxrsResource;
 import info.elexis.server.core.redmine.internal.RedmineUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -17,6 +17,7 @@
   <modules>
     <module>info.elexis.jaxrs.service.test</module>
     <module>es.core.connector.elexis.test</module>
+    <module>io.curity.oauth.filter.testcert</module>
     <module>es.fhir.rest.core.test</module>
   </modules>
   <dependencies>

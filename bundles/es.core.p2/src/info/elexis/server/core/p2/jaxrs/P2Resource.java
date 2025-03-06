@@ -10,7 +10,7 @@ import org.eclipse.equinox.p2.operations.Update;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import info.elexis.jaxrs.service.JaxrsResource;
+import ch.elexis.core.jaxrs.JaxrsResource;
 import info.elexis.server.core.p2.IProvisioner;
 import info.elexis.server.core.p2.internal.RepoInfo;
 import info.elexis.server.core.rest.ResponseStatusUtil;

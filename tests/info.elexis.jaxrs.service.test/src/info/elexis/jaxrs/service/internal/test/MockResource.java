@@ -32,4 +32,14 @@ interface MockResource {
 	@Path("/xml")
 	@Produces(MediaType.APPLICATION_XML)
 	MockElement getXml();
+
+	@GET
+	@Path("/user")
+	@Produces(MediaType.TEXT_PLAIN)
+	String getUser();
+
+	@GET
+	@Path("/roles")
+	@Produces(MediaType.TEXT_PLAIN)
+	String getRoles();
 }
