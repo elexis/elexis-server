@@ -422,6 +422,7 @@
         <setEntry value="ch.novcom.elexis.mednet.plugin"/>
         <setEntry value="ch.pharmed.phmprescriber"/>
         <setEntry value="ch.pharmed.phmprescriber_test"/>
+        <setEntry value="ch.rgw.utility.tests"/>
         <setEntry value="ch.unibe.iam.scg.archie"/>
         <setEntry value="ch.unibe.iam.scg.archie.samples"/>
         <setEntry value="ch.vality.dicom.viewer"/>
@@ -448,6 +449,7 @@
         <setEntry value="net.medshare.connector.viollier_test"/>
         <setEntry value="net.medshare.percentile.v2"/>
         <setEntry value="net.medshare.percentile.v2_test"/>
+        <setEntry value="org.apache.felix.gogo.shell.contribution"/>
         <setEntry value="org.iatrix.bestellung.pharmapool"/>
         <setEntry value="org.iatrix.bestellung.pharmapool_test"/>
         <setEntry value="org.iatrix.bestellung.rose"/>
@@ -657,15 +659,13 @@
         <setEntry value="ch.elexis.core.test.logging@default:false"/>
         <setEntry value="ch.elexis.core.webdav@default:default"/>
         <setEntry value="ch.elexis.core@default:default"/>
-        <setEntry value="ch.rgw.utility.tests@default:false"/>
         <setEntry value="ch.rgw.utility@default:default"/>
         <setEntry value="es.gogo.shell@default:false"/>
         <setEntry value="info.elexis.jaxrs.service.test@default:false"/>
         <setEntry value="info.elexis.jaxrs.service@default:default"/>
         <setEntry value="io.curity.oauth.filter.testcert@default:false"/>
-        <setEntry value="org.apache.felix.gogo.shell.contribution@default:false"/>
     </setAttribute>
-    <booleanAttribute key="show_selected_only" value="false"/>
+    <booleanAttribute key="show_selected_only" value="true"/>
     <stringAttribute key="templateConfig" value="${target_home}/configuration/config.ini"/>
     <booleanAttribute key="tracing" value="false"/>
     <booleanAttribute key="useCustomFeatures" value="false"/>
