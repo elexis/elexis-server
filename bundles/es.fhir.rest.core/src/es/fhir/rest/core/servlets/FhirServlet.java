@@ -13,7 +13,7 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import es.fhir.rest.core.resources.ServerCapabilityStatementProvider;
 import jakarta.servlet.annotation.WebServlet;
 
-@WebServlet(urlPatterns = { "/*" })
+@WebServlet(name = "fhir", urlPatterns = { "/*" })
 public class FhirServlet extends RestfulServer {
 
 	private static Logger logger = LoggerFactory.getLogger(FhirServlet.class);

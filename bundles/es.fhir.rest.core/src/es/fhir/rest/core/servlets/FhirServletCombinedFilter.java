@@ -4,7 +4,9 @@ import ch.elexis.core.jaxrs.filter.AbstractCombinedOauthJwtContextSettingFilter;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
 
-@WebFilter(urlPatterns = { "/fhir/*" }, initParams = { @WebInitParam(name = "skipPattern", value = "/fhir/metadata") })
+@WebFilter(servletNames = { "fhir" }, urlPatterns = { "/*" }, initParams = {
+		@WebInitParam(name = "filter-id", value = "fhir"),
+		@WebInitParam(name = "skipPattern", value = "/fhir/metadata") })
 public class FhirServletCombinedFilter extends AbstractCombinedOauthJwtContextSettingFilter {
 
 }

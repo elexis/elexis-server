@@ -5,7 +5,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import jakarta.servlet.annotation.WebServlet;
 
-@WebServlet(urlPatterns = { "/*" })
+@WebServlet(name = "services", urlPatterns = { "/*" })
 public class JaxRsJerseyServlet extends ServletContainer {
 
 	private static final long serialVersionUID = -131084922708281927L;

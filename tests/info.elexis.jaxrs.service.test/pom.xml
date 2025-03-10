@@ -68,11 +68,11 @@
           <showEclipseLog>true</showEclipseLog>
           <argLine>-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true -ea -Delexis.test.mode=true -Djetty.http.port=8380 -Djetty.home.bundle=org.eclipse.jetty.ee10.osgi.boot -Dorg.eclipse.jetty.LEVEL=WARN</argLine>
 			<environmentVariables>
-				<OAUTH_FILTER_audience>test-jwt-audience</OAUTH_FILTER_audience>
-				<OAUTH_FILTER_issuer>test-jwt-issuer</OAUTH_FILTER_issuer>
-				<OAUTH_FILTER_jsonWebKeysPath>someurl</OAUTH_FILTER_jsonWebKeysPath>
-				<OAUTH_FILTER_oauthHost>somehost</OAUTH_FILTER_oauthHost>
-				<OAUTH_FILTER_oauthPort>0</OAUTH_FILTER_oauthPort>
+				<OAUTH_FILTER_services_audience>test-jwt-audience</OAUTH_FILTER_services_audience>
+				<OAUTH_FILTER_services_issuer>test-jwt-issuer</OAUTH_FILTER_services_issuer>
+				<OAUTH_FILTER_services_jsonWebKeysPath>someurl</OAUTH_FILTER_services_jsonWebKeysPath>
+				<OAUTH_FILTER_services_oauthHost>somehost</OAUTH_FILTER_services_oauthHost>
+				<OAUTH_FILTER_services_oauthPort>0</OAUTH_FILTER_services_oauthPort>
 			</environmentVariables>
           <dependencies>
             <dependency>

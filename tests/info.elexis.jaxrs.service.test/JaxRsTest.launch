@@ -469,11 +469,11 @@
         <listEntry value="1"/>
     </listAttribute>
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-        <mapEntry key="OAUTH_FILTER_audience" value="test-jwt-audience"/>
-        <mapEntry key="OAUTH_FILTER_issuer" value="test-jwt-issuer"/>
-        <mapEntry key="OAUTH_FILTER_jsonWebKeysPath" value="/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/certs"/>
-        <mapEntry key="OAUTH_FILTER_oauthHost" value="ee-master.myelexis.ch"/>
-        <mapEntry key="OAUTH_FILTER_oauthPort" value="443"/>
+        <mapEntry key="OAUTH_FILTER_services_audience" value="test-jwt-audience"/>
+        <mapEntry key="OAUTH_FILTER_services_issuer" value="test-jwt-issuer"/>
+        <mapEntry key="OAUTH_FILTER_services_jsonWebKeysPath" value="/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/certs"/>
+        <mapEntry key="OAUTH_FILTER_services_oauthHost" value="ee-master.myelexis.ch"/>
+        <mapEntry key="OAUTH_FILTER_services_oauthPort" value="443"/>
     </mapAttribute>
     <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="true"/>
