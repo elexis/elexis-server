@@ -4,6 +4,6 @@
       <provide interface="info.elexis.server.core.p2.IProvisioner"/>
    </service>
    <reference bind="setAgentProvider" cardinality="1..1" interface="org.eclipse.equinox.p2.core.IProvisioningAgentProvider" name="AgentProvider" policy="static" unbind="unsetAgentProvider"/>
-   <reference bind="setMetadataRepositoryManager" interface="org.eclipse.equinox.p2.core.spi.IAgentServiceFactory" name="MetadataRepositoryManager" target="(p2.agent.servicename=org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager)"/>
+   <reference bind="setMetadataRepositoryManager" interface="org.eclipse.equinox.p2.core.spi.IAgentServiceFactory" name="MetadataRepositoryManager" target="(p2.agent.service.name=org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager)"/>
    <implementation class="info.elexis.server.core.p2.internal.Provisioner"/>
 </scr:component>

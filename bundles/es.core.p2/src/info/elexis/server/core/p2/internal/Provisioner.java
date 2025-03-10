@@ -71,7 +71,10 @@ public class Provisioner implements IProvisioner {
 		this.agentProvider = agentProvider;
 	}
 	
-	@Reference(target = "(p2.agent.servicename=org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager)")
+	/**
+	 * https://github.com/eclipse-equinox/p2/commit/dd5abe60dd913635a818abd5af9b45cd6066bf90
+	 **/
+	@Reference(target = "(p2.agent.service.name=org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager)")
 	protected void setMetadataRepositoryManager(IAgentServiceFactory serviceFactory){
 		// is necessary to have the service loaded on startup
 	}
