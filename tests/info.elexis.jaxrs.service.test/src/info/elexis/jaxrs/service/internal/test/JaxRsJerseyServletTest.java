@@ -127,6 +127,7 @@ public class JaxRsJerseyServletTest {
 			builder.audience("test-jwt-audience");
 			builder.jwtID(UUID.randomUUID().toString());
 			builder.claim("preferred_username", username);
+			builder.claim("email", "test@tester.ch");
 			builder.subject(username);
 			builder.claim("realm_access", realmAccess);
 			builder.expirationTime(new Date(new Date().getTime() + 5 * 1000));
