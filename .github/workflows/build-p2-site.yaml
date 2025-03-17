@@ -56,6 +56,5 @@ jobs:
           no-cache: true
           build-args: |
             BRANCH=${{ env.BRANCH_NAME }}
-		  tags: |
-		    elexis/elexis-server:${{ github.ref_name }}
+          tags: elexis/elexis-server:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
