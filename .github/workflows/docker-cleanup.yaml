@@ -1,0 +1,35 @@
+name: Cleanup Docker Images
+
+# Allow this workflow to be triggered manually
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to clean up Docker images for'
+        required: true
+        default: 'master'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: List all Docker images
+        run: docker images
+
+      - name: Remove old Docker images for the specified branch
+        run: |
+          docker image prune -f
+          docker rmi $(docker images your-dockerhub-username/elexis-server:${{ github.event.inputs.branch }} -q) || true
