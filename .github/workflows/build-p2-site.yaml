@@ -40,7 +40,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -50,10 +50,12 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           pull: true
           no-cache: true
           build-args: |
             BRANCH=${{ env.BRANCH_NAME }}
-          tags: ${{ steps.meta.outputs.tags }}
+		  tags: |
+		    elexis/elexis-server:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
