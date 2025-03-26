@@ -437,9 +437,4 @@
          id="org.eclipse.jetty.ee10.servlets"
          version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.equinox.security.linux"
-         os="linux"
-         version="0.0.0"/>
-
 </feature>
