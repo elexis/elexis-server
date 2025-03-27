@@ -12,14 +12,14 @@ ENV LANG=de_CH.UTF-8
 ENV LC_ALL=de_CH.UTF-8
 ENV ELEXIS-BRANCH=${BRANCH}
 RUN case ${TARGETPLATFORM} in \
-         "linux/amd64")  TINI_ARCH=amd64  ;; \
-         "linux/arm64")  TINI_ARCH=arm64  ;; \
+         "linux/amd64")  ES_ARCH=x86_64  ;; \
+         "linux/arm64")  ES_ARCH=aarch64  ;; \
     esac && \
 	addgroup --gid 1001 elexis && adduser -S -u 1001 -G elexis -g "" -h /elexis elexis && \
     mkdir -p /opt/elexis-server && \
-    wget https://download.elexis.info/elexis-server/${BRANCH}/products/info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
-    unzip -d /opt/elexis-server/ info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
-    rm info.elexis.server.runtime.product-linux.gtk.x86_64.zip && \
+    wget https://download.elexis.info/elexis-server/${BRANCH}/products/info.elexis.server.runtime.product-linux.gtk.$ES_ARCH.zip && \
+    unzip -d /opt/elexis-server/ info.elexis.server.runtime.product-linux.gtk.$ES_ARCH.zip && \
+    rm info.elexis.server.runtime.product-linux.gtk.$ES_ARCH.zip && \
     chown -R elexis:elexis /opt/elexis-server /elexis
 
 COPY releng/docker-assets/elexis-server.sh /
