@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import ch.elexis.core.model.stock.ICommissioningSystemDriverFactory;
 import ch.elexis.core.services.IAccessControlService;
 import ch.elexis.core.services.IStockCommissioningSystemService;
-import ch.elexis.core.services.holder.AccessControlServiceHolder;
 import ch.elexis.core.status.StatusUtil;
 
 @Component(service = {})
@@ -61,7 +60,7 @@ public class StockCommissioningSystemDriverFactories {
 	public void unbind(ICommissioningSystemDriverFactory driverFactory) {
 		log.debug("Unbinding " + driverFactory.getClass().getName());
 
-		AccessControlServiceHolder.get().doPrivileged(() -> {
+		accessControlService.doPrivileged(() -> {
 			log.info("Shutting down stock commissioning systems for driver id [{}]",
 					driverFactory.getIdentification().toString());
 			IStatus status = stockCommissioningSystemService
