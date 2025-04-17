@@ -40,7 +40,7 @@
         <listEntry value="1"/>
     </listAttribute>
     <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
-    <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
     <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
@@ -61,12 +61,10 @@
     <stringAttribute key="product" value="info.elexis.server.core.ElexisServer"/>
     <booleanAttribute key="run_in_ui_thread" value="false"/>
     <setAttribute key="selected_target_bundles">
+        <setEntry value="angus-activation@1:true"/>
         <setEntry value="bcprov@default:default"/>
         <setEntry value="ch.qos.logback.classic@2:true"/>
         <setEntry value="ch.qos.logback.core@default:default"/>
-        <setEntry value="com.fasterxml.jackson.core.jackson-annotations@default:default"/>
-        <setEntry value="com.fasterxml.jackson.core.jackson-core@default:default"/>
-        <setEntry value="com.fasterxml.jackson.core.jackson-databind@default:default"/>
         <setEntry value="com.google.gson*2.12.1@default:default"/>
         <setEntry value="com.google.guava.failureaccess@default:default"/>
         <setEntry value="com.google.guava@default:default"/>
@@ -118,10 +116,14 @@
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
+        <setEntry value="org.apache.httpcomponents.client5.httpclient5@default:default"/>
+        <setEntry value="org.apache.httpcomponents.core5.httpcore5-h2@default:default"/>
+        <setEntry value="org.apache.httpcomponents.core5.httpcore5@default:default"/>
         <setEntry value="org.apache.httpcomponents.httpclient@default:default"/>
         <setEntry value="org.apache.httpcomponents.httpcore@default:default"/>
         <setEntry value="org.apache.poi.ooxml@default:default"/>
         <setEntry value="org.apache.poi@default:default"/>
+        <setEntry value="org.eclipse.angus.jakarta.mail@default:default"/>
         <setEntry value="org.eclipse.core.contenttype@default:default"/>
         <setEntry value="org.eclipse.core.databinding.observable@default:default"/>
         <setEntry value="org.eclipse.core.databinding.property@default:default"/>
@@ -203,12 +205,6 @@
         <setEntry value="org.jdom.2@default:default"/>
         <setEntry value="org.junit@default:default"/>
         <setEntry value="org.jvnet.mimepull@default:default"/>
-        <setEntry value="org.keycloak.keycloak-adapter-core@default:default"/>
-        <setEntry value="org.keycloak.keycloak-adapter-spi@default:default"/>
-        <setEntry value="org.keycloak.keycloak-authz-client@default:default"/>
-        <setEntry value="org.keycloak.keycloak-common@default:default"/>
-        <setEntry value="org.keycloak.keycloak-core@default:default"/>
-        <setEntry value="org.keycloak.keycloak-servlet-filter-adapter@default:default"/>
         <setEntry value="org.objectweb.asm*9.7.1@default:default"/>
         <setEntry value="org.objectweb.asm.commons*9.7.1@default:default"/>
         <setEntry value="org.objectweb.asm.tree*9.7.1@default:default"/>
@@ -242,6 +238,7 @@
         <setEntry value="ch.elexis.core.findings.fhir.model@default:default"/>
         <setEntry value="ch.elexis.core.findings.util@default:default"/>
         <setEntry value="ch.elexis.core.findings@default:default"/>
+        <setEntry value="ch.elexis.core.jcifs.test@default:false"/>
         <setEntry value="ch.elexis.core.jcifs@default:default"/>
         <setEntry value="ch.elexis.core.jpa.datasource@3:true"/>
         <setEntry value="ch.elexis.core.jpa.entities@default:default"/>
@@ -251,6 +248,7 @@
         <setEntry value="ch.elexis.core.logging.default_configuration@default:false"/>
         <setEntry value="ch.elexis.core.model@default:default"/>
         <setEntry value="ch.elexis.core.services@default:default"/>
+        <setEntry value="ch.elexis.core.test.logging@default:false"/>
         <setEntry value="ch.elexis.core.test@default:default"/>
         <setEntry value="ch.elexis.core.text.docx@default:default"/>
         <setEntry value="ch.elexis.core.webdav@default:default"/>
@@ -258,8 +256,10 @@
         <setEntry value="ch.elexis.omnivore.model@default:default"/>
         <setEntry value="ch.elexis.omnivore@default:default"/>
         <setEntry value="ch.rgw.utility@default:default"/>
+        <setEntry value="es.gogo.shell@default:false"/>
         <setEntry value="info.elexis.jaxrs.service@default:default"/>
         <setEntry value="info.elexis.server.core.common@default:default"/>
+        <setEntry value="info.elexis.server.core.logging@default:false"/>
         <setEntry value="info.elexis.server.core@default:default"/>
         <setEntry value="info.elexis.server.fhir.rest.core.test@default:false"/>
         <setEntry value="info.elexis.server.fhir.rest.core@3:true"/>

@@ -10,7 +10,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		PractitionerRoleTest.class, ConditionTest.class, ObservationTest.class, FamilyMemberHistoryTest.class,
 		EncounterTest.class, ServiceRequestTest.class, MedicationRequestTest.class, ClaimTest.class,
 		DocumentReferenceTest.class, SubscriptionResourceTest.class, PlainResourceProviderTest.class,
-		ImmunizationTest.class })
+		ImmunizationTest.class, TaskResourceTest.class })
 public class AllResourceTests {
 
 }
