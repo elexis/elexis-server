@@ -63,7 +63,7 @@
     <setAttribute key="selected_target_bundles">
         <setEntry value="angus-activation@1:true"/>
         <setEntry value="bcprov@default:default"/>
-        <setEntry value="ch.qos.logback.classic@2:true"/>
+        <setEntry value="ch.qos.logback.classic@1:true"/>
         <setEntry value="ch.qos.logback.core@default:default"/>
         <setEntry value="com.google.gson*2.12.1@default:default"/>
         <setEntry value="com.google.guava.failureaccess@default:default"/>
@@ -248,7 +248,6 @@
         <setEntry value="ch.elexis.core.logging.default_configuration@default:false"/>
         <setEntry value="ch.elexis.core.model@default:default"/>
         <setEntry value="ch.elexis.core.services@default:default"/>
-        <setEntry value="ch.elexis.core.test.logging@default:false"/>
         <setEntry value="ch.elexis.core.test@default:default"/>
         <setEntry value="ch.elexis.core.text.docx@default:default"/>
         <setEntry value="ch.elexis.core.webdav@default:default"/>
