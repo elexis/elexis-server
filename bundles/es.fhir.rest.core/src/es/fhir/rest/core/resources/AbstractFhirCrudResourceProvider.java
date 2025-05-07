@@ -36,9 +36,9 @@ public abstract class AbstractFhirCrudResourceProvider<FHIR extends BaseResource
 		implements IFhirResourceProvider<FHIR, ELEXIS> {
 
 	private final Class<ELEXIS> CLAZZ;
-	private IModelService modelService;
-	private IContextService contextService;
-	private ILocalLockService localLockService;
+	protected IModelService modelService;
+	protected IContextService contextService;
+	protected ILocalLockService localLockService;
 
 	protected Logger log;
 	protected ResourceProviderUtil resourceProviderUtil;

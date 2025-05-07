@@ -3,6 +3,7 @@ package es.fhir.rest.core.resources;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Task;
@@ -15,6 +16,7 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.TokenParamModifier;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
 import ch.elexis.core.model.IContact;
@@ -73,7 +75,6 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 			@OptionalParam(name = Task.SP_OWNER) ReferenceParam theOwnerParam,
 			@OptionalParam(name = Task.SP_PATIENT) ReferenceParam thePatientParam,
 			@Count Integer theCount) {
-
 		IQuery<IReminder> query = coreModelService.getQuery(IReminder.class);
 
 		if (statusParam != null) {
@@ -85,7 +86,8 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 				query.or(ModelPackage.Literals.IREMINDER__STATUS, COMPARATOR.EQUALS, ProcessStatus.OVERDUE);
 				query.andJoinGroups();
 			} else {
-				query.and(ModelPackage.Literals.IREMINDER__STATUS, COMPARATOR.EQUALS, processStatus);
+				query.and(ModelPackage.Literals.IREMINDER__STATUS,
+						hasNotModifier(statusParam) ? COMPARATOR.NOT_EQUALS : COMPARATOR.EQUALS, processStatus);
 			}
 		}
 
@@ -135,6 +137,10 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 		}
 
 		return super.handleExecute(query, null, null);
+	}
+
+	private boolean hasNotModifier(TokenParam statusParam) {
+		return statusParam.getModifier() != null && statusParam.getModifier() == TokenParamModifier.NOT;
 	}
 
 	private ProcessStatus getProcessStatus(String string) {

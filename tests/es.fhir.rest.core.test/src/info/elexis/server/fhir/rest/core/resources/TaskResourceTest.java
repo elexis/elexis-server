@@ -73,6 +73,12 @@ public class TaskResourceTest {
 				.and(Task.PATIENT.hasId("abcdef")).returnBundle(Bundle.class).execute();
 		assertEquals(0, results.getEntry().size());
 
+		results = client.search().byUrl("Task?status:not=COMPLETED").returnBundle(Bundle.class).execute();
+		assertEquals(allReminders.size() - 1, results.getEntry().size());
+		allReminders.get(1).setStatus(ProcessStatus.CLOSED);
+		CoreModelServiceHolder.get().save(allReminders.get(1));
+		results = client.search().byUrl("Task?status:not=COMPLETED").returnBundle(Bundle.class).execute();
+		assertEquals(allReminders.size() - 2, results.getEntry().size());
 	}
 
 	@Test
