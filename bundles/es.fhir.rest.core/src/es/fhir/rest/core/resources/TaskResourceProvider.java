@@ -3,7 +3,6 @@ package es.fhir.rest.core.resources;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Task;
@@ -26,6 +25,7 @@ import ch.elexis.core.model.IReminderResponsibleLink;
 import ch.elexis.core.model.IUserGroup;
 import ch.elexis.core.model.ModelPackage;
 import ch.elexis.core.model.issue.ProcessStatus;
+import ch.elexis.core.model.issue.Visibility;
 import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
@@ -74,6 +74,7 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 	public List<Task> search(@OptionalParam(name = Task.SP_STATUS) TokenParam statusParam,
 			@OptionalParam(name = Task.SP_OWNER) ReferenceParam theOwnerParam,
 			@OptionalParam(name = Task.SP_PATIENT) ReferenceParam thePatientParam,
+			@OptionalParam(name = Task.SP_CODE) TokenParam codeParam,
 			@Count Integer theCount) {
 		IQuery<IReminder> query = coreModelService.getQuery(IReminder.class);
 
@@ -88,6 +89,25 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 			} else {
 				query.and(ModelPackage.Literals.IREMINDER__STATUS,
 						hasNotModifier(statusParam) ? COMPARATOR.NOT_EQUALS : COMPARATOR.EQUALS, processStatus);
+			}
+		}
+		if (codeParam != null) {
+			if ("http://www.elexis.info/task/visibility".equals(codeParam.getSystem())) {
+				// query for visibility with code popup query for all popup visibility
+				if ("popup".equalsIgnoreCase(codeParam.getValue())) {
+					if (hasNotModifier(codeParam)) {
+						query.and("visibility", COMPARATOR.NOT_EQUALS, Visibility.POPUP_ON_PATIENT_SELECTION);
+						query.and("visibility", COMPARATOR.NOT_EQUALS, Visibility.POPUP_ON_LOGIN);
+					} else {
+						query.startGroup();
+						query.and("visibility", COMPARATOR.EQUALS, Visibility.POPUP_ON_PATIENT_SELECTION);
+						query.or("visibility", COMPARATOR.EQUALS, Visibility.POPUP_ON_LOGIN);
+						query.andJoinGroups();
+					}
+				} else {
+					query.and("visibility", (hasNotModifier(codeParam) ? COMPARATOR.NOT_EQUALS : COMPARATOR.EQUALS),
+							Visibility.valueOf(codeParam.getValue()));
+				}
 			}
 		}
 

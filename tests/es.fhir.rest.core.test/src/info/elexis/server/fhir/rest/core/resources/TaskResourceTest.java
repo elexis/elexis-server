@@ -25,7 +25,11 @@ import org.junit.Test;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ch.elexis.core.model.IReminder;
+import ch.elexis.core.model.IUserGroup;
+import ch.elexis.core.model.builder.IReminderBuilder;
+import ch.elexis.core.model.builder.IUserGroupBuilder;
 import ch.elexis.core.model.issue.ProcessStatus;
+import ch.elexis.core.model.issue.Visibility;
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import info.elexis.server.fhir.rest.core.test.AllTests;
@@ -79,6 +83,33 @@ public class TaskResourceTest {
 		CoreModelServiceHolder.get().save(allReminders.get(1));
 		results = client.search().byUrl("Task?status:not=COMPLETED").returnBundle(Bundle.class).execute();
 		assertEquals(allReminders.size() - 2, results.getEntry().size());
+
+		IUserGroup group = new IUserGroupBuilder(CoreModelServiceHolder.get(), "TestGroup").buildAndSave();
+		IReminder groupReminder = new IReminderBuilder(CoreModelServiceHolder.get(), null, Visibility.ALWAYS,
+				ProcessStatus.OPEN, "test").build();
+		groupReminder.setGroup(group);
+		CoreModelServiceHolder.get().save(groupReminder);
+
+		results = client.search().byUrl("Task?owner=" + group.getId() + "&status:not=COMPLETED")
+				.returnBundle(Bundle.class).execute();
+		assertEquals(1, results.getEntry().size());
+
+		CoreModelServiceHolder.get().remove(groupReminder);
+		CoreModelServiceHolder.get().remove(group);
+
+		List<IReminder> allPopupRemindersNotClosed = query.execute().stream()
+				.filter(r -> (r.getVisibility() == Visibility.POPUP_ON_LOGIN
+						|| r.getVisibility() == Visibility.POPUP_ON_PATIENT_SELECTION)
+						&& r.getStatus() != ProcessStatus.CLOSED)
+				.toList();
+		IReminder popupReminder = new IReminderBuilder(CoreModelServiceHolder.get(), null, Visibility.POPUP_ON_LOGIN,
+				ProcessStatus.OPEN, "test").buildAndSave();
+
+		results = client.search().byUrl("Task?code=http://www.elexis.info/task/visibility|popup&status:not=COMPLETED")
+				.returnBundle(Bundle.class).execute();
+		assertEquals(allPopupRemindersNotClosed.size() + 1, results.getEntry().size());
+
+		CoreModelServiceHolder.get().remove(popupReminder);
 	}
 
 	@Test
