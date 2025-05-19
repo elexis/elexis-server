@@ -76,7 +76,8 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 			@OptionalParam(name = Task.SP_PATIENT) ReferenceParam thePatientParam,
 			@OptionalParam(name = Task.SP_CODE) TokenParam codeParam,
 			@Count Integer theCount) {
-		IQuery<IReminder> query = coreModelService.getQuery(IReminder.class);
+		// always refresh cache data as change could have happened
+		IQuery<IReminder> query = coreModelService.getQuery(IReminder.class, true, false);
 
 		if (statusParam != null) {
 			ProcessStatus processStatus= getProcessStatus(statusParam.getValue());
