@@ -270,7 +270,9 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 
 		Map<String, IStockEntry> inventoryGtinMap = new HashMap<String, IStockEntry>();
 		scsInventoryResult.stream().forEach(ir -> inventoryGtinMap.put(ir.getArticle().getGtin(), ir));
-		for (String gtin : gtinsToUpdate) {
+		List<String> gtins = gtinsToUpdate.stream().map(entry -> entry.contains(":") ? entry.split(":", 2)[1] : entry)
+				.toList();
+		for (String gtin : gtins) {
 			IStatus status = null;
 
 			Optional<IStockEntry> seo = Optional.empty();
