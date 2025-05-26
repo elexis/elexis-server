@@ -374,18 +374,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="com.fasterxml.jackson.core.jackson-annotations"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.fasterxml.jackson.core.jackson-core"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.fasterxml.jackson.core.jackson-databind"
-         version="0.0.0"/>
-
-   <plugin
          id="jakarta.inject.jakarta.inject-api"
          version="0.0.0"/>
 
