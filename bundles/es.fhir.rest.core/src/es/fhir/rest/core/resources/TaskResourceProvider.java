@@ -150,6 +150,7 @@ public class TaskResourceProvider extends AbstractFhirCrudResourceProvider<Task,
 			}
 		}
 
+		query.orderBy(ModelPackage.Literals.IDENTIFIABLE__LASTUPDATE, ORDER.DESC);
 		query.orderBy(ModelPackage.Literals.IREMINDER__DUE, ORDER.DESC);
 
 		if (theCount != null) {
