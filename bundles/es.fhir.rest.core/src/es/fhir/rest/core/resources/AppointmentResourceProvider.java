@@ -176,7 +176,7 @@ public class AppointmentResourceProvider extends AbstractFhirCrudResourceProvide
 			switch (param) {
 			case Appointment.SP_DATE:
 				query.orderBy("Tag", QueryUtil.sortOrderEnumToLocal(order));
-				query.orderByLeftPadded("Beginn", QueryUtil.sortOrderEnumToLocal(order));
+				query.orderBy("Beginn", QueryUtil.sortOrderEnumToLocal(order));
 				break;
 			default:
 				log.info("sortParamName [{}] not supported.", param);
