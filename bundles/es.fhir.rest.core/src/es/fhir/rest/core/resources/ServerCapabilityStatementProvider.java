@@ -60,6 +60,12 @@ public class ServerCapabilityStatementProvider
 				.setValue(new UriType("/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/token"));
 		oauthExtension.getExtension().add(oauthTokenExtension);
 		
+		Extension authTokenExtension = new Extension();
+		authTokenExtension.setUrl("authorize");
+		authTokenExtension
+				.setValue(new UriType("/keycloak/auth/realms/ElexisEnvironment/protocol/openid-connect/auth"));
+		oauthExtension.getExtension().add(authTokenExtension);
+
 		csrsc.getService().add(smartOnFhirConcept);
 		csrsc.getExtension().add(oauthExtension);
 		
