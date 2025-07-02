@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -45,27 +46,30 @@ public class MedelexisFeatureManagement {
 	
 	@Activate
 	public void activate(){
-		
+		CompletableFuture.runAsync(() -> {
+			installFeatures();
+		});
+	}
+
+	private void installFeatures() {
 		if (getMisApiKey() == null) {
-			logger.info("env var [{}] not provided - skipping p2 feature management",
-				Constants.ENV_VAR_MIS_API_KEY);
+			logger.info("env var [{}] not provided - skipping p2 feature management", Constants.ENV_VAR_MIS_API_KEY);
 			return;
 		}
-		
+
 		// register authenticator for *.medelexis.ch
-		Authenticator makba =
-			new MisApiKeyBasicAuthenticator(getP2RepoUsername(), getMisApiKey().toCharArray());
+		Authenticator makba = new MisApiKeyBasicAuthenticator(getP2RepoUsername(), getMisApiKey().toCharArray());
 		Authenticator.setDefault(makba);
-		
+
 		boolean requiresReboot = false;
-		
+
 		try {
 			List<LicensedFeature> licensedFeatures = getLicensedFeatures();
 			if (licensedFeatures.isEmpty()) {
 				logger.warn("No licensed features found");
 				return;
 			}
-			
+
 			Collection<IInstallableUnit> installedFeatures = provisioner.getInstalledFeatures();
 			if (installedFeatures.isEmpty()) {
 				logger.warn("installedFeatures is empty");
@@ -74,57 +78,54 @@ public class MedelexisFeatureManagement {
 			for (IInstallableUnit unit : installedFeatures) {
 				installedFeaturesMap.put(unit.getId(), unit);
 			}
-			
+
 			List<IInstallableUnit> toInstall = new ArrayList<>();
 			for (LicensedFeature licensedFeature : licensedFeatures) {
 				IInstallableUnit iu = installedFeaturesMap.get(licensedFeature.getId());
 				if (iu == null) {
-					
+
 					URI p2repoUrl = replaceP2BranchVariable(licensedFeature.getP2RepoUrl());
-					if(p2repoUrl == null) {
+					if (p2repoUrl == null) {
 						logger.warn("Invalid repo url, continuing.");
 						continue;
 					}
-					
-					logger.info("Preparing installation for licensed feature [{}] from [{}]",
-						licensedFeature.getId(), p2repoUrl);
-					
+
+					logger.info("Preparing installation for licensed feature [{}] from [{}]", licensedFeature.getId(),
+							p2repoUrl);
+
 					provisioner.addRepository(p2repoUrl, getP2RepoUsername(), getMisApiKey());
-					IStatus loadRepositoryStatus =
-						provisioner.loadRepository(new ConsoleProgressMonitor(), p2repoUrl);
+					IStatus loadRepositoryStatus = provisioner.loadRepository(new ConsoleProgressMonitor(), p2repoUrl);
 					StatusUtil.logStatus(logger, loadRepositoryStatus);
-					
-					IInstallableUnit iuToInstall = provisioner.getFeatureInAllAvailableFeatures(
-						new ConsoleProgressMonitor(), licensedFeature.getId());
+
+					IInstallableUnit iuToInstall = provisioner
+							.getFeatureInAllAvailableFeatures(new ConsoleProgressMonitor(), licensedFeature.getId());
 					if (iuToInstall == null) {
-						logger.warn("Could not find feature [{}] in available repositories",
-							licensedFeature.getId());
+						logger.warn("Could not find feature [{}] in available repositories", licensedFeature.getId());
 					} else {
 						toInstall.add(iuToInstall);
 					}
 				}
 			}
-			
+
 			// TODO automated uninstall
-			
+
 			for (IInstallableUnit toInstallUnit : toInstall) {
 				logger.info("Installing licensed feature [{}]", toInstallUnit.getId());
 				IStatus status = provisioner.install(toInstallUnit, new ConsoleProgressMonitor());
 				StatusUtil.logStatus(logger, status, true);
 				requiresReboot = true;
 			}
-			
+
 		} catch (Exception e) {
 			logger.warn("Error in feature management", e);
 		}
-		
+
 		if (requiresReboot) {
 			logger.info("Reboot required");
 			Application.restart(false);
 		}
-		
 	}
-	
+
 	private URI replaceP2BranchVariable(String p2RepoUrl){
 		String _url = p2RepoUrl.replaceAll("\\{\\{p2.branch\\}\\}", getElexisBranch());
 		try {
