@@ -1,5 +1,5 @@
 # Elexis-Server 
-[![pipeline status](https://gitlab.medelexis.ch/elexis/elexis-server/badges/master/pipeline.svg)](https://gitlab.medelexis.ch/elexis/elexis-server/-/commits/master)
+[![Build P2 Site](https://github.com/elexis/elexis-server/actions/workflows/build-p2-site.yaml/badge.svg)](https://github.com/elexis/elexis-server/actions/workflows/build-p2-site.yaml)
 [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html)
 
 Elexis for server operation
