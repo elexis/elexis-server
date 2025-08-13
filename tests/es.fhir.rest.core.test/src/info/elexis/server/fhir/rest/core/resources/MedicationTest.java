@@ -88,6 +88,13 @@ public class MedicationTest {
 		codeMap = parseCodeMap((Medication) entries.get(0).getResource());
 		assertEquals("Dafalgan Filmtabl 1 g 100 Stk",
 			codeMap.get(MedicamentCoding.NAME.getUrl()).getCode());
+
+		results = client.search().forResource(Medication.class)
+				.where(Medication.CODE.exactly().systemAndCode(MedicamentCoding.ATC.getUrl(), "N02BE01"))
+				.returnBundle(Bundle.class).execute();
+		assertEquals(1, entries.size());
+		codeMap = parseCodeMap((Medication) entries.get(0).getResource());
+		assertEquals("Dafalgan Filmtabl 1 g 100 Stk", codeMap.get(MedicamentCoding.NAME.getUrl()).getCode());
 	}
 	
 	@Test

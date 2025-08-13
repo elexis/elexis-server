@@ -234,6 +234,8 @@
         <setEntry value="slf4j.osgi@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="at.medevit.atc_codes@default:default"/>
+        <setEntry value="at.medevit.ch.artikelstamm.model@default:default"/>
         <setEntry value="at.medevit.ch.artikelstamm@default:default"/>
         <setEntry value="ch.elexis.core.findings.fhir.model@default:default"/>
         <setEntry value="ch.elexis.core.findings.util@default:default"/>
@@ -241,19 +243,25 @@
         <setEntry value="ch.elexis.core.jcifs.test@default:false"/>
         <setEntry value="ch.elexis.core.jcifs@default:default"/>
         <setEntry value="ch.elexis.core.jpa.datasource@3:true"/>
+        <setEntry value="ch.elexis.core.jpa.entities.test@default:false"/>
         <setEntry value="ch.elexis.core.jpa.entities@default:default"/>
         <setEntry value="ch.elexis.core.jpa.logging.slf4j@default:false"/>
+        <setEntry value="ch.elexis.core.jpa.test@default:false"/>
         <setEntry value="ch.elexis.core.jpa@default:default"/>
         <setEntry value="ch.elexis.core.l10n@default:default"/>
         <setEntry value="ch.elexis.core.logging.default_configuration@default:false"/>
-        <setEntry value="ch.elexis.core.model@default:default"/>
+        <setEntry value="ch.elexis.core.model@3:true"/>
+        <setEntry value="ch.elexis.core.services.test.ws-bind@default:false"/>
+        <setEntry value="ch.elexis.core.services.test.ws@default:default"/>
         <setEntry value="ch.elexis.core.services@default:default"/>
+        <setEntry value="ch.elexis.core.test.logging@default:false"/>
         <setEntry value="ch.elexis.core.test@default:default"/>
         <setEntry value="ch.elexis.core.text.docx@default:default"/>
         <setEntry value="ch.elexis.core.webdav@default:default"/>
         <setEntry value="ch.elexis.core@default:default"/>
         <setEntry value="ch.elexis.omnivore.model@default:default"/>
         <setEntry value="ch.elexis.omnivore@default:default"/>
+        <setEntry value="ch.rgw.utility.tests@default:false"/>
         <setEntry value="ch.rgw.utility@default:default"/>
         <setEntry value="es.gogo.shell@default:false"/>
         <setEntry value="info.elexis.jaxrs.service@default:default"/>
@@ -263,6 +271,7 @@
         <setEntry value="info.elexis.server.fhir.rest.core.test@default:false"/>
         <setEntry value="info.elexis.server.fhir.rest.core@3:true"/>
         <setEntry value="info.elexis.server.findings.fhir.jpa.service@default:default"/>
+        <setEntry value="io.curity.oauth.filter.testcert@default:false"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>
     <booleanAttribute key="tracing" value="false"/>

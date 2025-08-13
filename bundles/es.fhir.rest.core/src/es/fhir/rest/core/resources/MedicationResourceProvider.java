@@ -48,7 +48,7 @@ public class MedicationResourceProvider implements IFhirResourceProvider<Medicat
 	
 	@Override
 	public IFhirTransformer<Medication, IArticle> getTransformer(){
-		return (IFhirTransformer<Medication, IArticle>) transformerRegistry
+		return transformerRegistry
 			.getTransformerFor(Medication.class, IArticle.class);
 	}
 	
@@ -89,6 +89,9 @@ public class MedicationResourceProvider implements IFhirResourceProvider<Medicat
 			coreQuery.and(ModelPackage.Literals.IARTICLE__GTIN, COMPARATOR.EQUALS, code.getValue(),
 				true);
 			artikelstammQuery.and("gtin", COMPARATOR.EQUALS, code.getValue(), true);
+		} else if (MedicamentCoding.ATC.getUrl().equals(code.getSystem())) {
+			coreQuery.and(ModelPackage.Literals.IARTICLE__ATC_CODE, COMPARATOR.EQUALS, code.getValue(), true);
+			artikelstammQuery.and("atc", COMPARATOR.EQUALS, code.getValue(), true);
 		} else if (MedicamentCoding.NAME.getUrl().equals(code.getSystem())) {
 			coreQuery.and(ModelPackage.Literals.IARTICLE__NAME, COMPARATOR.LIKE,
 				"%" + code.getValue() + "%", true);
