@@ -15,11 +15,9 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import ca.uhn.fhir.rest.annotation.Create;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.param.TokenParam;
@@ -77,7 +75,7 @@ public class ConditionResourceProvider extends AbstractFhirCrudResourceProvider<
 
 	@Override
 	public IFhirTransformer<Condition, ICondition> getTransformer() {
-		return (IFhirTransformer<Condition, ICondition>) transformerRegistry.getTransformerFor(Condition.class,
+		return transformerRegistry.getTransformerFor(Condition.class,
 				ICondition.class);
 	}
 
@@ -187,8 +185,7 @@ public class ConditionResourceProvider extends AbstractFhirCrudResourceProvider<
 	}
 	
 	@Override
-	@Create
-	public MethodOutcome create(@ResourceParam Condition condition) {
+	public MethodOutcome create(Condition condition) {
 		MethodOutcome outcome = new MethodOutcome();
 
 		if (condition.getCode().hasCoding(FhirConstants.DE_EAU_SYSTEM, FhirConstants.DE_EAU_SYSTEM_CODE)) {
