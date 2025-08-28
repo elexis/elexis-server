@@ -59,7 +59,7 @@ public class ScheduleResourceProvider implements IFhirResourceProvider<Schedule,
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
 			Optional<Schedule> fhirSchedule = getTransformer().getFhirObject(idPart);
-			return fhirSchedule.get();
+			return fhirSchedule.orElse(null);
 		}
 		return null;
 	}
