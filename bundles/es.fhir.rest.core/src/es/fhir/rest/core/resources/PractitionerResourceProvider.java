@@ -16,9 +16,8 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ch.elexis.core.findings.util.fhir.IFhirTransformer;
 import ch.elexis.core.findings.util.fhir.IFhirTransformerRegistry;
-import ch.elexis.core.model.IContact;
+import ch.elexis.core.model.IPerson;
 import ch.elexis.core.model.ModelPackage;
-import ch.elexis.core.services.IContextService;
 import ch.elexis.core.services.ILocalLockService;
 import ch.elexis.core.services.IModelService;
 import ch.elexis.core.services.IQuery;
@@ -28,19 +27,17 @@ import es.fhir.rest.core.resources.util.IContactSearchFilterQueryAdapter;
 import es.fhir.rest.core.resources.util.QueryUtil;
 
 @Component(service = IFhirResourceProvider.class)
-public class PractitionerResourceProvider extends AbstractFhirCrudResourceProvider<Practitioner, IContact> {
+public class PractitionerResourceProvider extends AbstractFhirCrudResourceProvider<Practitioner, IPerson> {
 
 	@Reference(target = "(" + IModelService.SERVICEMODELNAME + "=ch.elexis.core.model)")
 	protected IModelService coreModelService;
 
-	@Reference
-	private IContextService contextService;
 
 	@Reference
 	private ILocalLockService localLockService;
 
 	public PractitionerResourceProvider() {
-		super(IContact.class);
+		super(IPerson.class);
 	}
 
 	@Reference
@@ -61,15 +58,15 @@ public class PractitionerResourceProvider extends AbstractFhirCrudResourceProvid
 	}
 
 	@Override
-	public IFhirTransformer<Practitioner, IContact> getTransformer() {
-		return transformerRegistry.getTransformerFor(Practitioner.class, IContact.class);
+	public IFhirTransformer<Practitioner, IPerson> getTransformer() {
+		return transformerRegistry.getTransformerFor(Practitioner.class, IPerson.class);
 	}
 
 	@Override
 	public Practitioner read(IdType theId) {
 		String idPart = theId.getIdPart();
 		if (idPart != null) {
-			Optional<IContact> elexisObjOptional = modelService.load(idPart, IContact.class);
+			Optional<IPerson> elexisObjOptional = modelService.load(idPart, IPerson.class);
 			if (elexisObjOptional.isPresent() && elexisObjOptional.get().isUser()) {
 				Optional<Practitioner> elexisObj = getTransformer().getFhirObject(elexisObjOptional.get());
 				return elexisObj.get();
@@ -82,8 +79,8 @@ public class PractitionerResourceProvider extends AbstractFhirCrudResourceProvid
 	@Search
 	public List<Practitioner> search(@OptionalParam(name = Practitioner.SP_NAME) StringParam name,
 			@OptionalParam(name = ca.uhn.fhir.rest.api.Constants.PARAM_FILTER) StringAndListParam theFtFilter) {
-		IQuery<IContact> query = coreModelService.getQuery(IContact.class);
-		query.and(ModelPackage.Literals.ICONTACT__USER, COMPARATOR.EQUALS, true);
+		IQuery<IPerson> query = coreModelService.getQuery(IPerson.class);
+		query.and(ModelPackage.Literals.ICONTACT__MANDATOR, COMPARATOR.EQUALS, true);
 
 		if (name != null) {
 			QueryUtil.andContactNameCriterion(query, name);
@@ -93,7 +90,7 @@ public class PractitionerResourceProvider extends AbstractFhirCrudResourceProvid
 			new IContactSearchFilterQueryAdapter().adapt(query, theFtFilter);
 		}
 
-		List<IContact> practitioners = query.execute();
+		List<IPerson> practitioners = query.execute();
 		List<Practitioner> _practitioners = contextService.submitContextInheriting(
 				() -> practitioners.parallelStream().map(org -> getTransformer().getFhirObject(org))
 						.filter(Optional::isPresent).map(Optional::get).toList());
