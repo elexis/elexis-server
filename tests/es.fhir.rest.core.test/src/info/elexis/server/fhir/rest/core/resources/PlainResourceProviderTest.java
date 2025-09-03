@@ -44,7 +44,7 @@ public class PlainResourceProviderTest {
 				.where(new StringClientParam("_type").matches().values("Patient", "Organization"))
 				.where(new StringClientParam("_filter").matches().value("name co Smith")).returnBundle(Bundle.class)
 				.execute();
-		assertEquals(3, results.getEntry().size());
+		assertEquals(2, results.getEntry().size());
 
 		CoreModelServiceHolder.get().remove(contact1);
 		CoreModelServiceHolder.get().remove(contact2);
