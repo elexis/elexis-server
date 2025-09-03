@@ -64,10 +64,10 @@ public class PlainResourceProvider {
 				query.or(ModelPackage.Literals.ICONTACT__PERSON, COMPARATOR.EQUALS, searchPerson);
 			}
 			if (searchPatient) {
-				query.or(ModelPackage.Literals.ICONTACT__PATIENT, COMPARATOR.EQUALS, searchPerson);
+				query.or(ModelPackage.Literals.ICONTACT__PATIENT, COMPARATOR.EQUALS, searchPatient);
 			}
 			if (searchOrganization) {
-				query.or(ModelPackage.Literals.ICONTACT__ORGANIZATION, COMPARATOR.EQUALS, searchPerson);
+				query.or(ModelPackage.Literals.ICONTACT__ORGANIZATION, COMPARATOR.EQUALS, searchOrganization);
 			}
 			query.andJoinGroups();
 

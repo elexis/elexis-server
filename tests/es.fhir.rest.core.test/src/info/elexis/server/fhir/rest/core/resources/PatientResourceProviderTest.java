@@ -38,6 +38,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ch.elexis.core.constants.XidConstants;
+import ch.elexis.core.fhir.FhirChConstants;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
@@ -209,7 +210,7 @@ public class PatientResourceProviderTest {
 		List<Identifier> identifiers = readPatient.getIdentifier();
 		boolean ahvFound = false;
 		for (Identifier identifier : identifiers) {
-			if (identifier.getSystem().equals(XidConstants.CH_AHV)) {
+			if (identifier.getSystem().equals(FhirChConstants.OID_AHV13_SYSTEM)) {
 				assertTrue(identifier.getValue().startsWith("756"));
 				ahvFound = true;
 			}
