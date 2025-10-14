@@ -33,7 +33,7 @@ import ch.elexis.core.time.TimeUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class AppointmentResourceTest {
+public class AppointmentResourceProviderTest {
 
 	private static IGenericClient client;
 

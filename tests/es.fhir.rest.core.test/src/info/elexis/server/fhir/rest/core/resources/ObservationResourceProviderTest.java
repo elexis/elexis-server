@@ -45,7 +45,7 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class ObservationTest {
+public class ObservationResourceProviderTest {
 
 	private static IGenericClient client;
 	

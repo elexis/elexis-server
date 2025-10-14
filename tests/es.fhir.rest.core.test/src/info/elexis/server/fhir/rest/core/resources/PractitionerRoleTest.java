@@ -50,6 +50,10 @@ public class PractitionerRoleTest {
 		assertNotNull(client);
 	}
 
+	/**
+	 * Dieser Test geht davon aus, dass ein Mandant über dessen Benutzer die Rolle
+	 * doctor hat. Das ist hier irrelevant, der Test ist falsch
+	 */
 	@Test
 	public void getPractitionerRole() {
 		// search by role

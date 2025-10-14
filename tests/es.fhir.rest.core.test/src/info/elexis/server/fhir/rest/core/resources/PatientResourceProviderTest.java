@@ -37,11 +37,11 @@ import ca.uhn.fhir.rest.api.PreferReturnEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IReadExecutable;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import ch.elexis.core.constants.XidConstants;
 import ch.elexis.core.fhir.FhirChConstants;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.test.TestEntities;
 import ch.elexis.core.test.initializer.TestDatabaseInitializer;
+import ch.elexis.core.time.TimeUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
@@ -184,7 +184,7 @@ public class PatientResourceProviderTest {
 		assertEquals("Test", name.getGivenAsSingleString());
 		Date dob = readPatient.getBirthDate();
 		assertNotNull(dob);
-		assertEquals(LocalDate.of(1990, Month.JANUARY, 1), AllTests.getLocalDateTime(dob).toLocalDate());
+		assertEquals(LocalDate.of(1990, Month.JANUARY, 1), TimeUtil.toLocalDateTime(dob).toLocalDate());
 		assertEquals(AdministrativeGender.FEMALE, readPatient.getGender());
 		List<ContactPoint> telcoms = readPatient.getTelecom();
 		assertNotNull(telcoms);

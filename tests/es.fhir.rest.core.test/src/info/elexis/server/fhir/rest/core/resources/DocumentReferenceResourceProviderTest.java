@@ -55,7 +55,7 @@ import ch.elexis.omnivore.model.TransientCategory;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class DocumentReferenceTest {
+public class DocumentReferenceResourceProviderTest {
 
 	private static IGenericClient client;
 

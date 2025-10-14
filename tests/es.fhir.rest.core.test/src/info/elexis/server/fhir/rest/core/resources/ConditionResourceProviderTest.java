@@ -38,7 +38,7 @@ import ch.elexis.core.time.TimeUtil;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class ConditionTest {
+public class ConditionResourceProviderTest {
 
 	private static IGenericClient client;
 

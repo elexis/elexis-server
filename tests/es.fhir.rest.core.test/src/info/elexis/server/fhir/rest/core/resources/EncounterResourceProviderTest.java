@@ -38,7 +38,7 @@ import ch.elexis.core.test.initializer.TestDatabaseInitializer;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class EncounterTest {
+public class EncounterResourceProviderTest {
 
 	private static IGenericClient client;
 

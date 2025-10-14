@@ -16,7 +16,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class ScheduleResourceTest {
+public class ScheduleResourceProviderTest {
 
 	private static IGenericClient client;
 

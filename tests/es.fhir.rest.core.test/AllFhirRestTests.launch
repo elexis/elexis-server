@@ -191,8 +191,8 @@
         <setEntry value="org.glassfish.hk2.utils@default:default"/>
         <setEntry value="org.glassfish.jersey.containers.jersey-container-servlet-core@default:default"/>
         <setEntry value="org.glassfish.jersey.containers.jersey-container-servlet@default:default"/>
-        <setEntry value="org.glassfish.jersey.core.jersey-client*3.1.99.SNAPSHOT@2:true"/>
-        <setEntry value="org.glassfish.jersey.core.jersey-common*3.1.99.SNAPSHOT@2:true"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-client@2:true"/>
+        <setEntry value="org.glassfish.jersey.core.jersey-common@2:true"/>
         <setEntry value="org.glassfish.jersey.core.jersey-server@default:default"/>
         <setEntry value="org.glassfish.jersey.ext.jersey-proxy-client@default:default"/>
         <setEntry value="org.glassfish.jersey.inject.jersey-hk2@default:default"/>
@@ -234,9 +234,11 @@
         <setEntry value="slf4j.osgi@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="at.medevit.atc_codes.test@default:default"/>
         <setEntry value="at.medevit.atc_codes@default:default"/>
         <setEntry value="at.medevit.ch.artikelstamm.model@default:default"/>
         <setEntry value="at.medevit.ch.artikelstamm@default:default"/>
+        <setEntry value="ch.elexis.core.ee.openapi@default:default"/>
         <setEntry value="ch.elexis.core.findings.fhir.model@default:default"/>
         <setEntry value="ch.elexis.core.findings.util@default:default"/>
         <setEntry value="ch.elexis.core.findings@default:default"/>
@@ -272,6 +274,7 @@
         <setEntry value="info.elexis.server.fhir.rest.core@3:true"/>
         <setEntry value="info.elexis.server.findings.fhir.jpa.service@default:default"/>
         <setEntry value="io.curity.oauth.filter.testcert@default:false"/>
+        <setEntry value="org.apache.felix.gogo.shell.contribution@default:default"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>
     <booleanAttribute key="tracing" value="false"/>
