@@ -143,4 +143,16 @@ public class SystemAgentUser implements IUser {
 	public void setRoles(List<IRole> roles) {
 	}
 
+	@Override
+	public String getAssociatedContactId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getRoleIds() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

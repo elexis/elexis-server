@@ -44,6 +44,7 @@ public class ImmunizationTest {
 	@BeforeClass
 	public static void setupClass() throws IOException, SQLException{
 		AllTests.getTestDatabaseInitializer().initializePatient();
+		AllTests.getTestDatabaseInitializer().initializePrescription();
 		
 		
 		client = FhirUtil.getGenericClient("http://localhost:8380/fhir");

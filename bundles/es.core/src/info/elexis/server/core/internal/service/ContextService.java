@@ -74,7 +74,8 @@ public class ContextService implements IContextService {
 
 	@Override
 	public void postEvent(String eventTopic, Object object, Map<String, Object> additionalProperties) {
-		throw new UnsupportedOperationException();
+		// ignore
+//		throw new UnsupportedOperationException();
 	}
 
 	@Override

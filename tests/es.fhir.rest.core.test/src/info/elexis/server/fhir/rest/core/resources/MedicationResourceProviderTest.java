@@ -24,7 +24,7 @@ import ch.elexis.core.types.ArticleTyp;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class MedicationTest {
+public class MedicationResourceProviderTest {
 	
 	private static IGenericClient client;
 	

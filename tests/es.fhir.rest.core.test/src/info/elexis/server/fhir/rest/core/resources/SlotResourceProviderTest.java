@@ -21,7 +21,7 @@ import ch.elexis.core.model.IAppointment;
 import info.elexis.server.fhir.rest.core.test.AllTests;
 import info.elexis.server.fhir.rest.core.test.FhirUtil;
 
-public class SlotResourceTest {
+public class SlotResourceProviderTest {
 
 	private static IGenericClient client;
 

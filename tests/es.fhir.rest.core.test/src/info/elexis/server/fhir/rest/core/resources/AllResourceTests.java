@@ -5,12 +5,14 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AllergyIntoleranceTest.class, PersonResourceProviderTest.class, PatientResourceProviderTest.class,
-		OrganizationResourceProviderTest.class, AppointmentResourceProviderTest.class, CoverageTest.class, ScheduleResourceProviderTest.class,
-		PractitionerRoleTest.class, ConditionResourceProviderTest.class, ObservationResourceProviderTest.class, FamilyMemberHistoryTest.class,
-		EncounterResourceProviderTest.class, ServiceRequestTest.class, MedicationRequestResourceProviderTest.class, ClaimTest.class,
-		DocumentReferenceResourceProviderTest.class, SubscriptionResourceTest.class, PlainResourceProviderTest.class,
-		ImmunizationTest.class, TaskResourceTest.class, CareTeamTest.class, MedicationTest.class })
+@SuiteClasses({ AppointmentResourceProviderTest.class, AllergyIntoleranceTest.class, CareTeamTest.class,
+		ConditionResourceProviderTest.class, ClaimTest.class, CoverageTest.class,
+		DocumentReferenceResourceProviderTest.class, EncounterResourceProviderTest.class, FamilyMemberHistoryTest.class,
+		ImmunizationTest.class, InvoiceResourceProviderTest.class, MedicationResourceProviderTest.class,
+		MedicationRequestResourceProviderTest.class, ObservationResourceProviderTest.class,
+		OrganizationResourceProviderTest.class, PersonResourceProviderTest.class, PatientResourceProviderTest.class,
+		PlainResourceProviderTest.class, PractitionerRoleTest.class, ScheduleResourceProviderTest.class,
+		ServiceRequestTest.class, SubscriptionResourceTest.class, TaskResourceTest.class })
 public class AllResourceTests {
 
 }
