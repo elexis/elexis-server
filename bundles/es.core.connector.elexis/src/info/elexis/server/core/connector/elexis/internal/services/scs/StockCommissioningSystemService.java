@@ -229,9 +229,19 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 	}
 
 	private IStatus performFullInventorySynchronization(IStock stock, List<? extends IStockEntry> inventoryResult) {
-		List<IStockEntry> currentStockEntries = stockService.findAllStockEntriesForStock(stock);
-		Set<String> currentStockEntryIds = currentStockEntries.stream().map(cse -> cse.getId())
-				.collect(Collectors.toSet());
+		Set<String> currentStockEntryIds = stockService.findAllStockEntriesForStock(stock).stream()
+				.map(cse -> cse.getId()).collect(Collectors.toSet());
+
+		Map<String, IStockEntry> gtinToStockEntryMap = new HashMap<String, IStockEntry>();
+		stockService.findAllStockEntriesForStock(stock).stream().forEach(stockEntry -> {
+			String gtin = stockEntry.getArticle().getGtin();
+			if (gtin != null) {
+				gtinToStockEntryMap.put(gtin, stockEntry);
+			} else {
+				log.warn("No gtin found for stockEntry " + stockEntry.getId());
+			}
+		});
+
 		for (int i = 0; i < inventoryResult.size(); i++) {
 			IStockEntry inventoryResultStockEntry = inventoryResult.get(i);
 			String gtin = inventoryResultStockEntry.getArticle().getGtin();
@@ -239,8 +249,7 @@ public class StockCommissioningSystemService implements IStockCommissioningSyste
 					gtin);
 
 			IStatus status = null;
-			Optional<IStockEntry> seo = currentStockEntries.stream()
-					.filter(s -> (gtin.equalsIgnoreCase(s.getArticle().getGtin()))).findFirst();
+			Optional<IStockEntry> seo = Optional.ofNullable(gtinToStockEntryMap.get(gtin));
 			if (seo.isPresent()) {
 				status = updateStockEntry(seo.get(), inventoryResultStockEntry.getCurrentStock());
 				currentStockEntryIds.remove(seo.get().getId());
