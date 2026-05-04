@@ -10,8 +10,6 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.elexis.core.services.IContextService;
-import ch.elexis.core.utils.OsgiServiceUtil;
 import info.elexis.server.core.contrib.ApplicationShutdownRegistrar;
 import info.elexis.server.core.contrib.IApplicationShutdownListener;
 
@@ -30,7 +28,7 @@ public class Application implements IApplication {
 	
 	@Override
 	public Object start(IApplicationContext context) throws Exception{
-		String stationId = OsgiServiceUtil.getService(IContextService.class).get().getStationIdentifier();
+		String stationId = SystemPropertyConstants.STATION_ID_DEFAULT;
 		
 		log.info("{}: system starting", stationId);
 		
