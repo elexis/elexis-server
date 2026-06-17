@@ -1,3 +1,8 @@
+# EOL Notification
+
+Elexis-Server is being replaced by an alternative Server, based upon [Quarkus](https://quarkus.io/) for further information please contact https://www.medelexis.ch 
+
+
 # Elexis-Server 
 [![Build P2 Site](https://github.com/elexis/elexis-server/actions/workflows/build-p2-site.yaml/badge.svg)](https://github.com/elexis/elexis-server/actions/workflows/build-p2-site.yaml)
 [![License](http://img.shields.io/badge/license-EPL-blue.svg)](http://www.eclipse.org/legal/epl-v10.html)
